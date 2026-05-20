@@ -1,360 +1,828 @@
 import { Head, Link } from '@inertiajs/react';
+import { useState, useMemo } from 'react';
 
 export default function Welcome({ auth, laravelVersion, phpVersion }) {
-    const handleImageError = () => {
-        document
-            .getElementById('screenshot-container')
-            ?.classList.add('!hidden');
-        document.getElementById('docs-card')?.classList.add('!row-span-1');
-        document
-            .getElementById('docs-card-content')
-            ?.classList.add('!flex-row');
-        document.getElementById('background')?.classList.add('!hidden');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeCategory, setActiveCategory] = useState('All');
+    const [selectedFeature, setSelectedFeature] = useState(null);
+
+    // Premium custom-curated secret spots styled to match the royal theme
+    const secretSpots = [
+        {
+            id: 1,
+            name: "Jaya Sri Maha Bodhi",
+            category: "Sacred Sites & Shrines",
+            description: "One of the world's oldest historically documented trees, radiating immense spiritual peace and sacred Buddhist heritage.",
+            image: "/images/jaya_sri_maha_bodhi.png",
+            rating: "4.9",
+            reviews: 320,
+            location: "Anuradhapura, North Central Province",
+            tags: ["Sacred Tree", "Buddhism", "Ancient Heritage"],
+            difficulty: "Easy"
+        },
+        {
+            id: 2,
+            name: "Ruwanweli Maha Seya",
+            category: "Rituals, Poojas & Ceremonies",
+            description: "A magnificent, awe-inspiring ancient stupa housing sacred relics, standing as a grand marvel of engineering and devotion.",
+            image: "/images/ruwanweli_maha_seya.png",
+            rating: "4.9",
+            reviews: 415,
+            location: "Anuradhapura, North Central Province",
+            tags: ["Ancient Stupa", "Relics", "Devotion"],
+            difficulty: "Easy"
+        },
+        {
+            id: 3,
+            name: "Vessagiriya",
+            category: "Spiritual Experiences & Wellness",
+            description: "An ancient forest monastery complex where pious monks meditated amidst scenic, rugged rock caves and serene surroundings.",
+            image: "/images/vessagiriya_monastery.png",
+            rating: "4.8",
+            reviews: 110,
+            location: "Anuradhapura, North Central Province",
+            tags: ["Forest Monastery", "Meditation", "Rock Caves"],
+            difficulty: "Medium"
+        },
+        {
+            id: 4,
+            name: "Ranmasu Uyana",
+            category: "Ancient Hydraulic & Architecture Wonders",
+            description: "A fascinating ancient royal park renowned for its advanced hydraulic systems and the mysterious, symbolic stargate carving.",
+            image: "/images/ranmasu_uyana.png",
+            rating: "4.7",
+            reviews: 156,
+            location: "Anuradhapura, North Central Province",
+            tags: ["Royal Park", "Hydraulics", "Stargate Carving"],
+            difficulty: "Easy"
+        },
+        {
+            id: 5,
+            name: "Kalasohona Monastic Environment",
+            category: "Local Heritage MSMEs & Crafts",
+            description: "A tranquil, lesser-known historic monastic site wrapped in deep natural solitude, perfect for quiet spiritual contemplation.",
+            image: "/images/kalasohona_monastery.png",
+            rating: "4.8",
+            reviews: 74,
+            location: "Anuradhapura Outskirts, North Central Province",
+            tags: ["Heritage Crafts", "Stone Carving", "Ancient ruins"],
+            difficulty: "Medium"
+        },
+        {
+            id: 6,
+            name: "Mihintale",
+            category: "Transport & Pilgrimage Logistics",
+            description: "The revered, historic mountain peak celebrated as the cradle of Buddhism and spiritual awakening in Sri Lanka.",
+            image: "/images/mihintale_peak.png",
+            rating: "4.9",
+            reviews: 280,
+            location: "Mihintale, North Central Province",
+            tags: ["Pilgrimage route", "Buddhism Cradle", "Mountain Peak"],
+            difficulty: "Medium"
+        }
+    ];
+
+    const categories = [
+        'All', 
+        'Sacred Sites & Shrines', 
+        'Rituals, Poojas & Ceremonies', 
+        'Spiritual Experiences & Wellness', 
+        'Ancient Hydraulic & Architecture Wonders', 
+        'Local Heritage MSMEs & Crafts', 
+        'Transport & Pilgrimage Logistics'
+    ];
+
+    const categoryCards = [
+        {
+            title: "Sacred Sites & Shrines",
+            description: "Discover historic temples, ancient shrines, and deeply revered holy places.",
+            image: "/images/sacred_sites.png",
+            hashtags: "#SacredSites #Shrines #Temples #Ancient",
+            exploreText: "EXPLORE THE SACRED"
+        },
+        {
+            title: "Rituals, Poojas & Ceremonies",
+            description: "Experience live traditional rituals, sacred poojas, and cultural religious observances.",
+            image: "/images/rituals_ceremonies.png",
+            hashtags: "#Poojas #Rituals #Ceremonies #Faith",
+            exploreText: "WITNESS FAITH"
+        },
+        {
+            title: "Spiritual Experiences & Wellness",
+            description: "Rejuvenate with peaceful meditation programs, yoga, and holistic spiritual healing.",
+            image: "/images/spiritual_wellness.png",
+            hashtags: "#Meditation #Wellness #Yoga #Peace",
+            exploreText: "FIND SERENITY"
+        },
+        {
+            title: "Ancient Hydraulic & Architecture Wonders",
+            description: "Explore magnificent ancient reservoirs, stone carvings, and historic engineering marvels.",
+            image: "/images/ancient_hydraulic.png",
+            hashtags: "#Hydraulics #Architecture #Ruins #Wonders",
+            exploreText: "UNVEIL MAJESTY"
+        },
+        {
+            title: "Local Heritage MSMEs & Crafts",
+            description: "Support traditional local artisans, authentic cottage industries, and cultural crafts.",
+            image: "/images/heritage_crafts.png",
+            hashtags: "#MSMEs #Crafts #Artisans #Heritage",
+            exploreText: "SUPPORT LOCAL"
+        },
+        {
+            title: "Transport & Pilgrimage Logistics",
+            description: "Plan your sacred journey smoothly with reliable local transport.",
+            image: "/images/pilgrimage_logistics.png",
+            hashtags: "#Transport #Logistics #Pilgrimage #Routes",
+            exploreText: "JOURNEY SAFELY"
+        }
+    ];
+
+    const filteredSpots = useMemo(() => {
+        return secretSpots.filter(spot => {
+            const matchesCategory = activeCategory === 'All' || spot.category === activeCategory;
+            const matchesSearch = spot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                 spot.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                 spot.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+            return matchesCategory && matchesSearch;
+        });
+    }, [searchQuery, activeCategory]);
+
+    // 6 Feature Components as requested
+    const features = [
+        {
+            id: 'booking',
+            title: "Live Booking System",
+            description: "Instant real-time reservations for services and activities at sacred sites.",
+            dynamicTag: "🟢 142 Active Bookings",
+            details: "Access an automated live scheduling engine. Book local mountain guides, secluded heritage homestays, and sacred site pilgrimage tours. Integrates directly with instant SMS notifications and secure digital ticket verification.",
+            // Calendar icon
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-9 h-9">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                </svg>
+            )
+        },
+        {
+            id: 'tracking',
+            title: "Live Location Tracking",
+            description: "Real-time map navigation to discover nearby sacred attractions seamlessly.",
+            dynamicTag: "📍 87 Mapped Places Near You",
+            details: "Navigate remote landscapes using our high-fidelity offline map modules. Discover waterfall pools, ancient trails, and meditation caves. Shows elevation maps, trail conditions, and local ranger safety checkpoints.",
+            // Compass / Map-Pin icon
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-9 h-9">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                </svg>
+            )
+        },
+        {
+            id: 'storytelling',
+            title: "Digital Storytelling",
+            description: "High-quality media and detailed history highlighting religious significance.",
+            dynamicTag: "📖 48 Active Stories Mapped",
+            details: "Immerse yourself in history through premium audio guides and rich digital chronicles. Learn about ancient inscriptions, temple architecture, and cultural folk tales narrated by local heritage scholars.",
+            // Book / Document icon
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-9 h-9">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 0 0-6-6H3v8.25h3.375A3.375 3.375 0 0 1 9.75 21.137m3.75-2.387a6 6 0 0 1 6-6H21v8.25h-3.375a3.375 3.375 0 0 0-3.375 3.375M9 7.5h.008v.008H9V7.5Zm3 0h.008v.008H12V7.5Zm3 0h.008v.008H15V7.5Zm-6 3h.008v.008H9v-.008Zm3 0h.008v.008H12v-.008Zm3 0h.008v.008H15v-.008Z" />
+                </svg>
+            )
+        },
+        {
+            id: 'language',
+            title: "Multi-Language Content",
+            description: "Accessible information tailored in Sinhala, Tamil, or English languages.",
+            dynamicTag: "🌐 3 Languages Available",
+            details: "Ensure universal accessibility for local pilgrims and foreign nomads alike. Toggle between Sinhala (සිංහල), Tamil (தமிழ்), and English (English) with synchronized local dialect audio transcripts.",
+            // Language/Globe icon
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-9 h-9">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 21a9.003 9.003 0 0 0 8.354-5.646M10.5 21A9.003 9.003 0 0 1 2.146 15.354M10.5 21V3m0 18c-2.21 0-4-3.582-4-8s1.79-8 4-8m0 18c2.21 0 4-3.582 4-8s-1.79-8-4-8M3.343 7.5a9.001 9.001 0 0 1 14.314 0M2.146 15.354a9 9 0 0 1 16.708 0M10.5 3a9.003 9.003 0 0 0-8.354 5.646M10.5 3a9.003 9.003 0 0 1 8.354 5.646" />
+                </svg>
+            )
+        },
+        {
+            id: 'analytics',
+            title: "MSME Analytics",
+            description: "Simplified business dashboard tracking income and visitor insights.",
+            dynamicTag: "📈 18 Active MSMEs Online",
+            details: "Supporting remote community economics. Local homestay operators, guides, and craft artisans access a clean metrics dashboard to view booking income trends, site traffic, and guest review summaries.",
+            // Trend-Up Chart icon
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-9 h-9">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                </svg>
+            )
+        },
+        {
+            id: 'payments',
+            title: "Secure Payments",
+            description: "Safe multi-channel environment supporting local and international cards.",
+            dynamicTag: "🔒 SSL Certified LankaPay",
+            details: "Transact with complete peace of mind. Our robust gateway handles Sri Lankan local cards (LankaPay), international credit cards (Visa/Mastercard), and mobile wallet options seamlessly.",
+            // Credit Card & Lock icon
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-9 h-9">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+            )
+        }
+    ];
+
+    const [bookingDate, setBookingDate] = useState('');
+    const [bookingStatus, setBookingStatus] = useState('');
+
+    const handleMockBooking = (e) => {
+        e.preventDefault();
+        setBookingStatus('Processing...');
+        setTimeout(() => {
+            setBookingStatus(`🎉 Reservation Request for ${bookingDate} Submitted Successfully!`);
+        }, 1200);
     };
 
     return (
         <>
-            <Head title="Welcome" />
-            <div className="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
-                <img
-                    id="background"
-                    className="absolute -left-20 top-0 max-w-[877px]"
-                    src="https://laravel.com/assets/img/welcome/background.svg"
-                />
-                <div className="relative flex min-h-screen flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
-                    <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-                        <header className="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3">
-                            <div className="flex lg:col-start-2 lg:justify-center">
-                                <svg
-                                    className="h-12 w-auto text-white lg:h-16 lg:text-[#FF2D20]"
-                                    viewBox="0 0 62 65"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M61.8548 14.6253C61.8778 14.7102 61.8895 14.7978 61.8897 14.8858V28.5615C61.8898 28.737 61.8434 28.9095 61.7554 29.0614C61.6675 29.2132 61.5409 29.3392 61.3887 29.4265L49.9104 36.0351V49.1337C49.9104 49.4902 49.7209 49.8192 49.4118 49.9987L25.4519 63.7916C25.3971 63.8227 25.3372 63.8427 25.2774 63.8639C25.255 63.8714 25.2338 63.8851 25.2101 63.8913C25.0426 63.9354 24.8666 63.9354 24.6991 63.8913C24.6716 63.8838 24.6467 63.8689 24.6205 63.8589C24.5657 63.8389 24.5084 63.8215 24.456 63.7916L0.501061 49.9987C0.348882 49.9113 0.222437 49.7853 0.134469 49.6334C0.0465019 49.4816 0.000120578 49.3092 0 49.1337L0 8.10652C0 8.01678 0.0124642 7.92953 0.0348998 7.84477C0.0423783 7.8161 0.0598282 7.78993 0.0697995 7.76126C0.0884958 7.70891 0.105946 7.65531 0.133367 7.6067C0.152063 7.5743 0.179485 7.54812 0.20192 7.51821C0.230588 7.47832 0.256763 7.43719 0.290416 7.40229C0.319084 7.37362 0.356476 7.35243 0.388883 7.32751C0.425029 7.29759 0.457436 7.26518 0.498568 7.2415L12.4779 0.345059C12.6296 0.257786 12.8015 0.211853 12.9765 0.211853C13.1515 0.211853 13.3234 0.257786 13.475 0.345059L25.4531 7.2415H25.4556C25.4955 7.26643 25.5292 7.29759 25.5653 7.32626C25.5977 7.35119 25.6339 7.37362 25.6625 7.40104C25.6974 7.43719 25.7224 7.47832 25.7523 7.51821C25.7735 7.54812 25.8021 7.5743 25.8196 7.6067C25.8483 7.65656 25.8645 7.70891 25.8844 7.76126C25.8944 7.78993 25.9118 7.8161 25.9193 7.84602C25.9423 7.93096 25.954 8.01853 25.9542 8.10652V33.7317L35.9355 27.9844V14.8846C35.9355 14.7973 35.948 14.7088 35.9704 14.6253C35.9792 14.5954 35.9954 14.5692 36.0053 14.5405C36.0253 14.4882 36.0427 14.4346 36.0702 14.386C36.0888 14.3536 36.1163 14.3274 36.1375 14.2975C36.1674 14.2576 36.1923 14.2165 36.2272 14.1816C36.2559 14.1529 36.292 14.1317 36.3244 14.1068C36.3618 14.0769 36.3942 14.0445 36.4341 14.0208L48.4147 7.12434C48.5663 7.03694 48.7383 6.99094 48.9133 6.99094C49.0883 6.99094 49.2602 7.03694 49.4118 7.12434L61.3899 14.0208C61.4323 14.0457 61.4647 14.0769 61.5021 14.1055C61.5333 14.1305 61.5694 14.1529 61.5981 14.1803C61.633 14.2165 61.6579 14.2576 61.6878 14.2975C61.7103 14.3274 61.7377 14.3536 61.7551 14.386C61.7838 14.4346 61.8 14.4882 61.8199 14.5405C61.8312 14.5692 61.8474 14.5954 61.8548 14.6253ZM59.893 27.9844V16.6121L55.7013 19.0252L49.9104 22.3593V33.7317L59.8942 27.9844H59.893ZM47.9149 48.5566V37.1768L42.2187 40.4299L25.953 49.7133V61.2003L47.9149 48.5566ZM1.99677 9.83281V48.5566L23.9562 61.199V49.7145L12.4841 43.2219L12.4804 43.2194L12.4754 43.2169C12.4368 43.1945 12.4044 43.1621 12.3682 43.1347C12.3371 43.1097 12.3009 43.0898 12.2735 43.0624L12.271 43.0586C12.2386 43.0275 12.2162 42.9888 12.1887 42.9539C12.1638 42.9203 12.1339 42.8916 12.114 42.8567L12.1127 42.853C12.0903 42.8156 12.0766 42.7707 12.0604 42.7283C12.0442 42.6909 12.023 42.656 12.013 42.6161C12.0005 42.5688 11.998 42.5177 11.9931 42.4691C11.9881 42.4317 11.9781 42.3943 11.9781 42.3569V15.5801L6.18848 12.2446L1.99677 9.83281ZM12.9777 2.36177L2.99764 8.10652L12.9752 13.8513L22.9541 8.10527L12.9752 2.36177H12.9777ZM18.1678 38.2138L23.9574 34.8809V9.83281L19.7657 12.2459L13.9749 15.5801V40.6281L18.1678 38.2138ZM48.9133 9.14105L38.9344 14.8858L48.9133 20.6305L58.8909 14.8846L48.9133 9.14105ZM47.9149 22.3593L42.124 19.0252L37.9323 16.6121V27.9844L43.7219 31.3174L47.9149 33.7317V22.3593ZM24.9533 47.987L39.59 39.631L46.9065 35.4555L36.9352 29.7145L25.4544 36.3242L14.9907 42.3482L24.9533 47.987Z"
-                                        fill="currentColor"
-                                    />
+            <Head title="Secret Places Sri Lanka - Royal Travel Guide" />
+            
+            <div className="min-h-screen bg-[#FAF9F6] text-[#2c1d11] font-sans selection:bg-royalGold-500 selection:text-royalMaroon-950 relative overflow-hidden">
+                
+                {/* --- 1. NAVBAR (Deep Royal Maroon Background) --- */}
+                <header className="bg-royalMaroon-800 border-b border-royalGold-600/20 text-[#FAF9F6] sticky top-0 z-50 shadow-md">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                        
+                        {/* Circular Gold Traditional Mandala Logo */}
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-royalGold-600 via-royalGold-400 to-royalGold-300 flex items-center justify-center shadow-md border border-royalGold-300/30 group cursor-pointer hover:rotate-45 transition-transform duration-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-royalMaroon-950">
+                                    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v5.25H6a.75.75 0 0 0 0 1.5h5.25V18a.75.75 0 0 0 1.5 0v-5.25H18a.75.75 0 0 0 0-1.5h-5.25V6Z" clipRule="evenodd" />
+                                    <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" strokeWidth="1.5" />
                                 </svg>
                             </div>
-                            <nav className="-mx-3 flex flex-1 justify-end">
-                                {auth.user ? (
-                                    <Link
-                                        href={route('dashboard')}
-                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                                    >
-                                        Dashboard
-                                    </Link>
-                                ) : (
-                                    <>
-                                        <Link
-                                            href={route('login')}
-                                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                                        >
-                                            Log in
-                                        </Link>
-                                        <Link
-                                            href={route('register')}
-                                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                                        >
-                                            Register
-                                        </Link>
-                                    </>
-                                )}
-                            </nav>
-                        </header>
+                            <span className="font-display text-xl font-bold tracking-wider text-royalGold-300">
+                                SecretPlaces
+                            </span>
+                        </div>
 
-                        <main className="mt-6">
-                            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-                                <a
-                                    href="https://laravel.com/docs"
-                                    id="docs-card"
-                                    className="flex flex-col items-start gap-6 overflow-hidden rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] md:row-span-3 lg:p-10 lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
+                        {/* Navigation Links */}
+                        <nav className="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wide text-royalGold-300/90">
+                            <a href="#hero" className="hover:text-royalGold-300 transition-colors duration-200 border-b border-transparent hover:border-royalGold-500 pb-1">Home</a>
+                            <a href="#features" className="hover:text-royalGold-300 transition-colors duration-200 border-b border-transparent hover:border-royalGold-500 pb-1">Features</a>
+                            <a href="#discover" className="hover:text-royalGold-300 transition-colors duration-200 border-b border-transparent hover:border-royalGold-500 pb-1">Places</a>
+                            <a href="#newsletter" className="hover:text-royalGold-300 transition-colors duration-200 border-b border-transparent hover:border-royalGold-500 pb-1">Suggestions</a>
+                        </nav>
+
+                        {/* Auth / Action button */}
+                        <div className="flex items-center gap-4">
+                            {auth.user ? (
+                                <Link
+                                    href={route('dashboard')}
+                                    className="px-5 py-2.5 rounded-full bg-royalMaroon-900 border border-royalGold-500/50 text-xs font-bold uppercase tracking-wider text-royalGold-300 hover:bg-royalMaroon-950 transition-all duration-300 shadow-sm"
                                 >
-                                    <div
-                                        id="screenshot-container"
-                                        className="relative flex w-full flex-1 items-stretch"
+                                    Dashboard
+                                </Link>
+                            ) : (
+                                <>
+                                    <Link
+                                        href={route('login')}
+                                        className="text-sm font-semibold text-royalGold-400 hover:text-royalGold-300 transition-colors duration-200"
                                     >
-                                        <img
-                                            src="https://laravel.com/assets/img/welcome/docs-light.svg"
-                                            alt="Laravel documentation screenshot"
-                                            className="aspect-video h-full w-full flex-1 rounded-[10px] object-cover object-top drop-shadow-[0px_4px_34px_rgba(0,0,0,0.06)] dark:hidden"
-                                            onError={handleImageError}
-                                        />
-                                        <img
-                                            src="https://laravel.com/assets/img/welcome/docs-dark.svg"
-                                            alt="Laravel documentation screenshot"
-                                            className="hidden aspect-video h-full w-full flex-1 rounded-[10px] object-cover object-top drop-shadow-[0px_4px_34px_rgba(0,0,0,0.25)] dark:block"
-                                        />
-                                        <div className="absolute -bottom-16 -left-16 h-40 w-[calc(100%+8rem)] bg-gradient-to-b from-transparent via-white to-white dark:via-zinc-900 dark:to-zinc-900"></div>
+                                        Log In
+                                    </Link>
+                                    <Link
+                                        href={route('register')}
+                                        className="px-5 py-2.5 rounded-full bg-gradient-to-r from-royalGold-500 to-royalGold-300 text-xs font-bold uppercase tracking-wider text-royalMaroon-950 hover:brightness-110 active:scale-95 transition-all duration-200 shadow-md shadow-royalGold-500/10 border border-royalGold-400/20"
+                                    >
+                                        Join Group
+                                    </Link>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </header>
+
+                {/* --- 2. HERO SECTION (Traditional Maroon and Royal Gold Backdrop) --- */}
+                <section id="hero" className="relative bg-royalMaroon-800 text-[#FAF9F6] py-16 lg:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden border-b-4 border-royalGold-500 shadow-inner">
+                    <div className="absolute inset-0 z-0 opacity-5 pointer-events-none flex items-center justify-around">
+                        <div className="w-[400px] h-[400px] rounded-full border-[10px] border-royalGold-300" />
+                        <div className="w-[500px] h-[500px] rounded-full border-[15px] border-royalGold-300" />
+                    </div>
+
+                    <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center relative z-10">
+                        {/* Hero Left Content */}
+                        <div className="lg:col-span-7 space-y-8 text-left">
+                            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-wide text-royalGold-300 leading-tight">
+                                Welcome to <br />
+                                Secret Places Sri Lanka
+                            </h1>
+                            <p className="text-royalGold-400/90 text-base sm:text-lg max-w-xl font-light leading-relaxed">
+                                Explore the most beautiful, secluded, and historic travel destinations in Sri Lanka. Unveil hidden jungle waterfalls, ancient fortress ruins, and misty mountain ranges tucked away from standard tourist trails.
+                            </p>
+                            <div className="flex flex-wrap gap-4 pt-2">
+                                <a 
+                                    href="#discover"
+                                    className="px-8 py-3 rounded-full bg-royalGold-500 text-royalMaroon-950 hover:bg-royalGold-400 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase shadow-md shadow-royalGold-500/10"
+                                >
+                                    Live Detailing
+                                </a>
+                                <a 
+                                    href="#newsletter"
+                                    className="px-8 py-3 rounded-full border-2 border-royalGold-500 text-royalGold-400 hover:bg-royalMaroon-700/50 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase"
+                                >
+                                    Live Booking
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Hero Right Graphic Overlay (Traditional Sri Lankan Lion & Sandakada Pahana art) */}
+                        <div className="lg:col-span-5 flex justify-center items-center">
+                            <div className="relative w-full max-w-[420px] aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-royalGold-500/40 bg-royalMaroon-900 group">
+                                <img 
+                                    src="/images/sri_lanka_hero_art.png" 
+                                    alt="Traditional Sri Lankan Lion and Moonstone" 
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-royalMaroon-950/20 via-transparent to-transparent pointer-events-none" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* --- 3. PREMIUM 6-FEATURE GRID (Replaces Important Highlights) --- */}
+                <section id="features" className="py-24 bg-[#FAF9F6] border-b border-royalGold-400/25">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 text-center">
+                        
+                        {/* Section Header */}
+                        <div className="max-w-3xl mx-auto space-y-4">
+                            <h2 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-royalTeal leading-tight">
+                                Important Highlights
+                            </h2>
+                            <p className="text-[#605a54] text-sm sm:text-base font-light leading-relaxed max-w-2xl mx-auto">
+                                Discover a carefully balanced guide structured around pristine natural wonders, deep ancient heritage, safety compliance, and authentic local experiences.
+                            </p>
+                        </div>
+
+                        {/* Centered Green-Circle / Gold-Card Responsive Grid (6 components: 3x2 on desktop, 2x3 on tablet, 1x6 on mobile) */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto pt-6">
+                            {features.map((feature) => (
+                                <div 
+                                    key={feature.id}
+                                    onClick={() => setSelectedFeature(feature)}
+                                    className="flex flex-col items-center group cursor-pointer transform hover:-translate-y-2 transition-all duration-300"
+                                >
+                                    {/* Circle Icon Badge */}
+                                    <div className="w-20 h-20 rounded-full bg-royalTeal text-royalGold-300 flex items-center justify-center shadow-lg border-2 border-royalGold-400/30 z-10 group-hover:scale-110 group-hover:bg-[#08423f] transition-all duration-300">
+                                        {feature.icon}
                                     </div>
+                                    
+                                    {/* Gold Card Wrapper (Dynamic hover, Interactive link state, clickable) */}
+                                    <div className="w-full bg-[#dfbe82] rounded-3xl pt-12 pb-6 px-6 -mt-10 border border-royalGold-500/20 shadow-md group-hover:shadow-xl group-hover:bg-[#e6c78e] transition-all duration-300 flex flex-col justify-between items-center text-center min-h-[220px]">
+                                        
+                                        <div className="space-y-2.5">
+                                            {/* Feature Title */}
+                                            <h3 className="font-display text-lg font-bold text-royalMaroon-950 uppercase tracking-wider">
+                                                {feature.title}
+                                            </h3>
+                                            {/* 10-15 Word Concise Description */}
+                                            <p className="text-royalMaroon-900/90 text-xs sm:text-sm font-medium leading-relaxed px-1">
+                                                {feature.description}
+                                            </p>
+                                        </div>
 
-                                    <div className="relative flex items-center gap-6 lg:items-end">
-                                        <div
-                                            id="docs-card-content"
-                                            className="flex items-start gap-6 lg:flex-col"
-                                        >
-                                            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                                <svg
-                                                    className="size-5 sm:size-6"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        fill="#FF2D20"
-                                                        d="M23 4a1 1 0 0 0-1.447-.894L12.224 7.77a.5.5 0 0 1-.448 0L2.447 3.106A1 1 0 0 0 1 4v13.382a1.99 1.99 0 0 0 1.105 1.79l9.448 4.728c.14.065.293.1.447.1.154-.005.306-.04.447-.105l9.453-4.724a1.99 1.99 0 0 0 1.1-1.789V4ZM3 6.023a.25.25 0 0 1 .362-.223l7.5 3.75a.251.251 0 0 1 .138.223v11.2a.25.25 0 0 1-.362.224l-7.5-3.75a.25.25 0 0 1-.138-.22V6.023Zm18 11.2a.25.25 0 0 1-.138.224l-7.5 3.75a.249.249 0 0 1-.329-.099.249.249 0 0 1-.033-.12V9.772a.251.251 0 0 1 .138-.224l7.5-3.75a.25.25 0 0 1 .362.224v11.2Z"
-                                                    />
-                                                    <path
-                                                        fill="#FF2D20"
-                                                        d="m3.55 1.893 8 4.048a1.008 1.008 0 0 0 .9 0l8-4.048a1 1 0 0 0-.9-1.785l-7.322 3.706a.506.506 0 0 1-.452 0L4.454.108a1 1 0 0 0-.9 1.785H3.55Z"
-                                                    />
-                                                </svg>
-                                            </div>
+                                        <div className="w-full pt-4 mt-4 border-t border-royalMaroon-950/15 flex flex-col items-center gap-2">
+                                            {/* Dynamic automated data tag badge */}
+                                            <span className="px-2.5 py-1 rounded-full bg-royalMaroon-950/10 text-[10px] font-extrabold tracking-wide text-royalMaroon-950 uppercase">
+                                                {feature.dynamicTag}
+                                            </span>
+                                            {/* Action Link Indicator */}
+                                            <span className="text-[10px] font-bold text-royalMaroon-900 uppercase tracking-widest flex items-center gap-1 group-hover:text-royalMaroon-950 transition-colors">
+                                                Launch System ➜
+                                            </span>
+                                        </div>
 
-                                            <div className="pt-3 sm:pt-5 lg:pt-0">
-                                                <h2 className="text-xl font-semibold text-black dark:text-white">
-                                                    Documentation
-                                                </h2>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
 
-                                                <p className="mt-4 text-sm/relaxed">
-                                                    Laravel has wonderful
-                                                    documentation covering every
-                                                    aspect of the framework.
-                                                    Whether you are a newcomer
-                                                    or have prior experience
-                                                    with Laravel, we recommend
-                                                    reading our documentation
-                                                    from beginning to end.
-                                                </p>
+                    </div>
+                </section>
+
+                {/* --- 4. EXPLORE CATEGORIES SECTION --- */}
+                <section id="categories" className="py-24 bg-[#f3efe6] border-b border-royalGold-400/25">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 text-center">
+                        
+                        {/* Section Header */}
+                        <div className="max-w-3xl mx-auto space-y-4">
+                            <span className="text-xs uppercase tracking-widest font-extrabold text-royalGold-700">Classification Desk</span>
+                            <h2 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-royalMaroon-950 leading-tight">
+                                Explore Categories
+                            </h2>
+                            <p className="text-[#605a54] text-sm sm:text-base font-light leading-relaxed max-w-2xl mx-auto">
+                                Navigate our curated classifications of Sri Lankan wonders, each leading to deep-seated cultural mysteries and beautiful landscapes.
+                            </p>
+                        </div>
+
+                        {/* 6 Category Cards Grid (3x2 on desktop, 2x3 on tablet, and 1x6 on mobile) */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto pt-6">
+                            {categoryCards.map((card, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => {
+                                        setActiveCategory(card.title);
+                                        document.getElementById('discover')?.scrollIntoView({ behavior: 'smooth' });
+                                    }}
+                                    className="group relative aspect-square rounded-[32px] overflow-hidden shadow-lg hover:shadow-2xl cursor-pointer transition-all duration-500 border border-royalGold-500/10"
+                                >
+                                    {/* Full-bleed Background Image */}
+                                    <img
+                                        src={card.image}
+                                        alt={card.title}
+                                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                    />
+
+                                    {/* Dark bottom gradient overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/60 to-transparent transition-opacity duration-300" />
+
+                                    {/* Content Container */}
+                                    <div className="absolute inset-0 p-8 flex flex-col justify-end text-left">
+                                        
+                                        {/* Divider line separating visual elements */}
+                                        <div className="w-full border-t border-white/20 pt-4 flex flex-col space-y-2">
+                                            
+                                            {/* White Playfair Display serif uppercase title */}
+                                            <h3 className="font-display text-2xl sm:text-[22px] md:text-2xl font-bold text-white uppercase tracking-wider leading-snug">
+                                                {card.title}
+                                            </h3>
+
+                                            {/* Sand-gold (#ebd197) italicized body description */}
+                                            <p className="font-display italic text-royalGold-400 text-[13px] leading-relaxed font-semibold">
+                                                {card.description}
+                                            </p>
+                                        </div>
+
+                                        {/* Footer details divider line */}
+                                        <div className="w-full border-t border-white/10 mt-4 pt-4 flex items-center justify-between gap-4">
+                                            {/* Custom hashtags bottom-left */}
+                                            <span className="text-[10px] text-white/50 tracking-wider font-mono truncate max-w-[60%]" title={card.hashtags}>
+                                                {card.hashtags}
+                                            </span>
+
+                                            {/* Leaf-outline circle badge next to the word "EXPLORE" bottom-right */}
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <span className="text-[10px] font-bold text-white uppercase tracking-widest group-hover:text-royalGold-400 transition-colors">
+                                                    EXPLORE
+                                                </span>
+                                                <div className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center text-white group-hover:border-royalGold-400 group-hover:text-royalGold-400 group-hover:bg-royalGold-400/10 transition-all duration-300">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-5-5-6-10-2-14 4.5-4.5 10-3 10-3s1.5 5.5-3 10c-4 4-9 3-14 2M12 21l3-3" />
+                                                    </svg>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <svg
-                                            className="size-6 shrink-0 stroke-[#FF2D20]"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth="1.5"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                                            />
-                                        </svg>
-                                    </div>
-                                </a>
-
-                                <a
-                                    href="https://laracasts.com"
-                                    className="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
-                                >
-                                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                        <svg
-                                            className="size-5 sm:size-6"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g fill="#FF2D20">
-                                                <path d="M24 8.25a.5.5 0 0 0-.5-.5H.5a.5.5 0 0 0-.5.5v12a2.5 2.5 0 0 0 2.5 2.5h19a2.5 2.5 0 0 0 2.5-2.5v-12Zm-7.765 5.868a1.221 1.221 0 0 1 0 2.264l-6.626 2.776A1.153 1.153 0 0 1 8 18.123v-5.746a1.151 1.151 0 0 1 1.609-1.035l6.626 2.776ZM19.564 1.677a.25.25 0 0 0-.177-.427H15.6a.106.106 0 0 0-.072.03l-4.54 4.543a.25.25 0 0 0 .177.427h3.783c.027 0 .054-.01.073-.03l4.543-4.543ZM22.071 1.318a.047.047 0 0 0-.045.013l-4.492 4.492a.249.249 0 0 0 .038.385.25.25 0 0 0 .14.042h5.784a.5.5 0 0 0 .5-.5v-2a2.5 2.5 0 0 0-1.925-2.432ZM13.014 1.677a.25.25 0 0 0-.178-.427H9.101a.106.106 0 0 0-.073.03l-4.54 4.543a.25.25 0 0 0 .177.427H8.4a.106.106 0 0 0 .073-.03l4.54-4.543ZM6.513 1.677a.25.25 0 0 0-.177-.427H2.5A2.5 2.5 0 0 0 0 3.75v2a.5.5 0 0 0 .5.5h1.4a.106.106 0 0 0 .073-.03l4.54-4.543Z" />
-                                            </g>
-                                        </svg>
-                                    </div>
-
-                                    <div className="pt-3 sm:pt-5">
-                                        <h2 className="text-xl font-semibold text-black dark:text-white">
-                                            Laracasts
-                                        </h2>
-
-                                        <p className="mt-4 text-sm/relaxed">
-                                            Laracasts offers thousands of video
-                                            tutorials on Laravel, PHP, and
-                                            JavaScript development. Check them
-                                            out, see for yourself, and massively
-                                            level up your development skills in
-                                            the process.
-                                        </p>
-                                    </div>
-
-                                    <svg
-                                        className="size-6 shrink-0 self-center stroke-[#FF2D20]"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="1.5"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                                        />
-                                    </svg>
-                                </a>
-
-                                <a
-                                    href="https://laravel-news.com"
-                                    className="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
-                                >
-                                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                        <svg
-                                            className="size-5 sm:size-6"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g fill="#FF2D20">
-                                                <path d="M8.75 4.5H5.5c-.69 0-1.25.56-1.25 1.25v4.75c0 .69.56 1.25 1.25 1.25h3.25c.69 0 1.25-.56 1.25-1.25V5.75c0-.69-.56-1.25-1.25-1.25Z" />
-                                                <path d="M24 10a3 3 0 0 0-3-3h-2V2.5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2V20a3.5 3.5 0 0 0 3.5 3.5h17A3.5 3.5 0 0 0 24 20V10ZM3.5 21.5A1.5 1.5 0 0 1 2 20V3a.5.5 0 0 1 .5-.5h14a.5.5 0 0 1 .5.5v17c0 .295.037.588.11.874a.5.5 0 0 1-.484.625L3.5 21.5ZM22 20a1.5 1.5 0 1 1-3 0V9.5a.5.5 0 0 1 .5-.5H21a1 1 0 0 1 1 1v10Z" />
-                                                <path d="M12.751 6.047h2a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-2A.75.75 0 0 1 12 7.3v-.5a.75.75 0 0 1 .751-.753ZM12.751 10.047h2a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-2A.75.75 0 0 1 12 11.3v-.5a.75.75 0 0 1 .751-.753ZM4.751 14.047h10a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-10A.75.75 0 0 1 4 15.3v-.5a.75.75 0 0 1 .751-.753ZM4.75 18.047h7.5a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-7.5A.75.75 0 0 1 4 19.3v-.5a.75.75 0 0 1 .75-.753Z" />
-                                            </g>
-                                        </svg>
-                                    </div>
-
-                                    <div className="pt-3 sm:pt-5">
-                                        <h2 className="text-xl font-semibold text-black dark:text-white">
-                                            Laravel News
-                                        </h2>
-
-                                        <p className="mt-4 text-sm/relaxed">
-                                            Laravel News is a community driven
-                                            portal and newsletter aggregating
-                                            all of the latest and most important
-                                            news in the Laravel ecosystem,
-                                            including new package releases and
-                                            tutorials.
-                                        </p>
-                                    </div>
-
-                                    <svg
-                                        className="size-6 shrink-0 self-center stroke-[#FF2D20]"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="1.5"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                                        />
-                                    </svg>
-                                </a>
-
-                                <div className="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800">
-                                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                        <svg
-                                            className="size-5 sm:size-6"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g fill="#FF2D20">
-                                                <path d="M16.597 12.635a.247.247 0 0 0-.08-.237 2.234 2.234 0 0 1-.769-1.68c.001-.195.03-.39.084-.578a.25.25 0 0 0-.09-.267 8.8 8.8 0 0 0-4.826-1.66.25.25 0 0 0-.268.181 2.5 2.5 0 0 1-2.4 1.824.045.045 0 0 0-.045.037 12.255 12.255 0 0 0-.093 3.86.251.251 0 0 0 .208.214c2.22.366 4.367 1.08 6.362 2.118a.252.252 0 0 0 .32-.079 10.09 10.09 0 0 0 1.597-3.733ZM13.616 17.968a.25.25 0 0 0-.063-.407A19.697 19.697 0 0 0 8.91 15.98a.25.25 0 0 0-.287.325c.151.455.334.898.548 1.328.437.827.981 1.594 1.619 2.28a.249.249 0 0 0 .32.044 29.13 29.13 0 0 0 2.506-1.99ZM6.303 14.105a.25.25 0 0 0 .265-.274 13.048 13.048 0 0 1 .205-4.045.062.062 0 0 0-.022-.07 2.5 2.5 0 0 1-.777-.982.25.25 0 0 0-.271-.149 11 11 0 0 0-5.6 2.815.255.255 0 0 0-.075.163c-.008.135-.02.27-.02.406.002.8.084 1.598.246 2.381a.25.25 0 0 0 .303.193 19.924 19.924 0 0 1 5.746-.438ZM9.228 20.914a.25.25 0 0 0 .1-.393 11.53 11.53 0 0 1-1.5-2.22 12.238 12.238 0 0 1-.91-2.465.248.248 0 0 0-.22-.187 18.876 18.876 0 0 0-5.69.33.249.249 0 0 0-.179.336c.838 2.142 2.272 4 4.132 5.353a.254.254 0 0 0 .15.048c1.41-.01 2.807-.282 4.117-.802ZM18.93 12.957l-.005-.008a.25.25 0 0 0-.268-.082 2.21 2.21 0 0 1-.41.081.25.25 0 0 0-.217.2c-.582 2.66-2.127 5.35-5.75 7.843a.248.248 0 0 0-.09.299.25.25 0 0 0 .065.091 28.703 28.703 0 0 0 2.662 2.12.246.246 0 0 0 .209.037c2.579-.701 4.85-2.242 6.456-4.378a.25.25 0 0 0 .048-.189 13.51 13.51 0 0 0-2.7-6.014ZM5.702 7.058a.254.254 0 0 0 .2-.165A2.488 2.488 0 0 1 7.98 5.245a.093.093 0 0 0 .078-.062 19.734 19.734 0 0 1 3.055-4.74.25.25 0 0 0-.21-.41 12.009 12.009 0 0 0-10.4 8.558.25.25 0 0 0 .373.281 12.912 12.912 0 0 1 4.826-1.814ZM10.773 22.052a.25.25 0 0 0-.28-.046c-.758.356-1.55.635-2.365.833a.25.25 0 0 0-.022.48c1.252.43 2.568.65 3.893.65.1 0 .2 0 .3-.008a.25.25 0 0 0 .147-.444c-.526-.424-1.1-.917-1.673-1.465ZM18.744 8.436a.249.249 0 0 0 .15.228 2.246 2.246 0 0 1 1.352 2.054c0 .337-.08.67-.23.972a.25.25 0 0 0 .042.28l.007.009a15.016 15.016 0 0 1 2.52 4.6.25.25 0 0 0 .37.132.25.25 0 0 0 .096-.114c.623-1.464.944-3.039.945-4.63a12.005 12.005 0 0 0-5.78-10.258.25.25 0 0 0-.373.274c.547 2.109.85 4.274.901 6.453ZM9.61 5.38a.25.25 0 0 0 .08.31c.34.24.616.561.8.935a.25.25 0 0 0 .3.127.631.631 0 0 1 .206-.034c2.054.078 4.036.772 5.69 1.991a.251.251 0 0 0 .267.024c.046-.024.093-.047.141-.067a.25.25 0 0 0 .151-.23A29.98 29.98 0 0 0 15.957.764a.25.25 0 0 0-.16-.164 11.924 11.924 0 0 0-2.21-.518.252.252 0 0 0-.215.076A22.456 22.456 0 0 0 9.61 5.38Z" />
-                                            </g>
-                                        </svg>
-                                    </div>
-
-                                    <div className="pt-3 sm:pt-5">
-                                        <h2 className="text-xl font-semibold text-black dark:text-white">
-                                            Vibrant Ecosystem
-                                        </h2>
-
-                                        <p className="mt-4 text-sm/relaxed">
-                                            Laravel's robust library of
-                                            first-party tools and libraries,
-                                            such as{' '}
-                                            <a
-                                                href="https://forge.laravel.com"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white dark:focus-visible:ring-[#FF2D20]"
-                                            >
-                                                Forge
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://vapor.laravel.com"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Vapor
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://nova.laravel.com"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Nova
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://envoyer.io"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Envoyer
-                                            </a>
-                                            , and{' '}
-                                            <a
-                                                href="https://herd.laravel.com"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Herd
-                                            </a>{' '}
-                                            help you take your projects to the
-                                            next level. Pair them with powerful
-                                            open source libraries like{' '}
-                                            <a
-                                                href="https://laravel.com/docs/billing"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Cashier
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/dusk"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Dusk
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/broadcasting"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Echo
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/horizon"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Horizon
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/sanctum"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Sanctum
-                                            </a>
-                                            ,{' '}
-                                            <a
-                                                href="https://laravel.com/docs/telescope"
-                                                className="rounded-sm underline hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF2D20] dark:hover:text-white"
-                                            >
-                                                Telescope
-                                            </a>
-                                            , and more.
-                                        </p>
                                     </div>
                                 </div>
-                            </div>
-                        </main>
+                            ))}
+                        </div>
 
-                        <footer className="py-16 text-center text-sm text-black dark:text-white/70">
-                            Laravel v{laravelVersion} (PHP v{phpVersion})
-                        </footer>
                     </div>
-                </div>
+                </section>
+
+                {/* --- MOCK INTERACTIVE GLASSMORPHIC MODAL FOR CLICKABLE FEATURES --- */}
+                {selectedFeature && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 backdrop-blur-sm p-4 transition-all duration-300 animate-fadeIn">
+                        <div className="bg-royalMaroon-800 border-2 border-royalGold-500 rounded-3xl p-6 sm:p-8 max-w-lg w-full text-[#FAF9F6] shadow-2xl relative space-y-6">
+                            
+                            {/* Close Modal button */}
+                            <button 
+                                onClick={() => { setSelectedFeature(null); setBookingStatus(''); }}
+                                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-royalMaroon-950 text-royalGold-400 hover:text-royalGold-300 flex items-center justify-center font-bold border border-royalGold-500/30 transition-colors"
+                            >
+                                ✕
+                            </button>
+
+                            {/* Header Icon + Info */}
+                            <div className="flex items-center gap-4 border-b border-royalGold-600/30 pb-4">
+                                <div className="w-14 h-14 rounded-2xl bg-royalTeal text-royalGold-300 flex items-center justify-center border border-royalGold-400/20">
+                                    {selectedFeature.icon}
+                                </div>
+                                <div className="text-left">
+                                    <h3 className="font-display text-xl font-bold text-royalGold-300 uppercase tracking-wide">
+                                        {selectedFeature.title}
+                                    </h3>
+                                    <span className="text-[10px] bg-royalGold-500/10 border border-royalGold-400/20 text-royalGold-400 px-2 py-0.5 rounded-full uppercase font-bold tracking-widest mt-1 inline-block">
+                                        {selectedFeature.dynamicTag}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Detailed description */}
+                            <div className="text-left text-sm text-royalGold-300/80 leading-relaxed font-light">
+                                <p>{selectedFeature.details}</p>
+                            </div>
+
+                            {/* Functional Live Demos Inside Modal */}
+                            <div className="bg-royalMaroon-950/60 rounded-2xl p-4 border border-royalGold-500/10 space-y-3">
+                                <span className="text-[9px] uppercase font-bold text-royalGold-400/50 block tracking-widest text-left">Live Functional Sandbox</span>
+                                
+                                {selectedFeature.id === 'booking' && (
+                                    <form onSubmit={handleMockBooking} className="space-y-3 text-left">
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className="text-xs font-bold text-royalGold-400 uppercase tracking-wider">Select Adventure Date</label>
+                                            <input 
+                                                type="date" 
+                                                required
+                                                onChange={(e) => setBookingDate(e.target.value)}
+                                                className="w-full bg-royalMaroon-900 border border-royalGold-600/30 rounded-xl px-3 py-2 text-sm text-royalGold-300 focus:outline-none focus:border-royalGold-400"
+                                            />
+                                        </div>
+                                        <button type="submit" className="w-full py-2.5 rounded-xl bg-royalGold-500 hover:bg-royalGold-400 text-royalMaroon-950 font-bold text-xs uppercase tracking-wider transition-colors">
+                                            Book Instant Slot
+                                        </button>
+                                        {bookingStatus && (
+                                            <div className="text-xs font-semibold text-center text-emerald-400 bg-emerald-950/20 border border-emerald-800/30 rounded-xl py-2">
+                                                {bookingStatus}
+                                            </div>
+                                        )}
+                                    </form>
+                                )}
+
+                                {selectedFeature.id === 'tracking' && (
+                                    <div className="py-4 text-center space-y-3">
+                                        {/* Mock map radar animation */}
+                                        <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                                            <div className="absolute inset-0 rounded-full bg-emerald-500/20 border border-emerald-500/40 animate-ping" />
+                                            <div className="w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-100 z-10" />
+                                        </div>
+                                        <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">📡 Mapped coordinates active: 80.6337° E, 7.2906° N</span>
+                                        <p className="text-[11px] text-royalGold-450/60 font-light">Interactive tracking locates 3 hidden waterfall trails within 2.5km radius.</p>
+                                    </div>
+                                )}
+
+                                {selectedFeature.id === 'storytelling' && (
+                                    <div className="p-3 space-y-3 text-left">
+                                        <div className="flex items-center justify-between text-xs text-royalGold-300 font-semibold bg-royalMaroon-900 px-3 py-2 rounded-xl border border-royalGold-500/10">
+                                            <span>🔊 Play Audio Story: Sigiriya Inscription</span>
+                                            <span className="text-[9px] uppercase bg-royalGold-500/20 px-1.5 py-0.5 rounded text-royalGold-400 animate-pulse">Playing</span>
+                                        </div>
+                                        {/* Mock player slider bar */}
+                                        <div className="space-y-1">
+                                            <div className="w-full bg-royalMaroon-900 rounded-full h-1.5">
+                                                <div className="bg-royalGold-500 h-1.5 rounded-full w-[45%]" />
+                                            </div>
+                                            <div className="flex justify-between text-[9px] text-royalGold-400/50">
+                                                <span>02:18</span>
+                                                <span>05:10</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {selectedFeature.id === 'language' && (
+                                    <div className="p-3 text-center space-y-3">
+                                        <span className="text-xs font-bold text-royalGold-400 uppercase tracking-wider block">Select Platform Language</span>
+                                        <div className="flex justify-center gap-2">
+                                            <button className="px-3 py-1.5 rounded-lg border-2 border-royalGold-500 bg-royalGold-500 text-royalMaroon-950 text-xs font-bold uppercase">English</button>
+                                            <button className="px-3 py-1.5 rounded-lg border border-royalGold-500/40 text-royalGold-400 text-xs font-semibold hover:bg-royalMaroon-900 transition-colors">සිංහල</button>
+                                            <button className="px-3 py-1.5 rounded-lg border border-royalGold-500/40 text-royalGold-400 text-xs font-semibold hover:bg-royalMaroon-900 transition-colors">தமிழ்</button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {selectedFeature.id === 'analytics' && (
+                                    <div className="p-2 space-y-3 text-left">
+                                        <span className="text-xs font-bold text-royalGold-400 uppercase tracking-wider block">Homestay Revenue Trends</span>
+                                        {/* Mock analytical bar chart */}
+                                        <div className="flex items-end justify-between h-20 bg-royalMaroon-900/80 rounded-xl p-3 border border-royalGold-500/10">
+                                            <div className="w-6 bg-royalGold-500/30 hover:bg-royalGold-500 h-[30%] rounded transition-all duration-300" title="Mar: LKR 45k" />
+                                            <div className="w-6 bg-royalGold-500/30 hover:bg-royalGold-500 h-[50%] rounded transition-all duration-300" title="Apr: LKR 75k" />
+                                            <div className="w-6 bg-royalGold-500 hover:bg-royalGold-600 h-[85%] rounded transition-all duration-300" title="May: LKR 125k" />
+                                            <div className="w-6 bg-royalGold-600 h-[70%] rounded transition-all duration-300" title="Jun (Proj): LKR 100k" />
+                                        </div>
+                                        <div className="flex justify-between text-[9px] text-royalGold-400/50 px-1">
+                                            <span>Mar</span>
+                                            <span>Apr</span>
+                                            <span>May</span>
+                                            <span>Jun (Est)</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {selectedFeature.id === 'payments' && (
+                                    <div className="p-3 text-left space-y-3">
+                                        <span className="text-xs font-bold text-royalGold-400 uppercase tracking-wider block">Mock Payment Gateway</span>
+                                        <div className="bg-royalMaroon-900 border border-royalGold-500/10 rounded-xl p-3 space-y-2">
+                                            <div className="flex justify-between text-xs text-royalGold-450/70 font-semibold">
+                                                <span>LankaPay Network</span>
+                                                <span className="text-emerald-400">● Safe</span>
+                                            </div>
+                                            {/* Dummy credit card fields */}
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <div className="col-span-2 bg-royalMaroon-950 rounded px-2 py-1 text-[10px] text-royalGold-300 font-mono">•••• •••• •••• 4242</div>
+                                                <div className="bg-royalMaroon-950 rounded px-2 py-1 text-[10px] text-royalGold-300 font-mono text-center">12/28</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                            </div>
+
+                            {/* Back to Home Button */}
+                            <button 
+                                onClick={() => { setSelectedFeature(null); setBookingStatus(''); }}
+                                className="w-full py-3 bg-gradient-to-r from-royalGold-500 to-royalGold-300 text-royalMaroon-950 font-bold rounded-xl text-xs uppercase tracking-wider hover:brightness-110 transition-all duration-200"
+                            >
+                                Back to Main Desk
+                            </button>
+
+                        </div>
+                    </div>
+                )}
+
+                {/* --- 4. INTERACTIVE SPOT EXPLORER (Muted Traditional Design Theme) --- */}
+                <section id="discover" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-16">
+                    
+                    {/* Header and Live Filter and Search Controls */}
+                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 border-b border-royalGold-400/20 pb-8">
+                        <div className="space-y-3 text-left">
+                            <span className="text-xs uppercase tracking-widest font-bold text-royalGold-700">Exploration Desk</span>
+                            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-royalMaroon-950">
+                                Mapped Secret Spots
+                            </h2>
+                            <p className="text-slate-500 font-light text-sm max-w-lg">
+                                Use the search desk or category filters below to locate specific waterfalls, beaches, and scenic valleys throughout the island.
+                            </p>
+                        </div>
+
+                        {/* Search & Categories side-by-side */}
+                        <div className="flex flex-col sm:flex-row gap-4 items-center shrink-0 w-full lg:w-auto">
+                            {/* Search Box */}
+                            <div className="relative w-full sm:w-72">
+                                <input 
+                                    type="text" 
+                                    placeholder="Search spots..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-white border border-slate-350 rounded-xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:ring-1 focus:ring-royalGold-500 focus:border-royalGold-500 text-slate-800"
+                                />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m21-21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+                                </svg>
+                            </div>
+
+                            {/* Category Filter Badges */}
+                            <div className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl border border-slate-300 shrink-0 overflow-x-auto w-full sm:w-auto">
+                                {categories.map(category => (
+                                    <button
+                                        key={category}
+                                        onClick={() => setActiveCategory(category)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 shrink-0 ${
+                                            activeCategory === category 
+                                            ? 'bg-royalTeal text-royalGold-300 shadow-sm' 
+                                            : 'text-slate-600 hover:text-royalMaroon-950 hover:bg-slate-300/40'
+                                        }`}
+                                    >
+                                        {category}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Interactive Spot Grid */}
+                    {filteredSpots.length > 0 ? (
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {filteredSpots.map(spot => (
+                                <article 
+                                    key={spot.id} 
+                                    className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden hover:border-royalGold-500/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-md"
+                                >
+                                    {/* Image Container with Zoom */}
+                                    <div className="relative aspect-[4/3] overflow-hidden bg-slate-950">
+                                        <img 
+                                            src={spot.image} 
+                                            alt={spot.name} 
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    </div>
+
+                                    {/* Destination Details */}
+                                    <div className="p-6 flex flex-col flex-1 space-y-4 text-left">
+                                        
+                                        <div className="flex items-center justify-between text-xs text-slate-500">
+                                            <div className="flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4 text-slate-400">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                                </svg>
+                                                <span>{spot.location}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-amber-450">
+                                                    <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clipRule="evenodd" />
+                                                </svg>
+                                                <span className="font-bold text-slate-700">{spot.rating}</span>
+                                                <span className="text-slate-400">({spot.reviews})</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <h3 className="font-display text-xl font-bold text-royalMaroon-950 group-hover:text-royalMaroon-800 transition-colors duration-200">
+                                                {spot.name}
+                                            </h3>
+                                            <p className="text-slate-650 text-sm font-light leading-relaxed">
+                                                {spot.description}
+                                            </p>
+                                        </div>
+
+                                        {/* Tag badges */}
+                                        <div className="flex flex-wrap gap-1.5 pt-2">
+                                            {spot.tags.map(tag => (
+                                                <span key={tag} className="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-500 border border-slate-200">
+                                                    #{tag}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        {/* Interactive Button */}
+                                        <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
+                                            <span className="text-[10px] uppercase font-bold text-slate-400">Verified Spot</span>
+                                            <button className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-royalTeal hover:text-[#0c6b65] transition-colors duration-200">
+                                                View Details
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-3.5 h-3.5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-20 bg-slate-100/50 border border-slate-200 rounded-3xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-12 h-12 text-slate-400 mx-auto mb-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m21-21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+                            </svg>
+                            <h3 className="text-lg font-bold text-slate-600 mb-1">No Secret Spots Found</h3>
+                            <p className="text-slate-450 text-sm font-light">We couldn't find any spots matching "{searchQuery}".</p>
+                        </div>
+                    )}
+
+                </section>
+
+                {/* --- 5. ADVENTURE CLUB NEWSLETTER --- */}
+                <section id="newsletter" className="py-24 bg-[#f4ebd9] border-t border-royalGold-500/20">
+                    <div className="max-w-4xl mx-auto px-4 text-center space-y-8">
+                        <div className="w-16 h-16 rounded-full bg-royalMaroon-800 text-royalGold-300 flex items-center justify-center mx-auto shadow-md border border-royalGold-400/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-8 h-8">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.626a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                            </svg>
+                        </div>
+                        <div className="space-y-3">
+                            <span className="text-xs uppercase tracking-widest font-extrabold text-royalMaroon-900">Sri Lankan Adventure Club</span>
+                            <h2 className="font-display text-3xl font-extrabold text-royalMaroon-950">Join the Secret Travel Group</h2>
+                            <p className="text-slate-650 font-light max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
+                                Subscribe to receive precise maps, safety coordinates, and guidelines for a brand new secret travel spot in Sri Lanka every single month.
+                            </p>
+                        </div>
+                        <form className="max-w-md mx-auto flex gap-3 p-1.5 bg-white border border-slate-300 rounded-full focus-within:border-royalGold-500 shadow-sm transition-all duration-300">
+                            <input 
+                                type="email" 
+                                required
+                                placeholder="Enter your email address" 
+                                className="bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none flex-1 px-5 text-sm text-slate-800 placeholder-slate-400"
+                            />
+                            <button type="submit" className="px-6 py-3 bg-royalMaroon-800 text-royalGold-300 font-bold uppercase tracking-wider text-xs rounded-full hover:bg-royalMaroon-900 active:scale-95 transition-all duration-200">
+                                Subscribe
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                {/* --- 6. FOOTER SECTION --- */}
+                <footer className="border-t border-royalGold-500/20 bg-royalMaroon-900 text-[#FAF9F6] py-16 text-center text-xs space-y-6">
+                    <div className="flex justify-center gap-6 text-royalGold-400 font-bold uppercase tracking-wider">
+                        <a href="#hero" className="hover:text-royalGold-300 transition-colors">Home</a>
+                        <a href="#features" className="hover:text-royalGold-300 transition-colors">Features</a>
+                        <a href="#discover" className="hover:text-royalGold-300 transition-colors">Explorer Desk</a>
+                        <a href="#newsletter" className="hover:text-royalGold-300 transition-colors">Adventure Club</a>
+                    </div>
+                    
+                    <div className="text-royalGold-500/60 max-w-md mx-auto font-light leading-relaxed px-4">
+                        Discover responsibly. Respect local cultures, protect historical sights, and practice strict waste management to preserve the natural beauty of the island.
+                    </div>
+
+                    <div className="border-t border-royalGold-600/10 pt-8 w-11/12 max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center text-slate-400 gap-4">
+                        <div>
+                            © {new Date().getFullYear()} SecretPlaces Sri Lanka. Coordinated with love by Local Nomads.
+                        </div>
+                        <div className="font-mono text-[10px] text-royalGold-400/40">
+                            Powered by Laravel v{laravelVersion} (PHP v{phpVersion}) • React + Inertia
+                        </div>
+                    </div>
+                </footer>
+
             </div>
         </>
     );
