@@ -8,6 +8,7 @@ import Hero from './Welcome-sub-sub-components/Hero';
 import FeaturesSection from './Welcome-sub-sub-components/FeaturesSection';
 import CategoriesSection from './Welcome-sub-sub-components/CategoriesSection';
 import SpotsSection from './Welcome-sub-sub-components/SpotsSection';
+import CommunityImpactSection from './Welcome-sub-sub-components/CommunityImpactSection';
 import Newsletter from './Welcome-sub-sub-components/Newsletter';
 import FeatureModal from './Welcome-sub-sub-components/FeatureModal';
 import Footer from '@/Layouts/Footer';
@@ -69,6 +70,8 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                     setActiveCategory={setActiveCategory}
                     categories={categories}
                 />
+
+                <CommunityImpactSection />
 
                 <Newsletter />
 
