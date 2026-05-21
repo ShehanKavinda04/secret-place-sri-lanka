@@ -120,29 +120,29 @@ export default function CommunityImpactSection() {
                         
                         <div className="flex flex-col sm:flex-row items-center gap-10">
                             <div className="relative w-36 h-36 shrink-0">
-                                <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90 drop-shadow-sm">
+                                <svg viewBox="0 0 40 40" className="w-full h-full transform -rotate-90 drop-shadow-sm">
                                     {/* Community Dev - 10% (Base layer 100%) */}
-                                    <path
-                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none"
+                                    <circle
+                                        cx="20" cy="20" r="15.9155"
+                                        fill="transparent"
                                         stroke="#cbd5e1"
                                         strokeWidth="6.5"
                                     />
                                     {/* Preservation Fund - 25% (90% layer) */}
-                                    <path
-                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none"
+                                    <circle
+                                        cx="20" cy="20" r="15.9155"
+                                        fill="transparent"
                                         stroke="#8A1024"
                                         strokeWidth="6.5"
-                                        strokeDasharray="90, 100"
+                                        strokeDasharray="90 100"
                                     />
                                     {/* Artisan Income - 65% (65% layer) */}
-                                    <path
-                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none"
+                                    <circle
+                                        cx="20" cy="20" r="15.9155"
+                                        fill="transparent"
                                         stroke="#D4AF37"
                                         strokeWidth="6.5"
-                                        strokeDasharray="65, 100"
+                                        strokeDasharray="65 100"
                                     />
                                 </svg>
                             </div>

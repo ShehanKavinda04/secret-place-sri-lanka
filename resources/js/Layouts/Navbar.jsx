@@ -14,10 +14,13 @@ export default function Navbar({ auth }) {
                 </div>
 
                 <nav className="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wide text-royalGold-300/90">
-                    <a href="#hero" className="hover:text-royalGold-300 transition-colors">Home</a>
-                    <a href="#features" className="hover:text-royalGold-300 transition-colors">Features</a>
-                    <a href="#discover" className="hover:text-royalGold-300 transition-colors">Places</a>
-                    <a href="#newsletter" className="hover:text-royalGold-300 transition-colors">Suggestions</a>
+                    <a href="/#hero" className="hover:text-royalGold-300 transition-colors">Home</a>
+                    <a href="/#categories" className="hover:text-royalGold-300 transition-colors">Categories</a>
+                    <a href="/#smart-routing" className="hover:text-royalGold-300 transition-colors">Map</a>
+                    <a href="/#features" className="hover:text-royalGold-300 transition-colors">Features</a>
+                    <a href="/#discover" className="hover:text-royalGold-300 transition-colors">Places</a>
+                    <a href="/#newsletter" className="hover:text-royalGold-300 transition-colors">Suggestions</a>
+                    <Link href="/about-us" className="hover:text-royalGold-300 transition-colors">About Us</Link>
                 </nav>
 
                 <div className="flex items-center gap-4">
