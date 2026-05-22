@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import SpotCard from './SpotCard';
 
 export default function SpotsSection({ 
@@ -31,7 +32,7 @@ export default function SpotsSection({
                             className="w-full bg-white border border-slate-350 rounded-xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:ring-1 focus:ring-royalGold-500 focus:border-royalGold-500 text-slate-800"
                         />
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m21-21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
                     </div>
                 </div>
@@ -53,12 +54,8 @@ export default function SpotsSection({
             {/* Explore More Button */}
             <div className="flex flex-col items-center gap-4 pt-4 border-t border-royalGold-400/20">
                 <p className="text-xs uppercase tracking-widest font-bold text-royalGold-700">More Awaits You</p>
-                <a
-                    href="#categories"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
+                <Link
+                    href="/places"
                     className="group inline-flex items-center gap-3 px-10 py-4 rounded-full bg-gradient-to-r from-royalMaroon-800 to-royalMaroon-950 text-royalGold-300 font-bold text-sm uppercase tracking-widest border border-royalGold-500/40 shadow-lg hover:shadow-royalGold-500/20 hover:border-royalGold-400/70 hover:from-royalMaroon-700 hover:to-royalMaroon-900 active:scale-95 transition-all duration-300"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-5 h-5 text-royalGold-400 group-hover:rotate-12 transition-transform duration-300">
@@ -68,7 +65,7 @@ export default function SpotsSection({
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-4 h-4 text-royalGold-400 group-hover:translate-x-1 transition-transform duration-300">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                     </svg>
-                </a>
+                </Link>
                 <p className="text-[11px] text-slate-400 font-light">Discover all 6 sacred categories of Anuradhapura's ancient heritage</p>
             </div>
         </section>

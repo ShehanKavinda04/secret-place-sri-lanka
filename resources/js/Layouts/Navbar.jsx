@@ -18,7 +18,7 @@ export default function Navbar({ auth }) {
                     <a href="/#categories" className="hover:text-royalGold-300 transition-colors">Categories</a>
                     <a href="/#smart-routing" className="hover:text-royalGold-300 transition-colors">Map</a>
                     <a href="/#features" className="hover:text-royalGold-300 transition-colors">Features</a>
-                    <a href="/#discover" className="hover:text-royalGold-300 transition-colors">Places</a>
+                    <Link href="/places" className="hover:text-royalGold-300 transition-colors">Places</Link>
                     <a href="/#newsletter" className="hover:text-royalGold-300 transition-colors">Suggestions</a>
                     <Link href="/about-us" className="hover:text-royalGold-300 transition-colors">About Us</Link>
                 </nav>

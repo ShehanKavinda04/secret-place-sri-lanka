@@ -21,6 +21,13 @@ Route::get('/about-us', function () {
     ]);
 });
 
+Route::get('/places', function () {
+    return Inertia::render('Places', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
