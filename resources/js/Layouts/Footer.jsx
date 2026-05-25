@@ -1,26 +1,30 @@
 
 export default function Footer({ auth, laravelVersion, phpVersion }) {
     return (
-        <footer className="border-t border-royalGold-500/20 bg-royalMaroon-900 text-[#FAF9F6] py-16 text-center text-xs space-y-6">
-                    <div className="flex justify-center gap-6 text-royalGold-400 font-bold uppercase tracking-wider">
-                        <a href="#hero" className="hover:text-royalGold-300 transition-colors">Home</a>
-                        <a href="#features" className="hover:text-royalGold-300 transition-colors">Features</a>
-                        <a href="#discover" className="hover:text-royalGold-300 transition-colors">Explorer Desk</a>
-                        <a href="#newsletter" className="hover:text-royalGold-300 transition-colors">Adventure Club</a>
-                    </div>
-                    
-                    <div className="text-royalGold-500/60 max-w-md mx-auto font-light leading-relaxed px-4">
-                        Discover responsibly. Respect local cultures, protect historical sights, and practice strict waste management to preserve the natural beauty of the island.
-                    </div>
+        <footer className="bg-[#0f4a45] text-[#FAF9F6] py-10 flex flex-col items-center justify-center space-y-4">
+            <div className="flex flex-wrap justify-center items-center gap-3 text-xs sm:text-sm text-gray-200 font-medium tracking-wide">
+                <a href="#hero" className="hover:text-white transition-colors">Home</a>
+                <span className="text-gray-400 opacity-70">|</span>
+                <a href="#features" className="hover:text-white transition-colors">Features</a>
+                <span className="text-gray-400 opacity-70">|</span>
+                <a href="#discover" className="hover:text-white transition-colors">Explorer Desk</a>
+                <span className="text-gray-400 opacity-70">|</span>
+                <a href="#newsletter" className="hover:text-white transition-colors">Adventure Club</a>
+            </div>
+            
+            <div className="text-gray-300 text-xs font-light text-center px-4 max-w-2xl">
+                Discover responsibly. Respect local cultures, protect historical sights, and practice strict waste management to preserve the natural beauty of the island.
+            </div>
 
-                    <div className="border-t border-royalGold-600/10 pt-8 w-11/12 max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center text-slate-400 gap-4">
-                        <div>
-                            © {new Date().getFullYear()} SecretPlaces Sri Lanka. Coordinated with love by Local Nomads.
-                        </div>
-                        <div className="font-mono text-[10px] text-royalGold-400/40">
-                            Powered by Laravel v{laravelVersion} (PHP v{phpVersion}) • React + Inertia
-                        </div>
-                    </div>
-                </footer>
+            <div className="text-gray-200 text-xs font-medium text-center">
+                © {new Date().getFullYear()} SecretPlaces Sri Lanka. Coordinated with love by Local Nomads.
+            </div>
+            
+            {(laravelVersion || phpVersion) && (
+                <div className="font-mono text-[9px] text-gray-400/60 mt-2">
+                    Powered by Laravel {laravelVersion ? `v${laravelVersion}` : ''} {phpVersion ? `(PHP v${phpVersion})` : ''} • React + Inertia
+                </div>
+            )}
+        </footer>
     );
 }

@@ -1,3 +1,5 @@
+import { Link } from '@inertiajs/react';
+
 export default function SpotCard({ spot }) {
     return (
         <article className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden hover:border-royalGold-500/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-md">
@@ -31,10 +33,10 @@ export default function SpotCard({ spot }) {
 
                 <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
                     <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Verified Spot</span>
-                    <button className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-royalTeal hover:text-[#0c6b65] transition-colors">
+                    <Link href={`/places/${spot.id}/history`} className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-royalTeal hover:text-[#0c6b65] transition-colors">
                         View Details
                         <span>→</span>
-                    </button>
+                    </Link>
                 </div>
 
             </div>
