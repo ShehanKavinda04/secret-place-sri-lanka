@@ -1,3 +1,5 @@
+import { router } from '@inertiajs/react';
+
 export default function CategoriesSection({ categoryCards, setActiveCategory }) {
     return (
         <section id="categories" className="py-24 bg-[#f3efe6] border-b border-royalGold-400/25">
@@ -17,8 +19,12 @@ export default function CategoriesSection({ categoryCards, setActiveCategory }) 
                         <div
                             key={index}
                             onClick={() => {
-                                setActiveCategory(card.title);
-                                document.getElementById('discover')?.scrollIntoView({ behavior: 'smooth' });
+                                if (card.title === "Sacred Sites & Shrines") {
+                                    router.visit('/places');
+                                } else {
+                                    setActiveCategory(card.title);
+                                    document.getElementById('discover')?.scrollIntoView({ behavior: 'smooth' });
+                                }
                             }}
                             className="group relative aspect-square rounded-[32px] overflow-hidden shadow-lg hover:shadow-2xl cursor-pointer transition-all duration-500 border border-royalGold-500/10"
                         >
@@ -35,10 +41,7 @@ export default function CategoriesSection({ categoryCards, setActiveCategory }) 
                                     </p>
                                 </div>
 
-                                <div className="w-full border-t border-white/10 mt-4 pt-4 flex items-center justify-between gap-4">
-                                    <span className="text-[10px] text-white/50 tracking-wider font-mono truncate" title={card.hashtags}>
-                                        {card.hashtags}
-                                    </span>
+                                <div className="w-full border-t border-white/10 mt-4 pt-4 flex items-center justify-end gap-4">
                                     <div className="flex items-center gap-2">
                                         <span className="text-[10px] font-bold text-white uppercase tracking-widest group-hover:text-royalGold-400 transition-colors">
                                             EXPLORE
