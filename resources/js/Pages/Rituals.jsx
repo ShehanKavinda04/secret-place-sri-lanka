@@ -5,106 +5,106 @@ import SpotCard from './Welcome-sub-sub-components/SpotCard';
 
 const majorRituals = [
     {
-        id: 'esala-perahera',
-        name: 'Esala Perahera',
-        location: 'Kandy, Central Province',
+        id: 'poson-poya-mihintale',
+        name: 'Poson Poya Festival',
+        location: 'Mihintale & Anuradhapura',
         rating: '5.0',
-        reviews: '1240',
-        description: 'The grandest Buddhist pageant in Sri Lanka, featuring magnificently decorated elephants, fire dancers, and sacred relic processions held annually in Kandy.',
-        image: '/images/rituals_ceremonies.png'
-    },
-    {
-        id: 'vesak-lantern',
-        name: 'Vesak Festival Poojas',
-        location: 'Nationwide, Sri Lanka',
-        rating: '4.9',
-        reviews: '870',
-        description: 'The most sacred Buddhist festival celebrating the birth, enlightenment and passing of the Buddha with colorful lanterns, dansalas and temple poojas.',
-        image: '/images/ruwanweli_maha_seya.png'
-    },
-    {
-        id: 'kataragama-ritual',
-        name: 'Kataragama Firewalking',
-        location: 'Kataragama, Uva Province',
-        rating: '4.8',
-        reviews: '540',
-        description: 'A powerful and sacred multi-faith ritual where devotees walk on red-hot coals as a demonstration of deep faith and divine devotion at Kataragama.',
-        image: '/images/rituals_ceremonies.png'
+        reviews: '1540',
+        description: 'The historic celebration marking the arrival of Buddhism in Sri Lanka. The entire sacred city is illuminated, with massive crowds undertaking pilgrimages and observing sil.',
+        image: '/images/mihintale_peak.png'
     },
     {
         id: 'aluth-sahal-mangalya',
         name: 'Aluth Sahal Mangalya',
-        location: 'Anuradhapura & Kandy, Sri Lanka',
+        location: 'Jaya Sri Maha Bodhi, Anuradhapura',
+        rating: '4.8',
+        reviews: '890',
+        description: 'The national New Rice Festival where farmers offer their first harvest of paddy to the sacred Jaya Sri Maha Bodhi, ensuring blessings for future prosperity.',
+        image: '/images/jaya_sri_maha_bodhi.png'
+    },
+    {
+        id: 'ruwanwelisaya-pichcha-mal',
+        name: 'Pichcha Mal Pooja',
+        location: 'Ruwanweli Maha Seya, Anuradhapura',
+        rating: '4.9',
+        reviews: '1120',
+        description: 'A breathtakingly beautiful offering of millions of fragrant white jasmine (pichcha) flowers to the great stupa, filling the air with profound devotion and sweet scent.',
+        image: '/images/ruwanweli_maha_seya.png'
+    },
+    {
+        id: 'kanchuka-pooja',
+        name: 'Kanchuka Pooja (Robe Offering)',
+        location: 'Ruwanweli Maha Seya, Anuradhapura',
+        rating: '4.8',
+        reviews: '675',
+        description: 'A majestic ceremony where devotees carry a massive saffron-colored robe wrapped around the enormous dome of the Ruwanwelisaya stupa in a deeply emotional procession.',
+        image: '/images/ancient_brick_stupa_1779382089722.png'
+    },
+    {
+        id: 'nanumura-mangallaya',
+        name: 'Nanumura Mangallaya',
+        location: 'Jaya Sri Maha Bodhi, Anuradhapura',
         rating: '4.7',
-        reviews: '310',
-        description: 'The ancient harvest offering ceremony presenting the first grains of the new paddy harvest to the Buddha, a cherished tradition spanning over two millennia.',
+        reviews: '410',
+        description: 'A traditional and rare bathing ceremony of the sacred Bodhi tree using herbal preparations and scented water, invoking blessings for the nation and rain for the harvest.',
         image: '/images/sacred_bodhi_tree_1779382054492.png'
     },
     {
-        id: 'thai-pongal',
-        name: 'Thai Pongal Celebrations',
-        location: 'Northern & Eastern Provinces',
+        id: 'ill-poya-katina',
+        name: 'Katina Robe Month Ceremonies',
+        location: 'Atamasthana, Anuradhapura',
         rating: '4.8',
-        reviews: '410',
-        description: 'The vibrant Tamil harvest festival giving thanks to the sun god, celebrated with traditional cooking of sweet pongal, kolam art and cultural performances.',
-        image: '/images/heritage_crafts.png'
-    },
-    {
-        id: 'milad-un-nabi',
-        name: 'Milad-Un-Nabi Processions',
-        location: 'Colombo & Galle, Western Province',
-        rating: '4.7',
-        reviews: '275',
-        description: 'Colorful and devout Islamic processions celebrating the birthday of the Prophet Muhammad with elaborate floats, devotional singing and communal prayers.',
-        image: '/images/pilgrimage_logistics.png'
+        reviews: '530',
+        description: 'The culmination of the monks\' rainy season retreat (Vassa). Devotees offer the sacred Katina robes to the Maha Sangha in grand processions across the Eight Sacred Places.',
+        image: '/images/rituals_ceremonies.png'
     },
 ];
 
 const localCeremonies = [
     {
-        id: 'bali-thovil',
-        name: 'Bali & Thovil Ceremonies',
-        location: 'Rural Villages, Southern Province',
+        id: 'kapruk-pooja',
+        name: 'Kapruk Pooja',
+        location: 'Thuparamaya, Anuradhapura',
         rating: '4.9',
-        reviews: '185',
-        description: 'Ancient Sinhala healing rituals performed by masked dancers to appease planetary deities and ancestral spirits, rich with chanting and elaborate costumes.',
-        image: '/images/rock_cave_temple_1779382110458.png'
+        reviews: '345',
+        description: 'A special offering representing the mythical wish-fulfilling tree, presented with profound reverence at the oldest dagoba in Sri Lanka to invoke heavenly blessings.',
+        image: '/images/thuparamaya_1779380449379.png'
     },
     {
-        id: 'pirith-chanting',
-        name: 'Pirith Chanting Ceremonies',
-        location: 'Buddhist Temples Nationwide',
-        rating: '4.9',
-        reviews: '620',
-        description: 'Sacred all-night Buddhist blessing ceremonies where monks chant protective Pali suttas, filling the temple with deeply resonant, purifying vibrations.',
-        image: '/images/jaya_sri_maha_bodhi.png'
-    },
-    {
-        id: 'poson-poya',
-        name: 'Poson Poya at Mihintale',
-        location: 'Mihintale, North Central Province',
-        rating: '5.0',
-        reviews: '720',
-        description: 'The sacred full moon poya celebrating the introduction of Buddhism to Sri Lanka by Arahat Mahinda. Thousands of white-clad pilgrims ascend Mihintale hill.',
-        image: '/images/mihintale_peak.png'
-    },
-    {
-        id: 'devol-maduwa',
-        name: 'Devol Maduwa',
-        location: 'Hikkaduwa, Southern Province',
-        rating: '4.6',
-        reviews: '98',
-        description: 'A rare and spectacular coastal ritual for the god Devol Deviyo, featuring elaborate masked performances and community offerings on the southern shores.',
-        image: '/images/spiritual_wellness.png'
-    },
-    {
-        id: 'kohomba-kankariya',
-        name: 'Kohomba Kankariya',
-        location: 'Kandy Region, Central Province',
+        id: 'gilanpasa-pooja',
+        name: 'Evening Gilanpasa Pooja',
+        location: 'Mirisawetiya Stupa, Anuradhapura',
         rating: '4.8',
-        reviews: '145',
-        description: 'An elaborate multi-day Kandyan ritual drama invoking the ancient Kohomba deity for healing, blessings and prosperity, preserving classical dance traditions.',
-        image: '/images/ancient_hydraulic.png'
+        reviews: '280',
+        description: 'Serene evening rituals where monks and devotees offer medicinal drinks, lit oil lamps, and incense to the Buddha, creating a deeply tranquil twilight atmosphere.',
+        image: '/images/mirisawetiya_1779380509748.png'
+    },
+    {
+        id: 'bodhi-pooja-isurumuniya',
+        name: 'Bodhi Pooja at Isurumuniya',
+        location: 'Isurumuniya Viharaya, Anuradhapura',
+        rating: '4.7',
+        reviews: '415',
+        description: 'Devotional chanting and water offerings at the sacred Bodhi tree of Isurumuniya, famous for its ancient rock carvings and picturesque setting by the Tissa Wewa.',
+        image: '/images/isurumuniya_1779380577189.png'
+    },
+    {
+        id: 'atavisi-buddha-pooja',
+        name: 'Atavisi Buddha Pooja',
+        location: 'Abhayagiri Viharaya, Anuradhapura',
+        rating: '4.9',
+        reviews: '190',
+        description: 'A magnificent ritual offering homage to the 28 past Buddhas, conducted amidst the sprawling, ancient monastic ruins of the Abhayagiri complex.',
+        image: '/images/abhayagiri_1779380471030.png'
+    },
+    {
+        id: 'pahan-pooja',
+        name: 'Thousand Lamps Offering',
+        location: 'Jetavanaramaya, Anuradhapura',
+        rating: '4.8',
+        reviews: '310',
+        description: 'The awe-inspiring illumination of the ancient Jetavanarama stupa courtyard with thousands of flickering clay oil lamps, a sight of incredible spiritual beauty.',
+        image: '/images/jetavanarama_1779380489792.png'
     },
 ];
 
