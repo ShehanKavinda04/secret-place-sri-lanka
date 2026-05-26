@@ -11,7 +11,7 @@ const retreatCenters = [
         rating: '4.9',
         reviews: '340',
         description: 'A serene monastery offering guided meditation and Dhamma teachings in English and Sinhala, ideal for seekers looking to learn traditional Theravada practices.',
-        image: '/images/spiritual_wellness.png'
+        image: '/images/mahamevnawa_meditation_1779804848418.png'
     },
     {
         id: 'mihintale-aranya',
@@ -20,7 +20,7 @@ const retreatCenters = [
         rating: '4.8',
         reviews: '215',
         description: 'An ancient monastic retreat nestled in the hills of Mihintale, offering serious practitioners a deeply quiet environment for Vipassana meditation among ancient caves.',
-        image: '/images/mihintale_peak.png'
+        image: '/images/mihintale_hermitage_1779804870405.png'
     },
     {
         id: 'rajarata-ayurveda',
@@ -29,7 +29,7 @@ const retreatCenters = [
         rating: '4.7',
         reviews: '180',
         description: 'Experience authentic, traditional Sri Lankan Ayurveda utilizing ancient herbal remedies from the region, offering restorative Panchakarma and stress-relief therapies.',
-        image: '/images/hidden_waterfall.png'
+        image: '/images/rajarata_ayurveda_1779804888516.png'
     },
     {
         id: 'isinbessagala-hermitage',
@@ -38,7 +38,7 @@ const retreatCenters = [
         rating: '4.9',
         reviews: '120',
         description: 'Located on a picturesque rock outcrop near Anuradhapura, this quiet hermitage provides stunning views and profound silence for long-term meditation retreats.',
-        image: '/images/rock_cave_temple_1779382110458.png'
+        image: '/images/isinbessagala_hermitage_1779804909550.png'
     },
     {
         id: 'tapovana-anuradhapura',
@@ -47,7 +47,7 @@ const retreatCenters = [
         rating: '4.8',
         reviews: '155',
         description: 'A strict ascetic forest monastery where visitors can experience the pure, unadulterated monastic lifestyle, offering alms and participating in brief meditation sessions.',
-        image: '/images/jaya_sri_maha_bodhi.png'
+        image: '/images/tapovana_forest_1779804927418.png'
     },
     {
         id: 'sri-subodharama',
@@ -56,7 +56,7 @@ const retreatCenters = [
         rating: '4.6',
         reviews: '95',
         description: 'A welcoming meditation center close to the sacred city, providing comfortable facilities and expert guidance for beginners exploring mindfulness and breath meditation.',
-        image: '/images/ancient_hydraulic.png'
+        image: '/images/subodharama_centre_1779804944450.png'
     },
 ];
 
@@ -68,7 +68,7 @@ const wellnessSites = [
         rating: '5.0',
         reviews: '280',
         description: 'A deeply spiritual forest walk around the "Dark Water Pool." This ancient meditation site is surrounded by dense jungle and ruins, offering profound stillness and tranquility.',
-        image: '/images/spiritual_wellness.png'
+        image: '/images/rock_cave_temple_1779382110458.png'
     },
     {
         id: 'nuwara-wewa-yoga',
@@ -77,7 +77,7 @@ const wellnessSites = [
         rating: '4.8',
         reviews: '190',
         description: 'Gentle morning and sunset yoga sessions on the banks of the massive Nuwara Wewa reservoir, harmonizing breathwork with the cooling breeze of the ancient waters.',
-        image: '/images/hidden_waterfall.png'
+        image: '/images/ancient_hydraulic.png'
     },
     {
         id: 'ranmasu-uyana',
@@ -86,7 +86,7 @@ const wellnessSites = [
         rating: '4.7',
         reviews: '315',
         description: 'Practice walking meditation through the Royal Goldfish Park, an ancient pleasure garden featuring intricate rock carvings, lotus ponds, and the mysterious "Stargate" carving.',
-        image: '/images/ancient_hydraulic.png'
+        image: '/images/ranmasu_uyana.png'
     },
     {
         id: 'mihintale-sunrise',
@@ -104,8 +104,17 @@ const wellnessSites = [
         rating: '4.9',
         reviews: '255',
         description: 'Therapeutic Shinrin-yoku (forest bathing) amidst the ruins of a 1st-century BCE strictly contemplative monastery, hidden deep within a mystical mountain nature reserve.',
-        image: '/images/misty_mountains.png'
+        image: '/images/vessagiriya_monastery.png'
     },
+    {
+        id: 'jaya-sri-maha-bodhi-contemplation',
+        name: 'Sacred Bodhi Contemplation',
+        location: 'Jaya Sri Maha Bodhi, Anuradhapura',
+        rating: '5.0',
+        reviews: '620',
+        description: 'Spend deeply contemplative hours seated beneath the oldest historically documented tree in the world, absorbing the serene, ancient energy of this highly venerated site.',
+        image: '/images/srimaha_bodhi_malu_1779380597304.png'
+    }
 ];
 
 export default function Spiritual({ auth, laravelVersion, phpVersion }) {

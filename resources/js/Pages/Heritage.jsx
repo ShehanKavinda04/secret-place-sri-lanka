@@ -5,106 +5,106 @@ import SpotCard from './Welcome-sub-sub-components/SpotCard';
 
 const traditionalCrafts = [
     {
-        id: 'beeralu-lace',
-        name: 'Beeralu Lace Weaving',
-        location: 'Galle, Southern Province',
-        rating: '4.8',
-        reviews: '210',
-        description: "A centuries-old Portuguese-influenced lacework tradition practised in Galle's coastal villages, where skilled artisans weave intricate patterns using wooden bobbins on padded pillows.",
+        id: 'stone-carving',
+        name: 'Traditional Stone Sculpting',
+        location: 'Anuradhapura Sacred City',
+        rating: '4.9',
+        reviews: '310',
+        description: "Master stonemasons recreate the glory of ancient Anuradhapura, meticulously chiseling granite to craft exquisite replicas of Moonstones (Sandakada Pahana), Guardstones, and Samadhi statues.",
         image: '/images/heritage_crafts.png'
     },
     {
-        id: 'dumbara-weaving',
-        name: 'Dumbara Mat Weaving',
-        location: 'Hennanigala, Kandy District',
-        rating: '4.9',
-        reviews: '175',
-        description: 'The legendary Dumbara mats, woven from the fibrous bark of the Hana plant using geometric patterns unique to each village, are a protected GI-tagged craft of Sri Lanka.',
+        id: 'rajarata-pottery',
+        name: 'Rajarata Clay Pottery',
+        location: 'Nuwaragam Palatha, Anuradhapura',
+        rating: '4.8',
+        reviews: '245',
+        description: 'Local artisans in traditional pottery villages use the rich red laterite clay from the dry zone to wheel-throw terracotta water jugs (Gurulethu), cooking pots, and ritual oil lamps.',
+        image: '/images/kalasohona_monastery.png'
+    },
+    {
+        id: 'rush-reed-weaving',
+        name: 'Rush & Reed Weaving (Pan)',
+        location: 'Kala Wewa Environs, Anuradhapura',
+        rating: '4.7',
+        reviews: '180',
+        description: 'Women from communities surrounding the ancient reservoirs expertly weave dried reeds and rushes into beautiful, eco-friendly mats, baskets, and intricate household items.',
         image: '/images/media__1779345162925.png'
     },
     {
-        id: 'kandyan-goldsmithing',
-        name: 'Kandyan Traditional Goldsmithing',
-        location: 'Kandy, Central Province',
+        id: 'lotus-fibre-craft',
+        name: 'Lotus Stem Silk Extraction',
+        location: 'Nuwara Wewa, Anuradhapura',
         rating: '4.9',
-        reviews: '320',
-        description: 'Master goldsmiths in Kandy craft exquisite jewellery using traditional repoussé and filigree techniques, producing the regal ornaments once exclusive to Kandyan royalty.',
-        image: '/images/heritage_crafts.png'
+        reviews: '155',
+        description: 'An innovative, highly sustainable MSME craft where artisans extract delicate micro-fibres from the lotus stems gathered from Anuradhapura’s ancient lakes to weave rare, luxurious textiles.',
+        image: '/images/spiritual_wellness.png'
     },
     {
-        id: 'kolam-masks',
-        name: 'Ambalangoda Mask Carving',
-        location: 'Ambalangoda, Southern Province',
-        rating: '4.8',
-        reviews: '285',
-        description: 'Brightly painted ritual masks hand-carved from the lightweight Kaduru tree by hereditary master craftsmen, used in ancient kolam dance dramas and Thovil healing ceremonies.',
+        id: 'wood-carving',
+        name: 'Anuradhapura Woodcraft',
+        location: 'Mihintale, Anuradhapura',
+        rating: '4.6',
+        reviews: '220',
+        description: 'Skilled carpenters and carvers shape locally sourced timber into stunning architectural elements, replicating the floral motifs and ancient designs found in ruins like the Lovamahapaya.',
         image: '/images/rock_cave_temple_1779382110458.png'
     },
     {
-        id: 'brass-brassware',
-        name: 'Traditional Brassware Crafting',
-        location: 'Kurunegala, North Western Province',
-        rating: '4.7',
-        reviews: '148',
-        description: 'Artisans using the ancient lost-wax (Cire Perdue) casting method to create sacred oil lamps, temple vessels, and decorative figurines with timeless elegance.',
-        image: '/images/heritage_crafts.png'
-    },
-    {
-        id: 'batik-art',
-        name: 'Sri Lankan Batik Art Studios',
-        location: 'Matale, Central Province',
+        id: 'handloom-textiles',
+        name: 'Rajarata Handloom Centres',
+        location: 'Anuradhapura',
         rating: '4.8',
-        reviews: '390',
-        description: 'Vibrant hand-crafted batik fabrics featuring nature motifs and traditional Sri Lankan iconography, produced by skilled artisans in dedicated cottage studios open to visitors.',
-        image: '/images/spiritual_wellness.png'
+        reviews: '290',
+        description: 'Local handloom cooperatives supporting female artisans who weave vibrant cotton fabrics and traditional garments using wooden looms, preserving a vital rural livelihood.',
+        image: '/images/heritage_crafts.png'
     },
 ];
 
 const heritageExperiences = [
     {
-        id: 'pottuvil-pottery',
-        name: 'Traditional Pottery Villages',
-        location: 'Kekirawa, North Central Province',
-        rating: '4.7',
-        reviews: '118',
-        description: 'Visit traditional villages where hereditary potters craft terracotta water pots, cooking vessels, and ritual oil lamps using ancient hand-wheel techniques on red laterite clay.',
-        image: '/images/kalasohona_monastery.png'
-    },
-    {
-        id: 'coir-weaving',
-        name: 'Coir Industry & Weaving Co-ops',
-        location: 'Negombo, Western Province',
-        rating: '4.6',
-        reviews: '96',
-        description: 'Explore cooperative workshops where coastal communities process coconut husks into coir rope, mattress fibre, and decorative products, sustaining a 600-year-old maritime craft tradition.',
-        image: '/images/hidden_waterfall.png'
-    },
-    {
-        id: 'silver-filigree',
-        name: 'Silver Filigree Craft MSMEs',
-        location: 'Jaffna, Northern Province',
-        rating: '4.9',
-        reviews: '162',
-        description: 'Extraordinary filigree silverwork unique to Jaffna, where Tamil master craftsmen twist and solder fine silver threads into delicate jewellery of remarkable intricacy.',
-        image: '/images/heritage_crafts.png'
-    },
-    {
-        id: 'palmyrah-crafts',
-        name: 'Palmyrah Leaf Craft Workshops',
-        location: 'Vavuniya, Northern Province',
-        rating: '4.7',
-        reviews: '84',
-        description: 'Traditional Northern Province craft workshops where artisans weave the leaves of the Palmyrah palm into decorative fans, baskets, hats, and ornamental household items.',
+        id: 'craft-village-tour',
+        name: 'Kala Grama Artisan Tour',
+        location: 'Anuradhapura Surroundings',
+        rating: '4.8',
+        reviews: '142',
+        description: 'A guided immersive tour through dedicated artisan villages (Kala Grama) where you can interact directly with master craftspeople and support local MSME families.',
         image: '/images/misty_mountains.png'
     },
     {
-        id: 'gem-cutting',
-        name: 'Ratnapura Gem Cutting Studios',
-        location: 'Ratnapura, Sabaragamuwa Province',
+        id: 'pottery-workshop',
+        name: 'Hands-on Clay Workshop',
+        location: 'Anuradhapura',
         rating: '4.9',
-        reviews: '440',
-        description: "Sri Lanka's Gem Capital offers unique studio visits to witness master gem cutters and polishers transform rough sapphires, rubies, and cat's eyes into world-class precious stones.",
+        reviews: '188',
+        description: 'Learn the ancient techniques of wheel-throwing and hand-building from hereditary potters. Shape your own terracotta souvenirs using the distinct red clay of the Rajarata region.',
+        image: '/images/kalasohona_monastery.png'
+    },
+    {
+        id: 'stone-carving-demo',
+        name: 'Stone Sculpting Experience',
+        location: 'Anuradhapura Sacred City',
+        rating: '4.7',
+        reviews: '115',
+        description: 'Watch mesmerising demonstrations of granite carving, learning about the ancient tools, sacred geometry, and sheer patience required to create Anuradhapura-style stone art.',
+        image: '/images/heritage_crafts.png'
+    },
+    {
+        id: 'reed-weaving-class',
+        name: 'Pan Weaving Masterclass',
+        location: 'Abhaya Wewa Environs',
+        rating: '4.8',
+        reviews: '95',
+        description: 'Sit alongside local weavers near the ancient reservoirs to learn the delicate art of processing and braiding natural reeds into colourful, geometric patterned mats.',
         image: '/images/ancient_hydraulic.png'
+    },
+    {
+        id: 'lotus-silk-experience',
+        name: 'Lotus Silk Farm Visit',
+        location: 'Anuradhapura',
+        rating: '5.0',
+        reviews: '134',
+        description: 'Experience the magical process of transforming raw lotus stems into exquisite fabric. Understand how this unique eco-friendly enterprise provides vital income for local communities.',
+        image: '/images/spiritual_wellness.png'
     },
 ];
 
@@ -125,7 +125,7 @@ export default function Heritage({ auth, laravelVersion, phpVersion }) {
                             Local Heritage MSMEs &amp; Crafts
                         </h1>
                         <p className="mt-3 text-white/70 text-sm max-w-xl font-light">
-                            Support the living artisan traditions that have sustained Sri Lanka's cultural identity for centuries.
+                            Support the living artisan traditions that have sustained Anuradhapura's cultural identity for centuries.
                         </p>
                     </div>
                 </div>
@@ -134,10 +134,10 @@ export default function Heritage({ auth, laravelVersion, phpVersion }) {
                 <div className="bg-royalMaroon-950/5 border-y border-royalGold-400/20 py-6 px-4">
                     <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
                         {[
-                            { icon: '🏺', stat: '200+', label: 'Artisan Workshops' },
-                            { icon: '🧵', stat: '18', label: 'Protected GI Crafts' },
-                            { icon: '🏘️', stat: '45', label: 'Heritage Villages' },
-                            { icon: '🤝', stat: '3,500+', label: 'MSME Livelihoods Supported' },
+                            { icon: '🏺', stat: '50+', label: 'Artisan Workshops' },
+                            { icon: '🌿', stat: '10+', label: 'Eco-Craft MSMEs' },
+                            { icon: '🏘️', stat: '12', label: 'Heritage Villages' },
+                            { icon: '🤝', stat: '1,200+', label: 'Livelihoods Supported' },
                         ].map((item) => (
                             <div key={item.label} className="flex flex-col items-center gap-1">
                                 <span className="text-2xl">{item.icon}</span>
@@ -153,10 +153,10 @@ export default function Heritage({ auth, laravelVersion, phpVersion }) {
                     <div className="space-y-3 text-left border-b border-royalGold-400/20 pb-8">
                         <span className="text-xs uppercase tracking-widest font-bold text-royalGold-700">Exploration Desk</span>
                         <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-royalMaroon-950">
-                            Local Heritage MSMEs &amp; Crafts
+                            Anuradhapura Heritage Crafts
                         </h2>
                         <p className="text-slate-500 font-light text-sm max-w-lg">
-                            Discover the extraordinary skill of Sri Lanka's craftspeople — from Kandyan goldsmiths and Galle lacemakers to Jaffna silversmiths and Ratnapura gem-cutters. Every purchase sustains a living heritage tradition.
+                            Discover the extraordinary skill of Anuradhapura's craftspeople — from traditional stone sculptors recreating ancient moonstones to skilled potters and rush-weavers around the ancient reservoirs. Every purchase sustains a living heritage tradition in the Sacred City.
                         </p>
                     </div>
 
