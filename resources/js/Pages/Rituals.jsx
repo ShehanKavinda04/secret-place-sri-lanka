@@ -11,7 +11,7 @@ const majorRituals = [
         rating: '5.0',
         reviews: '1540',
         description: 'The historic celebration marking the arrival of Buddhism in Sri Lanka. The entire sacred city is illuminated, with massive crowds undertaking pilgrimages and observing sil.',
-        image: '/images/mihintale_peak.png'
+        image: '/images/poson_poya_festival_1779804284565.png'
     },
     {
         id: 'aluth-sahal-mangalya',
@@ -20,7 +20,7 @@ const majorRituals = [
         rating: '4.8',
         reviews: '890',
         description: 'The national New Rice Festival where farmers offer their first harvest of paddy to the sacred Jaya Sri Maha Bodhi, ensuring blessings for future prosperity.',
-        image: '/images/jaya_sri_maha_bodhi.png'
+        image: '/images/aluth_sahal_mangalya_1779804303762.png'
     },
     {
         id: 'ruwanwelisaya-pichcha-mal',
@@ -29,7 +29,7 @@ const majorRituals = [
         rating: '4.9',
         reviews: '1120',
         description: 'A breathtakingly beautiful offering of millions of fragrant white jasmine (pichcha) flowers to the great stupa, filling the air with profound devotion and sweet scent.',
-        image: '/images/ruwanweli_maha_seya.png'
+        image: '/images/pichcha_mal_pooja_1779804320556.png'
     },
     {
         id: 'kanchuka-pooja',
@@ -38,7 +38,7 @@ const majorRituals = [
         rating: '4.8',
         reviews: '675',
         description: 'A majestic ceremony where devotees carry a massive saffron-colored robe wrapped around the enormous dome of the Ruwanwelisaya stupa in a deeply emotional procession.',
-        image: '/images/ancient_brick_stupa_1779382089722.png'
+        image: '/images/kanchuka_pooja_1779804339624.png'
     },
     {
         id: 'nanumura-mangallaya',
@@ -47,7 +47,7 @@ const majorRituals = [
         rating: '4.7',
         reviews: '410',
         description: 'A traditional and rare bathing ceremony of the sacred Bodhi tree using herbal preparations and scented water, invoking blessings for the nation and rain for the harvest.',
-        image: '/images/sacred_bodhi_tree_1779382054492.png'
+        image: '/images/nanumura_mangallaya_1779804357947.png'
     },
     {
         id: 'ill-poya-katina',
@@ -56,7 +56,7 @@ const majorRituals = [
         rating: '4.8',
         reviews: '530',
         description: 'The culmination of the monks\' rainy season retreat (Vassa). Devotees offer the sacred Katina robes to the Maha Sangha in grand processions across the Eight Sacred Places.',
-        image: '/images/rituals_ceremonies.png'
+        image: '/images/katina_ceremony_1779804386668.png'
     },
 ];
 
@@ -68,7 +68,7 @@ const localCeremonies = [
         rating: '4.9',
         reviews: '345',
         description: 'A special offering representing the mythical wish-fulfilling tree, presented with profound reverence at the oldest dagoba in Sri Lanka to invoke heavenly blessings.',
-        image: '/images/thuparamaya_1779380449379.png'
+        image: '/images/kapruk_pooja_1779804403588.png'
     },
     {
         id: 'gilanpasa-pooja',
@@ -77,7 +77,7 @@ const localCeremonies = [
         rating: '4.8',
         reviews: '280',
         description: 'Serene evening rituals where monks and devotees offer medicinal drinks, lit oil lamps, and incense to the Buddha, creating a deeply tranquil twilight atmosphere.',
-        image: '/images/mirisawetiya_1779380509748.png'
+        image: '/images/gilanpasa_pooja_1779804420756.png'
     },
     {
         id: 'bodhi-pooja-isurumuniya',
@@ -86,7 +86,7 @@ const localCeremonies = [
         rating: '4.7',
         reviews: '415',
         description: 'Devotional chanting and water offerings at the sacred Bodhi tree of Isurumuniya, famous for its ancient rock carvings and picturesque setting by the Tissa Wewa.',
-        image: '/images/isurumuniya_1779380577189.png'
+        image: '/images/bodhi_pooja_isurumuniya_1779804442648.png'
     },
     {
         id: 'atavisi-buddha-pooja',
@@ -95,7 +95,7 @@ const localCeremonies = [
         rating: '4.9',
         reviews: '190',
         description: 'A magnificent ritual offering homage to the 28 past Buddhas, conducted amidst the sprawling, ancient monastic ruins of the Abhayagiri complex.',
-        image: '/images/abhayagiri_1779380471030.png'
+        image: '/images/atavisi_buddha_pooja_1779804459576.png'
     },
     {
         id: 'pahan-pooja',
@@ -104,7 +104,7 @@ const localCeremonies = [
         rating: '4.8',
         reviews: '310',
         description: 'The awe-inspiring illumination of the ancient Jetavanarama stupa courtyard with thousands of flickering clay oil lamps, a sight of incredible spiritual beauty.',
-        image: '/images/jetavanarama_1779380489792.png'
+        image: '/images/thousand_lamps_offering_1779804476762.png'
     },
 ];
 

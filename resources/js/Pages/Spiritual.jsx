@@ -5,106 +5,106 @@ import SpotCard from './Welcome-sub-sub-components/SpotCard';
 
 const retreatCenters = [
     {
-        id: 'nilambe-meditation',
-        name: 'Nilambe Meditation Centre',
-        location: 'Galaha, Central Province',
+        id: 'mahamevnawa-anuradhapura',
+        name: 'Mahamevnawa Meditation Centre',
+        location: 'Anuradhapura, North Central Province',
         rating: '4.9',
-        reviews: '430',
-        description: 'A renowned international meditation retreat nestled in the misty hills above Kandy, offering silent Vipassana and mindfulness programs in a serene forest setting.',
+        reviews: '340',
+        description: 'A serene monastery offering guided meditation and Dhamma teachings in English and Sinhala, ideal for seekers looking to learn traditional Theravada practices.',
         image: '/images/spiritual_wellness.png'
     },
     {
-        id: 'kanduboda-centre',
-        name: 'Kanduboda Meditation Centre',
-        location: 'Delgoda, Western Province',
+        id: 'mihintale-aranya',
+        name: 'Mihintale Forest Hermitage',
+        location: 'Mihintale, Anuradhapura',
         rating: '4.8',
-        reviews: '310',
-        description: 'One of Sri Lanka\'s largest meditation centers offering structured Vipassana courses for both beginners and advanced practitioners in a peaceful forest monastery.',
-        image: '/images/jaya_sri_maha_bodhi.png'
+        reviews: '215',
+        description: 'An ancient monastic retreat nestled in the hills of Mihintale, offering serious practitioners a deeply quiet environment for Vipassana meditation among ancient caves.',
+        image: '/images/mihintale_peak.png'
     },
     {
-        id: 'dhamma-kuta',
-        name: 'Dhamma Kuta Vipassana Centre',
-        location: 'Hindagala, Central Province',
-        rating: '4.9',
-        reviews: '290',
-        description: 'A 10-day silent Vipassana retreat center overlooking the lush Kandy valley, following the tradition of S.N. Goenka, drawing seekers from around the world.',
-        image: '/images/misty_mountains.png'
-    },
-    {
-        id: 'bodhiyana-monastery',
-        name: 'Bodhiyana Forest Monastery',
-        location: 'Kotmale, Central Province',
-        rating: '4.8',
-        reviews: '165',
-        description: 'An ancient-inspired forest monastery where monks and lay practitioners engage in deep contemplative practices surrounded by pristine highland wilderness.',
-        image: '/images/sacred_bodhi_tree_1779382054492.png'
-    },
-    {
-        id: 'ayurveda-retreat',
-        name: 'Barberyn Ayurveda Resort',
-        location: 'Weligama, Southern Province',
-        rating: '4.9',
-        reviews: '520',
-        description: 'A world-class Ayurveda resort offering authentic healing programs including Panchakarma, herbal therapies, and holistic wellness consultations by senior physicians.',
+        id: 'rajarata-ayurveda',
+        name: 'Rajarata Ayurvedic Healing',
+        location: 'Anuradhapura City',
+        rating: '4.7',
+        reviews: '180',
+        description: 'Experience authentic, traditional Sri Lankan Ayurveda utilizing ancient herbal remedies from the region, offering restorative Panchakarma and stress-relief therapies.',
         image: '/images/hidden_waterfall.png'
     },
     {
-        id: 'jungle-beach-retreat',
-        name: 'Ulpotha Yoga Retreat',
-        location: 'Embogama, North Western Province',
+        id: 'isinbessagala-hermitage',
+        name: 'Isinbessagala Meditation Hermitage',
+        location: 'Medawachchiya, Anuradhapura District',
         rating: '4.9',
-        reviews: '385',
-        description: 'A legendary eco-retreat in the jungle offering traditional yoga, organic farm-to-table meals, and Ayurveda treatments in a beautifully restored ancient village.',
-        image: '/images/spiritual_wellness.png'
+        reviews: '120',
+        description: 'Located on a picturesque rock outcrop near Anuradhapura, this quiet hermitage provides stunning views and profound silence for long-term meditation retreats.',
+        image: '/images/rock_cave_temple_1779382110458.png'
+    },
+    {
+        id: 'tapovana-anuradhapura',
+        name: 'Tapovana Forest Monastery',
+        location: 'Anuradhapura, North Central Province',
+        rating: '4.8',
+        reviews: '155',
+        description: 'A strict ascetic forest monastery where visitors can experience the pure, unadulterated monastic lifestyle, offering alms and participating in brief meditation sessions.',
+        image: '/images/jaya_sri_maha_bodhi.png'
+    },
+    {
+        id: 'sri-subodharama',
+        name: 'Subodharama Buddhist Centre',
+        location: 'Anuradhapura, North Central Province',
+        rating: '4.6',
+        reviews: '95',
+        description: 'A welcoming meditation center close to the sacred city, providing comfortable facilities and expert guidance for beginners exploring mindfulness and breath meditation.',
+        image: '/images/ancient_hydraulic.png'
     },
 ];
 
 const wellnessSites = [
     {
-        id: 'sigiriya-sunrise-yoga',
-        name: 'Sigiriya Sunrise Yoga',
-        location: 'Sigiriya, North Central Province',
+        id: 'kaludiya-pokuna',
+        name: 'Kaludiya Pokuna Forest Walk',
+        location: 'Mihintale, Anuradhapura',
+        rating: '5.0',
+        reviews: '280',
+        description: 'A deeply spiritual forest walk around the "Dark Water Pool." This ancient meditation site is surrounded by dense jungle and ruins, offering profound stillness and tranquility.',
+        image: '/images/spiritual_wellness.png'
+    },
+    {
+        id: 'nuwara-wewa-yoga',
+        name: 'Nuwara Wewa Lakeside Yoga',
+        location: 'Nuwara Wewa, Anuradhapura',
+        rating: '4.8',
+        reviews: '190',
+        description: 'Gentle morning and sunset yoga sessions on the banks of the massive Nuwara Wewa reservoir, harmonizing breathwork with the cooling breeze of the ancient waters.',
+        image: '/images/hidden_waterfall.png'
+    },
+    {
+        id: 'ranmasu-uyana',
+        name: 'Ranmasu Uyana Mindfulness Walk',
+        location: 'Anuradhapura Sacred City',
         rating: '4.7',
-        reviews: '218',
-        description: 'Guided sunrise yoga sessions at the base of the iconic Lion Rock, harmonizing ancient asanas with the profound spiritual energy of this UNESCO World Heritage site.',
+        reviews: '315',
+        description: 'Practice walking meditation through the Royal Goldfish Park, an ancient pleasure garden featuring intricate rock carvings, lotus ponds, and the mysterious "Stargate" carving.',
         image: '/images/ancient_hydraulic.png'
     },
     {
-        id: 'pidurangala-meditation',
-        name: 'Pidurangala Rock Meditation',
-        location: 'Sigiriya, North Central Province',
-        rating: '4.8',
-        reviews: '175',
-        description: 'Guided mindfulness walks and meditation sessions on Pidurangala rock, offering breathtaking sunrise vistas and a powerful sense of stillness above the jungle canopy.',
-        image: '/images/misty_mountains.png'
-    },
-    {
-        id: 'dambulla-forest-walk',
-        name: 'Dambulla Forest Mindfulness Walk',
-        location: 'Dambulla, Central Province',
-        rating: '4.7',
-        reviews: '132',
-        description: 'Guided silent forest walking meditation through ancient Dambulla\'s sacred jungle, led by experienced forest monks to cultivate deep mindfulness and inner peace.',
-        image: '/images/rock_cave_temple_1779382110458.png'
-    },
-    {
-        id: 'knuckles-forest-bathing',
-        name: 'Knuckles Forest Bathing',
-        location: 'Knuckles Range, Central Province',
+        id: 'mihintale-sunrise',
+        name: 'Mihintale Sunrise Meditation',
+        location: 'Mihintale Peak, Anuradhapura',
         rating: '4.9',
-        reviews: '248',
-        description: 'Therapeutic Shinrin-yoku (forest bathing) experiences in the pristine Knuckles Mountain Range, guided by naturalists to restore mental clarity and physical vitality.',
-        image: '/images/misty_mountains.png'
+        reviews: '410',
+        description: 'Ascend the sacred mountain of Mihintale before dawn for a guided meditation session as the sun rises over the lush plains of the North Central Province.',
+        image: '/images/mihintale_peak.png'
     },
     {
-        id: 'ella-wellness-trail',
-        name: 'Ella Wellness & Nature Trail',
-        location: 'Ella, Uva Province',
-        rating: '4.8',
-        reviews: '340',
-        description: 'A curated wellness journey through Ella\'s stunning highland scenery, combining gentle tea estate hikes, guided breathwork sessions and traditional herbal tea tastings.',
-        image: '/images/hidden_waterfall.png'
+        id: 'ritigala-forest-bathing',
+        name: 'Ritigala Ancient Forest Bathing',
+        location: 'Ritigala, Anuradhapura District',
+        rating: '4.9',
+        reviews: '255',
+        description: 'Therapeutic Shinrin-yoku (forest bathing) amidst the ruins of a 1st-century BCE strictly contemplative monastery, hidden deep within a mystical mountain nature reserve.',
+        image: '/images/misty_mountains.png'
     },
 ];
 
