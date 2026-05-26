@@ -41,7 +41,11 @@ Route::get('/places/{id}/history', function ($id) {
         'topic' => 'The oldest historically documented tree in the world, serving as the living heartbeat of Sri Lankan Buddhism.',
         'history_narrative' => 'The Jaya Sri Maha Bodhi is a sacred fig tree located in the Mahamewna Gardens, Anuradhapura, Sri Lanka. It is a sapling from the historical Sri Maha Bodhi at Bodh Gaya in India under which Buddha attained Enlightenment. It was planted in 288 BC, and is the oldest living human-planted tree in the world with a known planting date. It was brought to Sri Lanka by Sangamitta Theri, the daughter of Emperor Asoka.',
         'blueprint_text' => 'The sacred tree is planted on a high terrace about 6.5 meters (21.3 ft) above the ground and surrounded by railings. The wall was constructed during the reign of King Kirthi Sri Rajasingha to protect it from wild elephants. Multiple smaller bodhi trees known as "Parivara Bodhi" surround the central sacred tree.',
-        'blueprint_image' => '/images/jaya_sri_maha_bodhi_blueprint.jpg' // Place holder image or assume it exists/will fail gracefully
+        'blueprint_image' => '/images/jaya_sri_maha_bodhi_blueprint.jpg', // Place holder image or assume it exists/will fail gracefully
+        'gallery' => array_map(function($i) use ($id) {
+            // Using picsum seed for consistent high-quality placeholder images
+            return "https://picsum.photos/seed/" . crc32($id . $i) . "/800/600";
+        }, range(1, 12))
     ];
 
     return Inertia::render('History', [

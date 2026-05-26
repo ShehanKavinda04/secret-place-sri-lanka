@@ -23,7 +23,7 @@ export default function History({ auth, spot }) {
                 
                 <main className="flex-grow max-w-[1400px] mx-auto w-full flex flex-col md:flex-row py-8 px-4 sm:px-6 lg:px-8 gap-6">
                     {/* Left Sidebar */}
-                    <aside className="w-full md:w-64 shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col h-fit">
+                    <aside className="w-full md:w-64 shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col h-fit md:sticky md:top-8 md:self-start z-10">
                         <div className="p-4 border-b border-slate-100 bg-slate-50/50">
                             <Link href="/places" className="text-royalTeal hover:text-[#0c6b65] text-sm font-bold tracking-wider uppercase inline-flex items-center gap-2 transition-colors">
                                 <span>←</span> Back to Places
@@ -78,10 +78,6 @@ export default function History({ auth, spot }) {
                                 <div className="max-w-4xl space-y-10">
                                     {/* Header & Guidelines */}
                                     <div className="space-y-6">
-                                        <h1 className="font-display text-4xl sm:text-5xl font-bold text-royalMaroon-950">
-                                            {spot.name}
-                                        </h1>
-                                        
                                         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-md">
                                             <h3 className="text-red-800 font-bold uppercase tracking-widest text-xs mb-1">You Must Need</h3>
                                             <p className="text-sm text-red-700/90 leading-relaxed">
@@ -90,26 +86,31 @@ export default function History({ auth, spot }) {
                                         </div>
                                     </div>
 
-                                    {/* Main Image */}
-                                    <div className="w-full aspect-[21/9] bg-slate-200 relative overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-                                        <img 
-                                            src={spot.image} 
-                                            alt={spot.name}
-                                            className="w-full h-full object-cover"
-                                            onError={(e) => { e.target.src = 'https://placehold.co/1200x500/e2e8f0/64748b?text=Sacred+Site+Image' }}
-                                        />
+                                    {/* Main Content Card (Image + Text Below) */}
+                                    <div className="w-full bg-[#0a0f12] rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                                        <div className="w-full aspect-[21/9] md:aspect-[16/9] lg:aspect-[21/9] relative">
+                                            <img 
+                                                src={spot.image} 
+                                                alt={spot.name}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => { e.target.src = 'https://placehold.co/1200x500/e2e8f0/64748b?text=Sacred+Site+Image' }}
+                                            />
+                                            {/* Gradient to smoothly transition from image to the dark text area below */}
+                                            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a0f12] to-transparent pointer-events-none"></div>
+                                        </div>
+                                        
+                                        <div className="px-6 pt-2 pb-12 md:px-10 md:pb-16 text-center flex flex-col items-center justify-center relative z-10">
+                                            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-white tracking-widest uppercase mb-4 drop-shadow-md">
+                                                {spot.name}
+                                            </h2>
+                                            <p className="text-[#e2c792] font-serif text-base md:text-lg lg:text-xl max-w-3xl leading-relaxed">
+                                                {spot.topic}
+                                            </p>
+                                        </div>
                                     </div>
                                     
                                     {/* Topics & Details */}
                                     <div className="space-y-8 text-slate-700">
-                                        <div>
-                                            <h2 className="text-xl font-bold text-royalMaroon-900 mb-2">Topic</h2>
-                                            <p className="text-lg font-light leading-relaxed text-slate-600">
-                                                {spot.topic}
-                                            </p>
-                                        </div>
-
-                                        <div className="h-px w-full bg-slate-200"></div>
 
                                         <div>
                                             <h2 className="text-xl font-bold text-royalMaroon-900 mb-4">Historical Narrative (Sub Topic 1)</h2>
@@ -170,11 +171,14 @@ export default function History({ auth, spot }) {
                                 <div className="h-full min-h-[500px] flex gap-6 relative">
                                     {/* Map Area */}
                                     <div className="flex-1 bg-slate-200 rounded-xl border border-slate-300 overflow-hidden relative shadow-inner">
-                                        <img 
-                                            src="https://placehold.co/800x600/e2e8f0/64748b?text=Interactive+Map+View" 
-                                            alt="Map" 
-                                            className="w-full h-full object-cover" 
-                                        />
+                                        <iframe 
+                                            src={`https://www.google.com/maps?q=${encodeURIComponent((spot?.name || 'Anuradhapura') + ', Sri Lanka')}&output=embed`}
+                                            title={`Interactive Map of ${spot?.name || 'Location'}`}
+                                            className="w-full h-full border-0"
+                                            allowFullScreen="" 
+                                            loading="lazy" 
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                        ></iframe>
                                     </div>
                                     
                                     {/* Detail Panel overlay/side */}
@@ -195,6 +199,35 @@ export default function History({ auth, spot }) {
                                                 <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-royalTeal"></div> Thuparamaya (1.2 km)</span>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            ) : activeTab === 'gallery' && spot ? (
+                                <div className="space-y-8">
+                                    <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+                                        <h3 className="text-xl font-bold text-royalMaroon-900 font-display">Photo Gallery</h3>
+                                        <span className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{spot.gallery?.length || 0} Photos</span>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                        {spot.gallery && spot.gallery.map((img, idx) => (
+                                            <div key={idx} className="group relative aspect-square rounded-xl overflow-hidden bg-slate-200 border border-slate-200 shadow-sm cursor-pointer">
+                                                <img 
+                                                    src={img} 
+                                                    alt={`Gallery image ${idx + 1}`} 
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                    loading="lazy"
+                                                />
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="white" className="w-10 h-10 drop-shadow-md transform scale-50 group-hover:scale-100 transition-transform duration-300">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {(!spot.gallery || spot.gallery.length === 0) && (
+                                            <div className="col-span-full py-12 text-center text-slate-500">
+                                                No photos available for this location yet.
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ) : (
