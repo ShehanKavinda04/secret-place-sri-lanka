@@ -28,6 +28,41 @@ Route::get('/places', function () {
     ]);
 });
 
+Route::get('/category/rituals', function () {
+    return Inertia::render('Rituals', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+});
+
+Route::get('/category/spiritual', function () {
+    return Inertia::render('Spiritual', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+});
+
+Route::get('/category/hydraulic', function () {
+    return Inertia::render('Hydraulic', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+});
+
+Route::get('/category/heritage', function () {
+    return Inertia::render('Heritage', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+});
+
+Route::get('/category/transport', function () {
+    return Inertia::render('Transport', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

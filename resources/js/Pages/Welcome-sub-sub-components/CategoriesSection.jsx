@@ -1,5 +1,14 @@
 import { router } from '@inertiajs/react';
 
+const CATEGORY_ROUTES = {
+    "Sacred Sites & Shrines": '/places',
+    "Rituals, Poojas & Ceremonies": '/category/rituals',
+    "Spiritual Experiences & Wellness": '/category/spiritual',
+    "Ancient Hydraulic & Architecture Wonders": '/category/hydraulic',
+    "Local Heritage MSMEs & Crafts": '/category/heritage',
+    "Transport & Pilgrimage Logistics": '/category/transport',
+};
+
 export default function CategoriesSection({ categoryCards, setActiveCategory }) {
     return (
         <section id="categories" className="py-24 bg-[#f3efe6] border-b border-royalGold-400/25">
@@ -19,8 +28,9 @@ export default function CategoriesSection({ categoryCards, setActiveCategory }) 
                         <div
                             key={index}
                             onClick={() => {
-                                if (card.title === "Sacred Sites & Shrines") {
-                                    router.visit('/places');
+                                const route = CATEGORY_ROUTES[card.title];
+                                if (route) {
+                                    router.visit(route);
                                 } else {
                                     setActiveCategory(card.title);
                                     document.getElementById('discover')?.scrollIntoView({ behavior: 'smooth' });
@@ -48,7 +58,7 @@ export default function CategoriesSection({ categoryCards, setActiveCategory }) 
                                         </span>
                                         <div className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center text-white group-hover:border-royalGold-400 group-hover:text-royalGold-400 group-hover:bg-royalGold-400/10 transition-all">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-5-5-6-10-2-14 4.5-4.5 10-3 10-3s1.5 5.5-3 10c-4 4-9 3-14 2M12 21l3-3" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                                             </svg>
                                         </div>
                                     </div>
@@ -60,4 +70,4 @@ export default function CategoriesSection({ categoryCards, setActiveCategory }) 
             </div>
         </section>
     );
-}
+}
