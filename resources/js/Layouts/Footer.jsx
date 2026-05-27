@@ -1,7 +1,14 @@
+import { motion } from 'framer-motion';
 
 export default function Footer({ auth, laravelVersion, phpVersion }) {
     return (
-        <footer className="bg-[#0f4a45] text-[#FAF9F6] py-10 flex flex-col items-center justify-center space-y-4">
+        <motion.footer 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="bg-[#0f4a45] text-[#FAF9F6] py-10 flex flex-col items-center justify-center space-y-4"
+        >
             <div className="flex flex-wrap justify-center items-center gap-3 text-xs sm:text-sm text-gray-200 font-medium tracking-wide">
                 <a href="#hero" className="hover:text-white transition-colors">Home</a>
                 <span className="text-gray-400 opacity-70">|</span>
@@ -25,6 +32,6 @@ export default function Footer({ auth, laravelVersion, phpVersion }) {
                     Powered by Laravel {laravelVersion ? `v${laravelVersion}` : ''} {phpVersion ? `(PHP v${phpVersion})` : ''} • React + Inertia
                 </div>
             )}
-        </footer>
+        </motion.footer>
     );
 }

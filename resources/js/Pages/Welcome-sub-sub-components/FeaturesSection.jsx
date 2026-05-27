@@ -1,4 +1,18 @@
+import { motion } from 'framer-motion';
+
 export default function FeaturesSection({ features, setSelectedFeature }) {
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.2 }
+        }
+    };
+    const item = {
+        hidden: { opacity: 0, y: 30 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+    };
+
     return (
         <section id="features" className="py-24 bg-[#FAF9F6] border-b border-royalGold-400/25">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 text-center">
@@ -11,9 +25,16 @@ export default function FeaturesSection({ features, setSelectedFeature }) {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto pt-6">
+                <motion.div 
+                    variants={container}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-100px" }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto pt-6"
+                >
                     {features.map((feature) => (
-                        <div 
+                        <motion.div 
+                            variants={item}
                             key={feature.id}
                             onClick={() => setSelectedFeature(feature)}
                             className="flex flex-col items-center group cursor-pointer transform hover:-translate-y-2 transition-all duration-300"
@@ -41,9 +62,9 @@ export default function FeaturesSection({ features, setSelectedFeature }) {
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </div>
         </section>
     );

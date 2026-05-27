@@ -9,7 +9,21 @@ const CATEGORY_ROUTES = {
     "Transport & Pilgrimage Logistics": '/category/transport',
 };
 
+import { motion } from 'framer-motion';
+
 export default function CategoriesSection({ categoryCards, setActiveCategory }) {
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.15 }
+        }
+    };
+    const item = {
+        hidden: { opacity: 0, scale: 0.9 },
+        show: { opacity: 1, scale: 1, transition: { duration: 0.5 } }
+    };
+
     return (
         <section id="categories" className="py-24 bg-[#f3efe6] border-b border-royalGold-400/25">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 text-center">
@@ -23,17 +37,27 @@ export default function CategoriesSection({ categoryCards, setActiveCategory }) 
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto pt-6">
+                <motion.div 
+                    variants={container}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-100px" }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto pt-6"
+                >
                     {categoryCards.map((card, index) => (
-                        <div
+                        <motion.div
+                            variants={item}
                             key={index}
                             onClick={() => {
                                 const route = CATEGORY_ROUTES[card.title];
                                 if (route) {
-                                    router.visit(route);
+                                    import('@inertiajs/react').then(({ router }) => {
+                                        router.visit(route);
+                                    });
                                 } else {
                                     setActiveCategory(card.title);
-                                    document.getElementById('discover')?.scrollIntoView({ behavior: 'smooth' });
+                                    window.dispatchEvent(new CustomEvent('manual-loader', { detail: { duration: 600 } }));
+                                    setTimeout(() => document.getElementById('discover')?.scrollIntoView({ behavior: 'smooth' }), 100);
                                 }
                             }}
                             className="group relative aspect-square rounded-[32px] overflow-hidden shadow-lg hover:shadow-2xl cursor-pointer transition-all duration-500 border border-royalGold-500/10"
@@ -64,9 +88,9 @@ export default function CategoriesSection({ categoryCards, setActiveCategory }) 
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </div>
         </section>
     );

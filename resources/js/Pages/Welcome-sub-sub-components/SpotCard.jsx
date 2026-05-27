@@ -1,8 +1,16 @@
 import { Link } from '@inertiajs/react';
+import { motion } from 'framer-motion';
 
 export default function SpotCard({ spot }) {
     return (
-        <article className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden hover:border-royalGold-500/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-md">
+        <motion.article 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ y: -5 }}
+            className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden hover:border-royalGold-500/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-md"
+        >
             <div className="relative aspect-[4/3] overflow-hidden bg-slate-950">
                 <img 
                     src={spot.image} 
@@ -40,6 +48,6 @@ export default function SpotCard({ spot }) {
                 </div>
 
             </div>
-        </article>
+        </motion.article>
     );
 }

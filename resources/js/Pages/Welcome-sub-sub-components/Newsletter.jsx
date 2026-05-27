@@ -1,6 +1,15 @@
+import { motion } from 'framer-motion';
+
 export default function Newsletter() {
     return (
-        <section id="newsletter" className="py-24 bg-[#f4ebd9] border-t border-royalGold-500/20">
+        <motion.section 
+            id="newsletter" 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="py-24 bg-[#f4ebd9] border-t border-royalGold-500/20"
+        >
             <div className="max-w-4xl mx-auto px-4 text-center space-y-8">
                 <div className="w-16 h-16 rounded-full bg-royalMaroon-800 text-royalGold-300 flex items-center justify-center mx-auto shadow-md border border-royalGold-400/30">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-8 h-8">
@@ -26,6 +35,6 @@ export default function Newsletter() {
                     </button>
                 </form>
             </div>
-        </section>
+        </motion.section>
     );
 }

@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
+import { motion } from 'framer-motion';
 import SpotCard from './Welcome-sub-sub-components/SpotCard';
 
 const pilgrimageRoutes = [
@@ -116,7 +117,12 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                 <Navbar auth={auth} />
 
                 {/* Hero Banner */}
-                <div className="relative h-64 sm:h-80 overflow-hidden">
+                <motion.div 
+                    initial={{ opacity: 0, y: -30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="relative h-64 sm:h-80 overflow-hidden"
+                >
                     <img src="/images/pilgrimage_logistics.png" alt="Transport & Pilgrimage Logistics" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/50 to-[#FAF9F6]" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
@@ -128,7 +134,7 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                             Plan your sacred journey with confidence — covering every route, rest stop, and mode of transport across Sri Lanka.
                         </p>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Journey Planner Info Strip */}
                 <div className="bg-royalMaroon-950/5 border-y border-royalGold-400/20 py-6 px-4">
@@ -148,7 +154,12 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                     </div>
                 </div>
 
-                <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 space-y-20 w-full">
+                <motion.main 
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                    className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 space-y-20 w-full"
+                >
                     {/* Header */}
                     <div className="space-y-3 text-left border-b border-royalGold-400/20 pb-8">
                         <span className="text-xs uppercase tracking-widest font-bold text-royalGold-700">Exploration Desk</span>
@@ -210,7 +221,7 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                             <p className="text-xs text-slate-600 font-light leading-relaxed">Major festivals like the Esala Perahera and Kataragama Pada Yatra draw enormous crowds. Check the Sri Lanka Tourism calendar and arrange accommodation 3–4 weeks in advance.</p>
                         </div>
                     </div>
-                </main>
+                </motion.main>
 
                 <Footer auth={auth} laravelVersion={laravelVersion} phpVersion={phpVersion} />
             </div>

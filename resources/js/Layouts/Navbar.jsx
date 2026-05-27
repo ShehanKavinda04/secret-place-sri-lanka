@@ -1,8 +1,14 @@
 import { Link } from '@inertiajs/react';
+import { motion } from 'framer-motion';
 
 export default function Navbar({ auth }) {
     return (
-        <header className="bg-royalMaroon-800 border-b border-royalGold-600/20 text-[#FAF9F6] sticky top-0 z-50 shadow-md">
+        <motion.header 
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="bg-royalMaroon-800 border-b border-royalGold-600/20 text-[#FAF9F6] sticky top-0 z-50 shadow-md"
+        >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-royalGold-600 via-royalGold-400 to-royalGold-300 flex items-center justify-center shadow-md border border-royalGold-300/30">
@@ -14,12 +20,74 @@ export default function Navbar({ auth }) {
                 </div>
 
                 <nav className="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wide text-royalGold-300/90">
-                    <a href="/#hero" className="hover:text-royalGold-300 transition-colors">Home</a>
-                    <a href="/#categories" className="hover:text-royalGold-300 transition-colors">Categories</a>
-                    <a href="/#smart-routing" className="hover:text-royalGold-300 transition-colors">Map</a>
-                    <a href="/#features" className="hover:text-royalGold-300 transition-colors">Features</a>
-                    <a href="/#newsletter" className="hover:text-royalGold-300 transition-colors">Suggestions</a>
-                    <Link href="/about-us" className="hover:text-royalGold-300 transition-colors">About Us</Link>
+                    <motion.a 
+                        whileHover={{ scale: 1.05 }} 
+                        whileTap={{ scale: 0.95 }} 
+                        href="/#hero" 
+                        onClick={(e) => {
+                            if (window.location.pathname === '/') {
+                                e.preventDefault();
+                                window.dispatchEvent(new CustomEvent('manual-loader', { detail: { duration: 600 } }));
+                                setTimeout(() => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                            }
+                        }}
+                        className="hover:text-royalGold-300 transition-colors"
+                    >Home</motion.a>
+                    <motion.a 
+                        whileHover={{ scale: 1.05 }} 
+                        whileTap={{ scale: 0.95 }} 
+                        href="/#categories" 
+                        onClick={(e) => {
+                            if (window.location.pathname === '/') {
+                                e.preventDefault();
+                                window.dispatchEvent(new CustomEvent('manual-loader', { detail: { duration: 600 } }));
+                                setTimeout(() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                            }
+                        }}
+                        className="hover:text-royalGold-300 transition-colors"
+                    >Categories</motion.a>
+                    <motion.a 
+                        whileHover={{ scale: 1.05 }} 
+                        whileTap={{ scale: 0.95 }} 
+                        href="/#smart-routing" 
+                        onClick={(e) => {
+                            if (window.location.pathname === '/') {
+                                e.preventDefault();
+                                window.dispatchEvent(new CustomEvent('manual-loader', { detail: { duration: 600 } }));
+                                setTimeout(() => document.getElementById('smart-routing')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                            }
+                        }}
+                        className="hover:text-royalGold-300 transition-colors"
+                    >Map</motion.a>
+                    <motion.a 
+                        whileHover={{ scale: 1.05 }} 
+                        whileTap={{ scale: 0.95 }} 
+                        href="/#features" 
+                        onClick={(e) => {
+                            if (window.location.pathname === '/') {
+                                e.preventDefault();
+                                window.dispatchEvent(new CustomEvent('manual-loader', { detail: { duration: 600 } }));
+                                setTimeout(() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                            }
+                        }}
+                        className="hover:text-royalGold-300 transition-colors"
+                    >Features</motion.a>
+                    <motion.a 
+                        whileHover={{ scale: 1.05 }} 
+                        whileTap={{ scale: 0.95 }} 
+                        href="/#newsletter" 
+                        onClick={(e) => {
+                            if (window.location.pathname === '/') {
+                                e.preventDefault();
+                                window.dispatchEvent(new CustomEvent('manual-loader', { detail: { duration: 600 } }));
+                                setTimeout(() => document.getElementById('newsletter')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                            }
+                        }}
+                        className="hover:text-royalGold-300 transition-colors"
+                    >Suggestions</motion.a>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Link href="/about-us" className="hover:text-royalGold-300 transition-colors">About Us</Link>
+                    </motion.div>
                 </nav>
 
                 <div className="flex items-center gap-4">
@@ -37,6 +105,6 @@ export default function Navbar({ auth }) {
                     )}
                 </div>
             </div>
-        </header>
+        </motion.header>
     );
 }

@@ -1,8 +1,17 @@
 import React from 'react';
 
+import { motion } from 'framer-motion';
+
 export default function CommunityImpactSection() {
     return (
-        <section id="community-impact" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <motion.section 
+            id="community-impact" 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24"
+        >
             <div className="grid lg:grid-cols-12 gap-12 lg:gap-8">
                 
                 {/* Left Column: Text and Stats */}
@@ -175,6 +184,6 @@ export default function CommunityImpactSection() {
                 </div>
 
             </div>
-        </section>
+        </motion.section>
     );
 }

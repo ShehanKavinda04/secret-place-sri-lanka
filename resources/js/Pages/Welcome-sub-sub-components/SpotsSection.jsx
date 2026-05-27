@@ -1,6 +1,8 @@
 import { Link } from '@inertiajs/react';
 import SpotCard from './SpotCard';
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 export default function SpotsSection({ 
     filteredSpots, 
     searchQuery, 
@@ -10,7 +12,14 @@ export default function SpotsSection({
     categories 
 }) {
     return (
-        <section id="discover" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-16">
+        <motion.section 
+            id="discover" 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-16"
+        >
             <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 border-b border-royalGold-400/20 pb-8">
                 <div className="space-y-3 text-left">
                     <span className="text-xs uppercase tracking-widest font-bold text-royalGold-700">Exploration Desk</span>
@@ -39,11 +48,25 @@ export default function SpotsSection({
             </div>
 
             {filteredSpots.length > 0 ? (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredSpots.map(spot => (
-                        <SpotCard key={spot.id} spot={spot} />
-                    ))}
-                </div>
+                <motion.div 
+                    layout
+                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+                >
+                    <AnimatePresence>
+                        {filteredSpots.map(spot => (
+                            <motion.div
+                                key={spot.id}
+                                layout
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <SpotCard spot={spot} />
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </motion.div>
             ) : (
                 <div className="text-center py-20 bg-slate-100/50 border border-slate-200 rounded-3xl">
                     <h3 className="text-lg font-bold text-slate-600 mb-1">No Secret Spots Found</h3>
@@ -68,6 +91,6 @@ export default function SpotsSection({
                 </Link>
                 <p className="text-[11px] text-slate-400 font-light">Discover all 6 sacred categories of Anuradhapura's ancient heritage</p>
             </div>
-        </section>
+        </motion.section>
     );
 }

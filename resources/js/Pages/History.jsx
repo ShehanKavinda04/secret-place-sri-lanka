@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
+import { motion } from 'framer-motion';
 
 export default function History({ auth, spot }) {
     // Default to location to match the wireframe image, but normally history
@@ -21,9 +22,19 @@ export default function History({ auth, spot }) {
             <div className="min-h-screen bg-[#FAF9F6] text-[#2c1d11] font-sans selection:bg-royalGold-500 selection:text-royalMaroon-950 flex flex-col">
                 <Navbar auth={auth} />
                 
-                <main className="flex-grow max-w-[1400px] mx-auto w-full flex flex-col md:flex-row py-8 px-4 sm:px-6 lg:px-8 gap-6">
+                <motion.main 
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                    className="flex-grow max-w-[1400px] mx-auto w-full flex flex-col md:flex-row py-8 px-4 sm:px-6 lg:px-8 gap-6"
+                >
                     {/* Left Sidebar */}
-                    <aside className="w-full md:w-64 shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col h-fit md:sticky md:top-8 md:self-start z-10">
+                    <motion.aside 
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="w-full md:w-64 shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col h-fit md:sticky md:top-8 md:self-start z-10"
+                    >
                         <div className="p-4 border-b border-slate-100 bg-slate-50/50">
                             <Link href="/places" className="text-royalTeal hover:text-[#0c6b65] text-sm font-bold tracking-wider uppercase inline-flex items-center gap-2 transition-colors">
                                 <span>←</span> Back to Places
@@ -48,10 +59,15 @@ export default function History({ auth, spot }) {
                                 </button>
                             ))}
                         </nav>
-                    </aside>
+                    </motion.aside>
 
                     {/* Main Content Area */}
-                    <section className="flex-1 min-w-0 bg-white border border-slate-200/60 shadow-sm rounded-xl overflow-hidden flex flex-col">
+                    <motion.section 
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="flex-1 min-w-0 bg-white border border-slate-200/60 shadow-sm rounded-xl overflow-hidden flex flex-col"
+                    >
                         
                         {/* Teal Header Bar */}
                         <div className="bg-[#0f4a45] text-white px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -236,8 +252,8 @@ export default function History({ auth, spot }) {
                                 </div>
                             )}
                         </div>
-                    </section>
-                </main>
+                    </motion.section>
+                </motion.main>
 
                 <Footer auth={auth} />
             </div>

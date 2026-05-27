@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
+import { motion } from 'framer-motion';
 import SpotCard from './Welcome-sub-sub-components/SpotCard';
 
 const retreatCenters = [
@@ -125,7 +126,12 @@ export default function Spiritual({ auth, laravelVersion, phpVersion }) {
                 <Navbar auth={auth} />
 
                 {/* Hero Banner */}
-                <div className="relative h-64 sm:h-80 overflow-hidden">
+                <motion.div 
+                    initial={{ opacity: 0, y: -30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="relative h-64 sm:h-80 overflow-hidden"
+                >
                     <img src="/images/spiritual_wellness.png" alt="Spiritual Experiences & Wellness" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/50 to-[#FAF9F6]" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
@@ -137,9 +143,14 @@ export default function Spiritual({ auth, laravelVersion, phpVersion }) {
                             Discover profound inner peace through meditation, yoga, Ayurveda and sacred nature immersion across Sri Lanka.
                         </p>
                     </div>
-                </div>
+                </motion.div>
 
-                <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 space-y-20 w-full">
+                <motion.main 
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                    className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 space-y-20 w-full"
+                >
                     {/* Header */}
                     <div className="space-y-3 text-left border-b border-royalGold-400/20 pb-8">
                         <span className="text-xs uppercase tracking-widest font-bold text-royalGold-700">Exploration Desk</span>
@@ -182,7 +193,7 @@ export default function Spiritual({ auth, laravelVersion, phpVersion }) {
                             ))}
                         </div>
                     </section>
-                </main>
+                </motion.main>
 
                 <Footer auth={auth} laravelVersion={laravelVersion} phpVersion={phpVersion} />
             </div>
