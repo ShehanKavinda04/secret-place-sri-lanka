@@ -133,7 +133,22 @@ export default function Places({ auth, laravelVersion, phpVersion }) {
             <div className="min-h-screen bg-[#FAF9F6] text-[#2c1d11] font-sans selection:bg-royalGold-500 selection:text-royalMaroon-950 flex flex-col">
                 <Navbar auth={auth} />
                 
-                <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[60px] pb-24 space-y-20 w-full">
+                {/* Hero Banner */}
+                <div className="relative h-64 sm:h-80 overflow-hidden">
+                    <img src="/images/sacred_sites.png" alt="Sacred Sites & Shrines" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/50 to-[#FAF9F6]" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+                        <span className="text-xs uppercase tracking-widest font-bold text-royalGold-400 mb-2">Category Exploration</span>
+                        <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
+                            Sacred Sites & Shrines
+                        </h1>
+                        <p className="mt-3 text-white/70 text-sm max-w-xl font-light">
+                            Explore the ancient, sacred heart of Anuradhapura, home to venerable stupas, historic monasteries, and deeply revered Buddhist heritage sites.
+                        </p>
+                    </div>
+                </div>
+
+                <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 space-y-20 w-full">
                     {/* Header */}
                     <div className="space-y-3 text-left border-b border-royalGold-400/20 pb-8">
                         <span className="text-xs uppercase tracking-widest font-bold text-royalGold-700">Exploration Desk</span>

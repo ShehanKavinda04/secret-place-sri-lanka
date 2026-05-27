@@ -11,7 +11,7 @@ const pilgrimageRoutes = [
         rating: '5.0',
         reviews: '1420',
         description: 'The most important Buddhist pilgrimage circuit in Sri Lanka, encompassing the Jaya Sri Maha Bodhi, Ruwanwelisaya, Jetavanarama, and Thuparamaya Dagobas in a single sacred journey.',
-        image: '/images/mihintale_peak.png'
+        image: '/images/anuradhapura_circuit.png'
     },
     {
         id: 'kataragama-pilgrimage',
@@ -20,7 +20,7 @@ const pilgrimageRoutes = [
         rating: '4.9',
         reviews: '870',
         description: 'The legendary 45-day barefoot pilgrimage walk from Jaffna to Kataragama, retracing the ancient route of Skanda, undertaken by tens of thousands of multi-faith devotees annually.',
-        image: '/images/pilgrimage_logistics.png'
+        image: '/images/kataragama_yatra.png'
     },
     {
         id: 'adams-peak-yatra',
@@ -29,7 +29,7 @@ const pilgrimageRoutes = [
         rating: '4.9',
         reviews: '1680',
         description: "The sacred night-climb to Adam's Peak (Sri Pada), revered by Buddhists, Hindus, Muslims, and Christians alike for the holy footprint at the summit, accessible from December to May.",
-        image: '/images/misty_mountains.png'
+        image: '/images/adams_peak.png'
     },
     {
         id: 'mihintale-pilgrimage',
@@ -38,7 +38,7 @@ const pilgrimageRoutes = [
         rating: '4.9',
         reviews: '730',
         description: 'Ascend the 1,840 ancient granite steps to Mihintale, the sacred hill where Buddhism was introduced to Sri Lanka by Arahat Mahinda, the son of Emperor Asoka, in 247 BC.',
-        image: '/images/mihintale_peak.png'
+        image: '/images/mihintale_steps.png'
     },
     {
         id: 'nallur-kovil-yatra',

@@ -11,7 +11,7 @@ const traditionalCrafts = [
         rating: '4.9',
         reviews: '310',
         description: "Master stonemasons recreate the glory of ancient Anuradhapura, meticulously chiseling granite to craft exquisite replicas of Moonstones (Sandakada Pahana), Guardstones, and Samadhi statues.",
-        image: '/images/heritage_crafts.png'
+        image: '/images/stone_sculpting.png'
     },
     {
         id: 'rajarata-pottery',
@@ -20,7 +20,7 @@ const traditionalCrafts = [
         rating: '4.8',
         reviews: '245',
         description: 'Local artisans in traditional pottery villages use the rich red laterite clay from the dry zone to wheel-throw terracotta water jugs (Gurulethu), cooking pots, and ritual oil lamps.',
-        image: '/images/kalasohona_monastery.png'
+        image: '/images/clay_pottery.png'
     },
     {
         id: 'rush-reed-weaving',
@@ -29,7 +29,7 @@ const traditionalCrafts = [
         rating: '4.7',
         reviews: '180',
         description: 'Women from communities surrounding the ancient reservoirs expertly weave dried reeds and rushes into beautiful, eco-friendly mats, baskets, and intricate household items.',
-        image: '/images/media__1779345162925.png'
+        image: '/images/reed_weaving.png'
     },
     {
         id: 'lotus-fibre-craft',
@@ -38,7 +38,7 @@ const traditionalCrafts = [
         rating: '4.9',
         reviews: '155',
         description: 'An innovative, highly sustainable MSME craft where artisans extract delicate micro-fibres from the lotus stems gathered from Anuradhapura’s ancient lakes to weave rare, luxurious textiles.',
-        image: '/images/spiritual_wellness.png'
+        image: '/images/lotus_silk.png'
     },
     {
         id: 'wood-carving',
@@ -47,7 +47,7 @@ const traditionalCrafts = [
         rating: '4.6',
         reviews: '220',
         description: 'Skilled carpenters and carvers shape locally sourced timber into stunning architectural elements, replicating the floral motifs and ancient designs found in ruins like the Lovamahapaya.',
-        image: '/images/rock_cave_temple_1779382110458.png'
+        image: '/images/woodcraft.png'
     },
     {
         id: 'handloom-textiles',
@@ -56,7 +56,7 @@ const traditionalCrafts = [
         rating: '4.8',
         reviews: '290',
         description: 'Local handloom cooperatives supporting female artisans who weave vibrant cotton fabrics and traditional garments using wooden looms, preserving a vital rural livelihood.',
-        image: '/images/heritage_crafts.png'
+        image: '/images/handloom.png'
     },
 ];
 
@@ -68,7 +68,7 @@ const heritageExperiences = [
         rating: '4.8',
         reviews: '142',
         description: 'A guided immersive tour through dedicated artisan villages (Kala Grama) where you can interact directly with master craftspeople and support local MSME families.',
-        image: '/images/misty_mountains.png'
+        image: '/images/artisan_tour.png'
     },
     {
         id: 'pottery-workshop',
@@ -77,7 +77,7 @@ const heritageExperiences = [
         rating: '4.9',
         reviews: '188',
         description: 'Learn the ancient techniques of wheel-throwing and hand-building from hereditary potters. Shape your own terracotta souvenirs using the distinct red clay of the Rajarata region.',
-        image: '/images/kalasohona_monastery.png'
+        image: '/images/clay_workshop.png'
     },
     {
         id: 'stone-carving-demo',
@@ -86,7 +86,7 @@ const heritageExperiences = [
         rating: '4.7',
         reviews: '115',
         description: 'Watch mesmerising demonstrations of granite carving, learning about the ancient tools, sacred geometry, and sheer patience required to create Anuradhapura-style stone art.',
-        image: '/images/heritage_crafts.png'
+        image: '/images/stone_demo.png'
     },
     {
         id: 'reed-weaving-class',
@@ -95,7 +95,7 @@ const heritageExperiences = [
         rating: '4.8',
         reviews: '95',
         description: 'Sit alongside local weavers near the ancient reservoirs to learn the delicate art of processing and braiding natural reeds into colourful, geometric patterned mats.',
-        image: '/images/ancient_hydraulic.png'
+        image: '/images/weaving_class.png'
     },
     {
         id: 'lotus-silk-experience',
@@ -104,7 +104,7 @@ const heritageExperiences = [
         rating: '5.0',
         reviews: '134',
         description: 'Experience the magical process of transforming raw lotus stems into exquisite fabric. Understand how this unique eco-friendly enterprise provides vital income for local communities.',
-        image: '/images/spiritual_wellness.png'
+        image: '/images/lotus_farm.png'
     },
 ];
 
