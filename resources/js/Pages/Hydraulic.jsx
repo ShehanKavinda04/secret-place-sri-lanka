@@ -6,33 +6,6 @@ import SpotCard from './Welcome-sub-sub-components/SpotCard';
 
 const majorWonders = [
     {
-        id: 'ruwanweli-maha-seya',
-        name: 'Ruwanweli Maha Seya',
-        location: 'Anuradhapura Sacred City',
-        rating: '5.0',
-        reviews: '2100',
-        description: 'The "Great Stupa", a marvel of ancient architecture and devotion built by King Dutugemunu. Its enormous white dome remains one of the most sacred Buddhist monuments in the world.',
-        image: '/images/ruwanweli_maha_seya.png'
-    },
-    {
-        id: 'jetavanaramaya',
-        name: 'Jetavanaramaya Stupa',
-        location: 'Anuradhapura Sacred City',
-        rating: '4.9',
-        reviews: '1850',
-        description: 'Once the third tallest structure in the ancient world behind the Pyramids of Giza. This colossal brick stupa is an engineering masterpiece built by King Mahasena.',
-        image: '/images/jetavanarama_1779380489792.png'
-    },
-    {
-        id: 'abhayagiri-stupa',
-        name: 'Abhayagiri Stupa',
-        location: 'Anuradhapura Sacred City',
-        rating: '4.9',
-        reviews: '1640',
-        description: 'A massive architectural wonder that once served as the centerpiece of a sprawling international monastic complex, renowned for its intricate carvings and sheer scale.',
-        image: '/images/abhayagiri_1779380471030.png'
-    },
-    {
         id: 'abhaya-wewa',
         name: 'Abhaya Wewa (Basawakkulama)',
         location: 'Anuradhapura',
@@ -72,24 +45,6 @@ const hiddenMarvels = [
         image: '/images/kuttam_pokuna_actual.jpg'
     },
     {
-        id: 'lovamahapaya',
-        name: 'Lovamahapaya (Brazen Palace)',
-        location: 'Anuradhapura Sacred City',
-        rating: '4.7',
-        reviews: '675',
-        description: 'The ruins of a magnificent ancient skyscraper that once stood nine stories high, roofed with bronze tiles. Today, 1,600 stone pillars remain perfectly aligned in 40 rows.',
-        image: '/images/lovamahaprasaya_1779380558455.png'
-    },
-    {
-        id: 'thuparamaya',
-        name: 'Thuparamaya Dagoba',
-        location: 'Anuradhapura Sacred City',
-        rating: '4.9',
-        reviews: '920',
-        description: 'The oldest dagoba in Sri Lanka, constructed in the 3rd century BC. It is surrounded by concentric circles of slender stone pillars that once supported a circular roof (vatadage).',
-        image: '/images/thuparamaya_1779380449379.png'
-    },
-    {
         id: 'eth-pokuna',
         name: 'Eth Pokuna (Elephant Pond)',
         location: 'Anuradhapura Sacred City',
@@ -97,15 +52,6 @@ const hiddenMarvels = [
         reviews: '415',
         description: 'A gigantic ancient artificial pool built for the monks of Abhayagiri. It is so large that it can hold six Olympic swimming pools worth of water, fed by an intricate canal system.',
         image: '/images/eth_pokuna_actual.jpg'
-    },
-    {
-        id: 'lankaramaya',
-        name: 'Lankaramaya Stupa',
-        location: 'Anuradhapura Sacred City',
-        rating: '4.8',
-        reviews: '530',
-        description: 'An elegant 1st-century BC stupa built by King Vattagamani Abhaya. Like Thuparamaya, it features the striking ruins of a vatadage with gracefully carved stone pillars.',
-        image: '/images/lankaramaya_1779380541763.png'
     },
     {
         id: 'samadhi-statue',
