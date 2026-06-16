@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 export default function History({ auth, spot }) {
     // Default to location to match the wireframe image, but normally history
     const [activeTab, setActiveTab] = useState('history');
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const sidebarItems = [
         { id: 'history', label: 'History of the Sacred Site', icon: 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' },
@@ -131,7 +132,59 @@ export default function History({ auth, spot }) {
                                         <div>
                                             <h2 className="text-xl font-bold text-royalMaroon-900 mb-4">Historical Narrative (Sub Topic 1)</h2>
                                             <div className="prose prose-slate max-w-none text-sm leading-relaxed mb-6">
-                                                <p className="whitespace-pre-line">{spot.history_narrative}</p>
+                                                {(() => {
+                                                    const text = spot.history_narrative || '';
+                                                    const wordCount = text.split(/\s+/).filter(Boolean).length;
+                                                    const needsTruncation = wordCount > 100;
+                                                    const paragraphs = text.split(/\n\s*\n+/).filter(Boolean);
+
+                                                    if (!needsTruncation) {
+                                                        return <p className="whitespace-pre-line">{text}</p>;
+                                                    }
+
+                                                    if (!isExpanded) {
+                                                        return (
+                                                            <div className="space-y-4">
+                                                                <p className="whitespace-pre-line">{paragraphs[0]}</p>
+                                                                <button
+                                                                    onClick={() => setIsExpanded(true)}
+                                                                    className="mt-2 text-[#0f4a45] hover:text-[#0c3935] font-bold text-sm flex items-center gap-1 transition-colors group cursor-pointer"
+                                                                >
+                                                                    Read More...
+                                                                    <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                                                                </button>
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <div className="space-y-6">
+                                                            {paragraphs.map((p, idx) => {
+                                                                if (idx === 0) {
+                                                                    return <p key={idx} className="whitespace-pre-line">{p}</p>;
+                                                                }
+                                                                return (
+                                                                    <motion.p
+                                                                        key={idx}
+                                                                        initial={{ opacity: 0, y: 15 }}
+                                                                        animate={{ opacity: 1, y: 0 }}
+                                                                        transition={{ duration: 0.4, delay: (idx - 1) * 0.12 }}
+                                                                        className="whitespace-pre-line"
+                                                                    >
+                                                                        {p}
+                                                                    </motion.p>
+                                                                );
+                                                            })}
+                                                            <button
+                                                                onClick={() => setIsExpanded(false)}
+                                                                className="mt-2 text-[#0f4a45] hover:text-[#0c3935] font-bold text-sm flex items-center gap-1 transition-colors group cursor-pointer"
+                                                            >
+                                                                Read Less
+                                                                <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
                                             
                                             <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-xl flex items-center gap-4">
