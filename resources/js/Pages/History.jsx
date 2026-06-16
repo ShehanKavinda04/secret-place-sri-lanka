@@ -131,7 +131,7 @@ export default function History({ auth, spot }) {
                                         <div>
                                             <h2 className="text-xl font-bold text-royalMaroon-900 mb-4">Historical Narrative (Sub Topic 1)</h2>
                                             <div className="prose prose-slate max-w-none text-sm leading-relaxed mb-6">
-                                                <p>{spot.history_narrative}</p>
+                                                <p className="whitespace-pre-line">{spot.history_narrative}</p>
                                             </div>
                                             
                                             <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-xl flex items-center gap-4">
