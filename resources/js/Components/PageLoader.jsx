@@ -13,15 +13,20 @@ export default function PageLoader() {
 
     useEffect(() => {
         let timeout;
+        let startTimeout;
 
         const handleStart = () => {
-            setLoading(true);
+            // Delay loader appearance slightly so fast/prefetched pages don't cause a flash
+            startTimeout = setTimeout(() => {
+                setLoading(true);
+            }, 150);
         };
 
         const handleFinish = () => {
+            clearTimeout(startTimeout);
             timeout = setTimeout(() => {
                 setLoading(false);
-            }, 100); // Start fade-out quickly, let the CSS transition do the smoothing
+            }, 100); // Start fade-out quickly
         };
 
         const handleManual = (e) => {

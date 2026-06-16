@@ -86,19 +86,19 @@ export default function Navbar({ auth }) {
                         className="hover:text-royalGold-300 transition-colors"
                     >Suggestions</motion.a>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Link href="/about-us" className="hover:text-royalGold-300 transition-colors">About Us</Link>
+                        <Link prefetch href="/about-us" className="hover:text-royalGold-300 transition-colors">About Us</Link>
                     </motion.div>
                 </nav>
 
                 <div className="flex items-center gap-4">
                     {auth.user ? (
-                        <Link href={route('dashboard')} className="px-5 py-2.5 rounded-full bg-royalMaroon-900 border border-royalGold-500/50 text-xs font-bold uppercase tracking-wider text-royalGold-300 hover:bg-royalMaroon-950 transition-all">
+                        <Link prefetch href={route('dashboard')} className="px-5 py-2.5 rounded-full bg-royalMaroon-900 border border-royalGold-500/50 text-xs font-bold uppercase tracking-wider text-royalGold-300 hover:bg-royalMaroon-950 transition-all">
                             Dashboard
                         </Link>
                     ) : (
                         <>
-                            <Link href={route('login')} className="text-sm font-semibold text-royalGold-400 hover:text-royalGold-300">Log In</Link>
-                            <Link href={route('register')} className="px-5 py-2.5 rounded-full bg-gradient-to-r from-royalGold-500 to-royalGold-300 text-xs font-bold uppercase tracking-wider text-royalMaroon-950 hover:brightness-110">
+                            <Link prefetch href={route('login')} className="text-sm font-semibold text-royalGold-400 hover:text-royalGold-300">Log In</Link>
+                            <Link prefetch href={route('register')} className="px-5 py-2.5 rounded-full bg-gradient-to-r from-royalGold-500 to-royalGold-300 text-xs font-bold uppercase tracking-wider text-royalMaroon-950 hover:brightness-110">
                                 Join Group
                             </Link>
                         </>
