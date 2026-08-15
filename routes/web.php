@@ -887,6 +887,16 @@ Route::middleware('auth')->group(function () {
 
 Route::post('/predict-demand', [ForecastController::class, 'getLiveDemandForecast']);
 Route::post('/api/predict-demand', [ForecastController::class, 'getLiveDemandForecast']);
+
+Route::get('/translator', function () {
+    return Inertia::render('Translator', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('translator');
+
 Route::post('/translate', [App\Http\Controllers\TranslationController::class, 'translate']);
+Route::get('/translate/status', [App\Http\Controllers\TranslationController::class, 'status']);
 
 require __DIR__.'/auth.php';
+

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from '@inertiajs/react';
 
 export default function Hero() {
     return (
@@ -42,17 +43,28 @@ export default function Hero() {
                     </motion.p>
                     <motion.div 
                         variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                        className="flex flex-wrap gap-4 pt-2"
+                        className="flex flex-wrap items-center gap-4 pt-2"
                     >
+                        <Link 
+                            href="/translator"
+                            className="px-7 py-3 rounded-full bg-gradient-to-r from-royalGold-500 to-royalGold-300 text-royalMaroon-950 hover:brightness-110 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase shadow-lg shadow-royalGold-500/20 flex items-center gap-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m0 2.25c0 3.107 1.002 6.012 2.766 8.384m-4.502-1.921A11.96 11.96 0 0 1 3 5.621m15-1.996a48.474 48.474 0 0 0-6-.371" />
+                            </svg>
+                            <span>AI Cultural Translator</span>
+                        </Link>
+                        
                         <a 
                             href="#discover"
-                            className="px-8 py-3 rounded-full bg-royalGold-500 text-royalMaroon-950 hover:bg-royalGold-400 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase shadow-md shadow-royalGold-500/10"
+                            className="px-6 py-3 rounded-full border-2 border-royalGold-500 text-royalGold-300 hover:bg-royalMaroon-700/50 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase"
                         >
                             Live Detailing
                         </a>
+                        
                         <a 
                             href="#newsletter"
-                            className="px-8 py-3 rounded-full border-2 border-royalGold-500 text-royalGold-400 hover:bg-royalMaroon-700/50 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase"
+                            className="px-6 py-3 rounded-full border border-royalGold-500/50 text-royalGold-400 hover:bg-royalMaroon-700/50 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase"
                         >
                             Live Booking
                         </a>

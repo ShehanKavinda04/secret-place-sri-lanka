@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class TranslationController extends Controller
 {
@@ -12,17 +13,40 @@ class TranslationController extends Controller
             'text' => 'required|string'
         ]);
 
-        $sinhalaText = $request->input('text');
+        $sinhalaText = trim($request->input('text'));
 
-        $response = \Illuminate\Support\Facades\Http::timeout(30)
-            ->post('http://127.0.0.1:5001/translate', [
-                'text' => $sinhalaText
-            ]);
+        try {
+            $response = Http::timeout(35)
+                ->post('http://127.0.0.1:5001/translate', [
+                    'text' => $sinhalaText
+                ]);
 
-        if ($response->successful()) {
-            return response()->json($response->json());
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+
+            return response()->json([
+                'error' => 'Translation service error',
+                'details' => $response->json()
+            ], $response->status());
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Translation AI service is offline. Please start the Python translation API (python translation_api/api.py).',
+                'message' => $e->getMessage()
+            ], 503);
         }
+    }
 
-        return response()->json(['error' => 'Translation service eka available na'], 500);
+    public function status()
+    {
+        try {
+            $response = Http::timeout(5)->get('http://127.0.0.1:5001/health');
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+            return response()->json(['status' => 'offline', 'model_loaded' => false], 503);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'offline', 'model_loaded' => false], 503);
+        }
     }
 }

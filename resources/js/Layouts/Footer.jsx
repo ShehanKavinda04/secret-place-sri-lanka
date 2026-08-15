@@ -12,6 +12,8 @@ export default function Footer({ auth, laravelVersion, phpVersion }) {
             <div className="flex flex-wrap justify-center items-center gap-3 text-xs sm:text-sm text-gray-200 font-medium tracking-wide">
                 <a href="#hero" className="hover:text-white transition-colors">Home</a>
                 <span className="text-gray-400 opacity-70">|</span>
+                <a href="/translator" className="text-royalGold-400 hover:text-white transition-colors">AI Cultural Translator</a>
+                <span className="text-gray-400 opacity-70">|</span>
                 <a href="#features" className="hover:text-white transition-colors">Features</a>
                 <span className="text-gray-400 opacity-70">|</span>
                 <a href="#discover" className="hover:text-white transition-colors">Explorer Desk</a>
