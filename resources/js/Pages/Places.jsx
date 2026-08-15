@@ -115,15 +115,6 @@ const otherSites = [
         reviews: '490',
         description: 'The sacred mountain peak where Buddhism was introduced to Sri Lanka, featuring ancient steps and panoramic views.',
         image: '/images/mihintale_peak.png'
-    },
-    {
-        id: 'lovamahaprasada-2',
-        name: 'Lovamahaprasada',
-        location: 'Anuradhapura, North Central Province',
-        rating: '4.7',
-        reviews: '220',
-        description: 'The magnificent ruins of the Brazen Palace, standing as a testament to the grand monastic life of ancient times.',
-        image: '/images/lovamahaprasaya_1779380558455.png'
     }
 ];
 

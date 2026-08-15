@@ -19,6 +19,10 @@
 /storage/*.key
 /storage/pail
 /vendor
+translation_api/final_model/model.safetensors
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+*.safetensors
+translation_api/final_model/

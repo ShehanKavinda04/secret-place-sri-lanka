@@ -3,11 +3,40 @@ import { Head, Link } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { motion } from 'framer-motion';
+import InteractiveMap from '@/Components/InteractiveMap';
 
 export default function History({ auth, spot }) {
     // Default to location to match the wireframe image, but normally history
     const [activeTab, setActiveTab] = useState('history');
     const [isExpanded, setIsExpanded] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchedLocation, setSearchedLocation] = useState(null);
+    const [isSearching, setIsSearching] = useState(false);
+
+    const handleSearch = async (e) => {
+        if (e.key === 'Enter' && searchQuery.trim()) {
+            setIsSearching(true);
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    setSearchedLocation({
+                        lat: parseFloat(data[0].lat),
+                        lng: parseFloat(data[0].lon),
+                        name: data[0].display_name
+                    });
+                    setActiveTab('location');
+                } else {
+                    alert('Location not found');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error searching for location');
+            } finally {
+                setIsSearching(false);
+            }
+        }
+    };
 
     const sidebarItems = [
         { id: 'history', label: 'History of the Sacred Site', icon: 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' },
@@ -77,16 +106,26 @@ export default function History({ auth, spot }) {
                             </h2>
                             
                             {/* Search box (simulating the map wireframe) */}
-                            <div className="relative w-full sm:w-64">
-                                <input 
-                                    type="text" 
-                                    placeholder="Search details..." 
-                                    className="w-full bg-white/10 border border-white/20 rounded-md px-3 py-1.5 text-sm text-white placeholder-white/60 focus:outline-none focus:ring-1 focus:ring-royalGold-400 focus:border-royalGold-400"
-                                />
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-white/60 absolute right-3 top-2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                                </svg>
-                            </div>
+                            {activeTab !== 'gallery' && (
+                                <div className="relative w-full sm:w-64">
+                                    <input 
+                                        type="text" 
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onKeyDown={handleSearch}
+                                        placeholder="Search Location" 
+                                        className="w-full bg-white/10 border border-white/20 rounded-md px-3 py-1.5 pr-8 text-sm text-white placeholder-white/60 focus:outline-none focus:ring-1 focus:ring-royalGold-400 focus:border-royalGold-400"
+                                        disabled={isSearching}
+                                    />
+                                    {isSearching ? (
+                                        <div className="w-4 h-4 border-2 border-white/60 border-t-white rounded-full animate-spin absolute right-3 top-2 pointer-events-none"></div>
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-white/60 absolute right-3 top-2 pointer-events-none">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                        </svg>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {/* Content Container */}
@@ -239,15 +278,8 @@ export default function History({ auth, spot }) {
                                 /* Location / Map View matching the wireframe */
                                 <div className="h-full min-h-[500px] flex gap-6 relative">
                                     {/* Map Area */}
-                                    <div className="flex-1 bg-slate-200 rounded-xl border border-slate-300 overflow-hidden relative shadow-inner">
-                                        <iframe 
-                                            src={`https://www.google.com/maps?q=${encodeURIComponent((spot?.name || 'Anuradhapura') + ', Sri Lanka')}&output=embed`}
-                                            title={`Interactive Map of ${spot?.name || 'Location'}`}
-                                            className="w-full h-full border-0"
-                                            allowFullScreen="" 
-                                            loading="lazy" 
-                                            referrerPolicy="no-referrer-when-downgrade"
-                                        ></iframe>
+                                    <div className="flex-1 bg-slate-200 rounded-xl border border-slate-300 overflow-hidden relative shadow-inner z-0">
+                                        <InteractiveMap spot={spot} searchedLocation={searchedLocation} />
                                     </div>
                                     
                                     {/* Detail Panel overlay/side */}

@@ -64,6 +64,13 @@ Route::get('/category/transport', function () {
     ]);
 });
 
+Route::get('/category/accommodations', function () {
+    return Inertia::render('Accommodations', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -72,7 +79,9 @@ Route::get('/places/{id}/history', function ($id) {
     $spotsData = [
         'jaya-sri' => [
             'name' => 'Jaya Sri Maha Bodhi',
-            'image' => '/images/jaya_sri_maha_bodhi.png',
+                        'lat' => 8.3447,
+            'lng' => 80.3970,
+'image' => '/images/jaya_sri_maha_bodhi.png',
             'topic' => 'The oldest historically documented tree in the world, serving as the living heartbeat of Sri Lankan Buddhism.',
             'history_narrative' => <<<'EOD'
 Chapter 1: The Great Act of Truth by Emperor Ashoka of Jambudvipa
@@ -115,10 +124,18 @@ EOD
 ,
             'blueprint_text' => 'The sacred tree is planted on a high terrace about 6.5 meters (21.3 ft) above the ground and surrounded by railings. The wall was constructed during the reign of King Kirthi Sri Rajasingha to protect it from wild elephants. Multiple smaller bodhi trees known as "Parivara Bodhi" surround the central sacred tree.',
             'blueprint_image' => '/images/jaya_sri_maha_bodhi_blueprint.jpg',
+            'gallery' => [
+                '/images/jaya_sri_gallery_1.jpg',
+                '/images/jaya_sri_gallery_2.jpg',
+                '/images/jaya_sri_gallery_3.jpg',
+                '/images/jaya_sri_gallery_4.jpg',
+            ],
         ],
         'ruwanweli' => [
             'name' => 'Ruwanwelisaya',
-            'image' => '/images/ruwanweli_maha_seya.png',
+                        'lat' => 8.3500,
+            'lng' => 80.3964,
+'image' => '/images/ruwanweli_maha_seya.png',
             'topic' => 'A magnificent, awe-inspiring ancient stupa housing sacred relics, standing as a grand marvel of engineering and devotion.',
             'history_narrative' => <<<'EOD'
 Chapter 1: The Historic Prophecy by the Malwathu Oya
@@ -194,7 +211,9 @@ EOD
         ],
         'thuparamaya' => [
             'name' => 'Thuparamaya',
-            'image' => '/images/thuparamaya_1779380449379.png',
+                        'lat' => 8.3556,
+            'lng' => 80.3967,
+'image' => '/images/thuparamaya_1779380449379.png',
             'topic' => 'The oldest dagoba in Sri Lanka, constructed to enshrine the sacred collarbone relic of the Buddha.',
             'history_narrative' => <<<'EOD'
 Chapter 1: The Royal Aspiration for the Sacred Bodily Relics
@@ -251,10 +270,18 @@ EOD
 ,
             'blueprint_text' => 'The Thuparamaya stupa was originally built in the shape of a heap of paddy, but was reconstructed in a bell shape in 1842. The unique architectural feature is the Vatadage—a circular relic house built around the stupa. It originally supported a conical wooden roof, and its ruins are marked by concentric circles of elegant monolithic stone pillars.',
             'blueprint_image' => '/images/thuparamaya_blueprint.jpg',
+            'gallery' => [
+                '/images/thuparamaya_gallery_1.jpg',
+                '/images/thuparamaya_gallery_2.jpg',
+                '/images/thuparamaya_gallery_3.jpg',
+                '/images/thuparamaya_gallery_4.jpg',
+            ],
         ],
         'abhayagiriya' => [
             'name' => 'Abhayagiriya',
-            'image' => '/images/abhayagiri_1779380471030.png',
+                        'lat' => 8.3711,
+            'lng' => 80.3953,
+'image' => '/images/abhayagiri_1779380471030.png',
             'topic' => 'A massive monastic complex and ancient center of Buddhist scholarship, featuring a towering, majestic brick stupa.',
             'history_narrative' => <<<'EOD'
 Chapter 1: "The Great Black Sinhalese is Fleeing!" (The Royal Retreat)
@@ -313,10 +340,18 @@ EOD
 ,
             'blueprint_text' => 'The Abhayagiri stupa stands as one of the largest brick structures in the ancient world, reaching a height of about 75 meters (246 ft). The monastic complex includes beautiful stone carvings, guardstones (Muragala), moonstones (Sandakada Pahana), and the famous twin ponds (Kuttam Pokuna), illustrating advanced ancient water engineering.',
             'blueprint_image' => '/images/abhayagiri_blueprint.jpg',
+            'gallery' => [
+                '/images/abhayagiri_gallery_1.jpg',
+                '/images/abhayagiri_gallery_2.jpg',
+                '/images/abhayagiri_gallery_3.jpg',
+                '/images/abhayagiri_gallery_4.jpg',
+            ],
         ],
         'jetavanaramaya' => [
             'name' => 'Jetavanaramaya',
-            'image' => '/images/jetavanarama_1779380489792.png',
+                        'lat' => 8.3517,
+            'lng' => 80.4033,
+'image' => '/images/jetavanarama_1779380489792.png',
             'topic' => 'Once the tallest stupa in the ancient world, representing an unparalleled masterpiece of ancient Sri Lankan architecture.',
             'history_narrative' => <<<'EOD'
 Chapter 1: The Darkness of Heresy and the Great Crisis of the Maha Vihara
@@ -371,10 +406,18 @@ EOD
 ,
             'blueprint_text' => 'With a height of 122 meters (400 ft) at its construction, the Jetavanaramaya was the third tallest structure in the ancient world, behind only the Pyramids of Giza. It required approximately 93.3 million baked bricks. The foundation is dug to a depth of 8.5 meters (28 ft), resting directly on bedrock to support the colossal weight.',
             'blueprint_image' => '/images/jetavanarama_blueprint.jpg',
+            'gallery' => [
+                '/images/jetavanarama_gallery_1.jpg',
+                '/images/jetavanarama_gallery_2.jpg',
+                '/images/jetavanarama_gallery_3.jpg',
+                '/images/jetavanarama_gallery_4.jpg',
+            ],
         ],
         'mirisawetiya' => [
             'name' => 'Mirisawetiya Stupa',
-            'image' => '/images/mirisawetiya_1779380509748.png',
+                        'lat' => 8.3444,
+            'lng' => 80.3900,
+'image' => '/images/mirisawetiya_1779380509748.png',
             'topic' => 'Built by King Dutugemunu after leaving his scepter containing Buddha relics, a symbol of profound devotion.',
             'history_narrative' => <<<'EOD'
 Chapter 1: The Auspicious Water Bath that Grounded the Scepter
@@ -409,10 +452,18 @@ EOD
 ,
             'blueprint_text' => 'Mirisawetiya stupa was the first built by King Dutugemunu. Its most significant feature is that it was built around his victory scepter. The site is characterized by its tranquil atmosphere and large stone pillars, which suggest it was once surrounded by a massive vatadage or colonnaded structure.',
             'blueprint_image' => '/images/mirisawetiya_blueprint.jpg',
+            'gallery' => [
+                '/images/mirisawetiya_gallery_1.jpg',
+                '/images/mirisawetiya_gallery_2.jpg',
+                '/images/mirisawetiya_gallery_3.jpg',
+                '/images/mirisawetiya_gallery_4.jpg',
+            ],
         ],
         'lankarama' => [
             'name' => 'Lankarama',
-            'image' => '/images/lankaramaya_1779380541763.png',
+                        'lat' => 8.3614,
+            'lng' => 80.3886,
+'image' => '/images/lankaramaya_1779380541763.png',
             'topic' => 'An ancient stupa built by King Vattagamani Abhaya, surrounded by beautiful monolithic stone pillars and ruins.',
             'history_narrative' => <<<'EOD'
 Chapter 1: The Retreat of the Great Black Sinhalese and the Weight of the Royal Chariot
@@ -456,7 +507,9 @@ EOD
         ],
         'lovamahaprasada-1' => [
             'name' => 'Lovamahaprasada',
-            'image' => '/images/lovamahaprasaya_1779380558455.png',
+                        'lat' => 8.3458,
+            'lng' => 80.3975,
+'image' => '/images/lovamahaprasaya_1779380558455.png',
             'topic' => 'The Brazen Palace, an ancient multistoried building with hundreds of stone pillars, once a grand monastery.',
             'history_narrative' => <<<'EOD'
 Chapter 1: The Model of a Celestial Mansion and the Inscription on the Stone Pillar
@@ -511,6 +564,12 @@ EOD
 ,
             'blueprint_text' => 'The structure originally had nine stories and could accommodate up to a thousand monks. Today, the ruins consist of a forest of 1,600 stone pillars arranged in a perfect square grid of 40x40. Each stone pillar stands about 3.5 meters (11.5 ft) high, representing the foundation of this massive multi-level timber structure.',
             'blueprint_image' => '/images/lovamahaprasada_blueprint.jpg',
+            'gallery' => [
+                '/images/lovamahaprasada_gallery_1.jpg',
+                '/images/lovamahaprasada_gallery_2.jpg',
+                '/images/lovamahaprasada_gallery_3.jpg',
+                '/images/lovamahaprasada_gallery_4.jpg',
+            ],
         ],
         'lovamahaprasada-2' => [
             'name' => 'Lovamahaprasada',
@@ -569,38 +628,221 @@ EOD
 ,
             'blueprint_text' => 'The structure originally had nine stories and could accommodate up to a thousand monks. Today, the ruins consist of a forest of 1,600 stone pillars arranged in a perfect square grid of 40x40. Each stone pillar stands about 3.5 meters (11.5 ft) high, representing the foundation of this massive multi-level timber structure.',
             'blueprint_image' => '/images/lovamahaprasada_blueprint.jpg',
+            'gallery' => [
+                '/images/lovamahaprasada_gallery_1.jpg',
+                '/images/lovamahaprasada_gallery_2.jpg',
+                '/images/lovamahaprasada_gallery_3.jpg',
+                '/images/lovamahaprasada_gallery_4.jpg',
+            ],
         ],
         'isurumuniya' => [
             'name' => 'Isurumuniya Rajamaha Viharaya',
-            'image' => '/images/isurumuniya_1779380577189.png',
+                        'lat' => 8.3344,
+            'lng' => 80.3897,
+'image' => '/images/isurumuniya_1779380577189.png',
             'topic' => 'A beautiful rock temple famous for its exquisite ancient stone carvings, including the renowned Isurumuniya Lovers.',
-            'history_narrative' => 'Isurumuniya is a rock temple situated near the Tissa Wewa. It was built by King Devanampiya Tissa in the 3rd century BC to house 500 newly ordained children. The temple is globally famous for its secular stone carvings, particularly the "Isurumuniya Lovers", "Man and Horse", and the relief carving of bathing elephants.',
+            'history_narrative' => <<<'EOD'
+Chapter 1: The Sanctuary of Nobles and the Birth of "Issarasamana"
+The third century BCE had dawned. Following the arrival of Arahat Mahinda Maha Thero and the establishment of the Buddha Sasana on the soil of Lanka, a massive religious renaissance swept across the city of Anuradhapura. Individuals from various social strata of society, deeply inspired by the Sublime Dhamma, entered the Buddhist monastic order.
+
+While King Devanampiyatissa allocated the Maha Vihara and Chetiyagiri (Mihintale) for individuals from the higher royal lineages, he resolved to create a specialized monastic complex for the wealthy elite and nobles (Issaras) belonging to the Vaishya and Kshatriya clans of Anuradhapura who had entered the monkhood.
+
+The King selected a tranquil, scenic terrain characterized by beautiful natural granite boulders and ponds, situated adjacent to the auspicious royal gardens and the Tisa Wewa. Because it served as the sanctuary where affluent nobles (Issaras) resided as ordained monks, this sacred ground was designated in ancient chronicles as the "Issarasamana Vihara" (The Monastery of Nobles). In the course of time, this classical name evolved within popular vernacular into "Isurumuniya".
+
+Chapter 2: The Romantic Saga of Saliya and Asokamala
+The moment the name Isurumuniya is spoken, the world immediately recalls its world-renowned stone relief, the "Isurumuniya Lovers". Behind this magnificent carving lies a deeply touching, true romantic saga recorded within the historical chronicles of Lanka.
+
+Prince Saliya was the only son of King Dutugemunu the Great. He was the crown prince destined to inherit the vast empire of Anuradhapura. One day, while strolling through the beautiful Ranmasu Uyana (The Royal Goldfish Park) situated adjacent to Isurumuniya, the prince beheld an exceptionally beautiful young maiden gathering flowers and fell profoundly in love with her.
+
+Her name was Asokamala. Although she possessed unparalleled beauty, she belonged to a caste deemed low by the conventions of contemporary society (the Chandala clan). Prince Saliya resolved to make her his queen consort. Upon hearing this news, King Dutugemunu and the royal council became furious. The King issued a stern geopolitical decree to Prince Saliya:
+
+"Prince, erase this low-caste maiden from your mind immediately. Fail to do so, and you shall forfeit the grand crown of Lanka and your sovereign right to the throne forever!"
+
+Prince Saliya did not hesitate for a single moment. Looking at the grand throne and the imperial crown, he declared with immense pride:
+
+"For the sake of my love and Asokamala, I can discard any grand kingdom or imperial crown in this universe like a worthless blade of grass!"
+
+Prince Saliya renounced his right to the throne forever and departed from the palace to live as a commoner alongside Asokamala. History records that the couple subsequently resided within the monastic grounds of the Isurumuniya Vihara. Witnessing this peerless devotion, a gifted Sinhalese artisan of the 4th century CE etched the love of Saliya and Asokamala into a solid granite boulder as an immortal monument. This masterpiece is the iconic 'Isurumuniya Lovers' relief we behold today.
+
+Chapter 3: The Sinhalese Artistic Marvel Carved in Granite
+The Isurumuniya Vihara stands as the preeminent epicenter of ancient Sinhalese stone carving artistry. Deep iconographic and historical meanings are embedded within each of its iconic reliefs:
+
+The Man and the Horse Head: Carved into the surface of the natural granite rock face, this relief depicts a powerful, majestic man seated in a regal posture with the head of a horse etched behind his shoulder. According to meteorological and historical interpretations, this composition symbolizes Parjanya (the god of rainclouds and rain) and Agni (the wind). It is widely regarded as a sacred symbolic invocation carved to govern the water levels of the adjacent Tisa Wewa.
+
+The Bathing Elephants: Etched just above the water level of the Isurumuniya pond, these carvings of elephants are remarkably lifelike. The master artisan captured the animals in an incredibly natural state, depicting them as if they are actively drinking and splashing water within the pool.
+
+The Royal Court: Another remarkable relief panel found at the site depicts a royal assembly, widely believed to represent King Dutugemunu, Queen Viharamaha Devi, and the dignitaries of the royal court.
+
+Chapter 4: The Inaugural Resting Place of the Sacred Tooth Relic
+In the 4th century CE, during the reign of King Kithsirimewan, Princess Hemamala and Prince Dantha risked their lives to carry the deeply venerated Sacred Tooth Relic (Dantha Dhatu) of the Buddha from the Kingdom of Kalinga in India to the island of Lanka.
+
+The moment they reached Anuradhapura in secret, King Kithsirimewan personally received the Sacred Tooth Relic. Under strict royal security, the King safely deposited the relic and conducted the inaugural state offerings right here within the Isurumuniya Raja Maha Vihara.
+
+Until a permanent palace was constructed specifically for the relic, the sacred ground of Isurumuniya served as the inaugural and highly secure sanctuary for the Sacred Tooth Relic. Consequently, Isurumuniya continuously received immense royal patronage throughout history.
+
+Chapter 5: An Unshaken Heritage Through the Ages
+The Isurumuniya Vihara was later extensively renovated and expanded by King Kasyapa (the monarch who created Sigiriya), who renamed it the "Bodhi Upulvan Kasupgiri Vihara", incorporating the names of his daughters into the sanctuary and dedicating grand religious festivals to it.
+
+Although this monastery was eventually abandoned and swallowed by dense vegetation following the fall of the Anuradhapura Kingdom, its ruins were rediscovered and restored during the Kandyan Kingdom by King Kirti Sri Rajasinha. He commissioned the creation of the present image house and the serene reclining Buddha statue.
+EOD
+,
             'blueprint_text' => 'The temple is built around a low rock cliff. It has a beautiful pond at the base of the rock, from which relief carvings of elephants emerge. Above the pond is a shrine room carved into the cave, and a small stupa sits on top of the rock boulder, offering panoramic views of the Royal Gardens.',
             'blueprint_image' => '/images/isurumuniya_blueprint.jpg',
+            'gallery' => [
+                '/images/isurumuniya_gallery_1.jpg',
+                '/images/isurumuniya_gallery_2.jpg',
+                '/images/isurumuniya_gallery_3.jpg',
+                '/images/isurumuniya_gallery_4.jpg',
+            ],
         ],
         'vessagiriya' => [
             'name' => 'Vessagiriya',
-            'image' => '/images/vessagiriya_monastery.png',
+                        'lat' => 8.3242,
+            'lng' => 80.3931,
+'image' => '/images/vessagiriya_monastery.png',
             'topic' => 'An ancient forest monastery complex where pious monks meditated amidst scenic, rugged rock caves and serene surroundings.',
-            'history_narrative' => 'Vessagiriya is an ancient forest monastery complex built on three large rock boulders. It was established in the 3rd century BC by King Devanampiya Tissa, who built it for 500 commoners who ordained as monks. The caves contain some of the oldest Brahmi rock inscriptions in Sri Lanka, detailing gifts of caves to the Sangha.',
+            'history_narrative' => <<<'EOD'
+Chapter 1: The Ordination of Five Hundred Vaishya Princes
+The third century BCE had dawned. Following the arrival of Arahat Mahinda Maha Thero and the dissemination of the light of the Sublime Dhamma across the land of Lanka, thousands of individuals throughout the city of Anuradhapura embraced the Buddha Sasana, casting aside all barriers of caste and social strata.
+
+While King Devanampiyatissa allocated the Maha Vihara for the highest royal lineages (Kshatriyas) and subsequently designated Isurumuniya for the affluent nobles (Issaras) of the Vaishya clan, five hundred (500) princes and youths belonging to the ordinary commercial and agricultural community—the Vaishya (Vessa) clan—entered the monastic order before Arahat Mahinda on the exact same day.
+
+To provide these five hundred newly ordained monks with a deeply meditative and profoundly tranquil environment to dwell in, King Devanampiyatissa selected a secluded terrain situated at the southern boundary of the city of Anuradhapura, characterized by three massive granite rock outcrops and encircled by dense forest. Because this sanctuary was specifically dedicated to the individuals of the Vaishya (Vessa) clan, it was given the sacred name "Vessagiri Vihara" (The Monastery of the Vaishyas).
+
+Chapter 2: The Drip-Ledge Caves and the Silent Meditation of the Arahats
+Vessagiriya was not an imperial palace filled with monumental brick constructions, but an awe-inspiring monastic complex fashioned entirely from natural granite caves. Its infrastructure was developed in perfect harmony with the austere, renunciant nature of true sons of the Buddha:
+
+Drip-Ledge Caves: To prevent monsoonal rainwater from cascading down the rock face and leaking into the living spaces, ancient Sinhalese sculptors meticulously chiseled fine channels high along the brows of the granite caves, carving drip-ledges (Kataram).
+
+Ancient Brahmi Inscriptions: Directly beneath these drip-ledges, the names of the affluent patrons who dedicated the caves to the monastic order were engraved in ancient Brahmi script. Some of the oldest rock inscriptions discovered anywhere in Sri Lanka are preserved across these Vessagiriya caves.
+
+Monolithic Stone Beds: Intricately carved directly into the living rock inside the caves are smooth granite beds designed for the venerable monks to sleep upon and utilize for deep meditative absorption (Dhyana).
+
+Within twenty-three (23) rock caves distributed across the three massive granite formations of Vessagiriya, five hundred enlightened Arahat monks resided in absolute secrecy. In profound silence, they mastered their minds, cultivated higher meditative states, and experienced the sublime bliss of Nirvana. As night gave way to dawn, the only sound vibrating through the entire Vessagiriya hermitage was the serene, rhythmic breathing of these meditating sages.
+
+Chapter 3: The Royal Sanctuary that Sheltered King Walagamba
+In the first century BCE, when Anuradhapura fell to the seven ruthless South Indian Dravidian invaders and King Walagamba (Vattagamani Abhaya) was forced into helpless exile, the very first sanctuary that offered him protection was provided by the Arahat monks residing within the Vessagiri Vihara.
+
+While the enemy forces combed through the capital city of Anuradhapura searching for members of the royal family, the monks of Vessagiriya acted with absolute secrecy, concealing the King and Queen Anula Devi deep within the safety of their caves.
+
+The venerable community of monks, led by the enlightened sage Arahat Kupikkala Maha Tissa, guided the King on how to survive inside the dense wilderness. It was from this very sacred ground that the final blueprints were drawn to facilitate King Walagamba's retreat to the highly secure caverns of the Malaya region (the central highlands) to evade capture. Upon reclaiming his throne fourteen years later, a deeply grateful King Walagamba extensively renovated the Vessagiriya hermitage that had saved him from certain death.
+
+Chapter 4: Advanced Architecture and Miraculous Cave Paintings
+In the course of time, during the 5th century CE, King Kasyapa (the monarch who engineered the citadel of Sigiriya) extended immense royal patronage to the Vessagiri Vihara, transforming it into a expansive monastic university. Blending his own name with the names of his two beloved daughters, 'Bodhi' and 'Uppalavanna', the King renovated Vessagiriya and officially renamed it the "Bodhi Uppalavanna Kasupgiri Vihara".
+
+During this golden era of Vessagiriya:
+
+Structural Expansion: Alongside the natural rock caves, elegant brick-built chapter houses (Uposathagaras), grand alms halls, and small stupas were constructed across the landscape.
+
+Vibrant Cave Art: Exquisite cave paintings (Frescoes), mirroring the distinct artistic style, pigments, and fine composition of the world-renowned Sigiriya Frescoes, were rendered across the rock ceilings of the Vessagiriya caves. Traces of these ancient masterpieces can still be faintly witnessed inside a specific cave at Vessagiriya today.
+
+Chapter 5: A Living Testament to Wilderness Serenity
+Following the tragic collapse of the Anuradhapura Kingdom, when the entire capital city was swallowed by a vast, dense jungle, the Vessagiriya hermitage surrendered to nature and was gradually forgotten. For over a millennium, these sacred ruins remained hidden deep within the heart of the forest until they were systematically brought back to light by archaeologists during the late 19th and early 20th centuries.
+
+Today, as one travels to the southern boundaries of the sacred city of Anuradhapura, situated a short distance from Isurumuniya and completely removed from the bustle of modern life, the three massive granite rock outcrops and their collection of caves rise proudly across several acres of tranquil terrain.
+EOD
+,
             'blueprint_text' => 'The complex consists of natural rock shelters modified with drip ledges to prevent rain from entering. Monks used these caves as living quarters and meditation cells. The remains of a stupa, a chapter house, and refectory buildings are scattered among the boulders, connected by ancient stone pathways.',
             'blueprint_image' => '/images/vessagiriya_blueprint.jpg',
+            'gallery' => [
+                '/images/vessagiriya_gallery_1.jpg',
+                '/images/vessagiriya_gallery_2.jpg',
+                '/images/vessagiriya_gallery_3.jpg',
+                '/images/vessagiriya_gallery_4.jpg',
+            ],
         ],
         'srimahabodhi-malu' => [
             'name' => 'Sri Maha Bodhi Malu Vihara',
-            'image' => '/images/srimaha_bodhi_malu_1779380597304.png',
+                        'lat' => 8.3447,
+            'lng' => 80.3970,
+'image' => '/images/srimaha_bodhi_malu_1779380597304.png',
             'topic' => 'A serene temple complex surrounding the sacred Bodhi tree, offering a profoundly peaceful environment for reflection.',
             'history_narrative' => 'The Sri Maha Bodhi Malu Vihara is a temple complex surrounding the sacred Mahamewna Gardens and the outer terraces of the Jaya Sri Maha Bodhi. It has been a site of continuous Buddhist worship, chanting, and meditation for over two millennia, serving as a sanctuary for pilgrims visiting the sacred tree.',
             'blueprint_text' => 'The temple grounds are arranged in a series of terraces. It features ancient stone altars, guard stones, and meditation pavilions (Pilima Ge) housing beautiful Buddha statues. The stone paths are shaded by ancient trees, creating a quiet space for spiritual reflection.',
             'blueprint_image' => '/images/srimahabodhi_malu_blueprint.jpg',
+            'gallery' => [
+                '/images/srimahabodhi_malu_gallery_1.jpg',
+                '/images/srimahabodhi_malu_gallery_2.jpg',
+                '/images/srimahabodhi_malu_gallery_3.jpg',
+                '/images/srimahabodhi_malu_gallery_4.jpg',
+            ],
         ],
         'mihintale' => [
             'name' => 'Mihintale',
-            'image' => '/images/mihintale_peak.png',
+                        'lat' => 8.3514,
+            'lng' => 80.5167,
+'image' => '/images/mihintale_peak.png',
             'topic' => 'The sacred mountain peak where Buddhism was introduced to Sri Lanka, featuring ancient steps and panoramic views.',
-            'history_narrative' => 'Mihintale is a mountain peak near Anuradhapura, regarded as the cradle of Buddhism in Sri Lanka. In 247 BC, King Devanampiya Tissa met Arhat Mahinda, the son of Emperor Asoka of India, on this hill while hunting. Arhat Mahinda preached the Dhamma to the king, marking the official introduction of Buddhism to the island.',
+            'history_narrative' => <<<'EOD'
+Chapter 1: The Auspicious Arrival of the Dhamma Mission at Ambasthala Peak
+In the year 247 BCE, a wondrous evening on the full-moon day of Poson (Asela in ancient reckoning) had dawned. The throne of Anuradhapura in the island of Sri Lanka was occupied by King Devanampiyatissa. As a grand hunting festival had been proclaimed throughout the city that day, the King, bearing his royal bow and arrows in his right hand and surrounded by a massive army, arrived for a hunt in the dense wilderness of "Missaka Pawwa" (modern-day Mihintale), situated outside the city limits of Anuradhapura.
+
+As the King advanced through the thick jungle, a highly majestic stag possessing immense past merit caught his eye, guided by the influence of a certain deity. The King immediately drew his bow string, preparing to release the arrow, but paused, thinking: "It is unbefitting of royal protocol to shoot an animal unawares from behind." Instead, he twanged his bow string to make a sound. Startled, the stag fled rapidly toward the upper Ambasthala plateau of Missaka Pawwa, and the King pursued it, running all the way to the summit of the rock.
+
+The moment the King reached the Ambasthala plateau, the stag vanished into thin air. In its place, the King beheld a group of noble, merit-filled Maha Arahat monks clad in saffron robes, illuminating the entire environment with a serene aura.
+
+Then, the majestic ascetic monk standing at the center of the group addressed the King directly by his name in a voice as resonant as thunder, yet brimming with immense compassion:
+"Tissa... Tissa... Come here...!"
+
+The King was profoundly startled and gripped by fear, wondering who this mysterious group could be that was bold enough to directly call out the name of the supreme sovereign of the entire island. To dispel the King's fear, Arahat Mahinda (the son of Emperor Ashoka) smiled gently and uttered the immortal, historic stanza that altered the entire trajectory of Sri Lankan history:
+"Samana mayam maharaja - Dhammarajassa savaka
+Tameva anukampaya - Jambudipa idhagata..."
+(Great King, we are recluses, disciples of the King of Dhamma, the Buddha. Out of compassion for you and all the people of Lanka, we have journeyed here from Jambudvipa...)
+
+The moment he heard these noble words, the King dropped his great bow and arrows to the ground, placed both hands upon his head in worship, and knelt before the Maha Arahat in profound faith ($Saddha$). With the fall of that royal bow, the reign of weapons and bloodshed on the soil of Lanka came to an end, and the reign of wisdom and compassion officially began.
+
+Chapter 2: "The Mango Tree Puzzle" that Tested the King's Intellect
+Arahat Mahinda did not rush to immediately preach the Dhamma to the King. He wished to initially test whether the ruler of the nation possessed a sharp enough intellect to comprehend the profound depths of the Buddhist doctrine. To achieve this, he presented the King with "The Mango Tree Puzzle"—the first recorded intelligence test in world history—using a nearby mango tree as the subject:
+
+Arahat Mahinda: "Great King, what tree is this?"
+King: "Venerable Sir, this is a mango tree."
+Arahat Mahinda: "Great King, are there other mango trees besides this one?"
+King: "Venerable Sir, there are many other mango trees."
+Arahat Mahinda: "Great King, are there other trees besides those mango trees and this mango tree?"
+King: "Venerable Sir, there are many other trees which are not mango trees."
+Arahat Mahinda: "Great King, besides all those mango trees and the trees that are not mango trees, is there any other tree?"
+
+The King, without a moment's hesitation, replied with exceptional brilliance:
+"Venerable Sir, there remains only this very tree under which I am standing!"
+
+Following the King's highly logical and clever response, Arahat Mahinda posed another series of questions regarding the King's kinsmen, firmly establishing that the monarch possessed a highly advanced mind with supreme retention.
+
+Subsequently, he preached the Chullahatthipadopama Sutta (The Shorter Discourse on the Elephant's Footprint Simile) to the King and his assembly, which encapsulates the core tenets of Buddhism. At the conclusion of the sermon, King Devanampiyatissa, the royal court, and the hunting party took refuge in the Triple Gem, becoming devout lay disciples (Upasakas).
+
+Chapter 3: The Dedication of 68 Drip-Ledge Caves and the First Hermitage of Lanka
+Following the spiritual revolution that took place at Mihintale, King Devanampiyatissa ordered that the Mihintale mountain (Chetiyagiri) be converted into a grand monastic sanctuary. To provide Arahat Mahinda and the community of monks with shelter to observe the rainy season retreat (Vassa), the King undertook the preparation of the natural granite caves situated along the slopes of Mihintale.
+
+Ancient Sinhalese artisans chiseled drip-ledges (Kataram) along the brows of the granite cliffs to ensure that rainwater would not seep into the living quarters, clearing and preparing the caves for comfortable habitation. The King dedicated sixty-eight (68) of these highly secure, serene drip-ledge caves simultaneously to the Maha Sangha led by Arahat Mahinda.
+
+This stood as the very first wilderness forest hermitage established in the history of Sri Lanka. As night fell, hundreds of Arahat monks resided within these 68 caves in absolute tranquility, cultivating higher meditative states and experiencing the bliss of Nirvana. Mihintale thus became the great epicenter radiating spiritual energy across the entire island. Arahat Mahinda resided on this sacred mountain until the final days of his life, where he eventually attained passing away (Parinirvana).
+
+Chapter 4: The Monumental Ruins of Mihintale and Visual Engineering
+In the course of time, Mihintale evolved beyond a holy mountain to become a massive monastic city and an independent university supporting over 2,000 resident monks. Its architectural grandeur continues to astound us to this day:
+
+The Grand Staircase (1,840 Stone Steps): To reach the summit of the Mihintale mountain, a monumental stone staircase chiseled out of solid granite runs beneath the shade of beautiful temple trees (Frangipani). Consisting of 1,840 steps, it is regarded as one of the most scenic and largest ancient staircases in all of Asia.
+
+The Mihintale Inscription Tablets: Flanking the entrance of the ancient refectory stand two massive stone tablets containing inscriptions that detail the administration of the monastery, the regulations of the clergy, and the institutional wages paid to physicians, laborers, and carpenters. This serves as supreme historical evidence of ancient Sinhalese management practices.
+
+The Alms Boats (The Rice Boat): Inside the grand refectory lie wondrous stone troughs chiseled out of solid granite, exceeding 20 feet in length, used to distribute rice and gruel (Kenda) to thousands of monks simultaneously.
+
+The Mihintale Hospital: Situated at the foot of the mountain and equipped with a specialized monolithic stone medicinal bath (Medicinal Bath Container), this hospital complex is officially recognized by archaeologists as the world's oldest archaeologically documented hospital.
+
+The engineering prowess of the era is vividly displayed across the site through the architectural composition of the Kantaka Chetiya, the Maha Seya which enshrined the Urna Roma relic (the sacred hair relic from between the eyebrows of the Buddha), the Mihindu Guhava (the narrow rock cave where Arahat Mahinda meditated), and the Sinha Pokuna (Lion Pond) chiseled out of living rock.
+
+Chapter 5: The Eternal Heartbeat of the Sri Lankan Chronicle
+Mihintale stands as the true birthplace of Sri Lankan religion, culture, literature, art, architecture, and language. Were it not for the light of the Dhamma that erupted from Mihintale, the vast reservoirs, the sky-high stupas, and the proud, independent Sinhalese identity we witness today would never have come into existence.
+
+Although Mihintale surrendered to nature and was swallowed by dense jungles when Anuradhapura collapsed under foreign invasions, its sacred ruins were systematically uncovered and restored in the modern era, elevated today as the most sacred 'Poson Sanctuary' for the inhabitants of Lanka.
+EOD
+,
             'blueprint_text' => 'A grand stone staircase of 1,840 steps leads up to the summit of the mountain. The site features several important monuments: the Kantaka Cetiya with its beautiful stone carvings, the Ambasthala Dagoba (built where the meeting took place), the Maha Stupa on the peak, and the Aradhana Gala rock where Mahinda landed.',
             'blueprint_image' => '/images/mihintale_blueprint.jpg',
+            'gallery' => [
+                '/images/mihintale_gallery_1.jpg',
+                '/images/mihintale_gallery_2.jpg',
+                '/images/mihintale_gallery_3.jpg',
+                '/images/mihintale_gallery_4.jpg',
+            ],
         ],
     ];
 
@@ -614,6 +856,8 @@ EOD
         'history_narrative' => $spotInfo['history_narrative'],
         'blueprint_text' => $spotInfo['blueprint_text'],
         'blueprint_image' => $spotInfo['blueprint_image'],
+        'lat' => $spotInfo['lat'] ?? null,
+        'lng' => $spotInfo['lng'] ?? null,
         'gallery' => isset($spotInfo['gallery']) ? $spotInfo['gallery'] : array_map(function($i) use ($id) {
             return "https://picsum.photos/seed/" . crc32($id . $i) . "/800/600";
         }, range(1, 12))
@@ -626,6 +870,15 @@ EOD
     ]);
 });
 
+Route::get('/crafts/{category}', function ($category) {
+    // For now we assume category is rajarata-pottery
+    return Inertia::render('CraftCategory', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'category' => $category
+    ]);
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -634,5 +887,6 @@ Route::middleware('auth')->group(function () {
 
 Route::post('/predict-demand', [ForecastController::class, 'getLiveDemandForecast']);
 Route::post('/api/predict-demand', [ForecastController::class, 'getLiveDemandForecast']);
+Route::post('/translate', [App\Http\Controllers\TranslationController::class, 'translate']);
 
 require __DIR__.'/auth.php';

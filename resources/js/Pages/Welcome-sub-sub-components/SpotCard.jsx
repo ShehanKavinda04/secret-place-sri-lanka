@@ -41,7 +41,7 @@ export default function SpotCard({ spot }) {
 
                 <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
                     <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Verified Spot</span>
-                    <Link href={`/places/${spot.id}/history`} className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-royalTeal hover:text-[#0c6b65] transition-colors">
+                    <Link href={spot.href || `/places/${spot.id}/history`} className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-royalTeal hover:text-[#0c6b65] transition-colors">
                         View Details
                         <span>→</span>
                     </Link>

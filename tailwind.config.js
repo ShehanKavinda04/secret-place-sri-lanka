@@ -32,6 +32,15 @@ export default {
                     700: '#9d8122',
                 },
                 royalTeal: '#0a4d49',
+                // New Accommodations Theme Colors
+                'theme-green': '#1c3829',
+                'theme-gold': '#d6b052',
+                'theme-header': '#4d6a45',
+                'theme-grad': '#234533',
+                'badge-resort': '#6c8651',
+                'badge-hotel': '#0b5394',
+                'heart-pink': '#ff2b5e',
+                'slider-track': '#d6e5db'
             },
         },
     },

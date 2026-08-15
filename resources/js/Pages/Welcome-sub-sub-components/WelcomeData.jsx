@@ -17,7 +17,7 @@ export const secretSpots = [
     {
         id: 2,
         name: "Ruwanweli Maha Seya",
-        category: "Rituals, Poojas & Ceremonies",
+        category: "Accommodation Options",
         description: "A magnificent, awe-inspiring ancient stupa housing sacred relics, standing as a grand marvel of engineering and devotion.",
         image: "/images/ruwanweli_maha_seya.png",
         rating: "4.9",
@@ -79,7 +79,7 @@ export const secretSpots = [
 export const categories = [
     'All', 
     'Sacred Sites & Shrines', 
-    'Rituals, Poojas & Ceremonies', 
+    'Accommodation Options', 
     'Spiritual Experiences & Wellness', 
     'Ancient Hydraulic & Architecture Wonders', 
     'Local Heritage MSMEs & Crafts', 
@@ -95,11 +95,11 @@ export const categoryCards = [
         exploreText: "EXPLORE THE SACRED"
     },
     {
-        title: "Rituals, Poojas & Ceremonies",
-        description: "Experience live traditional rituals, sacred poojas, and cultural religious observances.",
-        image: "/images/rituals_ceremonies.png",
-        hashtags: "#Poojas #Rituals #Ceremonies #Faith",
-        exploreText: "WITNESS FAITH"
+        title: "Accommodation Options",
+        description: "Find serene and comfortable stays ranging from spiritual retreats to modern hotels.",
+        image: "/images/accommodation_options.png",
+        hashtags: "#Accommodations #Stays #Hotels #Retreats",
+        exploreText: "FIND A STAY"
     },
     {
         title: "Spiritual Experiences & Wellness",

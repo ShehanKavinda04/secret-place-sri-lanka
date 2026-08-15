@@ -2,7 +2,7 @@ import { router } from '@inertiajs/react';
 
 const CATEGORY_ROUTES = {
     "Sacred Sites & Shrines": '/places',
-    "Rituals, Poojas & Ceremonies": '/category/rituals',
+    "Accommodation Options": '/category/accommodations',
     "Spiritual Experiences & Wellness": '/category/spiritual',
     "Ancient Hydraulic & Architecture Wonders": '/category/hydraulic',
     "Local Heritage MSMEs & Crafts": '/category/heritage',

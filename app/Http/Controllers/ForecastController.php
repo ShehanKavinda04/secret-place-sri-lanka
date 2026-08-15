@@ -9,13 +9,13 @@ class ForecastController extends Controller
 {
     public function getLiveDemandForecast(Request $request)
     {
-        // 1. පරිශීලකයා ඇතුළත් කරන හෝ ඩේටාබේස් එකෙන් ගන්නා සජීවී දත්ත
+
         $temperature = $request->input('temperature', 28.5);
         $dew_point = $request->input('dew_point', 22.1);
         $is_peak_season = $request->input('is_peak_season', 1);
         $lagged_demand = $request->input('lagged_demand', 450);
 
-        // 2. පසුබිමෙන් දිවෙන Python Flask API එක වෙත දත්ත HTTP POST Request එකක් ලෙස යැවීම
+        
         $response = Http::post('http://127.0.0.1:5001/api/predict-demand', [
             'temperature' => $temperature,
             'dew_point' => $dew_point,
@@ -23,7 +23,7 @@ class ForecastController extends Controller
             'lagged_demand' => $lagged_demand,
         ]);
 
-        // 3. Python AI එකෙන් ලැබෙන පිළිතුර React Frontend එකට හෝ View එකට ලබා දීම
+        // 3. Python AI  React Frontend View 
         if ($response->successful()) {
             return response()->json($response->json(), 200);
         }
