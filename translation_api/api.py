@@ -13,11 +13,20 @@ if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
     except Exception:
         pass
 
+# Fix sklearn module loss alias for cwgbm_model.pkl unpickling
+try:
+    import sklearn._loss._loss as sklearn_loss
+    sys.modules['_loss'] = sklearn_loss
+except Exception:
+    pass
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import pandas as pd
 import gdown
+import pickle
+import numpy as np
 
 app = Flask(__name__)
 CORS(app)
@@ -26,6 +35,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = os.path.join(BASE_DIR, "final_model")
 MODEL_FILE = os.path.join(MODEL_DIR, "model.safetensors")
 GLOSSARY_PATH = os.path.join(BASE_DIR, "sinhala_cultural_glossary_v3_50entries.csv")
+CWGBM_PATH = os.path.abspath(os.path.join(BASE_DIR, "..", "ai-engine", "cwgbm_model.pkl"))
 
 # Ensure final_model directory exists
 os.makedirs(MODEL_DIR, exist_ok=True)
@@ -55,6 +65,18 @@ try:
     print("Model loaded successfully!")
 except Exception as e:
     print(f"Error loading model: {e}")
+
+# Load CwGBM AI Demand Forecast Model
+cwgbm_model = None
+if os.path.exists(CWGBM_PATH):
+    try:
+        with open(CWGBM_PATH, 'rb') as f:
+            cwgbm_model = pickle.load(f)
+        print("[OK] CwGBM Demand Forecast AI Model Loaded Successfully!")
+    except Exception as e:
+        print(f"[WARNING] Failed to load CwGBM model: {e}")
+else:
+    print(f"[WARNING] CwGBM model file not found at '{CWGBM_PATH}'.")
 
 # Load cultural glossary
 glossary_dict = {}
@@ -93,12 +115,42 @@ def translate_endpoint():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/predict-demand', methods=['POST'])
+def predict_demand():
+    try:
+        data = request.json or {}
+        temp = float(data.get('temperature', 28.5))
+        dew = float(data.get('dew_point', 22.1))
+        is_peak = int(data.get('is_peak_season', 1))
+        lagged_demand = float(data.get('lagged_demand', 450))
+
+        if cwgbm_model is not None:
+            input_features = np.array([[temp, dew, is_peak, lagged_demand]])
+            prediction = float(cwgbm_model.predict(input_features)[0])
+        else:
+            base = lagged_demand * (1.15 if is_peak else 0.85)
+            temp_adj = (30.0 - temp) * 8
+            prediction = round(max(50.0, base + temp_adj), 2)
+
+        return jsonify({
+            'status': 'success',
+            'predicted_demand': round(prediction, 2),
+            'model_used': 'cwgbm_model.pkl' if cwgbm_model is not None else 'algorithmic_fallback'
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 400
+
 @app.route('/health', methods=['GET'])
 def health_check():
     model_loaded = (model is not None and tokenizer is not None)
+    cwgbm_loaded = (cwgbm_model is not None)
     return jsonify({
         "status": "running",
         "model_loaded": model_loaded,
+        "cwgbm_loaded": cwgbm_loaded,
         "glossary_count": len(glossary_dict)
     })
 

@@ -892,11 +892,21 @@ Route::get('/translator', function () {
     return Inertia::render('Translator', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
+        'initialTab' => 'translator',
     ]);
 })->name('translator');
+
+Route::get('/forecast', function () {
+    return Inertia::render('Translator', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'initialTab' => 'forecast',
+    ]);
+})->name('forecast');
 
 Route::post('/translate', [App\Http\Controllers\TranslationController::class, 'translate']);
 Route::get('/translate/status', [App\Http\Controllers\TranslationController::class, 'status']);
 
 require __DIR__.'/auth.php';
+
 
