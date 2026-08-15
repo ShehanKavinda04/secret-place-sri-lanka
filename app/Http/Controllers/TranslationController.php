@@ -7,19 +7,27 @@ use Illuminate\Support\Facades\Http;
 
 class TranslationController extends Controller
 {
+    /**
+     * Proxy translation request to local Flask Python API running on port 5001
+     */
     public function translate(Request $request)
     {
         $request->validate([
-            'text' => 'required|string'
+            'text' => 'required|string|max:1000',
+            'src_lang' => 'nullable|string',
+            'tgt_lang' => 'nullable|string',
         ]);
 
-        $sinhalaText = trim($request->input('text'));
+        $text = $request->input('text');
+        $src_lang = $request->input('src_lang', 'sin_Sinh');
+        $tgt_lang = $request->input('tgt_lang', 'eng_Latn');
 
         try {
-            $response = Http::timeout(35)
-                ->post('http://127.0.0.1:5001/translate', [
-                    'text' => $sinhalaText
-                ]);
+            $response = Http::timeout(12)->post('http://127.0.0.1:5001/translate', [
+                'text' => $text,
+                'src_lang' => $src_lang,
+                'tgt_lang' => $tgt_lang,
+            ]);
 
             if ($response->successful()) {
                 return response()->json($response->json());
@@ -31,22 +39,28 @@ class TranslationController extends Controller
             ], $response->status());
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Translation AI service is offline. Please start the Python translation API (python translation_api/api.py).',
-                'message' => $e->getMessage()
+                'error' => 'Translation AI service is offline. Please start the Python translation API (python translation_api/api.py).'
             ], 503);
         }
     }
 
+    /**
+     * Check status of local Flask API
+     */
     public function status()
     {
         try {
-            $response = Http::timeout(5)->get('http://127.0.0.1:5001/health');
+            $response = Http::timeout(3)->get('http://127.0.0.1:5001/health');
             if ($response->successful()) {
                 return response()->json($response->json());
             }
-            return response()->json(['status' => 'offline', 'model_loaded' => false], 503);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'offline', 'model_loaded' => false], 503);
+            // Offline
         }
+
+        return response()->json([
+            'status' => 'offline',
+            'model_loaded' => false
+        ]);
     }
 }

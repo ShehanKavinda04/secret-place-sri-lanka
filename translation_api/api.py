@@ -88,16 +88,16 @@ if os.path.exists(GLOSSARY_PATH):
     except Exception as e:
         print(f"Failed to read glossary CSV: {e}")
 
-def smart_translate(sinhala_text, src_lang="sin_Sinh", tgt_lang="eng_Latn"):
-    cleaned_text = sinhala_text.strip()
-    if cleaned_text in glossary_dict:
+def smart_translate(text, src_lang="sin_Sinh", tgt_lang="eng_Latn"):
+    cleaned_text = text.strip()
+    if src_lang == "sin_Sinh" and cleaned_text in glossary_dict:
         return glossary_dict[cleaned_text], "glossary"
     
     if tokenizer is None or model is None:
         raise RuntimeError("Model is not loaded. Please ensure model.safetensors is downloaded or present in final_model directory.")
     
     tokenizer.src_lang = src_lang
-    inputs = tokenizer(sinhala_text, return_tensors="pt")
+    inputs = tokenizer(text, return_tensors="pt")
     forced_bos_token_id = tokenizer.convert_tokens_to_ids(tgt_lang)
     translated_tokens = model.generate(**inputs, forced_bos_token_id=forced_bos_token_id, max_length=128)
     result = tokenizer.batch_decode(translated_tokens, skip_special_tokens=True)
@@ -106,11 +106,13 @@ def smart_translate(sinhala_text, src_lang="sin_Sinh", tgt_lang="eng_Latn"):
 @app.route('/translate', methods=['POST'])
 def translate_endpoint():
     data = request.json or {}
-    sinhala_text = data.get('text', '')
-    if not sinhala_text:
+    text = data.get('text', '')
+    src_lang = data.get('src_lang', 'sin_Sinh')
+    tgt_lang = data.get('tgt_lang', 'eng_Latn')
+    if not text:
         return jsonify({"error": "Text field is required"}), 400
     try:
-        translation, source = smart_translate(sinhala_text)
+        translation, source = smart_translate(text, src_lang=src_lang, tgt_lang=tgt_lang)
         return jsonify({"translation": translation, "source": source})
     except Exception as e:
         return jsonify({"error": str(e)}), 500

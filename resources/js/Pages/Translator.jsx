@@ -81,7 +81,11 @@ export default function Translator({ auth, initialTab = 'translator' }) {
         setTranslatedText('');
 
         try {
-            const response = await axios.post('/translate', { text });
+            const response = await axios.post('/translate', { 
+                text,
+                src_lang: srcLang,
+                tgt_lang: tgtLang
+            });
             if (response.data && response.data.translation) {
                 const resText = response.data.translation;
                 const engine = response.data.source || 'model';
@@ -166,7 +170,11 @@ export default function Translator({ auth, initialTab = 'translator' }) {
         if (!predictionResult || !predictionResult.advice) return;
         setIsTranslatingAdvice(true);
         try {
-            const response = await axios.post('/translate', { text: predictionResult.advice });
+            const response = await axios.post('/translate', { 
+                text: predictionResult.advice,
+                src_lang: 'eng_Latn',
+                tgt_lang: 'sin_Sinh'
+            });
             if (response.data && response.data.translation) {
                 setTranslatedAdvice(response.data.translation);
             }
