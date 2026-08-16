@@ -172,30 +172,30 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                             <div>
                                                 <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 mb-1">First name</label>
-                                                <input type="text" id="firstName" className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                                <input type="text" id="firstName" value={data.firstName} onChange={e => setData('firstName', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
                                             </div>
                                             <div>
                                                 <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-1">Last name</label>
-                                                <input type="text" id="lastName" className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                                <input type="text" id="lastName" value={data.lastName} onChange={e => setData('lastName', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
                                             </div>
                                         </div>
                                         <div className="mb-4">
                                             <label htmlFor="address" className="block text-sm font-medium text-slate-700 mb-1">Street address</label>
-                                            <input type="text" id="address" className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                            <input type="text" id="address" value={data.address} onChange={e => setData('address', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                             <div>
                                                 <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-1">City</label>
-                                                <input type="text" id="city" className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                                <input type="text" id="city" value={data.city} onChange={e => setData('city', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
                                             </div>
                                             <div>
                                                 <label htmlFor="postalCode" className="block text-sm font-medium text-slate-700 mb-1">Postal code</label>
-                                                <input type="text" id="postalCode" className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                                <input type="text" id="postalCode" value={data.postalCode} onChange={e => setData('postalCode', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
                                             </div>
                                         </div>
                                         <div>
                                             <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">Phone number</label>
-                                            <input type="tel" id="phone" className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                            <input type="tel" id="phone" value={data.phone} onChange={e => setData('phone', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
                                         </div>
                                     </section>
 
