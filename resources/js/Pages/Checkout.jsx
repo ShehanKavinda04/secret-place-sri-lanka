@@ -1,7 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
-import { ShieldCheck, Truck, ArrowLeft, CreditCard, Lock } from 'lucide-react';
+import { ShieldCheck, Truck, ArrowLeft, CreditCard, Lock, MoreHorizontal, Plus, Minus, Trash2, Calendar } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVersion }) {
@@ -23,6 +23,8 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
     const shipping = 500.00;
     const total = subtotal + shipping;
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         firstName: '',
@@ -33,10 +35,15 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
         phone: '',
     });
 
-    const submit = (e) => {
+    const handleConfirm = (e) => {
         e.preventDefault();
-        // Here you would typically process the checkout via Inertia.
-        alert('Checkout process initiated! This is a UI demonstration.');
+        // Open the payment modal instead of directly submitting
+        setIsModalOpen(true);
+    };
+
+    const handlePay = () => {
+        alert('Checkout process initiated! Redirecting to payment gateway...');
+        setIsModalOpen(false);
     };
 
     return (
@@ -54,14 +61,76 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                         </Link>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
+                    <div className="flex flex-col gap-8 max-w-2xl mx-auto w-full">
                         
-                        {/* Left Column: Forms */}
-                        <div className="w-full lg:w-3/5 order-2 lg:order-1">
+                        {/* Top Section: My Cart */}
+                        <div className="w-full">
+                            <div className="bg-white rounded-md shadow-sm border border-slate-100 p-6">
+                                {/* Header */}
+                                <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-50">
+                                    <ArrowLeft className="w-5 h-5 text-[#F25C2C] cursor-pointer" />
+                                    <h2 className="text-base font-medium text-slate-800">My Cart</h2>
+                                    <MoreHorizontal className="w-5 h-5 text-[#F25C2C] cursor-pointer" />
+                                </div>
+                                
+                                {/* Item Details */}
+                                <div className="flex gap-4 p-3 rounded-lg border border-[#F25C2C] border-opacity-40 mb-10 relative bg-white">
+                                    <div className="w-16 h-16 bg-slate-900 rounded-lg overflow-hidden shrink-0 border border-slate-800">
+                                        <img src={product.image} alt={product.title} className="w-full h-full object-cover mix-blend-screen" />
+                                    </div>
+                                    <div className="flex flex-col justify-center flex-1">
+                                        <h3 className="font-medium text-slate-800 text-[13px] leading-tight">{product.title}</h3>
+                                        <p className="text-[10px] text-slate-500 mt-1">High - Quality Craft for your home</p>
+                                        <p className="font-bold text-slate-900 text-[14px] mt-2">Rs. {(product.price * qty).toLocaleString('en-US')}</p>
+                                    </div>
+                                    {/* Right controls */}
+                                    <div className="flex flex-col items-end justify-between">
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <button className="w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 transition-colors">
+                                                <Plus className="w-3 h-3" />
+                                            </button>
+                                            <span className="text-[13px] font-medium w-4 text-center border border-orange-200 rounded px-3 py-0.5 text-[#F25C2C] bg-orange-50">{qty}</span>
+                                            <button className="w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 transition-colors">
+                                                <Minus className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                        <button className="text-[#F25C2C] hover:text-red-600 mt-3 mr-1 transition-colors">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Cost Breakdown */}
+                                <div className="space-y-3 text-[13px] text-slate-600 mb-6">
+                                    <div className="flex justify-between">
+                                        <span>Subtotal</span>
+                                        <span className="font-bold text-slate-900">Rs. {subtotal.toLocaleString('en-US')}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Shipping</span>
+                                        <span className="text-slate-500">Estimate</span>
+                                    </div>
+                                </div>
+
+                                {/* Total */}
+                                <div className="flex justify-between items-center text-sm font-bold text-slate-900 mb-4 pt-4 border-t border-slate-100">
+                                    <span>Total</span>
+                                    <span>Rs. {total.toLocaleString('en-US')}</span>
+                                </div>
+
+                                {/* Proceed Button */}
+                                <button className="w-full bg-[#F25C2C] hover:bg-[#E04B1A] text-white text-[15px] font-medium py-3 rounded shadow-sm text-center transition-all">
+                                    Proceed to Checkout
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Bottom Section: Forms */}
+                        <div className="w-full">
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
                                 <h1 className="text-2xl font-display font-bold text-slate-900 mb-6">Secure Checkout</h1>
                                 
-                                <form onSubmit={submit} className="space-y-8">
+                                <form onSubmit={handleConfirm} className="space-y-8">
                                     {/* Contact Info */}
                                     <section>
                                         <h2 className="text-lg font-bold text-slate-800 mb-4">Contact Information</h2>
@@ -111,18 +180,6 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                         </div>
                                     </section>
 
-                                    {/* Payment Method placeholder */}
-                                    <section>
-                                        <h2 className="text-lg font-bold text-slate-800 mb-4">Payment Method</h2>
-                                        <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
-                                            <div className="flex items-center gap-3 text-slate-700 font-medium mb-3">
-                                                <CreditCard className="w-5 h-5" />
-                                                Credit / Debit Card
-                                            </div>
-                                            <p className="text-sm text-slate-500 mb-4">You will be redirected to a secure payment gateway to complete your purchase securely.</p>
-                                        </div>
-                                    </section>
-
                                     {/* Submit */}
                                     <div className="pt-4 border-t border-slate-100">
                                         <button 
@@ -131,60 +188,10 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                             disabled={processing}
                                         >
                                             <Lock className="w-4 h-4" />
-                                            Pay Rs. {total.toLocaleString('en-US', {minimumFractionDigits: 2})}
+                                            Confirm Details
                                         </button>
-                                        <p className="text-center text-xs text-slate-400 mt-4">Your payment information is encrypted and secure.</p>
                                     </div>
                                 </form>
-                            </div>
-                        </div>
-
-                        {/* Right Column: Order Summary */}
-                        <div className="w-full lg:w-2/5 order-1 lg:order-2">
-                            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sticky top-6">
-                                <h2 className="text-lg font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Order Summary</h2>
-                                
-                                {/* Item Details */}
-                                <div className="flex gap-4 mb-6">
-                                    <div className="w-20 h-20 bg-slate-50 rounded-lg border border-slate-100 overflow-hidden shrink-0">
-                                        <img src={product.image} alt={product.title} className="w-full h-full object-cover mix-blend-multiply" />
-                                    </div>
-                                    <div className="flex flex-col justify-center flex-1">
-                                        <h3 className="font-bold text-slate-800 text-[15px]">{product.title}</h3>
-                                        <p className="text-slate-500 text-sm">Qty: {qty}</p>
-                                        <p className="font-bold text-slate-900 text-sm mt-1">Rs. {(product.price * qty).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
-                                    </div>
-                                </div>
-
-                                {/* Cost Breakdown */}
-                                <div className="space-y-3 text-sm text-slate-600 mb-6 border-t border-slate-100 pt-6">
-                                    <div className="flex justify-between">
-                                        <span>Subtotal</span>
-                                        <span className="font-medium text-slate-900">Rs. {subtotal.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Shipping <span className="text-xs text-slate-400">(Island-wide)</span></span>
-                                        <span className="font-medium text-slate-900">Rs. {shipping.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
-                                    </div>
-                                </div>
-
-                                {/* Total */}
-                                <div className="flex justify-between items-center text-lg font-bold text-slate-900 border-t border-slate-100 pt-6 mb-8">
-                                    <span>Total</span>
-                                    <span className="text-royalMaroon-950">Rs. {total.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
-                                </div>
-
-                                {/* Trust Badges */}
-                                <div className="flex flex-col gap-3 text-sm text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                    <div className="flex items-center gap-3">
-                                        <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
-                                        <span>30-Day Money Back Guarantee</span>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <Truck className="w-5 h-5 text-blue-600 shrink-0" />
-                                        <span>Secure Delivery in 3-5 Days</span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -193,6 +200,109 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                 
                 <Footer auth={auth} laravelVersion={laravelVersion} phpVersion={phpVersion} />
             </div>
+
+            {/* Payment Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity overflow-y-auto">
+                    <div className="bg-[#f5f5f5] rounded-xl shadow-2xl w-full max-w-[500px] relative animate-in fade-in zoom-in duration-200 my-8">
+                        {/* Close Button */}
+                        <button 
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-4 right-4 text-slate-500 hover:text-slate-800 transition-colors z-10"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                        
+                        <div className="p-6 sm:p-8">
+                            <h2 className="text-xl font-bold text-slate-900 mb-6 font-sans">Payment Method</h2>
+                            
+                            <div className="p-3 sm:p-4 rounded-lg space-y-3" style={{backgroundColor: '#6F4E37'}}>
+                                {/* KOKO Option */}
+                                <div className="bg-white rounded-md p-4 flex items-center justify-between cursor-pointer shadow-sm">
+                                    <div className="flex items-center gap-4">
+                                        <input type="radio" name="payment_method" className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
+                                        <span className="font-medium text-slate-800 text-[15px]">KOKO</span>
+                                    </div>
+                                    <div className="font-bold text-lg tracking-wider" style={{WebkitTextStroke: "1px #6F4E37", color: "transparent"}}>KOKO</div>
+                                </div>
+                                
+                                {/* Credit/Debit Card Option */}
+                                <div className="bg-white rounded-md p-5 shadow-sm">
+                                    <div className="flex items-center justify-between mb-5">
+                                        <div className="flex items-center gap-4">
+                                            <input type="radio" name="payment_method" defaultChecked className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
+                                            <span className="font-medium text-slate-800 text-[15px]">Credit/ Debit Card</span>
+                                        </div>
+                                        <CreditCard className="w-7 h-7" style={{color: '#3b82f6'}} strokeWidth={1.5} />
+                                    </div>
+                                    
+                                    <div className="mb-6 pl-9">
+                                        <p className="text-[13px] text-slate-500 mb-2">We accept</p>
+                                        <div className="flex gap-2">
+                                            {/* Visa Badge */}
+                                            <div className="border border-slate-200 rounded px-2.5 py-1 font-bold italic text-[11px] flex items-center justify-center h-7" style={{color: '#1d4ed8'}}>VISA</div>
+                                            {/* Mastercard Badge */}
+                                            <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
+                                                <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#ef4444'}}></div>
+                                                <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#facc15', mixBlendMode: 'multiply'}}></div>
+                                            </div>
+                                            {/* Amex Badge */}
+                                            <div className="border border-slate-200 rounded px-2.5 py-1 text-white font-bold text-[10px] flex items-center justify-center h-7 tracking-wider" style={{backgroundColor: '#2563eb'}}>AMEX</div>
+                                            {/* Maestro Badge */}
+                                            <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
+                                                <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#3b82f6'}}></div>
+                                                <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#ef4444', mixBlendMode: 'multiply'}}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Holder</label>
+                                            <input type="text" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2" style={{outlineColor: '#6F4E37'}} />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Number</label>
+                                            <div className="relative">
+                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <CreditCard className="h-4 w-4 text-slate-400" />
+                                                </div>
+                                                <input type="text" placeholder="0000 0000 0000 0000" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37', paddingLeft: '2.5rem'}} />
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Valid Date</label>
+                                            <div className="relative">
+                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <Calendar className="h-4 w-4 text-slate-400" />
+                                                </div>
+                                                <input type="text" placeholder="MM/YY" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37', paddingLeft: '2.5rem'}} />
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">CVV</label>
+                                            <input type="text" placeholder="XXX" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37'}} />
+                                        </div>
+                                        
+                                        <div className="pt-2">
+                                            <button 
+                                                onClick={handlePay}
+                                                className="w-full text-white font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:opacity-90"
+                                                style={{backgroundColor: '#6F4E37'}}
+                                            >
+                                                Confirm
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
