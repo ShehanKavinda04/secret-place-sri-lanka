@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { useState } from 'react';
@@ -236,7 +236,7 @@ export default function CraftCategory({ auth, category, laravelVersion, phpVersi
                         {displayedProducts.length > 0 ? (
                             <div className="grid grid-cols-3 gap-6">
                                 {displayedProducts.map(product => (
-                                    <a href="#" key={product.id} className="block bg-white rounded-xl border border-slate-200 p-3 flex flex-col group cursor-pointer hover:shadow-md transition-shadow">
+                                    <Link href={`/crafts/item/${product.id}`} key={product.id} className="block bg-white rounded-xl border border-slate-200 p-3 flex flex-col group cursor-pointer hover:shadow-md transition-shadow">
                                         <div className="relative aspect-[4/3] w-full rounded-lg overflow-hidden bg-slate-50">
                                             <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                         </div>
@@ -250,7 +250,7 @@ export default function CraftCategory({ auth, category, laravelVersion, phpVersi
                                                 </div>
                                             </div>
                                         </div>
-                                    </a>
+                                    </Link>
                                 ))}
                             </div>
                         ) : (

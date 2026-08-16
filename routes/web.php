@@ -879,6 +879,14 @@ Route::get('/crafts/{category}', function ($category) {
     ]);
 });
 
+Route::get('/crafts/item/{id}', function ($id) {
+    return Inertia::render('CraftItem', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'itemId' => $id
+    ]);
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
