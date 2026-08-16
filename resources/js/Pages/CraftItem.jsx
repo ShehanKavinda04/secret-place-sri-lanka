@@ -129,9 +129,9 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                                             </div>
                                         </div>
                                         
-                                        <button className="flex-1 bg-craft-brown hover:bg-craft-brown-dark text-white text-[15px] font-medium h-[42px] px-8 rounded-full shadow-sm flex items-center justify-center transition-all">
+                                        <Link href={`/checkout?item=${product.id}&qty=${quantity}`} className="flex-1 bg-craft-brown hover:bg-craft-brown-dark text-white text-[15px] font-medium h-[42px] px-8 rounded-full shadow-sm flex items-center justify-center transition-all">
                                             Add to cart
-                                        </button>
+                                        </Link>
                                         <button className="w-[42px] h-[42px] rounded-full bg-craft-brown hover:bg-craft-brown-dark text-white flex items-center justify-center shrink-0 transition-all shadow-sm">
                                             <Heart className="w-5 h-5" />
                                         </button>

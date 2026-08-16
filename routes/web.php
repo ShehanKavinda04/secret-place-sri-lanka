@@ -71,6 +71,15 @@ Route::get('/category/accommodations', function () {
     ]);
 });
 
+Route::get('/checkout', function (Illuminate\Http\Request $request) {
+    return Inertia::render('Checkout', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'itemId' => $request->query('item', 401),
+        'quantity' => $request->query('qty', 1),
+    ]);
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
