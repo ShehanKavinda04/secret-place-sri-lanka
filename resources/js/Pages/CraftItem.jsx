@@ -120,19 +120,19 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                                 {/* Order Controls */}
                                 <div className="mt-auto">
                                     <div className="flex items-center gap-4 mb-6">
-                                        <div className="flex items-center gap-3 mr-2">
-                                            <span className="text-sm font-bold text-slate-800">Quantity :</span>
-                                            <div className="flex items-center bg-[#FDF9F6] rounded-md overflow-hidden h-10 border border-[#EBE3DC]">
-                                                <button onClick={() => handleQuantityChange('dec')} className="px-3.5 text-slate-700 hover:bg-[#F2E8E0] transition-colors h-full flex items-center justify-center font-bold text-lg">-</button>
-                                                <span className="w-8 text-center font-bold text-slate-900">{quantity}</span>
-                                                <button onClick={() => handleQuantityChange('inc')} className="px-3.5 text-slate-700 hover:bg-[#F2E8E0] transition-colors h-full flex items-center justify-center font-bold text-lg">+</button>
+                                        <div className="flex items-center gap-3 mr-4">
+                                            <span className="text-[15px] font-bold text-slate-900">Quantity :</span>
+                                            <div className="flex items-center bg-white rounded-lg h-[42px] border border-slate-200/80 shadow-sm">
+                                                <button onClick={() => handleQuantityChange('dec')} className="w-10 text-slate-800 hover:bg-slate-50 transition-colors h-full flex items-center justify-center font-bold text-lg">-</button>
+                                                <span className="w-8 text-center font-bold text-slate-900 text-[15px]">{quantity}</span>
+                                                <button onClick={() => handleQuantityChange('inc')} className="w-10 text-slate-800 hover:bg-slate-50 transition-colors h-full flex items-center justify-center font-bold text-lg">+</button>
                                             </div>
                                         </div>
                                         
-                                        <button className="flex-1 bg-[#6A4D42] hover:bg-[#5C4136] text-white font-medium py-3 px-8 rounded-full shadow-sm flex items-center justify-center gap-2 transition-all">
+                                        <button className="flex-1 bg-craft-brown hover:bg-craft-brown-dark text-white text-[15px] font-medium h-[42px] px-8 rounded-full shadow-sm flex items-center justify-center transition-all">
                                             Add to cart
                                         </button>
-                                        <button className="w-12 h-12 rounded-full bg-[#6A4D42] hover:bg-[#5C4136] text-white flex items-center justify-center shrink-0 transition-all shadow-sm">
+                                        <button className="w-[42px] h-[42px] rounded-full bg-craft-brown hover:bg-craft-brown-dark text-white flex items-center justify-center shrink-0 transition-all shadow-sm">
                                             <Heart className="w-5 h-5" />
                                         </button>
                                     </div>

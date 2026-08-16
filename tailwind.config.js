@@ -40,7 +40,9 @@ export default {
                 'badge-resort': '#6c8651',
                 'badge-hotel': '#0b5394',
                 'heart-pink': '#ff2b5e',
-                'slider-track': '#d6e5db'
+                'slider-track': '#d6e5db',
+                'craft-brown': '#6F4E37',
+                'craft-brown-dark': '#5C402E'
             },
         },
     },
