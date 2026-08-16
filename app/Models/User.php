@@ -34,16 +34,36 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isBusinessOwner(): bool
+    {
+        return $this->role === 'business_owner';
+    }
+
+    public function isTourist(): bool
+    {
+        return $this->role === 'tourist';
+    }
+
+    public function businesses()
+    {
+        return $this->hasMany(Business::class, 'owner_id');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'tourist_id');
     }
 }
