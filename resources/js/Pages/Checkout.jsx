@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { ShieldCheck, Truck, ArrowLeft, CreditCard, Lock, MoreHorizontal, Plus, Minus, Trash2, Calendar } from 'lucide-react';
@@ -23,6 +23,7 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
     const shipping = 500.00;
     const total = subtotal + shipping;
 
+    const { flash } = usePage().props;
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
@@ -33,6 +34,13 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
         city: '',
         postalCode: '',
         phone: '',
+        payment_method: 'card',
+        card_holder: '',
+        card_number: '',
+        valid_date: '',
+        cvv: '',
+        item_id: itemId,
+        quantity: qty
     });
 
     const handleConfirm = (e) => {
@@ -42,8 +50,12 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
     };
 
     const handlePay = () => {
-        alert('Checkout process initiated! Redirecting to payment gateway...');
-        setIsModalOpen(false);
+        post('/checkout/process', {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsModalOpen(false);
+            }
+        });
     };
 
     return (
@@ -60,6 +72,13 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                             Back to Item
                         </Link>
                     </div>
+
+                    {flash?.success && (
+                        <div className="mb-8 p-4 bg-green-50 text-green-800 rounded-md border border-green-200 shadow-sm flex items-center">
+                            <ShieldCheck className="w-6 h-6 mr-3 text-green-600 flex-shrink-0" />
+                            <span className="font-medium text-sm">{flash.success}</span>
+                        </div>
+                    )}
 
                     <div className="flex flex-col gap-8 max-w-2xl mx-auto w-full">
                         
@@ -218,85 +237,120 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                             
                             <div className="p-3 sm:p-4 rounded-lg space-y-3" style={{backgroundColor: '#6F4E37'}}>
                                 {/* KOKO Option */}
-                                <div className="bg-white rounded-md p-4 flex items-center justify-between cursor-pointer shadow-sm">
+                                <div className="bg-white rounded-md p-4 flex items-center justify-between cursor-pointer shadow-sm" onClick={() => setData('payment_method', 'koko')}>
                                     <div className="flex items-center gap-4">
-                                        <input type="radio" name="payment_method" className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
+                                        <input type="radio" checked={data.payment_method === 'koko'} onChange={() => setData('payment_method', 'koko')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
                                         <span className="font-medium text-slate-800 text-[15px]">KOKO</span>
                                     </div>
                                     <div className="font-bold text-lg tracking-wider" style={{WebkitTextStroke: "1px #6F4E37", color: "transparent"}}>KOKO</div>
                                 </div>
                                 
                                 {/* Credit/Debit Card Option */}
-                                <div className="bg-white rounded-md p-5 shadow-sm">
+                                <div className={`bg-white rounded-md p-5 shadow-sm cursor-pointer ${data.payment_method === 'card' ? 'ring-2 ring-craft-brown border-transparent' : ''}`} onClick={() => setData('payment_method', 'card')}>
                                     <div className="flex items-center justify-between mb-5">
                                         <div className="flex items-center gap-4">
-                                            <input type="radio" name="payment_method" defaultChecked className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
+                                            <input type="radio" checked={data.payment_method === 'card'} onChange={() => setData('payment_method', 'card')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
                                             <span className="font-medium text-slate-800 text-[15px]">Credit/ Debit Card</span>
                                         </div>
                                         <CreditCard className="w-7 h-7" style={{color: '#3b82f6'}} strokeWidth={1.5} />
                                     </div>
                                     
-                                    <div className="mb-6 pl-9">
-                                        <p className="text-[13px] text-slate-500 mb-2">We accept</p>
-                                        <div className="flex gap-2">
-                                            {/* Visa Badge */}
-                                            <div className="border border-slate-200 rounded px-2.5 py-1 font-bold italic text-[11px] flex items-center justify-center h-7" style={{color: '#1d4ed8'}}>VISA</div>
-                                            {/* Mastercard Badge */}
-                                            <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
-                                                <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#ef4444'}}></div>
-                                                <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#facc15', mixBlendMode: 'multiply'}}></div>
-                                            </div>
-                                            {/* Amex Badge */}
-                                            <div className="border border-slate-200 rounded px-2.5 py-1 text-white font-bold text-[10px] flex items-center justify-center h-7 tracking-wider" style={{backgroundColor: '#2563eb'}}>AMEX</div>
-                                            {/* Maestro Badge */}
-                                            <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
-                                                <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#3b82f6'}}></div>
-                                                <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#ef4444', mixBlendMode: 'multiply'}}></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Holder</label>
-                                            <input type="text" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2" style={{outlineColor: '#6F4E37'}} />
-                                        </div>
-                                        
-                                        <div>
-                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Number</label>
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
-                                                    <CreditCard className="h-4 w-4 text-slate-400" />
+                                    {data.payment_method === 'card' && (
+                                        <>
+                                            <div className="mb-6 pl-9">
+                                                <p className="text-[13px] text-slate-500 mb-2">We accept</p>
+                                                <div className="flex gap-2">
+                                                    {/* Visa Badge */}
+                                                    <div className="border border-slate-200 rounded px-2.5 py-1 font-bold italic text-[11px] flex items-center justify-center h-7" style={{color: '#1d4ed8'}}>VISA</div>
+                                                    {/* Mastercard Badge */}
+                                                    <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
+                                                        <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#ef4444'}}></div>
+                                                        <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#facc15', mixBlendMode: 'multiply'}}></div>
+                                                    </div>
+                                                    {/* Amex Badge */}
+                                                    <div className="border border-slate-200 rounded px-2.5 py-1 text-white font-bold text-[10px] flex items-center justify-center h-7 tracking-wider" style={{backgroundColor: '#2563eb'}}>AMEX</div>
+                                                    {/* Maestro Badge */}
+                                                    <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
+                                                        <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#3b82f6'}}></div>
+                                                        <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#ef4444', mixBlendMode: 'multiply'}}></div>
+                                                    </div>
                                                 </div>
-                                                <input type="text" placeholder="0000 0000 0000 0000" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} />
                                             </div>
-                                        </div>
-                                        
-                                        <div>
-                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Valid Date</label>
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
-                                                    <Calendar className="h-4 w-4 text-slate-400" />
+                                            
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Holder</label>
+                                                    <input type="text" value={data.card_holder} onChange={e => setData('card_holder', e.target.value)} className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 text-slate-900" style={{outlineColor: '#6F4E37'}} />
+                                                    {errors.card_holder && <div className="text-red-500 text-xs mt-1">{errors.card_holder}</div>}
                                                 </div>
-                                                <input type="text" placeholder="MM/YY" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} />
+                                                
+                                                <div>
+                                                    <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Number</label>
+                                                    <div className="relative">
+                                                        <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
+                                                            <CreditCard className="h-4 w-4 text-slate-400" />
+                                                        </div>
+                                                        <input 
+                                                            type="text" 
+                                                            value={data.card_number} 
+                                                            onChange={e => {
+                                                                let val = e.target.value.replace(/\D/g, '');
+                                                                val = val.replace(/(.{4})/g, '$1 ').trim();
+                                                                setData('card_number', val.substring(0, 19));
+                                                            }} 
+                                                            placeholder="0000 0000 0000 0000" 
+                                                            className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
+                                                            style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
+                                                            maxLength="19"
+                                                        />
+                                                    </div>
+                                                    {errors.card_number && <div className="text-red-500 text-xs mt-1">{errors.card_number}</div>}
+                                                </div>
+                                                
+                                                <div>
+                                                    <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Valid Date</label>
+                                                    <div className="relative">
+                                                        <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
+                                                            <Calendar className="h-4 w-4 text-slate-400" />
+                                                        </div>
+                                                        <input 
+                                                            type="text" 
+                                                            value={data.valid_date} 
+                                                            onChange={e => {
+                                                                let val = e.target.value.replace(/\D/g, '');
+                                                                if (val.length > 2) {
+                                                                    val = val.substring(0, 2) + '/' + val.substring(2, 4);
+                                                                }
+                                                                setData('valid_date', val);
+                                                            }} 
+                                                            placeholder="MM/YY" 
+                                                            className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
+                                                            style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
+                                                            maxLength="5"
+                                                        />
+                                                    </div>
+                                                    {errors.valid_date && <div className="text-red-500 text-xs mt-1">{errors.valid_date}</div>}
+                                                </div>
+                                                
+                                                <div>
+                                                    <label className="block text-[13px] font-medium text-slate-700 mb-1.5">CVV</label>
+                                                    <input type="text" value={data.cvv} onChange={e => setData('cvv', e.target.value)} placeholder="XXX" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" style={{outlineColor: '#6F4E37'}} />
+                                                    {errors.cvv && <div className="text-red-500 text-xs mt-1">{errors.cvv}</div>}
+                                                </div>
                                             </div>
-                                        </div>
+                                        </>
+                                    )}
                                         
-                                        <div>
-                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">CVV</label>
-                                            <input type="text" placeholder="XXX" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37'}} />
-                                        </div>
-                                        
-                                        <div className="pt-2">
+                                        <div className="pt-4 mt-4">
                                             <button 
                                                 onClick={handlePay}
-                                                className="w-full text-white font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:opacity-90"
+                                                disabled={processing}
+                                                className="w-full text-white font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:opacity-90 disabled:opacity-70"
                                                 style={{backgroundColor: '#6F4E37'}}
                                             >
                                                 Confirm
                                             </button>
                                         </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

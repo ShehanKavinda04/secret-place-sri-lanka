@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ForecastController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -79,6 +80,8 @@ Route::get('/checkout', function (Illuminate\Http\Request $request) {
         'quantity' => $request->query('qty', 1),
     ]);
 });
+
+Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
