@@ -265,20 +265,20 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                         <div>
                                             <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Number</label>
                                             <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
                                                     <CreditCard className="h-4 w-4 text-slate-400" />
                                                 </div>
-                                                <input type="text" placeholder="0000 0000 0000 0000" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37', paddingLeft: '2.5rem'}} />
+                                                <input type="text" placeholder="0000 0000 0000 0000" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} />
                                             </div>
                                         </div>
                                         
                                         <div>
                                             <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Valid Date</label>
                                             <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
                                                     <Calendar className="h-4 w-4 text-slate-400" />
                                                 </div>
-                                                <input type="text" placeholder="MM/YY" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37', paddingLeft: '2.5rem'}} />
+                                                <input type="text" placeholder="MM/YY" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono" style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} />
                                             </div>
                                         </div>
                                         
