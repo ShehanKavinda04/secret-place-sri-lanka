@@ -70,7 +70,57 @@ Route::get('/category/accommodations', function () {
     return Inertia::render('Accommodations', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
+        'reviews' => \App\Models\Review::latest()->get(),
+        'policy' => \App\Models\EstatePolicy::first(),
+        'addons' => \App\Models\LuxuryAddon::all(),
+        'roomsProp' => \App\Models\AccommodationRoom::all(),
+        'estateDetail' => \App\Models\EstateDetail::first(),
+        'accommodations' => \App\Models\Accommodation::all()
     ]);
+});
+
+Route::post('/accommodations/{id}/like', function ($id) {
+    $accommodation = \App\Models\Accommodation::findOrFail($id);
+    $accommodation->increment('likes');
+    return back();
+});
+
+Route::post('/accommodations/{id}/share', function ($id) {
+    $accommodation = \App\Models\Accommodation::findOrFail($id);
+    $accommodation->increment('shares');
+    return back();
+});
+
+Route::post('/accommodations/{id}/transit', function (Illuminate\Http\Request $request, $id) {
+    $request->validate([
+        'transit_method' => 'required|string|in:car,shuttle,rail',
+    ]);
+
+    \App\Models\TransitRequest::create([
+        'accommodation_id' => $id,
+        'transit_method' => $request->transit_method,
+        'status' => 'requested',
+    ]);
+
+    return back();
+});
+
+Route::post('/reviews', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'rating' => 'required|numeric|min:1|max:5',
+        'review_text' => 'required|string',
+    ]);
+
+    \App\Models\Review::create([
+        'name' => $request->name,
+        'date_string' => date('F Y'),
+        'review_text' => $request->review_text,
+        'avatar' => 'https://ui-avatars.com/api/?name=' . urlencode($request->name) . '&background=0D8ABC&color=fff',
+        'rating' => $request->rating,
+    ]);
+
+    return back();
 });
 
 Route::get('/checkout', function (Illuminate\Http\Request $request) {

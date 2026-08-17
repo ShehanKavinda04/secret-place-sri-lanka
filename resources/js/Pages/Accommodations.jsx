@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Search, MapPin, Star, Wifi, Wind, Coffee, Car, 
@@ -21,62 +21,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Mock Data matching the new visual theme
-const ACCOMMODATIONS = [
-    {
-        id: 1,
-        name: "Aurelia Riviera Resort & Spa",
-        category: "RESORTS",
-        categoryColor: "bg-badge-resort text-white", 
-        badge: "Michelin Star Key 2026",
-        location: "Ella, Sri Lanka",
-        rating: 4.98,
-        reviews: 142,
-        distance: "42.8 km away",
-        price: 250,
-        image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-        amenities: ['wifi', 'pool', 'ac', 'parking'],
-        description: "Experience handpicked 5-star oceanfront resorts with personal butler service.",
-        lat: 6.874,
-        lng: 81.047
-    },
-    {
-        id: 2,
-        name: "Kyoto Sanctuary & Onsen",
-        category: "VILLAS",
-        categoryColor: "bg-royalMaroon-800 text-royalGold-400",
-        badge: "Luxury Heritage Winner",
-        location: "Mirissa, Sri Lanka",
-        rating: 4.99,
-        reviews: 98,
-        distance: "89.4 km away",
-        price: 320,
-        // Using a beautiful Japanese architecture/temple image for Kyoto
-        image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-        amenities: ['wifi', 'ac', 'parking'],
-        description: "A private beachfront villa offering luxury and comfort.",
-        lat: 5.948,
-        lng: 80.453
-    },
-    {
-        id: 3,
-        name: "Château de Montmirail",
-        category: "HOTELS",
-        categoryColor: "bg-badge-hotel text-white",
-        badge: "Relais & Châteaux Gold",
-        location: "Kandy, Sri Lanka",
-        rating: 4.96,
-        reviews: 115,
-        distance: "120.5 km away",
-        price: 180,
-        // Guaranteed working Unsplash image for a luxury hotel/chateau
-        image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-        amenities: ['wifi', 'pool', 'ac', 'restaurant'],
-        description: "Experience the royal heritage of Kandy.",
-        lat: 7.290,
-        lng: 80.633
-    },
-];
+// Removed static ACCOMMODATIONS array
 
 const FOOD_MENU = [
     { 
@@ -147,7 +92,7 @@ const FOOD_MENU = [
     },
 ];
 
-export default function Accommodations({ auth }) {
+export default function Accommodations({ auth, reviews = [], policy, addons = [], roomsProp = [], estateDetail = {}, accommodations = [] }) {
     const [activeTab, setActiveTab] = useState('listing'); // listing, detail, map, food
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [cart, setCart] = useState([]);
@@ -255,13 +200,13 @@ export default function Accommodations({ auth }) {
                 
                 <AnimatePresence mode="wait">
                     {activeTab === 'listing' && (
-                        <ListingView key="listing" onSelect={handleViewDetails} />
+                        <ListingView key="listing" onSelect={handleViewDetails} accommodations={accommodations} />
                     )}
                     {activeTab === 'detail' && selectedProperty && (
-                        <DetailView key="detail" property={selectedProperty} onBack={() => setActiveTab('listing')} />
+                        <DetailView property={selectedProperty} onBack={() => setActiveTab('listing')} onMap={() => setActiveTab('map')} onFood={() => setActiveTab('food')} reviews={reviews} policy={policy} addons={addons} roomsProp={roomsProp} estateDetail={estateDetail} />
                     )}
                     {activeTab === 'map' && (
-                        <MapView key="map" property={selectedProperty} />
+                        <MapView key="map" property={selectedProperty} accommodations={accommodations} />
                     )}
                     {activeTab === 'food' && (
                         <FoodView key="food" cart={cart} setCart={setCart} />
@@ -275,7 +220,7 @@ export default function Accommodations({ auth }) {
 
 // Subcomponents
 
-function ListingView({ onSelect }) {
+function ListingView({ onSelect, accommodations = [] }) {
     const [activeFilter, setActiveFilter] = useState('All Escapes (6)');
 
     return (
@@ -377,7 +322,7 @@ function ListingView({ onSelect }) {
                 <div className="w-full lg:w-3/4 xl:w-4/5">
                     <div className="text-sm font-medium text-gray-500 mb-4">Showing 6 luxury stays found</div>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {ACCOMMODATIONS.map((prop, idx) => (
+                        {accommodations.map((prop, idx) => (
                             <motion.div 
                                 key={prop.id}
                                 initial={{ opacity: 0, scale: 0.95 }}
@@ -472,53 +417,93 @@ function ListingView({ onSelect }) {
     );
 }
 
-function DetailView({ property, onBack }) {
+function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, roomsProp, estateDetail }) {
     const [guests, setGuests] = useState(2);
+    const [checkIn, setCheckIn] = useState('2026-08-15');
+    const [checkOut, setCheckOut] = useState('2026-08-18');
     const [nights, setNights] = useState(3);
     const [roomType, setRoomType] = useState('deluxe');
     const [showCheckout, setShowCheckout] = useState(false);
+    const [showGallery, setShowGallery] = useState(false);
+    const [selectedAddons, setSelectedAddons] = useState([]);
+    const [likes, setLikes] = useState(property.likes || 0);
+    const [shares, setShares] = useState(property.shares || 0);
+    const [isFavorited, setIsFavorited] = useState(false);
 
-    const rooms = {
-        deluxe: { 
-            name: 'Deluxe Panorama Ocean Suite', 
-            price: 850, 
-            bed: '1 King Bed + Silk Egyptian Sheets', 
-            cap: 2,
-            size: '65 m²',
-            desc: 'Private marble balcony with uninhibited Mediterranean view, outdoor jacuzzi, and Dyson Supersonic wellness vanity.',
-            image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-            amenities: ['Marble Jacuzzi', 'Ocean Terrace', 'Butler Calling Button', 'Nespresso Reserve Bar']
-        },
-        villa: { 
-            name: 'Royal Amalfi Presidential Villa', 
-            price: 1650, 
-            bed: '2 King Beds + Private Sunken Pavilion', 
-            cap: 4,
-            size: '180 m²',
-            desc: 'Multi-level private sanctuary with heated infinity plunge pool, private sauna, subterranean wine cellar, and dedicated host.',
-            image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-            amenities: ['Private Heated Pool', 'Wine Cellar', '24/7 Chef Service', 'Private Dock Access']
-        },
-        heritage: { 
-            name: 'Emerald Heritage Suite', 
-            price: 1100, 
-            bed: '1 King Bed + 1 Daybed Lounge', 
-            cap: 3,
-            size: '90 m²',
-            desc: 'High vaulted fresco ceilings, handcrafted Majolica tiles, double rainfall marble shower, and private herbal tea garden.',
-            image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-            amenities: ['Fresco Ceilings', 'Herbal Tea Garden', 'Smart Glass Privacy Screen']
-        },
+    const handleLike = () => {
+        if (isFavorited) return; // simple toggle prevention
+        setIsFavorited(true);
+        setLikes(prev => prev + 1);
+        router.post(`/accommodations/${property.id}/like`, {}, { preserveScroll: true, preserveState: true });
     };
 
-    const total = rooms[roomType].price * nights;
+    const handleShare = () => {
+        setShares(prev => prev + 1);
+        router.post(`/accommodations/${property.id}/share`, {}, { preserveScroll: true, preserveState: true });
+        if (navigator.share) {
+            navigator.share({
+                title: property.name,
+                text: 'Check out this amazing property!',
+                url: window.location.href,
+            }).catch(console.error);
+        }
+    };
+
+    const { data, setData, post, processing: formProcessing, reset } = useForm({
+        name: '',
+        rating: 5,
+        review_text: ''
+    });
+
+    const submitReview = (e) => {
+        e.preventDefault();
+        post('/reviews', {
+            onSuccess: () => reset(),
+        });
+    };
+
+    useEffect(() => {
+        const start = new Date(checkIn);
+        const end = new Date(checkOut);
+        if (start && end && end > start) {
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            setNights(diffDays);
+        } else {
+            setNights(0);
+        }
+    }, [checkIn, checkOut]);
+
+    // Payment State
+    const [paymentMethod, setPaymentMethod] = useState('card');
+    const [paymentData, setPaymentData] = useState({
+        card_holder: '',
+        card_number: '',
+        valid_date: '',
+        cvv: ''
+    });
+    const [paymentErrors, setPaymentErrors] = useState({});
+    const [processing, setProcessing] = useState(false);
+
+    const rooms = roomsProp.reduce((acc, room) => {
+        acc[room.type_key] = room;
+        return acc;
+    }, {});
+
+    const addonsTotal = selectedAddons.reduce((sum, addonId) => {
+        const addon = addons.find(a => a.id === addonId);
+        return sum + (addon ? Number(addon.price) : 0);
+    }, 0);
+
+    const total = ((rooms[roomType]?.price || 850) * nights * guests) + addonsTotal;
     const fee = Math.round(total * 0.08);
     const savings = Math.round(total * 0.05);
     const grandTotal = total + fee - savings;
 
     return (
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-            {/* Header Section */}
+        <>
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full pb-20">
+                {/* Header Section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
                     <div className="flex flex-wrap gap-2 mb-3">
@@ -541,16 +526,16 @@ function DetailView({ property, onBack }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 bg-[#f9e6e8] text-royalTeal px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-[#f5ccd1] transition-colors">
+                    <button onClick={onMap} className="flex items-center gap-2 bg-[#f9e6e8] text-royalTeal px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-[#f5ccd1] transition-colors">
                         <Navigation size={16} /> Route & Map
                     </button>
-                    <button className="flex items-center gap-2 bg-[#faebd7] text-gray-800 px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-[#f3dfc6] transition-colors">
+                    <button onClick={onFood} className="flex items-center gap-2 bg-[#faebd7] text-gray-800 px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-[#f3dfc6] transition-colors">
                         <Utensils size={16} /> In-House Dining
                     </button>
-                    <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl shadow-sm text-heart-pink hover:bg-gray-50 transition-colors">
-                        <Heart size={18} className="fill-current" />
+                    <button onClick={handleLike} className={`w-10 h-10 flex flex-col items-center justify-center bg-white border border-gray-100 rounded-xl shadow-sm transition-colors ${isFavorited ? 'text-heart-pink bg-pink-50' : 'text-gray-400 hover:text-heart-pink hover:bg-gray-50'}`}>
+                        <Heart size={18} className={isFavorited ? "fill-current" : ""} />
                     </button>
-                    <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl shadow-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                    <button onClick={handleShare} className="w-10 h-10 flex flex-col items-center justify-center bg-white border border-gray-100 rounded-xl shadow-sm text-gray-600 hover:bg-gray-50 transition-colors relative">
                         <Share2 size={18} />
                     </button>
                 </div>
@@ -559,21 +544,24 @@ function DetailView({ property, onBack }) {
             {/* Image Grid */}
             <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px] mb-12">
                 <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden shadow-sm">
-                    <img src={property.image} alt={property.name} className="w-full h-full object-cover" />
+                    <img src={property.image} alt={estateDetail?.title || property.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-sm">
-                    <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" className="w-full h-full object-cover" />
+                    <img src={estateDetail?.photos?.[0] || "https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} className="w-full h-full object-cover" />
                 </div>
                 <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden relative shadow-sm">
-                    <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" className="w-full h-full object-cover" />
+                    <img src={estateDetail?.photos?.[1] || "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/10 flex items-end justify-center pb-8">
-                        <button className="bg-white text-gray-900 px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform">
+                        <button 
+                            onClick={() => setShowGallery(true)}
+                            className="bg-white text-gray-900 px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform"
+                        >
                             View All 4 Photos
                         </button>
                     </div>
                 </div>
                 <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-sm">
-                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" className="w-full h-full object-cover" />
+                    <img src={estateDetail?.photos?.[2] || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} className="w-full h-full object-cover" />
                 </div>
             </div>
 
@@ -583,25 +571,25 @@ function DetailView({ property, onBack }) {
                     
                     {/* Host & Description */}
                     <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
-                        <h2 className="text-2xl font-serif font-bold text-royalTeal mb-6">Cliffside Infinity Paradise on the Amalfi Coast</h2>
+                        <h2 className="text-2xl font-serif font-bold text-royalTeal mb-6">{estateDetail?.title || "Cliffside Infinity Paradise on the Amalfi Coast"}</h2>
                         <p className="text-gray-600 leading-relaxed mb-8">
-                            Designed by master Italian architects, Aurelia Riviera merges 18th-century royal Mediterranean heritage with ultra-modern biometric comfort. Enjoy private beach elevator access, champagne sunset terraces, custom fragrance concierges, and direct helicopter transfers.
+                            {estateDetail?.description || "Designed by master Italian architects, Aurelia Riviera merges 18th-century royal Mediterranean heritage with ultra-modern biometric comfort. Enjoy private beach elevator access, champagne sunset terraces, custom fragrance concierges, and direct helicopter transfers."}
                         </p>
                         
                         <div className="flex justify-between items-center pt-6 border-t border-gray-100">
                             <div className="flex items-center gap-4">
-                                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Host" className="w-12 h-12 rounded-full object-cover shadow-sm" />
+                                <img src={estateDetail?.host_image || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80"} alt="Host" className="w-12 h-12 rounded-full object-cover shadow-sm" />
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <span className="font-bold text-gray-900">Contessa Beatrice Visconti</span>
+                                        <span className="font-bold text-gray-900">{estateDetail?.host_name || "Contessa Beatrice Visconti"}</span>
                                         <span className="bg-royalGold-400 text-royalMaroon-900 text-[10px] font-bold px-2 py-0.5 rounded-md">Superhost</span>
                                     </div>
-                                    <div className="text-xs text-gray-500">Private Estate Host & Sommelier</div>
+                                    <div className="text-xs text-gray-500">{estateDetail?.host_role || "Private Estate Host & Sommelier"}</div>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <div className="text-xs font-bold text-royalTeal">100% Response Rate</div>
-                                <div className="text-xs text-gray-500">Within 5 minutes</div>
+                                <div className="text-xs font-bold text-royalTeal">{estateDetail?.response_rate || "100%"} Response Rate</div>
+                                <div className="text-xs text-gray-500">{estateDetail?.response_time || "Within 5 minutes"}</div>
                             </div>
                         </div>
                     </div>
@@ -659,25 +647,42 @@ function DetailView({ property, onBack }) {
                         <p className="text-xs text-gray-500 mb-6">Tailor your stay with private helicopter transfers, champagne tastings, or wellness pass.</p>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {[
-                                {icon: <Wind size={20}/>, title: 'Private Helicopter Airport Transfer', price: '+$450', desc: 'Direct fly in transfer from Naples/Rome Helipad to private resort pad'},
-                                {icon: <Coffee size={20}/>, title: 'Daily Gourmet Champagne Breakfast', price: '+$95', desc: 'In suite multi course organic breakfast served with Vintage Dom Perignon'},
-                                {icon: <Car size={20}/>, title: 'Private Riva Yacht Sunset Excursion (3 hrs)', price: '+$780', desc: 'Exclusive cruise along Capri grottos with private captain and prosecco'},
-                                {icon: <Sparkles size={20}/>, title: 'Thermal Spa & Massage Pass', price: '+$150', desc: 'Unlimited access to Roman thermal baths + 90 min deep tissue therapy'},
-                            ].map((addon, i) => (
-                                <div key={i} className="border border-gray-100 rounded-2xl p-4 flex gap-4 hover:border-royalGold-400/50 cursor-pointer transition-colors bg-[#fdfdfd]">
-                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-royalGold-400 shrink-0 border border-gray-100">
-                                        {addon.icon}
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between items-start mb-1">
-                                            <h4 className="text-xs font-bold text-gray-900 leading-tight">{addon.title}</h4>
-                                            <span className="text-[10px] font-bold text-royalTeal bg-royalMaroon-800/10 px-1.5 py-0.5 rounded ml-2 shrink-0">{addon.price}</span>
+                            {addons.map((addon) => {
+                                const isSelected = selectedAddons.includes(addon.id);
+                                const IconComponent = {
+                                    Wind: Wind,
+                                    Coffee: Coffee,
+                                    Car: Car,
+                                    Sparkles: Sparkles
+                                }[addon.icon] || Sparkles;
+
+                                return (
+                                    <div 
+                                        key={addon.id} 
+                                        onClick={() => {
+                                            if (isSelected) {
+                                                setSelectedAddons(selectedAddons.filter(id => id !== addon.id));
+                                            } else {
+                                                setSelectedAddons([...selectedAddons, addon.id]);
+                                            }
+                                        }}
+                                        className={`border rounded-2xl p-4 flex gap-4 cursor-pointer transition-colors ${isSelected ? 'border-royalGold-400 bg-royalGold-400/5' : 'border-gray-100 hover:border-royalGold-400/50 bg-[#fdfdfd]'}`}
+                                    >
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-colors ${isSelected ? 'bg-royalGold-400 text-white border-royalGold-400' : 'bg-gray-50 text-royalGold-400 border-gray-100'}`}>
+                                            <IconComponent size={20}/>
                                         </div>
-                                        <p className="text-[10px] text-gray-500 leading-relaxed">{addon.desc}</p>
+                                        <div className="flex-1 w-full min-w-0">
+                                            <div className="flex justify-between items-start mb-1 gap-2">
+                                                <h4 className="text-sm font-bold text-gray-900 leading-tight pr-2">{addon.title}</h4>
+                                                <span className={`text-xs font-bold px-2 py-1 rounded shrink-0 ${isSelected ? 'text-white bg-royalTeal' : 'text-royalTeal bg-royalMaroon-800/10'}`}>
+                                                    +${addon.price}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-500 leading-relaxed mt-1">{addon.desc}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -690,20 +695,29 @@ function DetailView({ property, onBack }) {
                         <div className="flex flex-col sm:flex-row gap-4 mb-6">
                             <div className="flex-1 bg-gray-50 p-4 rounded-xl border border-gray-100">
                                 <div className="text-[10px] font-bold text-gray-400 flex items-center gap-1 uppercase tracking-wider mb-2"><Calendar size={12}/> CHECK-IN</div>
-                                <div className="text-sm font-bold text-gray-800">3:00 PM - 11:00 PM (24/7 Private Valet Check-In)</div>
+                                <div className="text-sm font-bold text-gray-800">{policy?.check_in_time || '3:00 PM - 11:00 PM (24/7 Private Valet Check-In)'}</div>
                             </div>
                             <div className="flex-1 bg-gray-50 p-4 rounded-xl border border-gray-100">
                                 <div className="text-[10px] font-bold text-gray-400 flex items-center gap-1 uppercase tracking-wider mb-2"><Calendar size={12}/> CHECK-OUT</div>
-                                <div className="text-sm font-bold text-gray-800">12:00 PM (Late Check-Out available upon request)</div>
+                                <div className="text-sm font-bold text-gray-800">{policy?.check_out_time || '12:00 PM (Late Check-Out available upon request)'}</div>
                             </div>
                         </div>
 
                         <div>
                             <div className="text-xs font-bold text-gray-900 mb-3">Estate Guidelines:</div>
                             <ul className="space-y-2 text-xs text-gray-600">
-                                <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Gentlemen formal evening dress code for Main Fine Dining Saloon</li>
-                                <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Quiet hours on ocean terraces after 11:30 PM</li>
-                                <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Private butler service included for all Suite guests</li>
+                                {policy?.guidelines ? policy.guidelines.map((guideline, idx) => (
+                                    <li key={idx} className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> 
+                                        {guideline}
+                                    </li>
+                                )) : (
+                                    <>
+                                        <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Gentlemen formal evening dress code for Main Fine Dining Saloon</li>
+                                        <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Quiet hours on ocean terraces after 11:30 PM</li>
+                                        <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Private butler service included for all Suite guests</li>
+                                    </>
+                                )}
                             </ul>
                         </div>
                     </div>
@@ -720,27 +734,71 @@ function DetailView({ property, onBack }) {
                         </div>
 
                         <div className="space-y-4">
-                            {[
-                                {name: 'Lord Alexander St. Claire', date: 'July 2026', rev: 'Breathtaking beyond words. The private butler and helicopter landing were seamless. Watching the sunset over Positano from our infinity pool was the highlight of our decade.', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'},
-                                {name: 'Elena Rostova', date: 'June 2026', rev: 'The fine dining menu by Chef Lorenzo is world class. Every ingredient was divine, and the route tracking map made our private car transfer completely effortless.', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'}
-                            ].map((rev, i) => (
-                                <div key={i} className="border border-gray-100 rounded-2xl p-5 hover:bg-gray-50 transition-colors">
+                            {reviews.map((rev) => (
+                                <div key={rev.id} className="border border-gray-100 rounded-2xl p-5 hover:bg-gray-50 transition-colors">
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex items-center gap-3">
                                             <img src={rev.avatar} className="w-10 h-10 rounded-full object-cover" />
                                             <div>
                                                 <div className="text-sm font-bold text-gray-900">{rev.name}</div>
-                                                <div className="text-[10px] text-gray-500">{rev.date}</div>
+                                                <div className="text-[10px] text-gray-500">{rev.date_string}</div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-1 text-xs font-bold text-royalGold-400">
-                                            <Star size={12} className="fill-current"/> 5.0
+                                        <div className="flex items-center gap-1 text-royalGold-400 font-bold text-xs">
+                                            <Star size={12} className="fill-current" /> {Number(rev.rating).toFixed(1)}
                                         </div>
                                     </div>
-                                    <p className="text-xs text-gray-600 italic leading-relaxed">"{rev.rev}"</p>
+                                    <p className="text-xs text-gray-600 italic leading-relaxed">"{rev.review_text}"</p>
                                 </div>
                             ))}
                         </div>
+
+                        {/* Add Review Form */}
+                        <form onSubmit={submitReview} className="mt-6 border-t border-gray-100 pt-6">
+                            <h3 className="text-sm font-bold text-gray-900 mb-4">Leave a Review</h3>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="flex-1">
+                                        <input 
+                                            type="text" 
+                                            placeholder="Your Name" 
+                                            value={data.name}
+                                            onChange={e => setData('name', e.target.value)}
+                                            required
+                                            className="w-full border border-gray-200 rounded-xl text-sm focus:border-royalTeal focus:ring-1 focus:ring-royalTeal bg-gray-50 p-3 outline-none"
+                                        />
+                                    </div>
+                                    <div className="w-32">
+                                        <select 
+                                            value={data.rating}
+                                            onChange={e => setData('rating', e.target.value)}
+                                            className="w-full border border-gray-200 rounded-xl text-sm focus:border-royalTeal focus:ring-1 focus:ring-royalTeal bg-gray-50 p-3 outline-none"
+                                        >
+                                            <option value="5">5 Stars</option>
+                                            <option value="4">4 Stars</option>
+                                            <option value="3">3 Stars</option>
+                                            <option value="2">2 Stars</option>
+                                            <option value="1">1 Star</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    placeholder="Share your experience..." 
+                                    value={data.review_text}
+                                    onChange={e => setData('review_text', e.target.value)}
+                                    required
+                                    rows="3"
+                                    className="w-full border border-gray-200 rounded-xl text-sm focus:border-royalTeal focus:ring-1 focus:ring-royalTeal bg-gray-50 p-3 outline-none"
+                                ></textarea>
+                                <button 
+                                    type="submit" 
+                                    disabled={formProcessing}
+                                    className="bg-royalTeal hover:bg-teal-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors disabled:opacity-50 flex items-center gap-2"
+                                >
+                                    <Send size={16} /> {formProcessing ? 'Posting...' : 'Post Review'}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
@@ -762,19 +820,27 @@ function DetailView({ property, onBack }) {
                             <div>
                                 <label className="text-[10px] text-gray-600 uppercase font-bold block mb-2 tracking-widest">Stay Dates ({nights} Nights)</label>
                                 <div className="flex gap-2">
-                                    <div className="flex-1 p-3 border border-gray-200 rounded-xl flex justify-between items-center bg-gray-50">
-                                        <div>
+                                    <div className="flex-1 p-3 border border-gray-200 rounded-xl flex justify-between items-center bg-gray-50 overflow-hidden relative">
+                                        <div className="w-full">
                                             <div className="text-[9px] text-gray-400 font-bold mb-0.5">CHECK-IN</div>
-                                            <div className="text-xs font-bold text-gray-800">15/08/2026</div>
+                                            <input 
+                                                type="date" 
+                                                value={checkIn}
+                                                onChange={(e) => setCheckIn(e.target.value)}
+                                                className="text-xs font-bold text-gray-800 bg-transparent border-none p-0 focus:ring-0 w-full outline-none" 
+                                            />
                                         </div>
-                                        <Calendar size={14} className="text-gray-400" />
                                     </div>
-                                    <div className="flex-1 p-3 border border-gray-200 rounded-xl flex justify-between items-center bg-gray-50">
-                                        <div>
+                                    <div className="flex-1 p-3 border border-gray-200 rounded-xl flex justify-between items-center bg-gray-50 overflow-hidden relative">
+                                        <div className="w-full">
                                             <div className="text-[9px] text-gray-400 font-bold mb-0.5">CHECK-OUT</div>
-                                            <div className="text-xs font-bold text-gray-800">18/08/2026</div>
+                                            <input 
+                                                type="date" 
+                                                value={checkOut}
+                                                onChange={(e) => setCheckOut(e.target.value)}
+                                                className="text-xs font-bold text-gray-800 bg-transparent border-none p-0 focus:ring-0 w-full outline-none" 
+                                            />
                                         </div>
-                                        <Calendar size={14} className="text-gray-400" />
                                     </div>
                                 </div>
                             </div>
@@ -797,7 +863,7 @@ function DetailView({ property, onBack }) {
 
                         <div className="space-y-3 mb-6">
                             <div className="flex justify-between text-xs text-gray-500">
-                                <span>${rooms[roomType].price} x {nights} nights</span>
+                                <span>${rooms[roomType].price} × {nights} nights × {guests} guests</span>
                                 <span className="font-medium">${total}</span>
                             </div>
                             <div className="flex justify-between text-xs text-gray-500">
@@ -851,31 +917,233 @@ function DetailView({ property, onBack }) {
                                     </div>
                                 </div>
                                 
-                                <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2"><CreditCard size={20} className="text-royalTeal"/> Payment Method</h4>
-                                <div className="space-y-4">
-                                    <input type="text" placeholder="Card Number" className="w-full p-4 rounded-xl border border-gray-200 focus:border-royalMaroon-800 focus:ring-1 focus:ring-[#700918] outline-none" />
-                                    <div className="flex gap-4">
-                                        <input type="text" placeholder="MM/YY" className="w-1/2 p-4 rounded-xl border border-gray-200 focus:border-royalMaroon-800 focus:ring-1 focus:ring-[#700918] outline-none" />
-                                        <input type="text" placeholder="CVC" className="w-1/2 p-4 rounded-xl border border-gray-200 focus:border-royalMaroon-800 focus:ring-1 focus:ring-[#700918] outline-none" />
+                                <h2 className="text-xl font-bold text-slate-900 mb-6 font-sans">Payment Method</h2>
+                                
+                                <div className="p-3 sm:p-4 rounded-lg space-y-3" style={{backgroundColor: '#6F4E37'}}>
+                                    {/* KOKO Option */}
+                                    <div className="bg-white rounded-md p-4 flex items-center justify-between cursor-pointer shadow-sm" onClick={() => setPaymentMethod('koko')}>
+                                        <div className="flex items-center gap-4">
+                                            <input type="radio" checked={paymentMethod === 'koko'} onChange={() => setPaymentMethod('koko')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
+                                            <span className="font-medium text-slate-800 text-[15px]">KOKO</span>
+                                        </div>
+                                        <div className="font-bold text-lg tracking-wider" style={{WebkitTextStroke: "1px #6F4E37", color: "transparent"}}>KOKO</div>
+                                    </div>
+                                    
+                                    {/* Credit/Debit Card Option */}
+                                    <div className={`bg-white rounded-md p-5 shadow-sm cursor-pointer ${paymentMethod === 'card' ? 'ring-2 ring-craft-brown border-transparent' : ''}`} onClick={() => setPaymentMethod('card')}>
+                                        <div className="flex items-center justify-between mb-5">
+                                            <div className="flex items-center gap-4">
+                                                <input type="radio" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
+                                                <span className="font-medium text-slate-800 text-[15px]">Credit/ Debit Card</span>
+                                            </div>
+                                            <CreditCard className="w-7 h-7" style={{color: '#3b82f6'}} strokeWidth={1.5} />
+                                        </div>
+                                        
+                                        {paymentMethod === 'card' && (
+                                            <>
+                                                <div className="mb-6 pl-9">
+                                                    <p className="text-[13px] text-slate-500 mb-2">We accept</p>
+                                                    <div className="flex gap-2">
+                                                        {/* Visa Badge */}
+                                                        <div className="border border-slate-200 rounded px-2.5 py-1 font-bold italic text-[11px] flex items-center justify-center h-7" style={{color: '#1d4ed8'}}>VISA</div>
+                                                        {/* Mastercard Badge */}
+                                                        <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
+                                                            <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#ef4444'}}></div>
+                                                            <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#facc15', mixBlendMode: 'multiply'}}></div>
+                                                        </div>
+                                                        {/* Amex Badge */}
+                                                        <div className="border border-slate-200 rounded px-2.5 py-1 text-white font-bold text-[10px] flex items-center justify-center h-7 tracking-wider" style={{backgroundColor: '#2563eb'}}>AMEX</div>
+                                                        {/* Maestro Badge */}
+                                                        <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
+                                                            <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#3b82f6'}}></div>
+                                                            <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#ef4444', mixBlendMode: 'multiply'}}></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Holder</label>
+                                                        <input type="text" value={paymentData.card_holder} onChange={e => setPaymentData({...paymentData, card_holder: e.target.value})} className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 text-slate-900" style={{outlineColor: '#6F4E37'}} />
+                                                        {paymentErrors.card_holder && <div className="text-red-500 text-xs mt-1">{paymentErrors.card_holder}</div>}
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Number</label>
+                                                        <div className="relative">
+                                                            <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
+                                                                <CreditCard className="h-4 w-4 text-slate-400" />
+                                                            </div>
+                                                            <input 
+                                                                type="text" 
+                                                                value={paymentData.card_number} 
+                                                                onChange={e => {
+                                                                    let val = e.target.value.replace(/\D/g, '');
+                                                                    val = val.replace(/(.{4})/g, '$1 ').trim();
+                                                                    setPaymentData({...paymentData, card_number: val.substring(0, 19)});
+                                                                }} 
+                                                                placeholder="0000 0000 0000 0000" 
+                                                                className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
+                                                                style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
+                                                                maxLength="19"
+                                                            />
+                                                        </div>
+                                                        {paymentErrors.card_number && <div className="text-red-500 text-xs mt-1">{paymentErrors.card_number}</div>}
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Valid Date</label>
+                                                        <div className="relative">
+                                                            <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
+                                                                <Calendar className="h-4 w-4 text-slate-400" />
+                                                            </div>
+                                                            <input 
+                                                                type="text" 
+                                                                value={paymentData.valid_date} 
+                                                                onChange={e => {
+                                                                    let val = e.target.value.replace(/\D/g, '');
+                                                                    if (val.length > 2) {
+                                                                        val = val.substring(0, 2) + '/' + val.substring(2, 4);
+                                                                    }
+                                                                    setPaymentData({...paymentData, valid_date: val});
+                                                                }} 
+                                                                placeholder="MM/YY" 
+                                                                className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
+                                                                style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
+                                                                maxLength="5"
+                                                            />
+                                                        </div>
+                                                        {paymentErrors.valid_date && <div className="text-red-500 text-xs mt-1">{paymentErrors.valid_date}</div>}
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">CVV</label>
+                                                        <input type="text" value={paymentData.cvv} onChange={e => setPaymentData({...paymentData, cvv: e.target.value})} placeholder="XXX" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" style={{outlineColor: '#6F4E37'}} />
+                                                        {paymentErrors.cvv && <div className="text-red-500 text-xs mt-1">{paymentErrors.cvv}</div>}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                            
+                                        <div className="pt-4 mt-4">
+                                            <button 
+                                                onClick={() => {
+                                                    setProcessing(true);
+                                                    setTimeout(() => {
+                                                        setProcessing(false);
+                                                        setShowCheckout(false);
+                                                        alert("Booking Confirmed! The property owner has been notified.");
+                                                    }, 1500);
+                                                }}
+                                                disabled={processing}
+                                                className="w-full text-white font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:opacity-90 disabled:opacity-70 flex justify-center items-center gap-2"
+                                                style={{backgroundColor: '#6F4E37'}}
+                                            >
+                                                {processing ? 'Processing...' : 'Confirm'}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <button className="w-full mt-8 py-4 bg-royalMaroon-800 text-royalGold-400 font-bold rounded-xl shadow-md hover:bg-royalMaroon-700 transition-colors flex justify-center items-center gap-2">
-                                    Pay ${total + Math.round(total * 0.1)} & Confirm Booking <Check size={18} className="text-royalGold-400" />
-                                </button>
                             </div>
                         </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </motion.div>
+            </motion.div>
+
+            {/* Photo Gallery Modal */}
+            <AnimatePresence>
+                {showGallery && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[9999] bg-black/95 flex flex-col"
+                    >
+                        <div className="flex justify-between items-center p-6 bg-black">
+                            <h3 className="text-white font-serif text-xl">{property.name} - Gallery</h3>
+                            <button 
+                                onClick={() => setShowGallery(false)}
+                                className="text-white hover:text-royalGold-400 p-2"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-6 lg:p-12">
+                            <div className="max-w-5xl mx-auto space-y-8 flex flex-col items-center">
+                                <img src={property.image} className="w-full max-w-4xl rounded-2xl object-cover shadow-2xl" />
+                                {estateDetail?.photos?.map((photo, idx) => (
+                                    <img key={idx} src={photo} className="w-full max-w-4xl rounded-2xl object-cover shadow-2xl" />
+                                ))}
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
     );
 }
 
-function MapView({ property }) {
-    const center = property ? [property.lat, property.lng] : [40.6333, 14.6029];
-    const zoom = property ? 12 : 7;
+function MapView({ property, accommodations }) {
+    const currentProperty = property || (accommodations && accommodations.length > 0 ? accommodations[0] : null);
+    
+    const center = currentProperty ? [currentProperty.lat, currentProperty.lng] : [40.6333, 14.6029];
+    const zoom = currentProperty ? 12 : 7;
     const startPos = [40.8518, 14.2681];
-    const endPos = property ? [property.lat, property.lng] : [40.6333, 14.6029];
+    const endPos = currentProperty ? [currentProperty.lat, currentProperty.lng] : [40.6333, 14.6029];
+
+    const [originHub, setOriginHub] = useState('Central Executive Hub');
+    const [transitMethod, setTransitMethod] = useState('car');
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [gpsProgress, setGpsProgress] = useState(0);
+    const [isSimulating, setIsSimulating] = useState(false);
+
+    useEffect(() => {
+        let interval;
+        if (isSimulating && gpsProgress < 100) {
+            interval = setInterval(() => {
+                setGpsProgress(prev => {
+                    const next = prev + Math.floor(Math.random() * 8) + 2;
+                    if (next >= 100) {
+                        setIsSimulating(false);
+                        return 100;
+                    }
+                    return next;
+                });
+            }, 300);
+        }
+        return () => clearInterval(interval);
+    }, [isSimulating, gpsProgress]);
+
+    const startSimulation = () => {
+        setGpsProgress(0);
+        setIsSimulating(true);
+    };
+
+    const resetSimulation = () => {
+        setGpsProgress(0);
+        setIsSimulating(false);
+    };
+
+    const handleTransitSelect = (method) => {
+        setTransitMethod(method);
+        if (currentProperty?.id) {
+            setIsProcessing(true);
+            router.post(`/accommodations/${currentProperty.id}/transit`, { transit_method: method }, {
+                preserveScroll: true,
+                preserveState: true,
+                onFinish: () => setIsProcessing(false),
+            });
+        }
+    };
+
+    const transitData = {
+        car: { label: 'Chauffeured Car', icon: Car, cost: '$45', time: '38 Mins', distance: '42.8 km' },
+        shuttle: { label: 'Shuttle Express', icon: Wind, cost: '$15', time: '55 Mins', distance: '45.1 km' },
+        rail: { label: 'High-Speed Rail', icon: Compass, cost: '$25', time: '25 Mins', distance: '38.5 km' }
+    };
+    const currentTransit = transitData[transitMethod];
+    const ActiveIcon = currentTransit.icon;
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
@@ -885,21 +1153,39 @@ function MapView({ property }) {
                     <div className="text-royalGold-400 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mb-2">
                         <Navigation size={12} /> Live GPS & Chauffeured Route Tracking
                     </div>
-                    <h2 className="text-3xl font-serif font-bold mb-2">Route to {property?.name || 'Aurelia Riviera Resort & Spa'}</h2>
+                    <h2 className="text-3xl font-serif font-bold mb-2">Route to {currentProperty?.name || 'Aurelia Riviera Resort & Spa'}</h2>
                     <div className="text-xs text-white/80 flex items-center gap-1">
-                        <MapPin size={12} className="text-royalGold-400" /> Origin: <span className="font-bold text-white">Central Executive Hub</span> 
+                        <MapPin size={12} className="text-royalGold-400" /> Origin: 
+                        <select 
+                            value={originHub} 
+                            onChange={(e) => setOriginHub(e.target.value)}
+                            className="bg-transparent border-none text-white font-bold text-xs p-0 focus:ring-0 cursor-pointer"
+                        >
+                            <option className="text-slate-800" value="Central Executive Hub">Central Executive Hub</option>
+                            <option className="text-slate-800" value="Bandaranaike International Airport">Bandaranaike International Airport</option>
+                            <option className="text-slate-800" value="Colombo Fort Station">Colombo Fort Station</option>
+                        </select>
                         <ArrowRight size={12} className="mx-2 text-white/50" /> 
-                        Destination: <span className="font-bold text-white">{property?.location || 'Positano, Amalfi Coast'}</span>
+                        Destination: <span className="font-bold text-white">{currentProperty?.location || 'Positano, Amalfi Coast'}</span>
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <button className="flex items-center gap-2 bg-royalGold-400 text-royalMaroon-900 px-4 py-2 rounded-full font-bold text-xs shadow-md">
+                    <button 
+                        onClick={() => handleTransitSelect('car')}
+                        disabled={isProcessing}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-colors ${transitMethod === 'car' ? 'bg-royalGold-400 text-royalMaroon-900 shadow-md' : 'bg-black/20 text-white/70 hover:bg-black/30 hover:text-white border border-white/10'}`}>
                         <Car size={14} /> Chauffeured Car
                     </button>
-                    <button className="flex items-center gap-2 bg-black/20 text-white/70 hover:bg-black/30 hover:text-white px-4 py-2 rounded-full font-bold text-xs border border-white/10 transition-colors">
+                    <button 
+                        onClick={() => handleTransitSelect('shuttle')}
+                        disabled={isProcessing}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-colors ${transitMethod === 'shuttle' ? 'bg-royalGold-400 text-royalMaroon-900 shadow-md' : 'bg-black/20 text-white/70 hover:bg-black/30 hover:text-white border border-white/10'}`}>
                         <Wind size={14} /> Shuttle Express
                     </button>
-                    <button className="flex items-center gap-2 bg-black/20 text-white/70 hover:bg-black/30 hover:text-white px-4 py-2 rounded-full font-bold text-xs border border-white/10 transition-colors">
+                    <button 
+                        onClick={() => handleTransitSelect('rail')}
+                        disabled={isProcessing}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-colors ${transitMethod === 'rail' ? 'bg-royalGold-400 text-royalMaroon-900 shadow-md' : 'bg-black/20 text-white/70 hover:bg-black/30 hover:text-white border border-white/10'}`}>
                         <Compass size={14} /> High-Speed Rail
                     </button>
                 </div>
@@ -913,9 +1199,9 @@ function MapView({ property }) {
                         <div className="absolute top-6 left-6 z-[1000] bg-black/80 backdrop-blur border border-white/10 p-4 rounded-2xl shadow-xl text-white">
                             <div className="text-[9px] uppercase tracking-widest text-white/50 font-bold mb-2">Estimated Transit Stats</div>
                             <div className="flex items-center gap-3">
-                                <div className="text-lg font-bold flex items-center gap-1"><Calendar size={16}/> 38 <span className="text-[10px] font-normal text-white/50">Mins</span></div>
+                                <div className="text-lg font-bold flex items-center gap-1"><Calendar size={16}/> {currentTransit.time.split(' ')[0]} <span className="text-[10px] font-normal text-white/50">Mins</span></div>
                                 <div className="h-4 w-px bg-white/20"></div>
-                                <div className="text-sm font-bold text-royalGold-400 flex items-center gap-1"><Navigation size={14}/> 0% En Route</div>
+                                <div className="text-sm font-bold text-royalGold-400 flex items-center gap-1"><Navigation size={14}/> {gpsProgress}% En Route</div>
                                 <div className="h-4 w-px bg-white/20"></div>
                                 <div className="text-xs text-royalTeal font-bold flex items-center gap-1">
                                     <div className="w-1.5 h-1.5 rounded-full bg-royalMaroon-800"></div> Clear Traffic
@@ -939,30 +1225,35 @@ function MapView({ property }) {
                             />
                             <Polyline positions={[startPos, [40.7, 14.4], [40.65, 14.5], endPos]} color="#ff8c00" weight={4} />
                             <Marker position={startPos}>
-                                <Popup>Central Executive Hub</Popup>
+                                <Popup>{originHub}</Popup>
                             </Marker>
                             <Marker position={endPos}>
-                                <Popup>{property?.name || 'Aurelia Riviera Resort'}</Popup>
+                                <Popup>{currentProperty?.name || 'Aurelia Riviera Resort'}</Popup>
                             </Marker>
                         </MapContainer>
                         
                         {/* Map Footer Overlay */}
                         <div className="absolute bottom-6 left-6 right-6 z-[1000] flex flex-col md:flex-row md:items-end justify-between gap-4">
                             <div className="flex gap-2">
-                                <button className="bg-royalGold-400 hover:bg-royalGold-500 text-royalMaroon-900 px-6 py-3 rounded-full font-bold text-sm shadow-lg flex items-center gap-2 transition-all hover:scale-105">
-                                    <Navigation size={16} className="rotate-90" /> Simulate Live GPS
+                                <button 
+                                    onClick={startSimulation}
+                                    disabled={isSimulating || gpsProgress === 100}
+                                    className="bg-royalGold-400 hover:bg-royalGold-500 text-royalMaroon-900 px-6 py-3 rounded-full font-bold text-sm shadow-lg flex items-center gap-2 transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100">
+                                    <Navigation size={16} className="rotate-90" /> {isSimulating ? 'Simulating...' : (gpsProgress === 100 ? 'Arrived' : 'Simulate Live GPS')}
                                 </button>
-                                <button className="w-12 h-12 bg-black/80 backdrop-blur border border-white/10 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors">
+                                <button 
+                                    onClick={resetSimulation}
+                                    className="w-12 h-12 bg-black/80 backdrop-blur border border-white/10 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors">
                                     <RotateCcw size={18} />
                                 </button>
                             </div>
                             <div className="bg-black/80 backdrop-blur border border-white/10 p-4 rounded-2xl shadow-xl text-white w-full md:w-80">
                                 <div className="flex justify-between items-end mb-2">
                                     <div className="text-[10px] font-bold text-white/70 uppercase tracking-widest">GPS Navigation Progress</div>
-                                    <div className="text-xs font-bold text-white/90">0%</div>
+                                    <div className="text-xs font-bold text-white/90">{gpsProgress}%</div>
                                 </div>
                                 <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
-                                    <div className="bg-royalGold-400 w-0 h-full"></div>
+                                    <div className="bg-royalGold-400 h-full transition-all duration-300" style={{width: `${gpsProgress}%`}}></div>
                                 </div>
                             </div>
                         </div>
@@ -971,16 +1262,16 @@ function MapView({ property }) {
                     <div className="border border-gray-200 rounded-2xl p-4 flex items-center justify-between bg-white shadow-sm">
                         <div className="flex items-center gap-4">
                             <div className="w-14 h-14 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center text-royalTeal">
-                                <Car size={24} />
+                                <ActiveIcon size={24} />
                             </div>
                             <div>
-                                <h4 className="font-bold text-sm text-royalTeal mb-1">Car Transit Specification</h4>
-                                <div className="text-xs text-gray-500">Estimated Transit Cost: <span className="font-bold text-gray-700">$45</span></div>
+                                <h4 className="font-bold text-sm text-royalTeal mb-1">{currentTransit.label} Specification</h4>
+                                <div className="text-xs text-gray-500">Estimated Transit Cost: <span className="font-bold text-gray-700">{currentTransit.cost}</span></div>
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="font-bold text-sm text-royalTeal mb-1">38 Mins</div>
-                            <div className="text-[10px] text-gray-400 font-medium">42.8 km distance</div>
+                            <div className="font-bold text-sm text-royalTeal mb-1">{currentTransit.time}</div>
+                            <div className="text-[10px] text-gray-400 font-medium">{currentTransit.distance} distance</div>
                         </div>
                     </div>
                 </div>
