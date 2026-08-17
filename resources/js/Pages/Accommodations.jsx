@@ -7,9 +7,10 @@ import {
     Calendar, Users, CreditCard, ChevronRight, Menu, Home,
     Navigation, Utensils, Phone, Mail, Globe, ArrowLeft, Plus, Minus,
     Compass, Sparkles, Map, CheckCircle2, Crown, Filter, RotateCcw,
-    Waves, Send, ArrowRight, Share2, MessageSquare, ShieldCheck
+    Waves, Send, ArrowRight, Share2, MessageSquare, ShieldCheck,
+    Bike, Footprints
 } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -1087,12 +1088,20 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
 function MapView({ property, accommodations }) {
     const currentProperty = property || (accommodations && accommodations.length > 0 ? accommodations[0] : null);
     
-    const center = currentProperty ? [currentProperty.lat, currentProperty.lng] : [40.6333, 14.6029];
-    const zoom = currentProperty ? 12 : 7;
-    const startPos = [40.8518, 14.2681];
-    const endPos = currentProperty ? [currentProperty.lat, currentProperty.lng] : [40.6333, 14.6029];
-
     const [originHub, setOriginHub] = useState('Central Executive Hub');
+
+    const originCoords = {
+        'Central Executive Hub': [6.9271, 79.8612],
+        'Bandaranaike International Airport': [7.1804, 79.8833],
+        'Colombo Fort Station': [6.9333, 79.8500]
+    };
+    
+    const startPos = originCoords[originHub] || originCoords['Central Executive Hub'];
+    const endPos = currentProperty ? [currentProperty.lat, currentProperty.lng] : [40.6333, 14.6029];
+    
+    const center = [(startPos[0] + endPos[0]) / 2, (startPos[1] + endPos[1]) / 2];
+    const zoom = 8;
+
     const [transitMethod, setTransitMethod] = useState('car');
     const [isProcessing, setIsProcessing] = useState(false);
     const [gpsProgress, setGpsProgress] = useState(0);
@@ -1140,16 +1149,100 @@ function MapView({ property, accommodations }) {
     const transitData = {
         car: { label: 'Chauffeured Car', icon: Car, cost: '$45', time: '38 Mins', distance: '42.8 km' },
         shuttle: { label: 'Shuttle Express', icon: Wind, cost: '$15', time: '55 Mins', distance: '45.1 km' },
-        rail: { label: 'High-Speed Rail', icon: Compass, cost: '$25', time: '25 Mins', distance: '38.5 km' }
+        rail: { label: 'High-Speed Rail', icon: Compass, cost: '$25', time: '25 Mins', distance: '38.5 km' },
+        bicycle: { label: 'Bicycle', icon: Bike, cost: 'Free', time: '2 Hrs 15 Mins', distance: '39.0 km' },
+        walking: { label: 'Walking', icon: Footprints, cost: 'Free', time: '8 Hrs 30 Mins', distance: '37.5 km' }
     };
     const currentTransit = transitData[transitMethod];
     const ActiveIcon = currentTransit.icon;
 
+    const getNavigationSteps = () => {
+        const destName = currentProperty?.name || 'Aurelia Riviera Resort & Spa';
+        const destLoc = currentProperty?.location || 'the destination';
+        
+        switch (transitMethod) {
+            case 'car':
+            case 'shuttle':
+                return [
+                    { step: `Depart from ${originHub} towards A2 Highway`, dist: '2.4 km', time: '5 mins', active: true },
+                    { step: `Merge onto Southern Expressway (E01) towards ${destLoc}`, dist: '28.2 km', time: '25 mins', active: false },
+                    { step: `Take the exit towards ${destLoc} Scenic Route`, dist: '8.6 km', time: '12 mins', active: false, highlight: true, highlightText: `${destLoc} Scenic Route` },
+                    { step: `Arrive at ${destName}`, dist: '3.6 km', time: '13 mins', active: false, highlight: true, highlightText: `Arrive at ${destName}` },
+                ];
+            case 'rail':
+                return [
+                    { step: `Board the Intercity Express at ${originHub} Station`, dist: '0 km', time: '0 mins', active: true },
+                    { step: `Travel along the Coastal Line towards ${destLoc}`, dist: '35.0 km', time: '20 mins', active: false },
+                    { step: `Disembark at ${destLoc} Railway Station`, dist: '0 km', time: '0 mins', active: false, highlight: true, highlightText: `${destLoc} Railway Station` },
+                    { step: `Transfer to ${destName}`, dist: '3.5 km', time: '5 mins', active: false, highlight: true, highlightText: `Transfer to ${destName}` },
+                ];
+            case 'bicycle':
+                return [
+                    { step: `Start cycling from ${originHub} along Coastal Path`, dist: '5.4 km', time: '25 mins', active: true },
+                    { step: `Continue on the Old Galle Road cycle lane`, dist: '18.2 km', time: '1 hr 10 mins', active: false },
+                    { step: `Turn left onto ${destLoc} local roads`, dist: '12.6 km', time: '45 mins', active: false, highlight: true, highlightText: `${destLoc} local roads` },
+                    { step: `Arrive at ${destName} (Bicycle Parking)`, dist: '2.8 km', time: '15 mins', active: false, highlight: true, highlightText: `Arrive at ${destName}` },
+                ];
+            case 'walking':
+                return [
+                    { step: `Head south from ${originHub} walkway`, dist: '2.4 km', time: '30 mins', active: true },
+                    { step: `Walk along the Beachfront Promenade`, dist: '15.2 km', time: '3 hrs 15 mins', active: false },
+                    { step: `Follow the nature trails towards ${destLoc}`, dist: '16.6 km', time: '4 hrs', active: false, highlight: true, highlightText: `towards ${destLoc}` },
+                    { step: `Arrive at ${destName} (Main Reception)`, dist: '3.3 km', time: '45 mins', active: false, highlight: true, highlightText: `Arrive at ${destName}` },
+                ];
+            default:
+                return [];
+        }
+    };
+    
+    const navigationSteps = getNavigationSteps();
+
+    const getFooterText = () => {
+        if (transitMethod === 'car') return 'Chauffeured vehicle is satellite-monitored 24/7 for security.';
+        if (transitMethod === 'shuttle') return 'Shared shuttle is GPS-tracked and sanitized between trips.';
+        if (transitMethod === 'rail') return 'First-class rail tickets include priority boarding and lounge access.';
+        if (transitMethod === 'bicycle') return 'Bicycles are provided with helmets and safety gear on arrival.';
+        if (transitMethod === 'walking') return 'Walking paths are well-lit and patrolled by resort security.';
+        return '';
+    };
+
+    const getRoutePositions = () => {
+        const dx = endPos[0] - startPos[0];
+        const dy = endPos[1] - startPos[1];
+        let offset1 = 0, offset2 = 0;
+        
+        if (transitMethod === 'car') { offset1 = 0.1; offset2 = 0.05; }
+        else if (transitMethod === 'shuttle') { offset1 = -0.05; offset2 = -0.1; }
+        else if (transitMethod === 'rail') { offset1 = 0.02; offset2 = -0.02; }
+        else if (transitMethod === 'bicycle') { offset1 = 0.15; offset2 = 0.15; }
+        else if (transitMethod === 'walking') { offset1 = -0.1; offset2 = 0.1; }
+
+        const mid1 = [
+            startPos[0] + dx * 0.33 + (dy * offset1),
+            startPos[1] + dy * 0.33 - (dx * offset1)
+        ];
+        
+        const mid2 = [
+            startPos[0] + dx * 0.66 + (dy * offset2),
+            startPos[1] + dy * 0.66 - (dx * offset2)
+        ];
+        
+        return [startPos, mid1, mid2, endPos];
+    };
+
+    function MapUpdater({ center, zoom }) {
+        const map = useMap();
+        useEffect(() => {
+            map.flyTo(center, zoom, { duration: 1.5 });
+        }, [center, zoom, map]);
+        return null;
+    }
+
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
             {/* Header */}
-            <div className="bg-royalMaroon-800 text-white p-8 rounded-t-3xl border-b-4 border-royalGold-400 flex justify-between items-end">
-                <div>
+            <div className="bg-royalMaroon-800 text-white p-6 md:p-8 rounded-t-3xl border-b-4 border-royalGold-400 flex flex-col xl:flex-row justify-between xl:items-end gap-6">
+                <div className="shrink-0">
                     <div className="text-royalGold-400 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mb-2">
                         <Navigation size={12} /> Live GPS & Chauffeured Route Tracking
                     </div>
@@ -1169,7 +1262,7 @@ function MapView({ property, accommodations }) {
                         Destination: <span className="font-bold text-white">{currentProperty?.location || 'Positano, Amalfi Coast'}</span>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 xl:justify-end w-full">
                     <button 
                         onClick={() => handleTransitSelect('car')}
                         disabled={isProcessing}
@@ -1187,6 +1280,18 @@ function MapView({ property, accommodations }) {
                         disabled={isProcessing}
                         className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-colors ${transitMethod === 'rail' ? 'bg-royalGold-400 text-royalMaroon-900 shadow-md' : 'bg-black/20 text-white/70 hover:bg-black/30 hover:text-white border border-white/10'}`}>
                         <Compass size={14} /> High-Speed Rail
+                    </button>
+                    <button 
+                        onClick={() => handleTransitSelect('bicycle')}
+                        disabled={isProcessing}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-colors ${transitMethod === 'bicycle' ? 'bg-royalGold-400 text-royalMaroon-900 shadow-md' : 'bg-black/20 text-white/70 hover:bg-black/30 hover:text-white border border-white/10'}`}>
+                        <Bike size={14} /> Bicycle
+                    </button>
+                    <button 
+                        onClick={() => handleTransitSelect('walking')}
+                        disabled={isProcessing}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs transition-colors ${transitMethod === 'walking' ? 'bg-royalGold-400 text-royalMaroon-900 shadow-md' : 'bg-black/20 text-white/70 hover:bg-black/30 hover:text-white border border-white/10'}`}>
+                        <Footprints size={14} /> Walking
                     </button>
                 </div>
             </div>
@@ -1219,11 +1324,17 @@ function MapView({ property, accommodations }) {
                         </div>
 
                         <MapContainer center={center} zoom={zoom} style={{ height: '100%', width: '100%', background: '#40030a' }} zoomControl={false}>
+                            <MapUpdater center={center} zoom={zoom} />
                             <TileLayer
                                 url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                             />
-                            <Polyline positions={[startPos, [40.7, 14.4], [40.65, 14.5], endPos]} color="#ff8c00" weight={4} />
+                            <Polyline 
+                                positions={getRoutePositions()} 
+                                color={transitMethod === 'walking' ? '#34d399' : transitMethod === 'bicycle' ? '#3b82f6' : transitMethod === 'rail' ? '#f43f5e' : '#ff8c00'} 
+                                weight={4} 
+                                dashArray={transitMethod === 'walking' || transitMethod === 'bicycle' ? '8, 8' : ''}
+                            />
                             <Marker position={startPos}>
                                 <Popup>{originHub}</Popup>
                             </Marker>
@@ -1282,16 +1393,11 @@ function MapView({ property, accommodations }) {
                         <h3 className="font-serif font-bold text-royalTeal text-lg flex items-center gap-2">
                             <Navigation size={18} className="text-gray-300" /> Turn-by-Turn Navigation
                         </h3>
-                        <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-[10px] font-bold">4 Steps</span>
+                        <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-[10px] font-bold">{navigationSteps.length} Steps</span>
                     </div>
 
                     <div className="space-y-4 flex-1">
-                        {[
-                            { step: 'Head south on Highway SP145 towards Amalfi Coast Expanse', dist: '12.4 km', time: '10 mins', active: true },
-                            { step: 'Take Exit 24B towards Positano Cliffside Scenic Boulevard', dist: '18.2 km', time: '15 mins', active: false },
-                            { step: 'Merge left onto Via Cristoforo Colombo VIP Boulevard', dist: '8.6 km', time: '8 mins', active: false, highlight: true },
-                            { step: 'Arrive at Aurelia Riviera Resort & Spa (Private Valet Entrance on Left)', dist: '3.6 km', time: '5 mins', active: false, highlight: true },
-                        ].map((s, i) => (
+                        {navigationSteps.map((s, i) => (
                             <div key={i} className={`p-4 rounded-xl border ${s.active ? 'border-royalMaroon-800 bg-[#fdf9f9] shadow-sm' : 'border-gray-100 bg-white'}`}>
                                 <div className="flex gap-4 items-start">
                                     <div className="mt-0.5 w-7 h-7 rounded border border-gray-200 bg-white flex items-center justify-center shrink-0">
@@ -1299,8 +1405,8 @@ function MapView({ property, accommodations }) {
                                     </div>
                                     <div>
                                         <p className={`text-xs font-bold leading-relaxed mb-2 ${s.active ? 'text-royalTeal' : 'text-gray-700'}`}>
-                                            {s.highlight ? (
-                                                <span dangerouslySetInnerHTML={{__html: s.step.replace(/Via Cristoforo Colombo VIP Boulevard/, '<span class="bg-royalGold-400/30 px-1 rounded">Via Cristoforo Colombo VIP Boulevard</span>').replace(/Arrive at Aurelia Riviera Resort & Spa/, '<span class="bg-royalGold-400/30 px-1 rounded">Arrive at Aurelia Riviera Resort & Spa</span>')}} />
+                                            {s.highlight && s.highlightText ? (
+                                                <span dangerouslySetInnerHTML={{__html: s.step.replace(s.highlightText, `<span class="bg-royalGold-400/30 px-1 rounded">${s.highlightText}</span>`)}} />
                                             ) : s.step}
                                         </p>
                                         <div className="flex items-center gap-2 text-[10px] font-bold">
@@ -1323,11 +1429,8 @@ function MapView({ property, accommodations }) {
                         ))}
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-gray-100 flex items-start gap-3">
-                        <div className="w-2 h-2 rounded-full border border-royalGold-400 shrink-0 mt-1"></div>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-relaxed">
-                            Chauffeured vehicle is satellite-monitored 24/7 for security.
-                        </p>
+                    <div className="mt-6 pt-6 border-t border-gray-100 flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                        <div className="w-1.5 h-1.5 rounded-full border border-royalGold-400"></div> {getFooterText()}
                     </div>
                 </div>
             </div>
