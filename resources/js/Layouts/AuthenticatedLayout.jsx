@@ -30,6 +30,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    href={route('vendor.pricing.optimization')}
+                                    active={route().current('vendor.pricing.optimization')}
+                                >
+                                    AI Price Optimization
+                                </NavLink>
                             </div>
                         </div>
 
@@ -133,6 +139,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('dashboard')}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('vendor.pricing.optimization')}
+                            active={route().current('vendor.pricing.optimization')}
+                        >
+                            AI Price Optimization
                         </ResponsiveNavLink>
                     </div>
 

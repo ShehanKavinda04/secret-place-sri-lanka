@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ForecastController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\SmartPricingController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -798,7 +799,7 @@ Then, the majestic ascetic monk standing at the center of the group addressed th
 
 The King was profoundly startled and gripped by fear, wondering who this mysterious group could be that was bold enough to directly call out the name of the supreme sovereign of the entire island. To dispel the King's fear, Arahat Mahinda (the son of Emperor Ashoka) smiled gently and uttered the immortal, historic stanza that altered the entire trajectory of Sri Lankan history:
 "Samana mayam maharaja - Dhammarajassa savaka
-Tameva anukampaya - Jambudipa idhagata..."
+Tameva anukampaya - Jambudvipa idhagata..."
 (Great King, we are recluses, disciples of the King of Dhamma, the Buddha. Out of compassion for you and all the people of Lanka, we have journeyed here from Jambudvipa...)
 
 The moment he heard these noble words, the King dropped his great bow and arrows to the ground, placed both hands upon his head in worship, and knelt before the Maha Arahat in profound faith ($Saddha$). With the fall of that royal bow, the reign of weapons and bloodshed on the soil of Lanka came to an end, and the reign of wisdom and compassion officially began.
@@ -907,6 +908,15 @@ Route::middleware('auth')->group(function () {
 
 Route::post('/predict-demand', [ForecastController::class, 'getLiveDemandForecast']);
 Route::post('/api/predict-demand', [ForecastController::class, 'getLiveDemandForecast']);
+
+// Smart Pricing Routes
+Route::get('/smart-pricing', [SmartPricingController::class, 'index'])->name('smart-pricing.index');
+Route::post('/api/smart-pricing/predict', [SmartPricingController::class, 'predict'])->name('smart-pricing.predict');
+
+// Vendor Dashboard Route
+Route::get('/vendor/pricing/optimization', function () {
+    return Inertia\Inertia::render('Vendor/PriceOptimization');
+})->middleware(['auth', 'verified'])->name('vendor.pricing.optimization');
 
 Route::get('/translator', function () {
     return Inertia::render('Translator', [

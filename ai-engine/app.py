@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 import os
 import sys
+from smart_pricing_module.elasticity import predict_demand as elastic_demand, predict_profit as elastic_profit
 
 
 try:
@@ -52,6 +53,32 @@ def predict_demand():
             'status': 'error',
             'message': str(e)
         }), 400
+
+@app.route('/api/predict-price-elasticity', methods=['POST'])
+def predict_price_elasticity():
+    try:
+        data = request.json
+        price = float(data.get('price', 0))
+        
+        if price <= 0:
+            return jsonify({'status': 'error', 'message': 'Price must be greater than 0'}), 400
+            
+        expected_demand = elastic_demand(price)
+        expected_profit = elastic_profit(price)
+        
+        return jsonify({
+            'status': 'success',
+            'price': round(price, 2),
+            'expected_demand': round(expected_demand, 2),
+            'expected_profit': round(expected_profit, 2)
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 400
+
 
 if __name__ == '__main__':
    
