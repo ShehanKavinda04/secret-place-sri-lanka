@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderConfirmationMail;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
     public function process(Request $request)
     {
+        Log::info('Checkout process started', $request->all());
+
         $validated = $request->validate([
             'email' => 'required|email',
             'firstName' => 'required|string|max:255',
@@ -32,8 +35,22 @@ class CheckoutController extends Controller
             'cvv.required_if' => 'CVV is required.',
         ]);
 
+        Log::info('Validation passed', $validated);
+
         // Generate unique payment code
         $paymentCode = 'PAY-' . strtoupper(substr(uniqid(), -6));
+
+        // Save shipping details to the user profile if authenticated
+        if ($request->user()) {
+            $request->user()->update([
+                'first_name' => $validated['firstName'],
+                'last_name' => $validated['lastName'],
+                'address' => $validated['address'],
+                'city' => $validated['city'],
+                'postal_code' => $validated['postalCode'],
+                'phone' => $validated['phone'],
+            ]);
+        }
 
         // Mock Koko payment processing if selected
         if ($validated['payment_method'] === 'koko') {
@@ -62,8 +79,12 @@ class CheckoutController extends Controller
             'total' => ($product['price'] * $validated['quantity']) + 500.00
         ];
 
-        // Send Email
-        Mail::to($validated['email'])->send(new OrderConfirmationMail($orderData));
+        // Queue Email (avoids frontend timeout if SMTP is slow)
+        try {
+            Mail::to($validated['email'])->queue(new OrderConfirmationMail($orderData));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Mail sending failed: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Payment successful! Check your email for the payment code.');
     }

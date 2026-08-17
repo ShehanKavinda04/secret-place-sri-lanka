@@ -1,8 +1,8 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
-import { ShieldCheck, Truck, ArrowLeft, CreditCard, Lock, MoreHorizontal, Plus, Minus, Trash2, Calendar } from 'lucide-react';
-import { useState } from 'react';
+import { ShieldCheck, Truck, ArrowLeft, CreditCard, Lock, MoreHorizontal, Plus, Minus, Trash2, Calendar, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVersion }) {
     // Determine product based on itemId.
@@ -25,15 +25,33 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
 
     const { flash } = usePage().props;
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+    useEffect(() => {
+        if (flash?.success) {
+            setIsModalOpen(false);
+            setShowSuccessPopup(true);
+        }
+    }, [flash]);
+
+    const user = auth?.user || {};
+    
+    let defaultFirstName = user.first_name || '';
+    let defaultLastName = user.last_name || '';
+    if (!defaultFirstName && user.name) {
+        const parts = user.name.split(' ');
+        defaultFirstName = parts[0];
+        defaultLastName = parts.slice(1).join(' ');
+    }
 
     const { data, setData, post, processing, errors } = useForm({
-        email: '',
-        firstName: '',
-        lastName: '',
-        address: '',
-        city: '',
-        postalCode: '',
-        phone: '',
+        email: user.email || '',
+        firstName: defaultFirstName,
+        lastName: defaultLastName,
+        address: user.address || '',
+        city: user.city || '',
+        postalCode: user.postal_code || '',
+        phone: user.phone || '',
         payment_method: 'card',
         card_holder: '',
         card_number: '',
@@ -72,13 +90,6 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                             Back to Item
                         </Link>
                     </div>
-
-                    {flash?.success && (
-                        <div className="mb-8 p-4 bg-green-50 text-green-800 rounded-md border border-green-200 shadow-sm flex items-center">
-                            <ShieldCheck className="w-6 h-6 mr-3 text-green-600 flex-shrink-0" />
-                            <span className="font-medium text-sm">{flash.success}</span>
-                        </div>
-                    )}
 
                     <div className="flex flex-col gap-8 max-w-2xl mx-auto w-full">
                         
@@ -232,6 +243,12 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                         
+                        {Object.keys(errors).length > 0 && (
+                            <div className="bg-red-100 text-red-600 px-4 py-3 text-sm font-medium border-b border-red-200">
+                                Please fix the validation errors: {Object.values(errors)[0]}
+                            </div>
+                        )}
+                        
                         <div className="p-6 sm:p-8">
                             <h2 className="text-xl font-bold text-slate-900 mb-6 font-sans">Payment Method</h2>
                             
@@ -354,6 +371,24 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+            {/* Success Popup */}
+            {showSuccessPopup && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900 bg-opacity-50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full flex flex-col items-center text-center transform transition-all scale-100">
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                            <CheckCircle className="w-8 h-8 text-green-600" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-slate-900 mb-2">Confirmed!</h2>
+                        <p className="text-slate-600 mb-8">{flash?.success}</p>
+                        <button 
+                            onClick={() => setShowSuccessPopup(false)}
+                            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg transition-colors"
+                        >
+                            Continue Shopping
+                        </button>
                     </div>
                 </div>
             )}
