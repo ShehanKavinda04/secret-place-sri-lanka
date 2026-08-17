@@ -7,6 +7,9 @@ use Inertia\Inertia;
 use App\Http\Controllers\ForecastController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\SmartPricingController;
+use App\Http\Controllers\OrderController;
+
+Route::post('/api/orders', [OrderController::class, 'store']);
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [

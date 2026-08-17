@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 import { 
     Search, MapPin, Star, Wifi, Wind, Coffee, Car, 
     ShoppingCart, Heart, User, ChevronDown, Check, X,
@@ -97,6 +98,9 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
     const [activeTab, setActiveTab] = useState('listing'); // listing, detail, map, food
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [cart, setCart] = useState([]);
+    const [showWishlist, setShowWishlist] = useState(false);
+    const [showBookings, setShowBookings] = useState(false);
+
     
     const handleViewDetails = (property) => {
         setSelectedProperty(property);
@@ -138,10 +142,10 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                     </div>
 
                     <div className="flex items-center gap-6">
-                        <button className="flex items-center gap-2 hover:text-royalGold-400 transition-colors">
+                        <button onClick={() => setShowWishlist(true)} className="flex items-center gap-2 hover:text-royalGold-400 transition-colors">
                             <Heart size={16} /> Wishlist (2)
                         </button>
-                        <button className="flex items-center gap-2 hover:text-royalGold-400 transition-colors">
+                        <button onClick={() => setShowBookings(true)} className="flex items-center gap-2 hover:text-royalGold-400 transition-colors">
                             <Calendar size={16} /> Bookings
                         </button>
                     </div>
@@ -215,6 +219,91 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                 </AnimatePresence>
 
             </main>
+
+            {/* Wishlist Modal */}
+            <AnimatePresence>
+                {showWishlist && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] flex items-center justify-center p-4"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                            className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
+                        >
+                            <div className="bg-royalMaroon-800 p-5 text-white flex justify-between items-center border-b border-royalGold-400/30">
+                                <h3 className="text-xl font-serif font-bold text-royalGold-400 flex items-center gap-2"><Heart size={20}/> Your Wishlist</h3>
+                                <button onClick={() => setShowWishlist(false)} className="text-white/70 hover:text-white"><X size={24}/></button>
+                            </div>
+                            <div className="p-6">
+                                <div className="space-y-4">
+                                    <div className="flex gap-4 p-3 border border-gray-100 rounded-xl hover:border-royalMaroon-800/30 transition-colors cursor-pointer">
+                                        <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" className="w-20 h-20 rounded-lg object-cover" />
+                                        <div>
+                                            <h4 className="font-bold text-royalTeal">Ceylon Tea Trails</h4>
+                                            <p className="text-xs text-gray-500 mb-2">Hatton, Sri Lanka</p>
+                                            <span className="text-xs font-bold text-royalMaroon-900">$2,400 / night</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4 p-3 border border-gray-100 rounded-xl hover:border-royalMaroon-800/30 transition-colors cursor-pointer">
+                                        <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" className="w-20 h-20 rounded-lg object-cover" />
+                                        <div>
+                                            <h4 className="font-bold text-royalTeal">Amangalla Resort</h4>
+                                            <p className="text-xs text-gray-500 mb-2">Galle Fort, Sri Lanka</p>
+                                            <span className="text-xs font-bold text-royalMaroon-900">$1,850 / night</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="w-full mt-6 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl hover:bg-gray-200 transition-colors">
+                                    View Full Wishlist
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Bookings Modal */}
+            <AnimatePresence>
+                {showBookings && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] flex items-center justify-center p-4"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                            className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl"
+                        >
+                            <div className="bg-royalMaroon-800 p-5 text-white flex justify-between items-center border-b border-royalGold-400/30">
+                                <h3 className="text-xl font-serif font-bold text-royalGold-400 flex items-center gap-2"><Calendar size={20}/> Upcoming Bookings</h3>
+                                <button onClick={() => setShowBookings(false)} className="text-white/70 hover:text-white"><X size={24}/></button>
+                            </div>
+                            <div className="p-6">
+                                <div className="border border-royalGold-400/30 rounded-xl p-4 bg-[#fdf9f9]">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <h4 className="font-bold text-royalTeal">Amangalla Resort</h4>
+                                        <span className="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded">CONFIRMED</span>
+                                    </div>
+                                    <p className="text-sm text-gray-600 mb-1"><strong>Check-in:</strong> Oct 15, 2026 (2:00 PM)</p>
+                                    <p className="text-sm text-gray-600 mb-4"><strong>Check-out:</strong> Oct 18, 2026 (11:00 AM)</p>
+                                    <div className="flex items-center gap-2 text-xs font-bold text-royalMaroon-900 border-t border-gray-200 pt-3">
+                                        <Sparkles size={12} /> Ocean View Suite • 2 Guests
+                                    </div>
+                                </div>
+                                <div className="mt-4 flex gap-3">
+                                    <button className="flex-1 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">
+                                        Modify
+                                    </button>
+                                    <button className="flex-1 py-3 bg-royalMaroon-800 text-royalGold-400 font-bold rounded-xl hover:bg-royalMaroon-700 transition-colors text-sm">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
         </div>
     );
 }
@@ -902,13 +991,13 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                     >
                         <motion.div 
                             initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                            className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl"
+                            className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
                         >
-                            <div className="bg-royalMaroon-800 p-6 text-white flex justify-between items-center border-b border-royalGold-400/30">
+                            <div className="bg-royalMaroon-800 p-6 text-white flex justify-between items-center border-b border-royalGold-400/30 shrink-0">
                                 <h3 className="text-xl font-serif font-bold text-royalGold-400">Complete Reservation</h3>
                                 <button onClick={() => setShowCheckout(false)} className="text-white/70 hover:text-white"><X size={24}/></button>
                             </div>
-                            <div className="p-8">
+                            <div className="p-8 overflow-y-auto">
                                 <div className="flex gap-4 mb-8 pb-8 border-b border-gray-100">
                                     <img src={property.image} className="w-24 h-24 rounded-2xl object-cover" />
                                     <div>
@@ -1027,21 +1116,49 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                         )}
                                             
                                         <div className="pt-4 mt-4">
-                                            <button 
-                                                onClick={() => {
-                                                    setProcessing(true);
-                                                    setTimeout(() => {
-                                                        setProcessing(false);
-                                                        setShowCheckout(false);
-                                                        alert("Booking Confirmed! The property owner has been notified.");
-                                                    }, 1500);
-                                                }}
-                                                disabled={processing}
-                                                className="w-full text-white font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:opacity-90 disabled:opacity-70 flex justify-center items-center gap-2"
-                                                style={{backgroundColor: '#6F4E37'}}
-                                            >
-                                                {processing ? 'Processing...' : 'Confirm'}
-                                            </button>
+                                            <div className="flex gap-3">
+                                                <button 
+                                                    onClick={() => setShowCheckout(false)}
+                                                    className="w-full text-slate-700 font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:bg-slate-200 bg-slate-100 flex justify-center items-center"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button 
+                                                    onClick={async () => {
+                                                        setProcessing(true);
+                                                        setPaymentErrors({});
+                                                        try {
+                                                            const response = await axios.post('/api/orders', {
+                                                                type: 'accommodation',
+                                                                details: {
+                                                                    accommodation_id: property.id,
+                                                                    roomType: rooms[roomType].name,
+                                                                    nights,
+                                                                    guests
+                                                                },
+                                                                total_amount: total + Math.round(total * 0.1),
+                                                                payment_method: paymentMethod,
+                                                                payment_details: paymentMethod === 'card' ? paymentData : null
+                                                            });
+                                                            setProcessing(false);
+                                                            setShowCheckout(false);
+                                                            alert("Booking Confirmed! Order ID: " + response.data.order.id);
+                                                        } catch (error) {
+                                                            setProcessing(false);
+                                                            if (error.response?.data?.message) {
+                                                                alert("Error: " + error.response.data.message);
+                                                            } else {
+                                                                alert("Payment processing failed.");
+                                                            }
+                                                        }
+                                                    }}
+                                                    disabled={processing}
+                                                    className="w-full text-white font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:opacity-90 disabled:opacity-70 flex justify-center items-center gap-2"
+                                                    style={{backgroundColor: '#6F4E37'}}
+                                                >
+                                                    {processing ? 'Processing...' : 'Confirm'}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1441,6 +1558,16 @@ function MapView({ property, accommodations }) {
 function FoodView({ cart, setCart }) {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState('All');
+    const [showFoodCheckout, setShowFoodCheckout] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('card');
+    const [paymentData, setPaymentData] = useState({
+        card_holder: '',
+        card_number: '',
+        valid_date: '',
+        cvv: ''
+    });
+    const [paymentErrors, setPaymentErrors] = useState({});
+    const [processing, setProcessing] = useState(false);
 
     const filteredMenu = activeCategory === 'All' ? FOOD_MENU : FOOD_MENU.filter(item => item.category === activeCategory.toUpperCase());
 
@@ -1610,11 +1737,179 @@ function FoodView({ cart, setCart }) {
                                     <span>Total</span>
                                     <span>${cartTotal + Math.round(cartTotal * 0.1)}</span>
                                 </div>
-                                <button className="w-full py-4 bg-royalMaroon-800 text-royalGold-400 font-bold rounded-xl shadow-lg hover:bg-royalMaroon-700 transition-colors flex items-center justify-center gap-2">
+                                <button 
+                                    onClick={() => setShowFoodCheckout(true)}
+                                    className="w-full py-4 bg-royalMaroon-800 text-royalGold-400 font-bold rounded-xl shadow-lg hover:bg-royalMaroon-700 transition-colors flex items-center justify-center gap-2">
                                     Checkout Order <Check size={18} />
                                 </button>
                             </div>
                         )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Food Checkout Modal */}
+            <AnimatePresence>
+                {showFoodCheckout && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] flex items-center justify-center p-4"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                            className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+                        >
+                            <div className="bg-royalMaroon-800 p-6 text-white flex justify-between items-center border-b border-royalGold-400/30 shrink-0">
+                                <h3 className="text-xl font-serif font-bold text-royalGold-400">Complete Dining Order</h3>
+                                <button onClick={() => setShowFoodCheckout(false)} className="text-white/70 hover:text-white"><X size={24}/></button>
+                            </div>
+                            <div className="p-8 overflow-y-auto">
+                                <div className="mb-8 pb-8 border-b border-gray-100 flex justify-between items-center">
+                                    <div>
+                                        <h4 className="font-bold text-lg text-gray-900">Your Cart ({cart.reduce((sum, item) => sum + item.qty, 0)} items)</h4>
+                                    </div>
+                                    <p className="font-bold text-royalTeal text-xl">Total: ${cart.reduce((sum, item) => sum + (item.price * item.qty), 0) + Math.round(cart.reduce((sum, item) => sum + (item.price * item.qty), 0) * 0.1)}</p>
+                                </div>
+                                
+                                <h2 className="text-xl font-bold text-slate-900 mb-6 font-sans">Payment Method</h2>
+                                
+                                <div className="p-3 sm:p-4 rounded-lg space-y-3" style={{backgroundColor: '#6F4E37'}}>
+                                    {/* KOKO Option */}
+                                    <div className="bg-white rounded-md p-4 flex items-center justify-between cursor-pointer shadow-sm" onClick={() => setPaymentMethod('koko')}>
+                                        <div className="flex items-center gap-4">
+                                            <input type="radio" checked={paymentMethod === 'koko'} onChange={() => setPaymentMethod('koko')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
+                                            <span className="font-medium text-slate-800 text-[15px]">KOKO</span>
+                                        </div>
+                                        <div className="font-bold text-lg tracking-wider" style={{WebkitTextStroke: "1px #6F4E37", color: "transparent"}}>KOKO</div>
+                                    </div>
+                                    
+                                    {/* Credit/Debit Card Option */}
+                                    <div className={`bg-white rounded-md p-5 shadow-sm cursor-pointer ${paymentMethod === 'card' ? 'ring-2 ring-craft-brown border-transparent' : ''}`} onClick={() => setPaymentMethod('card')}>
+                                        <div className="flex items-center justify-between mb-5">
+                                            <div className="flex items-center gap-4">
+                                                <input type="radio" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
+                                                <span className="font-medium text-slate-800 text-[15px]">Credit/ Debit Card</span>
+                                            </div>
+                                            <CreditCard className="w-7 h-7" style={{color: '#3b82f6'}} strokeWidth={1.5} />
+                                        </div>
+                                        
+                                        {paymentMethod === 'card' && (
+                                            <>
+                                                <div className="mb-6 pl-9">
+                                                    <p className="text-[13px] text-slate-500 mb-2">We accept</p>
+                                                    <div className="flex gap-2">
+                                                        <div className="border border-slate-200 rounded px-2.5 py-1 font-bold italic text-[11px] flex items-center justify-center h-7" style={{color: '#1d4ed8'}}>VISA</div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Holder</label>
+                                                        <input type="text" value={paymentData.card_holder} onChange={e => setPaymentData({...paymentData, card_holder: e.target.value})} className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 text-slate-900" style={{outlineColor: '#6F4E37'}} />
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Number</label>
+                                                        <div className="relative">
+                                                            <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
+                                                                <CreditCard className="h-4 w-4 text-slate-400" />
+                                                            </div>
+                                                            <input 
+                                                                type="text" 
+                                                                value={paymentData.card_number} 
+                                                                onChange={e => {
+                                                                    let val = e.target.value.replace(/\D/g, '');
+                                                                    val = val.replace(/(.{4})/g, '$1 ').trim();
+                                                                    setPaymentData({...paymentData, card_number: val.substring(0, 19)});
+                                                                }} 
+                                                                placeholder="0000 0000 0000 0000" 
+                                                                className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
+                                                                style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
+                                                                maxLength="19"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Valid Date</label>
+                                                        <div className="relative">
+                                                            <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
+                                                                <Calendar className="h-4 w-4 text-slate-400" />
+                                                            </div>
+                                                            <input 
+                                                                type="text" 
+                                                                value={paymentData.valid_date} 
+                                                                onChange={e => {
+                                                                    let val = e.target.value.replace(/\D/g, '');
+                                                                    if (val.length > 2) {
+                                                                        val = val.substring(0, 2) + '/' + val.substring(2, 4);
+                                                                    }
+                                                                    setPaymentData({...paymentData, valid_date: val});
+                                                                }} 
+                                                                placeholder="MM/YY" 
+                                                                className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
+                                                                style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
+                                                                maxLength="5"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">CVV</label>
+                                                        <input type="text" value={paymentData.cvv} onChange={e => setPaymentData({...paymentData, cvv: e.target.value})} placeholder="XXX" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" style={{outlineColor: '#6F4E37'}} />
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                            
+                                        <div className="pt-4 mt-4">
+                                            <div className="flex gap-3">
+                                                <button 
+                                                    onClick={() => setShowFoodCheckout(false)}
+                                                    className="w-full text-slate-700 font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:bg-slate-200 bg-slate-100 flex justify-center items-center"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button 
+                                                    onClick={async () => {
+                                                        setProcessing(true);
+                                                        setPaymentErrors({});
+                                                        try {
+                                                            const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                                                            const grandTotal = cartTotal + Math.round(cartTotal * 0.1);
+                                                            const response = await axios.post('/api/orders', {
+                                                                type: 'food',
+                                                                details: { cart },
+                                                                total_amount: grandTotal,
+                                                                payment_method: paymentMethod,
+                                                                payment_details: paymentMethod === 'card' ? paymentData : null
+                                                            });
+                                                            setProcessing(false);
+                                                            setShowFoodCheckout(false);
+                                                            setCart([]);
+                                                            setIsCartOpen(false);
+                                                            alert("Dining Order Confirmed! Order ID: " + response.data.order.id);
+                                                        } catch (error) {
+                                                            setProcessing(false);
+                                                            if (error.response?.data?.message) {
+                                                                alert("Error: " + error.response.data.message);
+                                                            } else {
+                                                                alert("Payment processing failed.");
+                                                            }
+                                                        }
+                                                    }}
+                                                    disabled={processing}
+                                                    className="w-full text-white font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:opacity-90 disabled:opacity-70 flex justify-center items-center gap-2"
+                                                    style={{backgroundColor: '#6F4E37'}}
+                                                >
+                                                    {processing ? 'Processing...' : 'Confirm'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
