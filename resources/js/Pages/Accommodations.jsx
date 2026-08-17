@@ -318,14 +318,17 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                                         {bookings.map(order => (
                                             <div key={order.id} className="border border-royalGold-400/30 rounded-xl p-4 bg-[#fdf9f9]">
                                                 <div className="flex justify-between items-start mb-3">
-                                                    <h4 className="font-bold text-royalTeal line-clamp-1 flex-1 pr-2">Booking #{order.id}</h4>
+                                                    <h4 className="font-bold text-royalTeal">{order.details.propertyName || 'Luxury Property'}</h4>
                                                     <span className="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded">CONFIRMED</span>
                                                 </div>
-                                                <p className="text-sm text-gray-600 mb-1"><strong>Room:</strong> {order.details.roomType}</p>
-                                                <p className="text-sm text-gray-600 mb-4"><strong>Nights:</strong> {order.details.nights} • <strong>Guests:</strong> {order.details.guests}</p>
-                                                <div className="flex justify-between items-center text-xs font-bold text-royalMaroon-900 border-t border-gray-200 pt-3">
-                                                    <span className="flex items-center gap-1"><Sparkles size={12} /> {order.type}</span>
-                                                    <span>${order.total_amount}</span>
+                                                <p className="text-sm text-gray-600 mb-1">
+                                                    <strong>Check-in:</strong> {order.details.checkIn ? new Date(order.details.checkIn).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) + ' (2:00 PM)' : 'N/A'}
+                                                </p>
+                                                <p className="text-sm text-gray-600 mb-4">
+                                                    <strong>Check-out:</strong> {order.details.checkOut ? new Date(order.details.checkOut).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) + ' (11:00 AM)' : 'N/A'}
+                                                </p>
+                                                <div className="flex items-center gap-2 text-xs font-bold text-royalMaroon-900 border-t border-gray-200 pt-3">
+                                                    <Sparkles size={12} /> {order.details.roomType} • {order.details.guests} Guests
                                                 </div>
                                             </div>
                                         ))}
@@ -333,7 +336,10 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                                 )}
                                 <div className="mt-4 flex gap-3">
                                     <button onClick={() => setShowBookings(false)} className="flex-1 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">
-                                        Close
+                                        Modify
+                                    </button>
+                                    <button onClick={() => setShowBookings(false)} className="flex-1 py-3 bg-royalMaroon-800 text-royalGold-400 font-bold rounded-xl hover:bg-royalMaroon-700 transition-colors text-sm">
+                                        View Details
                                     </button>
                                 </div>
                             </div>
@@ -1170,6 +1176,9 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                                                 type: 'accommodation',
                                                                 details: {
                                                                     accommodation_id: property.id,
+                                                                    propertyName: property.name,
+                                                                    checkIn: checkIn,
+                                                                    checkOut: checkOut,
                                                                     roomType: rooms[roomType].name,
                                                                     nights,
                                                                     guests
