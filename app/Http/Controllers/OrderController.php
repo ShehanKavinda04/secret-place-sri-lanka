@@ -4,9 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use Illuminate\Support\Facades\Session;
 
 class OrderController extends Controller
 {
+    public function index(Request $request)
+    {
+        $userId = auth()->id();
+        $sessionId = Session::getId();
+
+        $orders = Order::where(function($q) use ($userId, $sessionId) {
+                if ($userId) {
+                    $q->where('user_id', $userId);
+                } else {
+                    $q->where('session_id', $sessionId);
+                }
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($orders);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -22,6 +41,8 @@ class OrderController extends Controller
         }
 
         $order = Order::create([
+            'session_id' => Session::getId(),
+            'user_id' => auth()->id(),
             'type' => $validated['type'],
             'details' => $validated['details'],
             'total_amount' => $validated['total_amount'],

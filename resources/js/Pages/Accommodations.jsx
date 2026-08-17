@@ -100,8 +100,36 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
     const [cart, setCart] = useState([]);
     const [showWishlist, setShowWishlist] = useState(false);
     const [showBookings, setShowBookings] = useState(false);
+    const [wishlistItems, setWishlistItems] = useState([]);
+    const [bookings, setBookings] = useState([]);
 
-    
+    useEffect(() => {
+        fetchWishlist();
+        fetchBookings();
+    }, []);
+
+    const fetchWishlist = async () => {
+        try {
+            const res = await axios.get('/api/wishlists');
+            setWishlistItems(res.data);
+        } catch (e) { console.error("Error fetching wishlist", e); }
+    };
+
+    const fetchBookings = async () => {
+        try {
+            const res = await axios.get('/api/orders');
+            setBookings(res.data.filter(order => order.type === 'accommodation'));
+        } catch (e) { console.error("Error fetching bookings", e); }
+    };
+
+    const toggleWishlist = async (propertyId) => {
+        try {
+            await axios.post('/api/wishlists/toggle', { accommodation_id: propertyId });
+            fetchWishlist();
+        } catch (e) { console.error("Error toggling wishlist", e); }
+    };
+
+
     const handleViewDetails = (property) => {
         setSelectedProperty(property);
         setActiveTab('detail');
@@ -143,10 +171,10 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
 
                     <div className="flex items-center gap-6">
                         <button onClick={() => setShowWishlist(true)} className="flex items-center gap-2 hover:text-royalGold-400 transition-colors">
-                            <Heart size={16} /> Wishlist (2)
+                            <Heart size={16} /> Wishlist ({wishlistItems.length})
                         </button>
                         <button onClick={() => setShowBookings(true)} className="flex items-center gap-2 hover:text-royalGold-400 transition-colors">
-                            <Calendar size={16} /> Bookings
+                            <Calendar size={16} /> Bookings ({bookings.length})
                         </button>
                     </div>
                 </div>
@@ -205,10 +233,10 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                 
                 <AnimatePresence mode="wait">
                     {activeTab === 'listing' && (
-                        <ListingView key="listing" onSelect={handleViewDetails} accommodations={accommodations} />
+                        <ListingView key="listing" onSelect={handleViewDetails} accommodations={accommodations} wishlistItems={wishlistItems} toggleWishlist={toggleWishlist} />
                     )}
                     {activeTab === 'detail' && selectedProperty && (
-                        <DetailView property={selectedProperty} onBack={() => setActiveTab('listing')} onMap={() => setActiveTab('map')} onFood={() => setActiveTab('food')} reviews={reviews} policy={policy} addons={addons} roomsProp={roomsProp} estateDetail={estateDetail} />
+                        <DetailView property={selectedProperty} onBack={() => setActiveTab('listing')} onMap={() => setActiveTab('map')} onFood={() => setActiveTab('food')} reviews={reviews} policy={policy} addons={addons} roomsProp={roomsProp} estateDetail={estateDetail} wishlistItems={wishlistItems} toggleWishlist={toggleWishlist} />
                     )}
                     {activeTab === 'map' && (
                         <MapView key="map" property={selectedProperty} accommodations={accommodations} />
@@ -235,27 +263,31 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                                 <h3 className="text-xl font-serif font-bold text-royalGold-400 flex items-center gap-2"><Heart size={20}/> Your Wishlist</h3>
                                 <button onClick={() => setShowWishlist(false)} className="text-white/70 hover:text-white"><X size={24}/></button>
                             </div>
-                            <div className="p-6">
-                                <div className="space-y-4">
-                                    <div className="flex gap-4 p-3 border border-gray-100 rounded-xl hover:border-royalMaroon-800/30 transition-colors cursor-pointer">
-                                        <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" className="w-20 h-20 rounded-lg object-cover" />
-                                        <div>
-                                            <h4 className="font-bold text-royalTeal">Ceylon Tea Trails</h4>
-                                            <p className="text-xs text-gray-500 mb-2">Hatton, Sri Lanka</p>
-                                            <span className="text-xs font-bold text-royalMaroon-900">$2,400 / night</span>
-                                        </div>
+                            <div className="p-6 overflow-y-auto max-h-[70vh]">
+                                {wishlistItems.length === 0 ? (
+                                    <div className="text-center py-8 text-gray-500">Your wishlist is empty.</div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {wishlistItems.map(item => (
+                                            <div key={item.id} onClick={() => { handleViewDetails(item.accommodation); setShowWishlist(false); }} className="flex gap-4 p-3 border border-gray-100 rounded-xl hover:border-royalMaroon-800/30 transition-colors cursor-pointer relative group">
+                                                <img src={item.accommodation.image || "https://images.unsplash.com/photo-1540541338287-41700207dee6?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80"} className="w-20 h-20 rounded-lg object-cover" />
+                                                <div className="flex-1">
+                                                    <h4 className="font-bold text-royalTeal line-clamp-1">{item.accommodation.name}</h4>
+                                                    <p className="text-xs text-gray-500 mb-2">{item.accommodation.location || 'Sri Lanka'}</p>
+                                                    <span className="text-xs font-bold text-royalMaroon-900">${item.accommodation.price_per_night || 2400} / night</span>
+                                                </div>
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); toggleWishlist(item.accommodation_id); }}
+                                                    className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-white/80 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 text-red-500"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="flex gap-4 p-3 border border-gray-100 rounded-xl hover:border-royalMaroon-800/30 transition-colors cursor-pointer">
-                                        <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" className="w-20 h-20 rounded-lg object-cover" />
-                                        <div>
-                                            <h4 className="font-bold text-royalTeal">Amangalla Resort</h4>
-                                            <p className="text-xs text-gray-500 mb-2">Galle Fort, Sri Lanka</p>
-                                            <span className="text-xs font-bold text-royalMaroon-900">$1,850 / night</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button className="w-full mt-6 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl hover:bg-gray-200 transition-colors">
-                                    View Full Wishlist
+                                )}
+                                <button onClick={() => setShowWishlist(false)} className="w-full mt-6 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl hover:bg-gray-200 transition-colors">
+                                    Close Wishlist
                                 </button>
                             </div>
                         </motion.div>
@@ -278,24 +310,30 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                                 <h3 className="text-xl font-serif font-bold text-royalGold-400 flex items-center gap-2"><Calendar size={20}/> Upcoming Bookings</h3>
                                 <button onClick={() => setShowBookings(false)} className="text-white/70 hover:text-white"><X size={24}/></button>
                             </div>
-                            <div className="p-6">
-                                <div className="border border-royalGold-400/30 rounded-xl p-4 bg-[#fdf9f9]">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <h4 className="font-bold text-royalTeal">Amangalla Resort</h4>
-                                        <span className="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded">CONFIRMED</span>
+                            <div className="p-6 overflow-y-auto max-h-[70vh]">
+                                {bookings.length === 0 ? (
+                                    <div className="text-center py-8 text-gray-500">You have no upcoming bookings.</div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {bookings.map(order => (
+                                            <div key={order.id} className="border border-royalGold-400/30 rounded-xl p-4 bg-[#fdf9f9]">
+                                                <div className="flex justify-between items-start mb-3">
+                                                    <h4 className="font-bold text-royalTeal line-clamp-1 flex-1 pr-2">Booking #{order.id}</h4>
+                                                    <span className="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded">CONFIRMED</span>
+                                                </div>
+                                                <p className="text-sm text-gray-600 mb-1"><strong>Room:</strong> {order.details.roomType}</p>
+                                                <p className="text-sm text-gray-600 mb-4"><strong>Nights:</strong> {order.details.nights} • <strong>Guests:</strong> {order.details.guests}</p>
+                                                <div className="flex justify-between items-center text-xs font-bold text-royalMaroon-900 border-t border-gray-200 pt-3">
+                                                    <span className="flex items-center gap-1"><Sparkles size={12} /> {order.type}</span>
+                                                    <span>${order.total_amount}</span>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <p className="text-sm text-gray-600 mb-1"><strong>Check-in:</strong> Oct 15, 2026 (2:00 PM)</p>
-                                    <p className="text-sm text-gray-600 mb-4"><strong>Check-out:</strong> Oct 18, 2026 (11:00 AM)</p>
-                                    <div className="flex items-center gap-2 text-xs font-bold text-royalMaroon-900 border-t border-gray-200 pt-3">
-                                        <Sparkles size={12} /> Ocean View Suite • 2 Guests
-                                    </div>
-                                </div>
+                                )}
                                 <div className="mt-4 flex gap-3">
-                                    <button className="flex-1 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">
-                                        Modify
-                                    </button>
-                                    <button className="flex-1 py-3 bg-royalMaroon-800 text-royalGold-400 font-bold rounded-xl hover:bg-royalMaroon-700 transition-colors text-sm">
-                                        View Details
+                                    <button onClick={() => setShowBookings(false)} className="flex-1 py-3 bg-gray-100 text-gray-800 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">
+                                        Close
                                     </button>
                                 </div>
                             </div>
@@ -310,7 +348,7 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
 
 // Subcomponents
 
-function ListingView({ onSelect, accommodations = [] }) {
+function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggleWishlist }) {
     const [activeFilter, setActiveFilter] = useState('All Escapes (6)');
 
     return (
@@ -435,8 +473,11 @@ function ListingView({ onSelect, accommodations = [] }) {
                                     </div>
                                     
                                     {/* Heart Button */}
-                                    <button className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center bg-heart-pink rounded-full text-white shadow-md hover:scale-110 transition-transform">
-                                        <Heart size={16} className="fill-current" />
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); toggleWishlist(prop.id); }}
+                                        className={`absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:scale-110 transition-transform ${wishlistItems.some(i => i.accommodation_id === prop.id) ? 'bg-heart-pink text-white' : 'bg-white text-gray-400 hover:text-heart-pink'}`}
+                                    >
+                                        <Heart size={16} className={wishlistItems.some(i => i.accommodation_id === prop.id) ? 'fill-current' : ''} />
                                     </button>
 
                                     {/* Image Slider Indicators */}
@@ -507,7 +548,7 @@ function ListingView({ onSelect, accommodations = [] }) {
     );
 }
 
-function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, roomsProp, estateDetail }) {
+function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, roomsProp, estateDetail, wishlistItems = [], toggleWishlist }) {
     const [guests, setGuests] = useState(2);
     const [checkIn, setCheckIn] = useState('2026-08-15');
     const [checkOut, setCheckOut] = useState('2026-08-18');
@@ -518,13 +559,10 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
     const [selectedAddons, setSelectedAddons] = useState([]);
     const [likes, setLikes] = useState(property.likes || 0);
     const [shares, setShares] = useState(property.shares || 0);
-    const [isFavorited, setIsFavorited] = useState(false);
+    const isFavorited = wishlistItems.some(i => i.accommodation_id === property.id);
 
     const handleLike = () => {
-        if (isFavorited) return; // simple toggle prevention
-        setIsFavorited(true);
-        setLikes(prev => prev + 1);
-        router.post(`/accommodations/${property.id}/like`, {}, { preserveScroll: true, preserveState: true });
+        toggleWishlist(property.id);
     };
 
     const handleShare = () => {

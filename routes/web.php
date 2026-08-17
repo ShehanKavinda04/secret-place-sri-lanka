@@ -8,8 +8,12 @@ use App\Http\Controllers\ForecastController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\SmartPricingController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\WishlistController;
 
+Route::get('/api/orders', [OrderController::class, 'index']);
 Route::post('/api/orders', [OrderController::class, 'store']);
+Route::get('/api/wishlists', [WishlistController::class, 'index']);
+Route::post('/api/wishlists/toggle', [WishlistController::class, 'toggle']);
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
