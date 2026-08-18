@@ -30,7 +30,7 @@ const FOOD_MENU = [
         id: 1, 
         name: "Truffle & Beluga Caviar Omelette", 
         category: "BREAKFAST", 
-        price: 95, 
+        price: 28500, 
         tags: ["Michelin Signature", "Gluten-Free", "Organic"], 
         time: "15 mins",
         image: "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
@@ -41,7 +41,7 @@ const FOOD_MENU = [
         id: 2, 
         name: "A5 Miyazaki Wagyu Beef Tartare", 
         category: "LUNCH", 
-        price: 110, 
+        price: 33000, 
         tags: ["Michelin Signature", "Halal"], 
         time: "20 mins",
         image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
@@ -52,7 +52,7 @@ const FOOD_MENU = [
         id: 3, 
         name: "Pan-Seared Brittany Sea Bass with Saffron Foam", 
         category: "DINNER", 
-        price: 140, 
+        price: 42000, 
         tags: ["Gluten-Free", "Dairy-Free", "Organic", "Michelin Signature"], 
         time: "25 mins",
         image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
@@ -63,7 +63,7 @@ const FOOD_MENU = [
         id: 4, 
         name: "Wild Morel Mushroom Risotto", 
         category: "DINNER", 
-        price: 85, 
+        price: 25500, 
         tags: ["Vegan", "Gluten-Free", "Organic"], 
         time: "20 mins",
         image: "https://images.unsplash.com/photo-1633504581786-316c8002b1b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
@@ -74,7 +74,7 @@ const FOOD_MENU = [
         id: 5, 
         name: "Vintage Dom Pérignon Champagne 2013 (750ml)", 
         category: "BEVERAGES & WINE", 
-        price: 420, 
+        price: 126000, 
         tags: [], 
         time: "5 mins",
         image: "https://images.unsplash.com/photo-1585553616435-2dc0a54e271d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
@@ -85,7 +85,7 @@ const FOOD_MENU = [
         id: 6, 
         name: "Gold Leaf Matcha Cold-Pressed Elixir", 
         category: "SPA WELLNESS", 
-        price: 35, 
+        price: 10500, 
         tags: ["Vegan", "Gluten-Free", "Organic", "Halal"], 
         time: "10 mins",
         image: "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
@@ -93,6 +93,8 @@ const FOOD_MENU = [
         ingredients: "Ceremonial Uji Matcha, Artisanal Almond Milk, Organic Wildflower Honey, 24k Gold Leaf"
     },
 ];
+
+const formatPrice = (amount) => new Intl.NumberFormat('en-LK', { style: 'currency', currency: 'LKR', maximumFractionDigits: 0 }).format(amount);
 
 export default function Accommodations({ auth, reviews = [], policy, addons = [], roomsProp = [], estateDetail = {}, accommodations = [] }) {
     const [activeTab, setActiveTab] = useState('listing'); // listing, detail, map, food
@@ -187,8 +189,8 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                         {/* Background Image */}
                         <div className="absolute inset-0 z-0">
                             <img 
-                                src="https://images.unsplash.com/photo-1540541338287-41700207dee6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80" 
-                                alt="Luxury Resort" 
+                                src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80" 
+                                alt="Luxury Resort Anuradhapura" 
                                 className="w-full h-full object-cover" 
                             />
                         </div>
@@ -205,10 +207,10 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                                 <Sparkles size={14} /> CATEGORY EXPLORATION
                             </div>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight mb-4 text-white drop-shadow-lg">
-                                Unrivaled Luxury Stays &<br />Private Estates
+                                Sacred City Sanctuaries &<br />Luxury Estates
                             </h1>
                             <p className="text-white/90 text-sm md:text-base leading-relaxed font-medium drop-shadow-md max-w-2xl mx-auto">
-                                Discover profound inner peace through 5-star oceanfront resorts, private heritage villas, and Michelin dining spots across Sri Lanka.
+                                Discover profound inner peace through 5-star heritage resorts, private villas, and authentic dining spots across the sacred city of Anuradhapura.
                             </p>
                         </div>
                     </div>
@@ -219,10 +221,10 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                             EXPLORATION DESK
                         </div>
                         <h2 className="text-3xl md:text-4xl font-serif font-bold text-royalMaroon-900 mb-4">
-                            Unrivaled Luxury Stays & Private Estates
+                            Sacred City Sanctuaries & Luxury Estates
                         </h2>
                         <p className="text-gray-500 max-w-3xl text-sm md:text-base leading-relaxed">
-                            Rejuvenate mind, body and soul through handpicked oceanfront resorts, private heritage villas, and transformative high-end wellness experiences with personal butler service and live chauffeured route tracking.
+                            Rejuvenate mind, body and soul through handpicked heritage resorts, private villas overlooking ancient reservoirs, and transformative high-end wellness experiences nestled in Anuradhapura with personal butler service and live chauffeured route tracking.
                         </p>
                     </div>
                 </>
@@ -274,7 +276,7 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                                                 <div className="flex-1">
                                                     <h4 className="font-bold text-royalTeal line-clamp-1">{item.accommodation.name}</h4>
                                                     <p className="text-xs text-gray-500 mb-2">{item.accommodation.location || 'Sri Lanka'}</p>
-                                                    <span className="text-xs font-bold text-royalMaroon-900">${item.accommodation.price_per_night || 2400} / night</span>
+                                                    <span className="text-xs font-bold text-royalMaroon-900">{formatPrice(item.accommodation.price_per_night || 720000)} / night</span>
                                                 </div>
                                                 <button 
                                                     onClick={(e) => { e.stopPropagation(); toggleWishlist(item.accommodation_id); }}
@@ -413,13 +415,13 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
                             <div>
                                 <div className="flex justify-between items-end mb-4">
                                     <label className="block text-sm font-bold text-gray-800">Max Starting Price</label>
-                                    <span className="text-sm font-bold text-royalTeal">$2500 / night</span>
+                                    <span className="text-sm font-bold text-royalTeal">LKR 750,000 / night</span>
                                 </div>
                                 <input type="range" min="300" max="2500" defaultValue="2500" className="w-full h-2 bg-slider-track rounded-lg appearance-none cursor-pointer accent-royalMaroon-800" />
                                 <div className="flex justify-between text-xs font-medium text-gray-400 mt-2">
-                                    <span>$300</span>
-                                    <span>$1,400</span>
-                                    <span>$2,500+</span>
+                                    <span>LKR 90,000</span>
+                                    <span>LKR 420,000</span>
+                                    <span>LKR 750,000+</span>
                                 </div>
                             </div>
 
@@ -531,7 +533,7 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
                                         <div>
                                             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Starting From</div>
                                             <div className="flex items-baseline gap-1">
-                                                <span className="text-xl font-bold text-royalTeal">${prop.price}</span>
+                                                <span className="text-xl font-bold text-royalTeal">{formatPrice(prop.price)}</span>
                                                 <span className="text-xs text-gray-500">/ night</span>
                                             </div>
                                         </div>
@@ -705,9 +707,9 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                     
                     {/* Host & Description */}
                     <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
-                        <h2 className="text-2xl font-serif font-bold text-royalTeal mb-6">{estateDetail?.title || "Cliffside Infinity Paradise on the Amalfi Coast"}</h2>
+                        <h2 className="text-2xl font-serif font-bold text-royalTeal mb-6">{property.name}</h2>
                         <p className="text-gray-600 leading-relaxed mb-8">
-                            {estateDetail?.description || "Designed by master Italian architects, Aurelia Riviera merges 18th-century royal Mediterranean heritage with ultra-modern biometric comfort. Enjoy private beach elevator access, champagne sunset terraces, custom fragrance concierges, and direct helicopter transfers."}
+                            {property.description}
                         </p>
                         
                         <div className="flex justify-between items-center pt-6 border-t border-gray-100">
@@ -748,7 +750,7 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="text-lg font-bold text-royalTeal">{room.name}</h3>
                                             <div className="bg-[#fcf0f2] text-royalTeal px-3 py-1 rounded-md flex items-baseline gap-1">
-                                                <span className="font-bold text-sm">${room.price}</span>
+                                                <span className="font-bold text-sm">{formatPrice(room.price)}</span>
                                                 <span className="text-[10px]">/ night</span>
                                             </div>
                                         </div>
@@ -809,7 +811,7 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                             <div className="flex justify-between items-start mb-1 gap-2">
                                                 <h4 className="text-sm font-bold text-gray-900 leading-tight pr-2">{addon.title}</h4>
                                                 <span className={`text-xs font-bold px-2 py-1 rounded shrink-0 ${isSelected ? 'text-white bg-royalTeal' : 'text-royalTeal bg-royalMaroon-800/10'}`}>
-                                                    +${addon.price}
+                                                    +{formatPrice(addon.price)}
                                                 </span>
                                             </div>
                                             <p className="text-xs text-gray-500 leading-relaxed mt-1">{addon.desc}</p>
@@ -942,7 +944,7 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                         <div className="flex justify-between items-start mb-6 pb-6 border-b border-gray-100">
                             <div>
                                 <div className="text-3xl font-bold text-royalTeal flex items-baseline gap-1">
-                                    ${rooms[roomType].price} <span className="text-xs font-normal text-gray-400">/ night</span>
+                                    {formatPrice(rooms[roomType].price)} <span className="text-xs font-normal text-gray-400">/ night</span>
                                 </div>
                                 <div className="text-xs text-gray-500 mt-2">
                                     Selected: <span className="font-bold text-gray-800">{rooms[roomType].name}</span>
@@ -997,22 +999,22 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
 
                         <div className="space-y-3 mb-6">
                             <div className="flex justify-between text-xs text-gray-500">
-                                <span>${rooms[roomType].price} × {nights} nights × {guests} guests</span>
-                                <span className="font-medium">${total}</span>
+                                <span>{formatPrice(rooms[roomType].price)} × {nights} nights × {guests} guests</span>
+                                <span className="font-medium">{formatPrice(total)}</span>
                             </div>
                             <div className="flex justify-between text-xs text-gray-500">
                                 <span>Concierge & Resort Fee (8%)</span>
-                                <span className="font-medium">${fee}</span>
+                                <span className="font-medium">{formatPrice(fee)}</span>
                             </div>
                             <div className="flex justify-between text-xs font-bold text-royalTeal">
                                 <span>Emerald VIP Savings (5%)</span>
-                                <span>-${savings}</span>
+                                <span>-{formatPrice(savings)}</span>
                             </div>
                         </div>
 
                         <div className="flex justify-between items-end pt-6 border-t border-gray-100 mb-8">
                             <span className="text-sm font-bold text-gray-900">Total Price</span>
-                            <span className="text-2xl font-bold text-royalTeal">${grandTotal}</span>
+                            <span className="text-2xl font-bold text-royalTeal">{formatPrice(grandTotal)}</span>
                         </div>
 
                         <button 
@@ -1047,7 +1049,7 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                     <div>
                                         <h4 className="font-bold text-lg text-gray-900">{property.name}</h4>
                                         <p className="text-sm text-gray-500">{rooms[roomType].name} • {nights} Nights • {guests} Guests</p>
-                                        <p className="font-bold text-royalTeal mt-2">Total: ${total + Math.round(total * 0.1)}</p>
+                                        <p className="font-bold text-royalTeal mt-2">Total: {formatPrice(total + Math.round(total * 0.1))}</p>
                                     </div>
                                 </div>
                                 
@@ -1311,9 +1313,9 @@ function MapView({ property, accommodations }) {
     };
 
     const transitData = {
-        car: { label: 'Chauffeured Car', icon: Car, cost: '$45', time: '38 Mins', distance: '42.8 km' },
-        shuttle: { label: 'Shuttle Express', icon: Wind, cost: '$15', time: '55 Mins', distance: '45.1 km' },
-        rail: { label: 'High-Speed Rail', icon: Compass, cost: '$25', time: '25 Mins', distance: '38.5 km' },
+        car: { label: 'Chauffeured Car', icon: Car, cost: 'LKR 13,500', time: '38 Mins', distance: '42.8 km' },
+        shuttle: { label: 'Shuttle Express', icon: Wind, cost: 'LKR 4,500', time: '55 Mins', distance: '45.1 km' },
+        rail: { label: 'High-Speed Rail', icon: Compass, cost: 'LKR 7,500', time: '25 Mins', distance: '38.5 km' },
         bicycle: { label: 'Bicycle', icon: Bike, cost: 'Free', time: '2 Hrs 15 Mins', distance: '39.0 km' },
         walking: { label: 'Walking', icon: Footprints, cost: 'Free', time: '8 Hrs 30 Mins', distance: '37.5 km' }
     };
@@ -1686,7 +1688,7 @@ function FoodView({ cart, setCart }) {
                         <div className="p-6 flex-1 flex flex-col">
                             <div className="flex justify-between items-start mb-4 gap-4">
                                 <h3 className="font-serif font-bold text-xl text-royalTeal leading-tight">{item.name}</h3>
-                                <div className="text-royalTeal font-bold text-lg">${item.price}</div>
+                                <div className="text-royalTeal font-bold text-lg">{formatPrice(item.price)}</div>
                             </div>
                             
                             <p className="text-xs text-gray-500 mb-5 leading-relaxed">
@@ -1751,7 +1753,7 @@ function FoodView({ cart, setCart }) {
                                             <div className="flex-1 flex flex-col justify-between">
                                                 <div>
                                                     <h4 className="font-bold text-gray-900 text-sm leading-tight mb-1">{item.name}</h4>
-                                                    <div className="text-royalTeal font-bold text-sm">${item.price}</div>
+                                                    <div className="text-royalTeal font-bold text-sm">{formatPrice(item.price)}</div>
                                                 </div>
                                                 <div className="flex items-center justify-between mt-2">
                                                     <div className="flex items-center gap-3">
