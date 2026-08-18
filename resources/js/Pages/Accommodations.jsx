@@ -28,70 +28,136 @@ L.Icon.Default.mergeOptions({
 const FOOD_MENU = [
     { 
         id: 1, 
-        name: "Truffle & Beluga Caviar Omelette", 
-        category: "BREAKFAST", 
-        price: 28500, 
-        tags: ["Michelin Signature", "Gluten-Free", "Organic"], 
+        name: "Authentic Sinhala Rice & Curry Banquet (ඇඹුල් තියල් සහ සහල්)", 
+        category: "SINHALA TRADITIONAL", 
+        mealType: "LUNCH",
+        price: 4500, 
+        tags: ["Traditional Heritage", "Clay Pot", "Organic"], 
         time: "15 mins",
-        image: "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
-        description: "Organic free-range eggs whisked with aged Comté cheese, topped with black winter truffles and 20g Royal Beluga caviar.",
-        ingredients: "Free-range Eggs, Comté Cheese, Black Winter Truffle, Royal Beluga Caviar, French Cultured Butter, Chives"
+        image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Organic Red Matara Kakulu rice served with Southern fish Ambul Thiyal, tempered Parippu (dhal), fresh Pol Sambol, Gotukola Mallum, and crispy papadam in authentic clay pots.",
+        ingredients: "Red Kakulu Rice, Fresh Tuna Fish, Goraka, Coconut Milk, Sri Lankan Spices, Fresh Coconut, Gotukola, Dhal"
     },
     { 
         id: 2, 
-        name: "A5 Miyazaki Wagyu Beef Tartare", 
-        category: "LUNCH", 
-        price: 33000, 
-        tags: ["Michelin Signature", "Halal"], 
-        time: "20 mins",
-        image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
-        description: "Hand-cut Miyazaki Wagyu seasoned with smoked quail egg yolk, shallot confit, caper berries, and crisp brioche toast.",
-        ingredients: "A5 Miyazaki Wagyu, Quail Egg Yolk, Caper Berries, French Shallots, Micro Herbs, House Brioche"
+        name: "Crispy Hoppers (Appa) & Egg Hoppers with Seeni Sambol (ආප්ප)", 
+        category: "SINHALA TRADITIONAL", 
+        mealType: "BREAKFAST",
+        price: 2800, 
+        tags: ["Live Station", "Signature Sinhala", "Vegetarian Option"], 
+        time: "10 mins",
+        image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Bowl-shaped crispy fermented rice flour pancakes with soft spongy centers, served with golden farm-egg hoppers, sweet & spicy caramelized seeni sambol, and spicy lunu miris.",
+        ingredients: "Fermented Rice Flour, Coconut Milk, Toddy Yeast, Farm-Fresh Eggs, Caramelized Onions, Chili Flakes"
     },
     { 
         id: 3, 
-        name: "Pan-Seared Brittany Sea Bass with Saffron Foam", 
-        category: "DINNER", 
-        price: 42000, 
-        tags: ["Gluten-Free", "Dairy-Free", "Organic", "Michelin Signature"], 
-        time: "25 mins",
-        image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
-        description: "Wild Brittany sea bass fillet on a bed of baby artichoke barigoule, heirloom cherry tomatoes, and aromatic saffron emulsion.",
-        ingredients: "Wild Brittany Sea Bass, Wild Artichokes, Saffron, Extra Virgin Olive Oil, Lemon Thyme"
+        name: "Pol Roti with Katta Sambol & Lunu Miris (පොල් රොටී)", 
+        category: "STREET FOOD & ROTIS", 
+        mealType: "BREAKFAST",
+        price: 2200, 
+        tags: ["Village Style", "Spicy", "Authentic"], 
+        time: "10 mins",
+        image: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Warm, thick griddle-baked flatbreads packed with freshly grated coconut and green chilies, served with fiery crushed chili-lime lunu miris and dried Maldive fish katta sambol.",
+        ingredients: "Stoneground Wheat Flour, Fresh Scraped Coconut, Green Chilies, Red Onions, Lime Juice, Maldive Fish"
     },
     { 
         id: 4, 
-        name: "Wild Morel Mushroom Risotto", 
-        category: "DINNER", 
-        price: 25500, 
-        tags: ["Vegan", "Gluten-Free", "Organic"], 
-        time: "20 mins",
-        image: "https://images.unsplash.com/photo-1633504581786-316c8002b1b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
-        description: "Creamy Acquerello carnaroli rice simmered with wild morels, aged Parmigiano Reggiano 36-month, and fresh summer herbs.",
-        ingredients: "Acquerello Carnaroli Rice, Wild Morel Mushrooms, Parmigiano Reggiano 36-month, White Wine, Fresh Herbs"
+        name: "Jaffna Lagoon Crab Curry with Murunga (යාපනයේ කකුළු කරිය)", 
+        category: "JAFFNA TAMIL", 
+        mealType: "DINNER",
+        price: 8500, 
+        tags: ["Jaffna Specialty", "Seafood Masterpiece", "Signature Spicy"], 
+        time: "25 mins",
+        image: "https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Succulent wild blue lagoon crabs stewed in fragrant roasted Jaffna curry powder, fresh drumstick (murunga) leaves, rich coconut milk, tamarind, and fennel seeds.",
+        ingredients: "Fresh Blue Lagoon Crabs, Jaffna Roasted Curry Powder, Murunga Leaves, Coconut Cream, Tamarind, Cumin"
     },
     { 
         id: 5, 
-        name: "Vintage Dom Pérignon Champagne 2013 (750ml)", 
-        category: "BEVERAGES & WINE", 
-        price: 126000, 
-        tags: [], 
-        time: "5 mins",
-        image: "https://images.unsplash.com/photo-1585553616435-2dc0a54e271d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
-        description: "Luminous nose of candied citrus, brioche, and toasted hazelnut with a silky lingering finish.",
-        ingredients: "Chardonnay & Pinot Noir Grapes from Grand Cru Vineyards"
+        name: "Jaffna Idiyappam (String Hoppers) with Sothi & Chutney (ඉඳිආප්ප)", 
+        category: "JAFFNA TAMIL", 
+        mealType: "BREAKFAST",
+        price: 3200, 
+        tags: ["Tamil Heritage", "Gluten-Free", "Vegetarian"], 
+        time: "12 mins",
+        image: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Delicate steamed rice-flour noodle nests served with creamy coconut-turmeric Jaffna sothi gravy, fiery coconut pol sambol, and tangy tomato-mint chutney.",
+        ingredients: "Steamed White & Red Rice Flour, Fresh Coconut Milk, Turmeric, Lime, Mustard Seeds, Curry Leaves"
     },
     { 
         id: 6, 
-        name: "Gold Leaf Matcha Cold-Pressed Elixir", 
-        category: "SPA WELLNESS", 
-        price: 10500, 
-        tags: ["Vegan", "Gluten-Free", "Organic", "Halal"], 
-        time: "10 mins",
-        image: "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
-        description: "Ceremonial grade Uji matcha shaken with almond milk, wild flower honey, and edible 24k gold leaf flakes.",
-        ingredients: "Ceremonial Uji Matcha, Artisanal Almond Milk, Organic Wildflower Honey, 24k Gold Leaf"
+        name: "Crispy Jaffna Medu Vadai with Sambar & Dhal (වාඩේ)", 
+        category: "JAFFNA TAMIL", 
+        mealType: "STREET FOOD & ROTIS",
+        price: 1800, 
+        tags: ["Vegan", "Crispy", "Popular Snack"], 
+        time: "8 mins",
+        image: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Golden, crispy-on-the-outside, fluffy-inside savory black gram lentil fritters tempered with green chili, shallots, curry leaves, and served with piping hot vegetable sambar.",
+        ingredients: "Ulundu (Black Gram) Dhal, Curry Leaves, Green Chilies, Cumin Seeds, Ginger, Sambar Spices"
     },
+    { 
+        id: 7, 
+        name: "Chicken Kottu Roti with Rich Curry Gravy (කොත්තු රොටී)", 
+        category: "STREET FOOD & ROTIS", 
+        mealType: "DINNER",
+        price: 3600, 
+        tags: ["Sri Lankan Street Icon", "Live Griddle", "Chef Special"], 
+        time: "15 mins",
+        image: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "The crown jewel of Sri Lankan night street food: hand-shredded godamba roti chopped rhythmically on a cast-iron griddle with farm eggs, leeks, carrots, spiced chicken, and hot curry gravy.",
+        ingredients: "Godamba Roti, Shredded Spiced Chicken, Farm Eggs, Leeks, Cabbage, Onions, Roasted Chili Curry Sauce"
+    },
+    { 
+        id: 8, 
+        name: "Negombo Lagoon Jumbo Prawn Curry (මීගමු ඉස්සෝ කරිය)", 
+        category: "ROYAL HERITAGE & SEAFOOD", 
+        mealType: "DINNER",
+        price: 7800, 
+        tags: ["Royal Seafood", "Gluten-Free", "Rich Gravy"], 
+        time: "20 mins",
+        image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Giant ocean-fresh Negombo lagoon prawns cooked gently in a velvety caramelized onion and roasted coriander coconut milk sauce with cinnamon and curry leaves.",
+        ingredients: "Wild Giant Lagoon Prawns, Coconut Cream, Fenugreek, Cinnamon, Cardamom, Lemongrass, Garlic"
+    },
+    { 
+        id: 9, 
+        name: "Dutch Burgher Ceylon Lamprais in Banana Leaf (ලම්ප්‍රයිස්)", 
+        category: "ROYAL HERITAGE & SEAFOOD", 
+        mealType: "LUNCH",
+        price: 5200, 
+        tags: ["Colonial Heritage", "Slow-Baked", "Authentic Recipe"], 
+        time: "20 mins",
+        image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Historic colonial Ceylon dish: stock-cooked ghee samba rice, slow-cooked meat curry, frikkadels (meatballs), blachan prawn relish, ash plantain curry, and seeni sambol wrapped and baked in a fresh banana leaf.",
+        ingredients: "Short-grain Samba Rice, Ghee, Mixed Meat Curry, Frikkadels, Blachan, Ash Plantain, Seeni Sambol, Banana Leaf"
+    },
+    { 
+        id: 10, 
+        name: "Fresh King Coconut (Thambili) with Lime (තැඹිලි)", 
+        category: "CEYLON TEAS & BEVERAGES", 
+        mealType: "BEVERAGES & WINE",
+        price: 950, 
+        tags: ["100% Natural", "Hydration", "Electrolytes"], 
+        time: "5 mins",
+        image: "https://images.unsplash.com/photo-1525385133512-2f3bdd039054?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Chilled golden king coconut freshly harvested from village palms, sliced open on order and served with a splash of fresh lime and mint.",
+        ingredients: "Pure Sri Lankan King Coconut Water, Fresh Lime, Garden Mint"
+    },
+    { 
+        id: 11, 
+        name: "Artisanal Ceylon Single-Estate Silver Tips Tea (සිලෝන් තේ)", 
+        category: "CEYLON TEAS & BEVERAGES", 
+        mealType: "BEVERAGES & WINE",
+        price: 1800, 
+        tags: ["Nuwara Eliya Estate", "Antioxidants", "Hand-Plucked"], 
+        time: "5 mins",
+        image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", 
+        description: "Ultra-premium handmade white Ceylon tea buds harvested at dawn in the high misty hills of Nuwara Eliya, brewed with pure mountain spring water and wild bee honey.",
+        ingredients: "100% Pure Ceylon Silver Tips White Tea, Forest Honey, Raw Jaggery"
+    }
 ];
 
 const formatPrice = (amount) => new Intl.NumberFormat('en-LK', { style: 'currency', currency: 'LKR', maximumFractionDigits: 0 }).format(amount);
@@ -1757,7 +1823,7 @@ function MapView({ property, accommodations }) {
 
 function FoodView({ cart, setCart }) {
     const [isCartOpen, setIsCartOpen] = useState(false);
-    const [activeCategory, setActiveCategory] = useState('All');
+    const [activeCategory, setActiveCategory] = useState('All Dishes');
     const [showFoodCheckout, setShowFoodCheckout] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [paymentData, setPaymentData] = useState({
@@ -1769,7 +1835,32 @@ function FoodView({ cart, setCart }) {
     const [paymentErrors, setPaymentErrors] = useState({});
     const [processing, setProcessing] = useState(false);
 
-    const filteredMenu = activeCategory === 'All' ? FOOD_MENU : FOOD_MENU.filter(item => item.category === activeCategory.toUpperCase());
+    const categories = [
+        'All Dishes',
+        'Sinhala Traditional',
+        'Jaffna Tamil',
+        'Royal Heritage & Seafood',
+        'Street Food & Rotis',
+        'Ceylon Teas & Beverages',
+        'Breakfast',
+        'Lunch',
+        'Dinner'
+    ];
+
+    const filteredMenu = activeCategory === 'All' || activeCategory === 'All Dishes'
+        ? FOOD_MENU
+        : FOOD_MENU.filter(item => {
+            const cat = activeCategory.toUpperCase();
+            if (cat.includes('SINHALA')) return item.category === 'SINHALA TRADITIONAL';
+            if (cat.includes('JAFFNA') || cat.includes('TAMIL')) return item.category === 'JAFFNA TAMIL';
+            if (cat.includes('ROYAL') || cat.includes('SEAFOOD')) return item.category === 'ROYAL HERITAGE & SEAFOOD';
+            if (cat.includes('STREET') || cat.includes('ROTI')) return item.category === 'STREET FOOD & ROTIS';
+            if (cat.includes('TEA') || cat.includes('BEVERAGE')) return item.category === 'CEYLON TEAS & BEVERAGES';
+            if (cat === 'BREAKFAST') return item.mealType === 'BREAKFAST';
+            if (cat === 'LUNCH') return item.mealType === 'LUNCH';
+            if (cat === 'DINNER') return item.mealType === 'DINNER';
+            return item.category === cat || item.mealType === cat;
+        });
 
     const addToCart = (item) => {
         const existing = cart.find(c => c.id === item.id);
@@ -1796,14 +1887,16 @@ function FoodView({ cart, setCart }) {
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative w-full pb-20">
             {/* Full Width Header */}
-            <div className="w-[100vw] relative left-1/2 -translate-x-1/2 bg-royalMaroon-800 text-white py-12 px-4 sm:px-6 lg:px-8 mb-10 -mt-8">
+            <div className="w-[100vw] relative left-1/2 -translate-x-1/2 bg-royalMaroon-800 text-white py-12 px-4 sm:px-6 lg:px-8 mb-10 -mt-8 shadow-md">
                 <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
                         <div className="text-royalGold-400 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mb-3">
-                            <Sparkles size={12} /> MICHELIN IN-ROOM GASTRONOMY
+                            <Sparkles size={12} /> AUTHENTIC SRI LANKAN IN-HOUSE GASTRONOMY
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-serif font-bold mb-3">Fine Dining & Room Service</h2>
-                        <p className="text-sm text-white/80 max-w-xl leading-relaxed">Prepared live by executive Michelin-starred chefs and delivered direct to your suite or poolside cabana in under 25 minutes.</p>
+                        <h2 className="text-4xl md:text-5xl font-serif font-bold mb-3">Sri Lankan Heritage Cuisine & Room Service</h2>
+                        <p className="text-sm text-white/80 max-w-2xl leading-relaxed">
+                            Prepared fresh by master heritage chefs celebrating authentic Sinhala, Jaffna Tamil, Royal Seafood, and Ceylon tea traditions delivered hot to your suite or private verandah.
+                        </p>
                     </div>
                     <button onClick={() => setIsCartOpen(!isCartOpen)} className="bg-royalGold-400 hover:bg-royalGold-500 text-royalMaroon-900 px-6 py-3 rounded-full font-bold text-sm shadow-md flex items-center gap-2 transition-colors">
                         <ShoppingCart size={18} /> Room Order Cart ({cart.length})
@@ -1812,9 +1905,17 @@ function FoodView({ cart, setCart }) {
             </div>
 
             {/* Filter Navigation */}
-            <div className="flex gap-4 mb-10 border-b border-gray-100 pb-8 overflow-x-auto scrollbar-hide">
-                {['All', 'Breakfast', 'Lunch', 'Dinner', 'Beverages & Wine', 'Spa Wellness'].map(cat => (
-                    <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-6 py-2.5 rounded-full text-sm font-bold border transition-colors whitespace-nowrap ${activeCategory === cat ? 'bg-royalMaroon-800 text-white border-royalMaroon-800 shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`}>
+            <div className="flex gap-3 mb-10 border-b border-gray-100 pb-6 overflow-x-auto scrollbar-hide">
+                {categories.map(cat => (
+                    <button 
+                        key={cat} 
+                        onClick={() => setActiveCategory(cat)} 
+                        className={`px-5 py-2.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap ${
+                            activeCategory === cat 
+                                ? 'bg-royalMaroon-800 text-royalGold-400 border-royalMaroon-800 shadow-md scale-105' 
+                                : 'bg-white text-gray-700 border-gray-200 hover:border-royalGold-400 hover:text-royalMaroon-800'
+                        }`}
+                    >
                         {cat}
                     </button>
                 ))}
@@ -1824,12 +1925,22 @@ function FoodView({ cart, setCart }) {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                 {filteredMenu.map(item => (
                     <div key={item.id} className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all flex flex-col group">
-                        <div className="h-64 relative overflow-hidden">
-                            <img src={item.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                            <div className="absolute top-4 left-4">
-                                <span className="px-4 py-1.5 bg-royalMaroon-800 text-royalGold-400 text-[9px] font-bold uppercase tracking-widest rounded-full shadow-lg">
+                        <div className="h-64 relative overflow-hidden bg-gray-100">
+                            <img 
+                                src={item.image} 
+                                alt={item.name}
+                                onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"; }}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                            />
+                            <div className="absolute top-4 left-4 flex flex-col gap-1.5 items-start">
+                                <span className="px-3.5 py-1.5 bg-royalMaroon-900/90 backdrop-blur text-royalGold-400 text-[9px] font-bold uppercase tracking-wider rounded-full shadow-lg border border-royalGold-400/20">
                                     {item.category}
                                 </span>
+                                {item.mealType && (
+                                    <span className="px-3 py-1 bg-royalTeal text-white text-[8px] font-bold uppercase tracking-wider rounded-full shadow-md">
+                                        {item.mealType}
+                                    </span>
+                                )}
                             </div>
                             <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur rounded-lg px-3 py-1.5 flex items-center gap-1.5 text-white text-[10px] font-bold border border-white/10 shadow-lg">
                                 <Calendar size={12} className="text-royalGold-400"/> {item.time}
