@@ -8,5 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Review extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'date_string', 'review_text', 'avatar', 'rating'];
+    protected $fillable = ['accommodation_id', 'name', 'date_string', 'review_text', 'avatar', 'rating'];
+
+    public function accommodation()
+    {
+        return $this->belongsTo(Accommodation::class);
+    }
 }

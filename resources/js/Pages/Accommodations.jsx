@@ -604,6 +604,11 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
     const [shares, setShares] = useState(property.shares || 0);
     const isFavorited = wishlistItems.some(i => i.accommodation_id === property.id);
 
+    const propertyReviews = (reviews || []).filter(rev => Number(rev.accommodation_id) === Number(property.id));
+    const avgRating = propertyReviews.length > 0
+        ? (propertyReviews.reduce((sum, r) => sum + Number(r.rating || 5), 0) / propertyReviews.length).toFixed(1)
+        : (property.rating || '4.95');
+
     const handleLike = () => {
         toggleWishlist(property.id);
     };
@@ -620,15 +625,24 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
     };
 
     const { data, setData, post, processing: formProcessing, reset } = useForm({
+        accommodation_id: property.id,
         name: '',
         rating: 5,
         review_text: ''
     });
 
+    useEffect(() => {
+        setData('accommodation_id', property.id);
+    }, [property.id]);
+
     const submitReview = (e) => {
         e.preventDefault();
         post('/reviews', {
-            onSuccess: () => reset(),
+            preserveScroll: true,
+            onSuccess: () => {
+                reset('name', 'review_text');
+                setData('rating', 5);
+            },
         });
     };
 
@@ -768,25 +782,46 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
 
             {/* Image Grid */}
             <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px] mb-12">
-                <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden shadow-sm">
-                    <img src={property.image} alt={property.name} className="w-full h-full object-cover" />
+                <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden shadow-sm bg-gray-100">
+                    <img 
+                        src={property.image} 
+                        alt={property.name} 
+                        onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"; }}
+                        className="w-full h-full object-cover" 
+                    />
                 </div>
-                <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-sm">
-                    <img src={currentPhotos[0] || property.image} className="w-full h-full object-cover" />
+                <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-sm bg-gray-100">
+                    <img 
+                        src={currentPhotos[0] || property.image} 
+                        alt="Gallery 1"
+                        onError={(e) => { e.currentTarget.src = property.image; }}
+                        className="w-full h-full object-cover" 
+                    />
                 </div>
-                <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden relative shadow-sm">
-                    <img src={currentPhotos[1] || currentPhotos[0] || property.image} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/10 flex items-end justify-center pb-8">
+                <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden relative shadow-sm bg-gray-100">
+                    <img 
+                        src={currentPhotos[1] || currentPhotos[0] || property.image} 
+                        alt="Gallery 2"
+                        onError={(e) => { e.currentTarget.src = property.image; }}
+                        className="w-full h-full object-cover" 
+                    />
+                    <div className="absolute inset-0 bg-black/20 hover:bg-black/30 transition-colors flex items-end justify-center pb-8">
                         <button 
                             onClick={() => setShowGallery(true)}
-                            className="bg-white text-gray-900 px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform"
+                            className="bg-white text-gray-900 px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
                         >
+                            <Sparkles size={14} className="text-royalGold-500"/>
                             View All Photos ({[property.image, ...currentPhotos].filter(Boolean).length})
                         </button>
                     </div>
                 </div>
-                <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-sm">
-                    <img src={currentPhotos[2] || currentPhotos[0] || property.image} className="w-full h-full object-cover" />
+                <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-sm bg-gray-100">
+                    <img 
+                        src={currentPhotos[2] || currentPhotos[0] || property.image} 
+                        alt="Gallery 3"
+                        onError={(e) => { e.currentTarget.src = property.image; }}
+                        className="w-full h-full object-cover" 
+                    />
                 </div>
             </div>
 
@@ -955,31 +990,37 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                     <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-serif font-bold text-royalTeal flex items-center gap-2">
-                                <MessageSquare className="text-royalTeal"/> Verified Guest Reviews
+                                <MessageSquare className="text-royalTeal"/> Verified Guest Reviews ({propertyReviews.length})
                             </h2>
                             <div className="flex items-center gap-2 text-sm font-bold text-royalGold-400">
-                                <Star size={14} className="fill-current"/> {property.rating || '4.95'} <span className="text-gray-400 font-normal">/ 5.0</span>
+                                <Star size={14} className="fill-current"/> {avgRating} <span className="text-gray-400 font-normal">/ 5.0</span>
                             </div>
                         </div>
 
                         <div className="space-y-4">
-                            {reviews.map((rev) => (
-                                <div key={rev.id} className="border border-gray-100 rounded-2xl p-5 hover:bg-gray-50 transition-colors">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="flex items-center gap-3">
-                                            <img src={rev.avatar} className="w-10 h-10 rounded-full object-cover" />
-                                            <div>
-                                                <div className="text-sm font-bold text-gray-900">{rev.name}</div>
-                                                <div className="text-[10px] text-gray-500">{rev.date_string}</div>
+                            {propertyReviews.length > 0 ? (
+                                propertyReviews.map((rev) => (
+                                    <div key={rev.id} className="border border-gray-100 rounded-2xl p-5 hover:bg-gray-50 transition-colors">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div className="flex items-center gap-3">
+                                                <img src={rev.avatar} alt={rev.name} className="w-10 h-10 rounded-full object-cover shadow-sm" />
+                                                <div>
+                                                    <div className="text-sm font-bold text-gray-900">{rev.name}</div>
+                                                    <div className="text-[10px] text-gray-500">{rev.date_string}</div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-royalGold-400 font-bold text-xs">
+                                                <Star size={12} className="fill-current" /> {Number(rev.rating).toFixed(1)}
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-1 text-royalGold-400 font-bold text-xs">
-                                            <Star size={12} className="fill-current" /> {Number(rev.rating).toFixed(1)}
-                                        </div>
+                                        <p className="text-xs text-gray-600 italic leading-relaxed">"{rev.review_text}"</p>
                                     </div>
-                                    <p className="text-xs text-gray-600 italic leading-relaxed">"{rev.review_text}"</p>
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-gray-400 text-sm">
+                                    No verified guest reviews yet for this estate. Be the first to share your experience!
                                 </div>
-                            ))}
+                            )}
                         </div>
 
                         {/* Add Review Form */}

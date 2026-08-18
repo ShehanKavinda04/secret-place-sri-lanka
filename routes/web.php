@@ -114,12 +114,14 @@ Route::post('/accommodations/{id}/transit', function (Illuminate\Http\Request $r
 
 Route::post('/reviews', function (Illuminate\Http\Request $request) {
     $request->validate([
+        'accommodation_id' => 'nullable|integer',
         'name' => 'required|string|max:255',
         'rating' => 'required|numeric|min:1|max:5',
         'review_text' => 'required|string',
     ]);
 
     \App\Models\Review::create([
+        'accommodation_id' => $request->accommodation_id,
         'name' => $request->name,
         'date_string' => date('F Y'),
         'review_text' => $request->review_text,
