@@ -34,16 +34,18 @@ foreach ($imagesToCopy as $filename) {
 // 2. Update EstateDetail
 $estate = EstateDetail::first();
 if ($estate) {
-    $estate->title = "Rajarata Palace Hotel - Royal Sanctuary";
-    $estate->description = "Designed by master architects inspired by the ancient Kingdom of Anuradhapura, the Rajarata Palace merges centuries-old heritage with ultra-modern luxury. Enjoy private temple access, champagne sunset terraces overlooking the reservoir, and direct helicopter transfers from Colombo.";
-    $estate->host_name = "Anura Dissanayake";
-    $estate->host_role = "Chief Estate Host & Concierge";
-    // Using a suitable unsplash image for a professional host
-    $estate->host_image = "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80";
+    $estate->title = "Ulagalla by Uga Escapes - 150-Year Historic Chieftain Sanctuary";
+    $estate->description = "Set in a 58-acre estate of verdant paddy fields, lotus canals, and working farmland, Ulagalla centers on a restored 150-year-old chieftain's mansion. Offering 25 ultra-luxurious private pool villas with glass walls, organic Kamathe dining, horseback riding, and world-class Ayurvedic wellness.";
+    $estate->host_name = "Uga Estate Chieftain & Naturalist Team";
+    $estate->host_role = "Chief Estate Host & Resident Naturalist";
+    $estate->host_image = "/images/accommodations/details/ulagalla_host.jpg";
     $estate->photos = [
-        '/images/accommodations/details/gallery_1_bedroom_1787033178413.jpg',
-        '/images/accommodations/details/gallery_2_spa_1787033451723.jpg',
-        '/images/accommodations/details/gallery_3_courtyard_1787033474585.jpg'
+        '/images/accommodations/details/ulagalla_main_pool.jpg',
+        '/images/accommodations/details/ulagalla_villa_exterior.jpg',
+        '/images/accommodations/details/ulagalla_villa_bedroom.jpg',
+        '/images/accommodations/details/ulagalla_plunge_pool.jpg',
+        '/images/accommodations/details/ulagalla_nature_walk.jpg',
+        '/images/accommodations/details/ulagalla_kamathe_dining.jpg'
     ];
     $estate->save();
 }
@@ -52,19 +54,19 @@ if ($estate) {
 $addonsData = [
     1 => [
         'title' => 'Private Helicopter Airport Transfer',
-        'desc' => 'Direct fly-in transfer from Colombo Airport (BIA) to our private resort helipad.'
+        'desc' => 'Direct fly-in transfer from Colombo Airport (BIA) to Ulagalla private resort helipad.'
     ],
     2 => [
-        'title' => 'Ancient City Private Tour',
-        'desc' => 'Guided exploration of Anuradhapura sacred ruins with an archaeology expert and luxury transport.'
+        'title' => 'Ancient Sacred City Private Tour',
+        'desc' => 'Guided exploration of Anuradhapura sacred ruins with our resident archaeology naturalist.'
     ],
     3 => [
-        'title' => 'Lakeview Sunset Dining Excursion',
-        'desc' => 'Exclusive private boat dining experience on the Tissa Wewa reservoir at sunset.'
+        'title' => 'Kamathe Organic Farm Dining Excursion',
+        'desc' => 'Exclusive private multi-course dinner nestled in the middle of illuminated paddy fields.'
     ],
     4 => [
-        'title' => 'Ayurvedic Thermal Spa Pass',
-        'desc' => 'Unlimited access to our heritage thermal baths + 90 min deep tissue Ayurvedic therapy.'
+        'title' => 'Equestrian Trail & Archery Pass',
+        'desc' => 'Private horseback riding along the reservoir banks + expert traditional archery session.'
     ]
 ];
 
@@ -87,9 +89,9 @@ $roomsData = [
     ],
     2 => [
         'name' => 'Royal Anuradhapura Presidential Villa',
-        'desc' => 'Multi-level private sanctuary with heated infinity plunge pool, traditional wooden architecture, private sauna, and dedicated host.',
-        'image' => '/images/accommodations/details/room_2_presidential_1787033866237.jpg',
-        'amenities' => ["Private Infinity Pool", "Ayurvedic Sauna", "24/7 Chef Service", "Private Garden Access"]
+        'desc' => 'Prestigious private sanctuary featuring authentic Anuradhapura architecture, serene landscaped tropical gardens, lavish king-sized master chambers, and dedicated personal butler service.',
+        'image' => '/images/accommodations/details/royal_anuradhapura_presidential_villa.jpg',
+        'amenities' => ["Private Garden Sanctuary", "King Master Chambers", "24/7 Butler Service", "Ayurvedic Spa Access"]
     ],
     3 => [
         'name' => 'Emerald Heritage Suite',

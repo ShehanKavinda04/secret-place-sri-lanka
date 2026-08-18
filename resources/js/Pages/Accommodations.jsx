@@ -557,11 +557,46 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
 }
 
 function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, roomsProp, estateDetail, wishlistItems = [], toggleWishlist }) {
+    const currentRoomsList = (property?.rooms && property.rooms.length > 0) ? property.rooms : roomsProp;
+    const currentAddonsList = (property?.addons && property.addons.length > 0) ? property.addons : addons;
+    const currentPolicy = property?.policy || policy;
+    const currentPhotos = (property?.photos && property.photos.length > 0) ? property.photos : (estateDetail?.photos || []);
+    const currentHostName = property?.host_name || estateDetail?.host_name || "Estate Host & Concierge";
+    const currentHostRole = property?.host_role || estateDetail?.host_role || "Resident Host";
+    const currentHostImage = property?.host_image || estateDetail?.host_image || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80";
+    const currentResponseRate = property?.response_rate || estateDetail?.response_rate || "100%";
+    const currentResponseTime = property?.response_time || estateDetail?.response_time || "Within 5 minutes";
+
+    const rooms = currentRoomsList.reduce((acc, room) => {
+        const key = room.type_key || room.id;
+        acc[key] = room;
+        return acc;
+    }, {});
+
+    const defaultRoomKey = currentRoomsList[0]?.type_key || currentRoomsList[0]?.id || Object.keys(rooms)[0] || 'deluxe';
+    const [roomType, setRoomType] = useState(defaultRoomKey);
+
+    useEffect(() => {
+        const firstKey = currentRoomsList[0]?.type_key || currentRoomsList[0]?.id || Object.keys(rooms)[0] || 'deluxe';
+        setRoomType(firstKey);
+        setSelectedAddons([]);
+    }, [property.id]);
+
+    const activeRoom = rooms[roomType] || rooms[defaultRoomKey] || currentRoomsList[0] || {
+        name: property.name,
+        price: property.price,
+        cap: 2,
+        bed: "1 King Bed",
+        size: "50 m²",
+        desc: property.description,
+        image: property.image,
+        amenities: ["Wi-Fi", "Air Conditioning", "En-suite Bathroom"]
+    };
+
     const [guests, setGuests] = useState(2);
     const [checkIn, setCheckIn] = useState('2026-08-15');
     const [checkOut, setCheckOut] = useState('2026-08-18');
     const [nights, setNights] = useState(3);
-    const [roomType, setRoomType] = useState('deluxe');
     const [showCheckout, setShowCheckout] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
     const [selectedAddons, setSelectedAddons] = useState([]);
@@ -575,7 +610,6 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
 
     const handleShare = () => {
         setShares(prev => prev + 1);
-        router.post(`/accommodations/${property.id}/share`, {}, { preserveScroll: true, preserveState: true });
         if (navigator.share) {
             navigator.share({
                 title: property.name,
@@ -610,7 +644,6 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
         }
     }, [checkIn, checkOut]);
 
-    // Payment State
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [paymentData, setPaymentData] = useState({
         card_holder: '',
@@ -621,20 +654,76 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
     const [paymentErrors, setPaymentErrors] = useState({});
     const [processing, setProcessing] = useState(false);
 
-    const rooms = roomsProp.reduce((acc, room) => {
-        acc[room.type_key] = room;
-        return acc;
-    }, {});
-
     const addonsTotal = selectedAddons.reduce((sum, addonId) => {
-        const addon = addons.find(a => a.id === addonId);
+        const addon = currentAddonsList.find(a => a.id === addonId);
         return sum + (addon ? Number(addon.price) : 0);
     }, 0);
 
-    const total = ((rooms[roomType]?.price || 850) * nights * guests) + addonsTotal;
+    const activeRoomPrice = Number(activeRoom.price) || Number(property.price) || 100000;
+    const total = (activeRoomPrice * nights * guests) + addonsTotal;
     const fee = Math.round(total * 0.08);
     const savings = Math.round(total * 0.05);
     const grandTotal = total + fee - savings;
+
+    const handlePaymentChange = (field, value) => {
+        setPaymentData(prev => ({ ...prev, [field]: value }));
+        if (paymentErrors[field]) {
+            setPaymentErrors(prev => ({ ...prev, [field]: null }));
+        }
+    };
+
+    const validatePayment = () => {
+        const errors = {};
+        if (paymentMethod === 'card') {
+            if (!paymentData.card_holder.trim()) errors.card_holder = 'Card holder name is required';
+            if (!paymentData.card_number.trim() || paymentData.card_number.replace(/\s/g, '').length < 16) errors.card_number = 'Valid 16-digit card number is required';
+            if (!paymentData.valid_date.trim()) errors.valid_date = 'Expiration date is required';
+            if (!paymentData.cvv.trim() || paymentData.cvv.length < 3) errors.cvv = '3 or 4 digit CVV is required';
+        }
+        setPaymentErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleReserve = async (e) => {
+        e.preventDefault();
+        if (!validatePayment()) return;
+
+        setProcessing(true);
+
+        try {
+            const orderPayload = {
+                type: 'accommodation',
+                payment_method: paymentMethod,
+                amount: grandTotal,
+                details: {
+                    accommodationId: property.id,
+                    propertyName: property.name,
+                    roomType: activeRoom.name,
+                    checkIn: checkIn,
+                    checkOut: checkOut,
+                    guests: guests,
+                    nights: nights,
+                    addons: selectedAddons.map(id => {
+                        const addon = currentAddonsList.find(a => a.id === id);
+                        return addon ? addon.title : '';
+                    }).filter(Boolean),
+                    paymentInfo: paymentMethod === 'card' ? {
+                        cardHolder: paymentData.card_holder,
+                        last4: paymentData.card_number.slice(-4)
+                    } : { method: paymentMethod }
+                }
+            };
+
+            await axios.post('/api/orders', orderPayload);
+            setProcessing(false);
+            setShowCheckout(false);
+            router.visit('/checkout?item=' + property.id + '&type=accommodation&success=1');
+        } catch (error) {
+            console.error('Reservation error:', error);
+            setProcessing(false);
+            alert('Failed to process reservation. Please try again.');
+        }
+    };
 
     return (
         <>
@@ -652,10 +741,10 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                     </div>
                     <h1 className="text-4xl font-serif font-bold text-royalTeal mb-2">{property.name}</h1>
                     <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
-                        <MapPin size={16} className="text-royalTeal" /> 
-                        Via Cristoforo Colombo 48, 84017 Positano SA, {property.location}
+                        <MapPin size={16} className="text-royalTeal shrink-0" /> 
+                        <span>{property.address || property.location || 'Anuradhapura, Sri Lanka'}</span>
                         <span className="mx-2">•</span>
-                        <Star size={16} className="text-royalTeal fill-theme-green" />
+                        <Star size={16} className="text-royalTeal fill-theme-green shrink-0" />
                         <span className="text-royalTeal font-bold">
                             {property.rating} <span className="text-royalTeal font-normal">({property.reviews} reviews)</span>
                         </span>
@@ -680,24 +769,24 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
             {/* Image Grid */}
             <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[500px] mb-12">
                 <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden shadow-sm">
-                    <img src={property.image} alt={estateDetail?.title || property.name} className="w-full h-full object-cover" />
+                    <img src={property.image} alt={property.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-sm">
-                    <img src={estateDetail?.photos?.[0] || "https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} className="w-full h-full object-cover" />
+                    <img src={currentPhotos[0] || property.image} className="w-full h-full object-cover" />
                 </div>
                 <div className="col-span-1 row-span-2 rounded-2xl overflow-hidden relative shadow-sm">
-                    <img src={estateDetail?.photos?.[1] || "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} className="w-full h-full object-cover" />
+                    <img src={currentPhotos[1] || currentPhotos[0] || property.image} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/10 flex items-end justify-center pb-8">
                         <button 
                             onClick={() => setShowGallery(true)}
                             className="bg-white text-gray-900 px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform"
                         >
-                            View All 4 Photos
+                            View All Photos ({[property.image, ...currentPhotos].filter(Boolean).length})
                         </button>
                     </div>
                 </div>
                 <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-sm">
-                    <img src={estateDetail?.photos?.[2] || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} className="w-full h-full object-cover" />
+                    <img src={currentPhotos[2] || currentPhotos[0] || property.image} className="w-full h-full object-cover" />
                 </div>
             </div>
 
@@ -714,18 +803,18 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                         
                         <div className="flex justify-between items-center pt-6 border-t border-gray-100">
                             <div className="flex items-center gap-4">
-                                <img src={estateDetail?.host_image || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80"} alt="Host" className="w-12 h-12 rounded-full object-cover shadow-sm" />
+                                <img src={currentHostImage} alt={currentHostName} className="w-12 h-12 rounded-full object-cover shadow-sm" />
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <span className="font-bold text-gray-900">{estateDetail?.host_name || "Contessa Beatrice Visconti"}</span>
+                                        <span className="font-bold text-gray-900">{currentHostName}</span>
                                         <span className="bg-royalGold-400 text-royalMaroon-900 text-[10px] font-bold px-2 py-0.5 rounded-md">Superhost</span>
                                     </div>
-                                    <div className="text-xs text-gray-500">{estateDetail?.host_role || "Private Estate Host & Sommelier"}</div>
+                                    <div className="text-xs text-gray-500">{currentHostRole}</div>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <div className="text-xs font-bold text-royalTeal">{estateDetail?.response_rate || "100%"} Response Rate</div>
-                                <div className="text-xs text-gray-500">{estateDetail?.response_time || "Within 5 minutes"}</div>
+                                <div className="text-xs font-bold text-royalTeal">{currentResponseRate} Response Rate</div>
+                                <div className="text-xs text-gray-500">{currentResponseTime}</div>
                             </div>
                         </div>
                     </div>
@@ -734,56 +823,60 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                     <div>
                         <div className="flex justify-between items-end mb-6">
                             <h2 className="text-xl font-serif font-bold text-royalTeal">Select Room or Villa Type</h2>
-                            <span className="text-xs font-bold text-gray-400">3 Suites Available</span>
+                            <span className="text-xs font-bold text-gray-400">{currentRoomsList.length} Options Available</span>
                         </div>
                         <div className="space-y-4">
-                            {Object.entries(rooms).map(([key, room]) => (
-                                <div 
-                                    key={key} 
-                                    onClick={() => setRoomType(key)}
-                                    className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col md:flex-row gap-6 ${
-                                        roomType === key ? 'border-royalMaroon-800 bg-[#fdf9f9] shadow-md' : 'border-gray-100 hover:border-royalMaroon-800/50 bg-white shadow-sm'
-                                    }`}
-                                >
-                                    <img src={room.image} className="w-full md:w-48 h-32 object-cover rounded-xl shadow-sm" />
-                                    <div className="flex-1 flex flex-col">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="text-lg font-bold text-royalTeal">{room.name}</h3>
-                                            <div className="bg-[#fcf0f2] text-royalTeal px-3 py-1 rounded-md flex items-baseline gap-1">
-                                                <span className="font-bold text-sm">{formatPrice(room.price)}</span>
-                                                <span className="text-[10px]">/ night</span>
+                            {currentRoomsList.map((room) => {
+                                const key = room.type_key || room.id;
+                                const isSelected = (roomType === key) || (activeRoom === room);
+                                return (
+                                    <div 
+                                        key={key} 
+                                        onClick={() => setRoomType(key)}
+                                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col md:flex-row gap-6 ${
+                                            isSelected ? 'border-royalMaroon-800 bg-[#fdf9f9] shadow-md' : 'border-gray-100 hover:border-royalMaroon-800/50 bg-white shadow-sm'
+                                        }`}
+                                    >
+                                        <img src={room.image} alt={room.name} className="w-full md:w-48 h-32 object-cover rounded-xl shadow-sm" />
+                                        <div className="flex-1 flex flex-col">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h3 className="text-lg font-bold text-royalTeal">{room.name}</h3>
+                                                <div className="bg-[#fcf0f2] text-royalTeal px-3 py-1 rounded-md flex items-baseline gap-1">
+                                                    <span className="font-bold text-sm">{formatPrice(room.price)}</span>
+                                                    <span className="text-[10px]">/ night</span>
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mb-4 flex-1 line-clamp-2 leading-relaxed">{room.desc}</p>
+                                            
+                                            <div className="flex flex-wrap gap-4 text-xs font-medium text-gray-600 mb-3">
+                                                <span className="flex items-center gap-1"><Users size={14}/> {room.cap} Guests</span>
+                                                <span>{room.bed}</span>
+                                                <span>{room.size}</span>
+                                            </div>
+                                            
+                                            <div className="flex flex-wrap gap-2 mt-auto">
+                                                {(room.amenities || []).map(am => (
+                                                    <span key={am} className="text-[10px] font-bold text-gray-500 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 flex items-center gap-1">
+                                                        <Check size={10} className="text-royalTeal"/> {am}
+                                                    </span>
+                                                ))}
                                             </div>
                                         </div>
-                                        <p className="text-xs text-gray-500 mb-4 flex-1 line-clamp-2 leading-relaxed">{room.desc}</p>
-                                        
-                                        <div className="flex flex-wrap gap-4 text-xs font-medium text-gray-600 mb-3">
-                                            <span className="flex items-center gap-1"><Users size={14}/> {room.cap} Guests</span>
-                                            <span>{room.bed}</span>
-                                            <span>{room.size}</span>
-                                        </div>
-                                        
-                                        <div className="flex flex-wrap gap-2 mt-auto">
-                                            {room.amenities.map(am => (
-                                                <span key={am} className="text-[10px] font-bold text-gray-500 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 flex items-center gap-1">
-                                                    <Check size={10} className="text-royalTeal"/> {am}
-                                                </span>
-                                            ))}
-                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
 
                     {/* Enhance Your Stay */}
                     <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
                         <h2 className="text-xl font-serif font-bold text-royalTeal mb-2 flex items-center gap-2">
-                            <Sparkles className="text-royalGold-400"/> Enhance Your Stay (Luxury Add-ons)
+                            <Sparkles className="text-royalGold-400"/> Enhance Your Stay (Tailored Add-ons)
                         </h2>
-                        <p className="text-xs text-gray-500 mb-6">Tailor your stay with private helicopter transfers, champagne tastings, or wellness pass.</p>
+                        <p className="text-xs text-gray-500 mb-6">Tailor your stay with private experiences, curated dining, or wellness passes.</p>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {addons.map((addon) => {
+                            {currentAddonsList.map((addon) => {
                                 const isSelected = selectedAddons.includes(addon.id);
                                 const IconComponent = {
                                     Wind: Wind,
@@ -831,27 +924,27 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                         <div className="flex flex-col sm:flex-row gap-4 mb-6">
                             <div className="flex-1 bg-gray-50 p-4 rounded-xl border border-gray-100">
                                 <div className="text-[10px] font-bold text-gray-400 flex items-center gap-1 uppercase tracking-wider mb-2"><Calendar size={12}/> CHECK-IN</div>
-                                <div className="text-sm font-bold text-gray-800">{policy?.check_in_time || '3:00 PM - 11:00 PM (24/7 Private Valet Check-In)'}</div>
+                                <div className="text-sm font-bold text-gray-800">{currentPolicy?.check_in_time || '2:00 PM - 11:00 PM (24/7 Check-In)'}</div>
                             </div>
                             <div className="flex-1 bg-gray-50 p-4 rounded-xl border border-gray-100">
                                 <div className="text-[10px] font-bold text-gray-400 flex items-center gap-1 uppercase tracking-wider mb-2"><Calendar size={12}/> CHECK-OUT</div>
-                                <div className="text-sm font-bold text-gray-800">{policy?.check_out_time || '12:00 PM (Late Check-Out available upon request)'}</div>
+                                <div className="text-sm font-bold text-gray-800">{currentPolicy?.check_out_time || '12:00 PM (Late Check-Out available upon request)'}</div>
                             </div>
                         </div>
 
                         <div>
                             <div className="text-xs font-bold text-gray-900 mb-3">Estate Guidelines:</div>
                             <ul className="space-y-2 text-xs text-gray-600">
-                                {policy?.guidelines ? policy.guidelines.map((guideline, idx) => (
+                                {currentPolicy?.guidelines ? currentPolicy.guidelines.map((guideline, idx) => (
                                     <li key={idx} className="flex items-center gap-2">
                                         <div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> 
                                         {guideline}
                                     </li>
                                 )) : (
                                     <>
-                                        <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Gentlemen formal evening dress code for Main Fine Dining Saloon</li>
-                                        <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Quiet hours on ocean terraces after 11:30 PM</li>
-                                        <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Private butler service included for all Suite guests</li>
+                                        <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Respect the cultural heritage and tranquil surroundings</li>
+                                        <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Quiet hours observed in nature zones from 10:30 PM</li>
+                                        <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border-2 border-royalMaroon-800 flex items-center justify-center shrink-0"></div> Personalized concierge assistance available at front desk</li>
                                     </>
                                 )}
                             </ul>
@@ -865,7 +958,7 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                 <MessageSquare className="text-royalTeal"/> Verified Guest Reviews
                             </h2>
                             <div className="flex items-center gap-2 text-sm font-bold text-royalGold-400">
-                                <Star size={14} className="fill-current"/> 4.98 <span className="text-gray-400 font-normal">/ 5.0</span>
+                                <Star size={14} className="fill-current"/> {property.rating || '4.95'} <span className="text-gray-400 font-normal">/ 5.0</span>
                             </div>
                         </div>
 
@@ -944,10 +1037,10 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                         <div className="flex justify-between items-start mb-6 pb-6 border-b border-gray-100">
                             <div>
                                 <div className="text-3xl font-bold text-royalTeal flex items-baseline gap-1">
-                                    {formatPrice(rooms[roomType].price)} <span className="text-xs font-normal text-gray-400">/ night</span>
+                                    {formatPrice(activeRoom.price)} <span className="text-xs font-normal text-gray-400">/ night</span>
                                 </div>
                                 <div className="text-xs text-gray-500 mt-2">
-                                    Selected: <span className="font-bold text-gray-800">{rooms[roomType].name}</span>
+                                    Selected: <span className="font-bold text-gray-800">{activeRoom.name}</span>
                                 </div>
                             </div>
                         </div>
@@ -999,9 +1092,15 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
 
                         <div className="space-y-3 mb-6">
                             <div className="flex justify-between text-xs text-gray-500">
-                                <span>{formatPrice(rooms[roomType].price)} × {nights} nights × {guests} guests</span>
-                                <span className="font-medium">{formatPrice(total)}</span>
+                                <span>{formatPrice(activeRoom.price)} × {nights} nights × {guests} guests</span>
+                                <span className="font-medium">{formatPrice(activeRoomPrice * nights * guests)}</span>
                             </div>
+                            {addonsTotal > 0 && (
+                                <div className="flex justify-between text-xs text-gray-500">
+                                    <span>Selected Add-ons</span>
+                                    <span className="font-medium">+{formatPrice(addonsTotal)}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between text-xs text-gray-500">
                                 <span>Concierge & Resort Fee (8%)</span>
                                 <span className="font-medium">{formatPrice(fee)}</span>
@@ -1048,8 +1147,9 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                     <img src={property.image} className="w-24 h-24 rounded-2xl object-cover" />
                                     <div>
                                         <h4 className="font-bold text-lg text-gray-900">{property.name}</h4>
-                                        <p className="text-sm text-gray-500">{rooms[roomType].name} • {nights} Nights • {guests} Guests</p>
-                                        <p className="font-bold text-royalTeal mt-2">Total: {formatPrice(total + Math.round(total * 0.1))}</p>
+                                        <p className="text-xs text-gray-500 mb-1">{property.address || property.location}</p>
+                                        <p className="text-sm font-semibold text-royalMaroon-900">{activeRoom.name} • {nights} Nights • {guests} Guests</p>
+                                        <p className="font-bold text-royalTeal mt-2">Total: {formatPrice(grandTotal)}</p>
                                     </div>
                                 </div>
                                 
@@ -1127,35 +1227,36 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                                         {paymentErrors.card_number && <div className="text-red-500 text-xs mt-1">{paymentErrors.card_number}</div>}
                                                     </div>
                                                     
-                                                    <div>
-                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Valid Date</label>
-                                                        <div className="relative">
-                                                            <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
-                                                                <Calendar className="h-4 w-4 text-slate-400" />
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div>
+                                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Valid Date</label>
+                                                            <div className="relative">
+                                                                <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
+                                                                    <Calendar className="h-4 w-4 text-slate-400" />
+                                                                </div>
+                                                                <input 
+                                                                    type="text" 
+                                                                    value={paymentData.valid_date} 
+                                                                    onChange={e => {
+                                                                        let val = e.target.value.replace(/\D/g, '');
+                                                                        if (val.length > 2) {
+                                                                            val = val.substring(0, 2) + '/' + val.substring(2, 4);
+                                                                        }
+                                                                        setPaymentData({...paymentData, valid_date: val});
+                                                                    }} 
+                                                                    placeholder="MM/YY" 
+                                                                    className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
+                                                                    style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
+                                                                    maxLength="5"
+                                                                />
                                                             </div>
-                                                            <input 
-                                                                type="text" 
-                                                                value={paymentData.valid_date} 
-                                                                onChange={e => {
-                                                                    let val = e.target.value.replace(/\D/g, '');
-                                                                    if (val.length > 2) {
-                                                                        val = val.substring(0, 2) + '/' + val.substring(2, 4);
-                                                                    }
-                                                                    setPaymentData({...paymentData, valid_date: val});
-                                                                }} 
-                                                                placeholder="MM/YY" 
-                                                                className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
-                                                                style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
-                                                                maxLength="5"
-                                                            />
+                                                            {paymentErrors.valid_date && <div className="text-red-500 text-xs mt-1">{paymentErrors.valid_date}</div>}
                                                         </div>
-                                                        {paymentErrors.valid_date && <div className="text-red-500 text-xs mt-1">{paymentErrors.valid_date}</div>}
-                                                    </div>
-                                                    
-                                                    <div>
-                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">CVV</label>
-                                                        <input type="text" value={paymentData.cvv} onChange={e => setPaymentData({...paymentData, cvv: e.target.value})} placeholder="XXX" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" style={{outlineColor: '#6F4E37'}} />
-                                                        {paymentErrors.cvv && <div className="text-red-500 text-xs mt-1">{paymentErrors.cvv}</div>}
+                                                        <div>
+                                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">CVV</label>
+                                                            <input type="text" value={paymentData.cvv} onChange={e => setPaymentData({...paymentData, cvv: e.target.value})} placeholder="XXX" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" style={{outlineColor: '#6F4E37'}} />
+                                                            {paymentErrors.cvv && <div className="text-red-500 text-xs mt-1">{paymentErrors.cvv}</div>}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </>
@@ -1181,11 +1282,15 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                                                     propertyName: property.name,
                                                                     checkIn: checkIn,
                                                                     checkOut: checkOut,
-                                                                    roomType: rooms[roomType].name,
+                                                                    roomType: activeRoom.name,
                                                                     nights,
-                                                                    guests
+                                                                    guests,
+                                                                    addons: selectedAddons.map(id => {
+                                                                        const addon = currentAddonsList.find(a => a.id === id);
+                                                                        return addon ? addon.title : '';
+                                                                    }).filter(Boolean)
                                                                 },
-                                                                total_amount: total + Math.round(total * 0.1),
+                                                                total_amount: grandTotal,
                                                                 payment_method: paymentMethod,
                                                                 payment_details: paymentMethod === 'card' ? paymentData : null
                                                             });
@@ -1239,7 +1344,7 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                         <div className="flex-1 overflow-y-auto p-6 lg:p-12">
                             <div className="max-w-5xl mx-auto space-y-8 flex flex-col items-center">
                                 <img src={property.image} className="w-full max-w-4xl rounded-2xl object-cover shadow-2xl" />
-                                {estateDetail?.photos?.map((photo, idx) => (
+                                {currentPhotos.map((photo, idx) => (
                                     <img key={idx} src={photo} className="w-full max-w-4xl rounded-2xl object-cover shadow-2xl" />
                                 ))}
                             </div>
@@ -1263,7 +1368,7 @@ function MapView({ property, accommodations }) {
     };
     
     const startPos = originCoords[originHub] || originCoords['Central Executive Hub'];
-    const endPos = currentProperty ? [currentProperty.lat, currentProperty.lng] : [40.6333, 14.6029];
+    const endPos = currentProperty ? [currentProperty.lat, currentProperty.lng] : [8.1942, 80.5284];
     
     const center = [(startPos[0] + endPos[0]) / 2, (startPos[1] + endPos[1]) / 2];
     const zoom = 8;
@@ -1405,14 +1510,19 @@ function MapView({ property, accommodations }) {
     }
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
-            {/* Header */}
-            <div className="bg-royalMaroon-800 text-white p-6 md:p-8 rounded-t-3xl border-b-4 border-royalGold-400 flex flex-col xl:flex-row justify-between xl:items-end gap-6">
-                <div className="shrink-0">
-                    <div className="text-royalGold-400 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mb-2">
-                        <Navigation size={12} /> Live GPS & Chauffeured Route Tracking
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-6"
+        >
+            {/* Control Bar */}
+            <div className="bg-royalMaroon-900 text-white rounded-3xl p-6 shadow-xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+                <div>
+                    <div className="text-royalGold-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-1">
+                        LIVE CHAUFFEURED ROUTE & TELEMETRY
                     </div>
-                    <h2 className="text-3xl font-serif font-bold mb-2">Route to {currentProperty?.name || 'Aurelia Riviera Resort & Spa'}</h2>
+                    <h2 className="text-3xl font-serif font-bold mb-2">Route to {currentProperty?.name || 'Ulagalla by Uga Escapes'}</h2>
                     <div className="text-xs text-white/80 flex items-center gap-1">
                         <MapPin size={12} className="text-royalGold-400" /> Origin: 
                         <select 
@@ -1425,7 +1535,7 @@ function MapView({ property, accommodations }) {
                             <option className="text-slate-800" value="Colombo Fort Station">Colombo Fort Station</option>
                         </select>
                         <ArrowRight size={12} className="mx-2 text-white/50" /> 
-                        Destination: <span className="font-bold text-white">{currentProperty?.location || 'Positano, Amalfi Coast'}</span>
+                        Destination: <span className="font-bold text-white">{currentProperty?.location || 'Thirappane, Anuradhapura, Sri Lanka'}</span>
                     </div>
                 </div>
                 <div className="flex flex-wrap gap-2 xl:justify-end w-full">
