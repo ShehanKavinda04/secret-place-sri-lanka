@@ -89,35 +89,25 @@ const heritageExperiences = [
         href: '/crafts/pottery-workshop'
     },
     {
-        id: 'stone-carving-demo',
-        name: 'Stone Sculpting Experience',
-        location: 'Anuradhapura Sacred City',
+        id: 'handloom-experience',
+        name: 'Rajarata Handloom & Weaving Experience',
+        location: 'Polonnaruwa / Rajarata',
         rating: '4.7',
-        reviews: '115',
-        description: 'Watch mesmerising demonstrations of granite carving, learning about the ancient tools, sacred geometry, and sheer patience required to create Anuradhapura-style stone art.',
-        image: '/images/stone_demo.png',
-        href: '/crafts/stone-carving-demo'
+        reviews: '96',
+        description: 'Experience the art of authentic handloom weaving and natural dyeing techniques. Interact with local weavers and create your own custom woven keepsake.',
+        image: '/images/handloom_experience.png',
+        href: '/crafts/handloom-experience'
     },
     {
-        id: 'reed-weaving-class',
-        name: 'Pan Weaving Masterclass',
-        location: 'Abhaya Wewa Environs',
-        rating: '4.8',
-        reviews: '95',
-        description: 'Sit alongside local weavers near the ancient reservoirs to learn the delicate art of processing and braiding natural reeds into colourful, geometric patterned mats.',
-        image: '/images/weaving_class.png',
-        href: '/crafts/reed-weaving-class'
-    },
-    {
-        id: 'lotus-silk-experience',
-        name: 'Lotus Silk Farm Visit',
-        location: 'Anuradhapura',
-        rating: '5.0',
-        reviews: '134',
-        description: 'Experience the magical process of transforming raw lotus stems into exquisite fabric. Understand how this unique eco-friendly enterprise provides vital income for local communities.',
-        image: '/images/lotus_farm.png',
-        href: '/crafts/lotus-silk-experience'
-    },
+        id: 'culinary-walk',
+        name: 'Village Culinary & Heritage Walk',
+        location: 'Mihintale Village',
+        rating: '4.9',
+        reviews: '210',
+        description: 'Walk through heritage villages and participate in traditional clay-pot culinary experiences, discovering authentic local recipes and rural living traditions.',
+        image: '/images/village_culinary.png',
+        href: '/crafts/culinary-walk'
+    }
 ];
 
 export default function Heritage({ auth, laravelVersion, phpVersion }) {

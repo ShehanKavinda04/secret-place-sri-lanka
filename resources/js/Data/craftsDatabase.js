@@ -151,7 +151,26 @@ export const categoryDatabase = {
         banner: '/images/lotus_farm.png',
         filters: [ { id: 'visit', label: 'Farm Visits' } ],
         products: [
-            { id: 1001, filterId: 'visit', title: 'Lotus Silk Extraction Tour', subtitle: 'See the magic of lotus silk.', price: 'Rs. 3,000.00', rating: '5.0', reviewsCount: 134, description: 'Experience the magical process of transforming raw lotus stems into exquisite fabric.', features: ['Guided walk', 'Demonstration'], image: '/images/lotus_farm.png', subImages: ['/images/lotus_farm.png'] }
+            { id: 1001, filterId: 'visit', title: 'Lotus Silk Extraction Tour', subtitle: 'See the magic of lotus silk.', price: 'Rs. 3,000.00', rating: '5.0', reviewsCount: 134, description: 'Experience the magical process of transforming raw lotus stems into exquisite fabric.', features: ['Guided walk', 'Demonstration'], image: '/images/lotus_farm.png', subImages: ['/images/lotus_farm.png'] },
+            { id: 1002, filterId: 'souvenir', title: 'Lotus Silk Handkerchief', subtitle: 'Woven by you during your visit.', price: 'Rs. 2,000.00', rating: '4.8', reviewsCount: 45, description: 'Support the artisans directly by purchasing a handkerchief woven during your visit.', features: ['Direct support', 'Handwoven'], image: '/images/lotus_farm.png', subImages: ['/images/lotus_farm.png'] }
+        ]
+    },
+    'handloom-experience': {
+        title: 'Rajarata Handloom & Weaving Experience',
+        desc: 'Experience the art of authentic handloom weaving and natural dyeing techniques. Interact with local weavers and create your own custom woven keepsake.',
+        banner: '/images/handloom_experience.png',
+        filters: [ { id: 'experience', label: 'Weaving Experience' } ],
+        products: [
+            { id: 1101, filterId: 'experience', title: 'Handloom Weaving Session', subtitle: 'Create your own custom woven keepsake.', price: 'Rs. 3,000.00', rating: '4.7', reviewsCount: 96, description: 'Experience the art of authentic handloom weaving and natural dyeing techniques.', features: ['Interact with weavers', 'Custom keepsake'], image: '/images/handloom_experience.png', subImages: ['/images/handloom_experience.png'] }
+        ]
+    },
+    'culinary-walk': {
+        title: 'Village Culinary & Heritage Walk',
+        desc: 'Walk through heritage villages and participate in traditional clay-pot culinary experiences, discovering authentic local recipes and rural living traditions.',
+        banner: '/images/village_culinary.png',
+        filters: [ { id: 'walk', label: 'Heritage Walks' } ],
+        products: [
+            { id: 1201, filterId: 'walk', title: 'Clay-pot Culinary Experience', subtitle: 'Discover authentic local recipes.', price: 'Rs. 4,500.00', rating: '4.9', reviewsCount: 210, description: 'Walk through heritage villages and participate in traditional clay-pot culinary experiences.', features: ['Rural living traditions', 'Authentic recipes'], image: '/images/village_culinary.png', subImages: ['/images/village_culinary.png'] }
         ]
     }
 };

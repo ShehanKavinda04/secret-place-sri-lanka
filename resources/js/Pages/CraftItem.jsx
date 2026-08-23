@@ -176,11 +176,20 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                             <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Seller Information</h3>
                             <div className="flex items-center gap-4">
                                 <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-200 shrink-0">
-                                    <img src="/images/woodcraft.png" alt="Anusha Perera" className="w-full h-full object-cover" />
+                                    <img src="/images/woodcraft.png" alt="Seller Avatar" className="w-full h-full object-cover" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-900 text-sm">Pottery Shop by Anusha Perera</h4>
-                                    <p className="text-slate-500 text-[13px] mt-0.5">Passionate potter from Kandy, bringing generations of craft to your home.</p>
+                                    <h4 className="font-bold text-slate-900 text-sm">
+                                        {categoryKey === 'stone-carving-demo' ? 'Master Stonemasons Guild' :
+                                         categoryKey === 'lotus-silk-experience' ? 'Lotus Weavers Co-op' :
+                                         categoryKey === 'wood-carving' ? 'Anuradhapura Woodworks' :
+                                         'Pottery Shop by Anusha Perera'}
+                                    </h4>
+                                    <p className="text-slate-500 text-[13px] mt-0.5">
+                                        {categoryKey === 'stone-carving-demo' ? 'Expert stone sculptors dedicated to preserving ancient architecture.' :
+                                         categoryKey === 'lotus-silk-experience' ? 'Empowering local women through eco-friendly fabric production.' :
+                                         'Passionate artisans bringing generations of craft to your home.'}
+                                    </p>
                                 </div>
                             </div>
                         </div>
