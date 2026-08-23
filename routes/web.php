@@ -86,6 +86,14 @@ Route::get('/category/accommodations', function () {
     ]);
 });
 
+Route::get('/experience/{id}', function ($id) {
+    return Inertia::render('ExperienceDetail', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'experienceId' => $id,
+    ]);
+});
+
 Route::post('/accommodations/{id}/like', function ($id) {
     $accommodation = \App\Models\Accommodation::findOrFail($id);
     $accommodation->increment('likes');

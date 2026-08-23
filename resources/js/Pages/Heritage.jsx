@@ -76,7 +76,7 @@ const heritageExperiences = [
         reviews: '142',
         description: 'A guided immersive tour through dedicated artisan villages (Kala Grama) where you can interact directly with master craftspeople and support local MSME families.',
         image: '/images/heritage_crafts.png',
-        href: '/crafts/craft-village-tour'
+        href: '/experience/craft-village-tour'
     },
     {
         id: 'pottery-workshop',
@@ -86,7 +86,7 @@ const heritageExperiences = [
         reviews: '188',
         description: 'Learn the ancient techniques of wheel-throwing and hand-building from hereditary potters. Shape your own terracotta souvenirs using the distinct red clay of the Rajarata region.',
         image: '/images/clay_workshop.png',
-        href: '/crafts/pottery-workshop'
+        href: '/experience/pottery-workshop'
     },
     {
         id: 'handloom-experience',
@@ -96,7 +96,7 @@ const heritageExperiences = [
         reviews: '96',
         description: 'Experience the art of authentic handloom weaving and natural dyeing techniques. Interact with local weavers and create your own custom woven keepsake.',
         image: '/images/handloom_experience.png',
-        href: '/crafts/handloom-experience'
+        href: '/experience/handloom-experience'
     },
     {
         id: 'culinary-walk',
@@ -106,7 +106,7 @@ const heritageExperiences = [
         reviews: '210',
         description: 'Walk through heritage villages and participate in traditional clay-pot culinary experiences, discovering authentic local recipes and rural living traditions.',
         image: '/images/village_culinary.png',
-        href: '/crafts/culinary-walk'
+        href: '/experience/culinary-walk'
     }
 ];
 
