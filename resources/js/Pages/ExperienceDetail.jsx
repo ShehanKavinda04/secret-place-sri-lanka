@@ -51,95 +51,105 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
     return (
         <>
             <Head title={`${experience.title} - Secret Places Sri Lanka`} />
-            <div className="min-h-screen bg-[#FDFBF7] text-[#2c1d11] font-sans selection:bg-[#D4AF37] selection:text-[#2E5A27] flex flex-col">
+            <div className="min-h-screen bg-[#FAF9F6] text-[#2c1d11] font-sans selection:bg-royalGold-500 selection:text-royalMaroon-950 flex flex-col">
                 <Navbar auth={auth} />
 
-                <main className="flex-grow max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-                    
-                    {/* 1. Header & Breadcrumb Navigation */}
-                    <div className="mb-6">
-                        <nav className="flex text-sm text-slate-500 mb-4" aria-label="Breadcrumb">
-                            <ol className="inline-flex items-center space-x-1 md:space-x-3">
-                                <li className="inline-flex items-center">
-                                    <Link href="/" className="hover:text-[#D4AF37] transition-colors">Home</Link>
-                                </li>
-                                <li>
-                                    <div className="flex items-center">
-                                        <ChevronRight className="w-4 h-4 mx-1" />
-                                        <Link href="/category/heritage" className="hover:text-[#D4AF37] transition-colors">MSME Experiences</Link>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div className="flex items-center">
-                                        <ChevronRight className="w-4 h-4 mx-1" />
-                                        <span className="ml-1 text-slate-700 font-medium">Anuradhapura</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div className="flex items-center">
-                                        <ChevronRight className="w-4 h-4 mx-1" />
-                                        <span className="ml-1 text-[#2E5A27] font-bold">{experience.title}</span>
-                                    </div>
-                                </li>
-                            </ol>
-                        </nav>
-
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#2E5A27]/10 text-[#2E5A27] border border-[#2E5A27]/20">
-                                <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Verified Spot
-                            </span>
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20">
-                                <Map className="w-3.5 h-3.5 mr-1" /> Cultural Heritage
-                            </span>
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#FF6B35]/10 text-[#FF6B35] border border-[#FF6B35]/20">
-                                <Check className="w-3.5 h-3.5 mr-1" /> Instant Confirmation
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* 2. Hero Section & Media Gallery */}
-                    <div className="mb-10">
-                        <h1 className="text-4xl md:text-5xl font-display font-bold text-[#2E5A27] mb-2">{experience.title}</h1>
-                        <p className="text-lg text-slate-600 mb-4">{experience.subtitle}</p>
+                {/* Hero Section (Maroon Background) */}
+                <div className="bg-royalMaroon-950 text-white relative">
+                    <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12">
                         
-                        <div className="flex items-center gap-4 text-sm font-medium mb-6">
-                            <div className="flex items-center text-[#D4AF37]">
-                                <Star className="w-5 h-5 fill-current mr-1" />
-                                <span className="text-slate-800 text-base">{experience.rating} <span className="text-slate-500 font-normal">({experience.reviewsCount} Reviews)</span></span>
-                            </div>
-                            <span className="text-slate-300">|</span>
-                            <div className="flex items-center text-slate-700">
-                                <MapPin className="w-5 h-5 text-[#2E5A27] mr-1" />
-                                {experience.location}
+                        {/* 1. Header & Breadcrumb Navigation */}
+                        <div className="mb-8">
+                            <nav className="flex text-sm text-white/70 mb-4" aria-label="Breadcrumb">
+                                <ol className="inline-flex items-center space-x-1 md:space-x-3">
+                                    <li className="inline-flex items-center">
+                                        <Link href="/" className="hover:text-royalGold-500 transition-colors">Home</Link>
+                                    </li>
+                                    <li>
+                                        <div className="flex items-center">
+                                            <ChevronRight className="w-4 h-4 mx-1" />
+                                            <Link href="/category/heritage" className="hover:text-royalGold-500 transition-colors">MSME Experiences</Link>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div className="flex items-center">
+                                            <ChevronRight className="w-4 h-4 mx-1" />
+                                            <span className="ml-1 font-medium">Anuradhapura</span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div className="flex items-center">
+                                            <ChevronRight className="w-4 h-4 mx-1" />
+                                            <span className="ml-1 text-white font-bold">{experience.title}</span>
+                                        </div>
+                                    </li>
+                                </ol>
+                            </nav>
+
+                            <div className="flex flex-wrap gap-2 mb-4">
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20">
+                                    <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Verified Spot
+                                </span>
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-royalGold-500/20 text-royalGold-400 border border-royalGold-500/30">
+                                    <Map className="w-3.5 h-3.5 mr-1" /> Cultural Heritage
+                                </span>
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#FF6B35]/20 text-[#FF6B35] border border-[#FF6B35]/30">
+                                    <Check className="w-3.5 h-3.5 mr-1" /> Instant Confirmation
+                                </span>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[400px] md:h-[500px]">
-                            <div className="md:col-span-2 relative rounded-2xl overflow-hidden group">
-                                <img src={experience.mainImage} alt={experience.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                <button className="absolute bottom-6 right-6 bg-white/90 backdrop-blur text-[#2E5A27] px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white transition-colors shadow-lg">
-                                    <Camera className="w-5 h-5" /> Video Preview
-                                </button>
-                            </div>
-                            <div className="hidden md:grid grid-rows-2 gap-4 h-full">
-                                <div className="rounded-2xl overflow-hidden relative group">
-                                    <img src={experience.gallery[0]} alt="Gallery 1" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        {/* 2. Hero Section Titles */}
+                        <div className="mb-10">
+                            <h1 className="text-4xl md:text-5xl font-display font-light text-white mb-3">
+                                {experience.title}
+                            </h1>
+                            <p className="text-lg text-white/80 font-light mb-6 max-w-3xl leading-relaxed">{experience.subtitle}</p>
+                            
+                            <div className="flex items-center gap-4 text-sm font-medium mb-8">
+                                <div className="flex items-center text-royalGold-500">
+                                    <Star className="w-5 h-5 fill-current mr-1" />
+                                    <span className="text-white text-base">{experience.rating} <span className="text-white/60 font-normal font-light">({experience.reviewsCount} Reviews)</span></span>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <span className="text-white/30">|</span>
+                                <div className="flex items-center text-white/80">
+                                    <MapPin className="w-5 h-5 text-royalGold-500 mr-1" />
+                                    {experience.location}
+                                </div>
+                            </div>
+
+                            {/* Grid Image Gallery */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[400px] md:h-[500px]">
+                                <div className="md:col-span-2 relative rounded-2xl overflow-hidden group">
+                                    <img src={experience.mainImage} alt={experience.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                    <button className="absolute bottom-6 right-6 bg-white/90 backdrop-blur text-royalMaroon-950 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white transition-colors shadow-lg">
+                                        <Camera className="w-5 h-5" /> Video Preview
+                                    </button>
+                                </div>
+                                <div className="hidden md:grid grid-rows-2 gap-4 h-full">
                                     <div className="rounded-2xl overflow-hidden relative group">
-                                        <img src={experience.gallery[1]} alt="Gallery 2" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        <img src={experience.gallery[0]} alt="Gallery 1" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                     </div>
-                                    <div className="rounded-2xl overflow-hidden relative group">
-                                        <img src={experience.gallery[2]} alt="Gallery 3" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer hover:bg-black/50 transition-colors">
-                                            <span className="text-white font-bold text-lg">+4 Photos</span>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="rounded-2xl overflow-hidden relative group">
+                                            <img src={experience.gallery[1]} alt="Gallery 2" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        </div>
+                                        <div className="rounded-2xl overflow-hidden relative group">
+                                            <img src={experience.gallery[2]} alt="Gallery 3" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                            <div className="absolute inset-0 bg-royalMaroon-950/40 flex items-center justify-center cursor-pointer hover:bg-royalMaroon-950/50 transition-colors">
+                                                <span className="text-white font-bold text-lg">+4 Photos</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
+                {/* Main Content Area */}
+                <main className="flex-grow max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+                    
                     <div className="flex flex-col lg:flex-row gap-12 relative">
                         {/* Left Content Area */}
                         <div className="lg:w-2/3">
@@ -147,22 +157,22 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             {/* 3. Key Highlights & Specifications Bar */}
                             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm mb-10 flex flex-wrap gap-y-6 justify-between">
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
-                                    <Clock className="w-6 h-6 text-[#D4AF37] mb-2" />
+                                    <Clock className="w-6 h-6 text-royalGold-500 mb-2" />
                                     <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Duration</span>
                                     <span className="text-sm font-semibold text-slate-800">3-4 Hours</span>
                                 </div>
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
-                                    <Users className="w-6 h-6 text-[#D4AF37] mb-2" />
+                                    <Users className="w-6 h-6 text-royalGold-500 mb-2" />
                                     <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Group Size</span>
                                     <span className="text-sm font-semibold text-slate-800">Max 10 People</span>
                                 </div>
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
-                                    <Globe className="w-6 h-6 text-[#D4AF37] mb-2" />
+                                    <Globe className="w-6 h-6 text-royalGold-500 mb-2" />
                                     <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Languages</span>
                                     <span className="text-sm font-semibold text-slate-800">Sinhala / English</span>
                                 </div>
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
-                                    <Accessibility className="w-6 h-6 text-[#D4AF37] mb-2" />
+                                    <Accessibility className="w-6 h-6 text-royalGold-500 mb-2" />
                                     <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Accessibility</span>
                                     <span className="text-sm font-semibold text-slate-800">Kid-friendly</span>
                                 </div>
@@ -179,7 +189,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                             {/* 4. Detailed Description & Itinerary Timeline */}
                             <section className="mb-12">
-                                <h2 className="text-2xl font-bold text-[#2E5A27] mb-4 font-display">Experience Overview</h2>
+                                <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-4">Experience Overview</h2>
                                 <p className="text-slate-600 leading-relaxed mb-8 text-lg">
                                     Step into the living history of Sri Lanka with a guided journey through Kala Grama, dedicated artisan villages where ancient techniques are preserved. Hear the stories of heritage families, witness their dedication, and provide direct economic support to local MSME artisans keeping these traditions alive.
                                 </p>
@@ -194,7 +204,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         { step: 4, title: 'MSME Artisan Shop Visit', desc: 'Browse the cooperative shop to purchase authentic crafts directly from the makers, supporting the local economy.' }
                                     ].map((item, idx) => (
                                         <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-[#D4AF37] text-white font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10">
+                                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-royalGold-500 text-white font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10">
                                                 {item.step}
                                             </div>
                                             <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
@@ -210,7 +220,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                             {/* 6. Location & Interactive Map View */}
                             <section className="mb-12">
-                                <h2 className="text-2xl font-bold text-[#2E5A27] mb-4 font-display">Location & Meeting Point</h2>
+                                <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-4">Location & Meeting Point</h2>
                                 <p className="text-slate-600 mb-6 flex items-start gap-2">
                                     <MapPin className="w-5 h-5 text-[#FF6B35] shrink-0 mt-0.5" />
                                     <span>Main Entrance, Kala Grama Cooperative Center, Anuradhapura Surroundings.<br/>GPS: 8.3114° N, 80.4037° E</span>
@@ -222,8 +232,8 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         <span className="text-slate-500 font-medium text-sm">Interactive Map View</span>
                                     </div>
                                 </div>
-                                <div className="bg-[#2E5A27]/5 rounded-xl p-5 border border-[#2E5A27]/10">
-                                    <h4 className="font-bold text-[#2E5A27] mb-2 text-sm uppercase tracking-wider">How to get there</h4>
+                                <div className="bg-royalMaroon-950/5 rounded-xl p-5 border border-royalMaroon-950/10">
+                                    <h4 className="font-bold text-royalMaroon-950 mb-2 text-sm uppercase tracking-wider">How to get there</h4>
                                     <ul className="text-sm text-slate-700 space-y-2">
                                         <li><strong>By Tuk-Tuk:</strong> Approx. 15 mins from Anuradhapura new town (Rs. 500 - 800).</li>
                                         <li><strong>By Bus:</strong> Take route 34/2 towards Mihintale, alight at the cooperative junction.</li>
@@ -235,16 +245,16 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             {/* 7. MSME Host Profile */}
                             <section className="mb-12 pt-10 border-t border-slate-200">
                                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                                    <div className="w-24 h-24 rounded-full overflow-hidden shrink-0 border-4 border-[#D4AF37]/30">
-                                        <img src="https://ui-avatars.com/api/?name=Rajarata+Craftsmen&background=2E5A27&color=fff&size=128" alt="Host Avatar" className="w-full h-full object-cover" />
+                                    <div className="w-24 h-24 rounded-full overflow-hidden shrink-0 border-4 border-royalGold-500/30">
+                                        <img src="https://ui-avatars.com/api/?name=Rajarata+Craftsmen&background=40030a&color=fff&size=128" alt="Host Avatar" className="w-full h-full object-cover" />
                                     </div>
                                     <div className="text-center sm:text-left">
-                                        <h2 className="text-2xl font-bold text-slate-800 font-display mb-1">Hosted by Rajarata Craftsmen Cooperative</h2>
+                                        <h2 className="text-3xl font-light text-slate-800 font-display mb-1">Hosted by Rajarata Craftsmen Cooperative</h2>
                                         <p className="text-sm text-slate-500 mb-4">Multi-generational artisans • Hosting since 2018</p>
                                         <p className="text-slate-600 mb-4 max-w-2xl">
                                             Our cooperative unites over 40 family-run MSMEs across the region. We are passionate about sharing our ancestral crafting techniques with visitors to preserve our heritage and sustain our rural communities.
                                         </p>
-                                        <button className="px-6 py-2 border-2 border-[#2E5A27] text-[#2E5A27] font-semibold rounded-lg hover:bg-[#2E5A27] hover:text-white transition-colors">
+                                        <button className="px-6 py-2 border-2 border-royalMaroon-950 text-royalMaroon-950 font-semibold rounded-lg hover:bg-royalMaroon-950 hover:text-white transition-colors">
                                             Contact Host
                                         </button>
                                     </div>
@@ -253,7 +263,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                             {/* 8. Guidelines & Policy Accordions */}
                             <section className="mb-12">
-                                <h2 className="text-2xl font-bold text-[#2E5A27] mb-6 font-display">Important Information</h2>
+                                <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-6">Important Information</h2>
                                 <div className="space-y-3">
                                     {[
                                         { title: 'Dress Code', content: 'We recommend comfortable, loose-fitting cotton clothing suitable for the tropical climate. Modest attire is appreciated when visiting village homes.' },
@@ -281,27 +291,27 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             {/* 9. Customer Reviews */}
                             <section className="mb-12">
                                 <div className="flex items-center gap-3 mb-6">
-                                    <Star className="w-8 h-8 fill-[#D4AF37] text-[#D4AF37]" />
-                                    <h2 className="text-3xl font-bold text-slate-800 font-display">4.8 <span className="text-xl font-normal text-slate-500">/ 5.0</span></h2>
+                                    <Star className="w-8 h-8 fill-royalGold-500 text-royalGold-500" />
+                                    <h2 className="text-4xl font-light text-slate-800 font-display">4.8 <span className="text-xl font-normal text-slate-500">/ 5.0</span></h2>
                                     <span className="text-slate-500 ml-2">({experience.reviewsCount} verified reviews)</span>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-8 border-b border-slate-200 pb-8">
                                     <div className="flex items-center justify-between">
                                         <span className="text-slate-700">Value for Money</span>
-                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[95%] h-full bg-[#2E5A27]"></div></div>
+                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[95%] h-full bg-royalMaroon-950"></div></div>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <span className="text-slate-700">Guide Knowledge</span>
-                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[100%] h-full bg-[#2E5A27]"></div></div>
+                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[100%] h-full bg-royalMaroon-950"></div></div>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <span className="text-slate-700">Experience</span>
-                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[98%] h-full bg-[#2E5A27]"></div></div>
+                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[98%] h-full bg-royalMaroon-950"></div></div>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <span className="text-slate-700">Cleanliness</span>
-                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[90%] h-full bg-[#2E5A27]"></div></div>
+                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[90%] h-full bg-royalMaroon-950"></div></div>
                                     </div>
                                 </div>
 
@@ -315,7 +325,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                     <p className="text-xs text-slate-500">August 2026 • Verified Buyer</p>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-1 text-[#D4AF37]">
+                                            <div className="flex gap-1 text-royalGold-500">
                                                 {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
                                             </div>
                                         </div>
@@ -424,7 +434,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                     {/* 10. Recommended / Similar MSME Experiences Grid */}
                     <section className="mt-16 pt-16 border-t border-slate-200">
-                        <h2 className="text-2xl font-bold text-[#2E5A27] mb-8 font-display">More Experiences You Might Like</h2>
+                        <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-8">More Experiences You Might Like</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
                                 { title: 'Hands-on Clay Pottery Workshop', location: 'Anuradhapura', image: '/images/clay_workshop.png', rating: 4.9, price: 35 },
@@ -436,11 +446,11 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     <div className="relative aspect-[4/3] overflow-hidden">
                                         <img src={sim.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                         <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-slate-800 flex items-center">
-                                            <Star className="w-3 h-3 fill-[#D4AF37] text-[#D4AF37] mr-1" /> {sim.rating}
+                                            <Star className="w-3 h-3 fill-royalGold-500 text-royalGold-500 mr-1" /> {sim.rating}
                                         </div>
                                     </div>
                                     <div className="p-4">
-                                        <div className="text-xs text-[#2E5A27] font-semibold mb-1 uppercase tracking-wider">{sim.location}</div>
+                                        <div className="text-xs text-royalMaroon-950 font-semibold mb-1 uppercase tracking-wider">{sim.location}</div>
                                         <h4 className="font-bold text-slate-800 mb-2 leading-tight group-hover:text-[#FF6B35] transition-colors">{sim.title}</h4>
                                         <div className="font-bold text-slate-900 text-sm">From ${sim.price}</div>
                                     </div>
