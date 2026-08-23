@@ -107,6 +107,16 @@ const heritageExperiences = [
         description: 'Walk through heritage villages and participate in traditional clay-pot culinary experiences, discovering authentic local recipes and rural living traditions.',
         image: '/images/village_culinary.png',
         href: '/experience/culinary-walk'
+    },
+    {
+        id: 'stone-carving-demo',
+        name: 'Stone Sculpting Experience',
+        location: 'Anuradhapura',
+        rating: '4.8',
+        reviews: '115',
+        description: 'Watch mesmerising demonstrations of granite carving, learning about the ancient tools, sacred geometry, and sheer patience required.',
+        image: '/images/stone_demo.png',
+        href: '/experience/stone-carving-demo'
     }
 ];
 

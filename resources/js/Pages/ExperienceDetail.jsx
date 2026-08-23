@@ -97,6 +97,28 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                 { step: 3, title: 'Clay Pot Cooking', desc: 'Cook alongside village women over an open wood fire using traditional clay pots.' },
                 { step: 4, title: 'Traditional Feast', desc: 'Sit down to enjoy the delicious meal you helped prepare, served on a lotus leaf.' }
             ]
+        },
+        'stone-carving-demo': {
+            title: "Stone Sculpting Experience",
+            subtitle: "Watch mesmerising demonstrations of granite carving, learning about ancient tools and sacred geometry.",
+            rating: 4.8,
+            reviewsCount: 115,
+            location: "Anuradhapura",
+            price: 30,
+            priceLkr: 9000,
+            mainImage: "/images/stone_demo.png",
+            gallery: ["/images/heritage_crafts.png", "/images/clay_workshop.png", "/images/handloom_experience.png", "/images/village_culinary.png"],
+            duration: "2-3 Hours",
+            groupSize: "Max 8 People",
+            hostName: "Anuradhapura Stonemasons",
+            hostAvatar: "Anuradhapura+Stonemasons",
+            overview: "Discover the sheer patience and incredible skill required for traditional Sri Lankan stone sculpting. From chiseling rough granite to polishing intricate designs, learn the ancient techniques that built the sacred city of Anuradhapura.",
+            itinerary: [
+                { step: 1, title: 'Introduction to Tools & Stone', desc: 'Learn about the traditional tools (chisel, mallet) and how to identify the right granite.' },
+                { step: 2, title: 'Sacred Geometry Class', desc: 'Understand the mathematical principles and ancient designs (like the moonstone) before carving.' },
+                { step: 3, title: 'Masterclass Demonstration', desc: 'Watch a master stonemason swiftly and precisely shape a rough block of granite.' },
+                { step: 4, title: 'Hands-on Sculpting', desc: 'Try your hand at chiseling a simple design onto a small stone under expert guidance.' }
+            ]
         }
     };
 
