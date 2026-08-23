@@ -9,23 +9,98 @@ import {
 } from 'lucide-react';
 
 export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion }) {
-    // Standard mock data for Kala Grama Artisan Tour
-    const experience = {
-        title: "Kala Grama Artisan Tour",
-        subtitle: "Guided immersive journey through traditional artisan villages in Anuradhapura.",
-        rating: 4.8,
-        reviewsCount: 142,
-        location: "Anuradhapura Surroundings",
-        price: 25,
-        priceLkr: 7500,
-        mainImage: "/images/heritage_crafts.png",
-        gallery: [
-            "/images/clay_workshop.png",
-            "/images/stone_demo.png",
-            "/images/handloom_experience.png",
-            "/images/village_culinary.png"
-        ]
+    const experienceDetails = {
+        'craft-village-tour': {
+            title: "Kala Grama Artisan Tour",
+            subtitle: "Guided immersive journey through traditional artisan villages in Anuradhapura.",
+            rating: 4.8,
+            reviewsCount: 142,
+            location: "Anuradhapura Surroundings",
+            price: 25,
+            priceLkr: 7500,
+            mainImage: "/images/heritage_crafts.png",
+            gallery: ["/images/clay_workshop.png", "/images/stone_demo.png", "/images/handloom_experience.png", "/images/village_culinary.png"],
+            duration: "3-4 Hours",
+            groupSize: "Max 10 People",
+            hostName: "Rajarata Craftsmen Cooperative",
+            hostAvatar: "Rajarata+Craftsmen",
+            overview: "Step into the living history of Sri Lanka with a guided journey through Kala Grama, dedicated artisan villages where ancient techniques are preserved. Hear the stories of heritage families, witness their dedication, and provide direct economic support to local MSME artisans keeping these traditions alive.",
+            itinerary: [
+                { step: 1, title: 'Welcome & Refreshments', desc: 'Arrive at the village and enjoy traditional Sri Lankan herbal tea (Belimal or Ranawara) served with jaggery.' },
+                { step: 2, title: 'Live Master Class Demo', desc: 'Watch master artisans demonstrating metal, wood, or pottery crafting techniques passed down through generations.' },
+                { step: 3, title: 'Hands-on Crafting Session', desc: 'Roll up your sleeves! Guided by an artisan, try your hand at the craft and create your own small keepsake.' },
+                { step: 4, title: 'MSME Artisan Shop Visit', desc: 'Browse the cooperative shop to purchase authentic crafts directly from the makers, supporting the local economy.' }
+            ]
+        },
+        'pottery-workshop': {
+            title: "Hands-on Clay Workshop",
+            subtitle: "Learn the ancient techniques of wheel-throwing and hand-building from hereditary potters.",
+            rating: 4.9,
+            reviewsCount: 188,
+            location: "Anuradhapura",
+            price: 35,
+            priceLkr: 10500,
+            mainImage: "/images/clay_workshop.png",
+            gallery: ["/images/heritage_crafts.png", "/images/stone_demo.png", "/images/handloom_experience.png", "/images/village_culinary.png"],
+            duration: "2-3 Hours",
+            groupSize: "Max 8 People",
+            hostName: "Anuradhapura Potters Guild",
+            hostAvatar: "Potters+Guild",
+            overview: "Get your hands dirty and learn the ancient art of pottery from hereditary craftsmen. Shape your own terracotta souvenirs and understand the cultural significance of traditional clay items in Sri Lankan households.",
+            itinerary: [
+                { step: 1, title: 'Introduction to Clay', desc: 'Learn about sourcing and preparing the perfect terracotta clay from local riverbanks.' },
+                { step: 2, title: 'Wheel-Throwing Demo', desc: 'Watch the mesmerizing speed and precision of a master potter on the traditional wheel.' },
+                { step: 3, title: 'Your Turn at the Wheel', desc: 'With guidance, try shaping your own small clay vessel on the wheel.' },
+                { step: 4, title: 'Hand-building & Decorating', desc: 'Learn to add traditional motifs and designs to your piece before it goes to the kiln.' }
+            ]
+        },
+        'handloom-experience': {
+            title: "Rajarata Handloom & Weaving Experience",
+            subtitle: "Experience the art of authentic handloom weaving and natural dyeing techniques.",
+            rating: 4.7,
+            reviewsCount: 96,
+            location: "Polonnaruwa / Rajarata",
+            price: 30,
+            priceLkr: 9000,
+            mainImage: "/images/handloom_experience.png",
+            gallery: ["/images/weaving_class.png", "/images/heritage_crafts.png", "/images/clay_workshop.png", "/images/village_culinary.png"],
+            duration: "3 Hours",
+            groupSize: "Max 12 People",
+            hostName: "Rajarata Women's Weaving Coop",
+            hostAvatar: "Weaving+Coop",
+            overview: "Join a vibrant community of female weavers and discover the intricate process of creating traditional Sri Lankan handloom textiles. From dyeing the yarn to operating the wooden looms, immerse yourself in this colorful heritage craft.",
+            itinerary: [
+                { step: 1, title: 'Yarn Preparation & Dyeing', desc: 'See how cotton yarn is prepared and dyed using vibrant, sometimes natural, colors.' },
+                { step: 2, title: 'Loom Setup', desc: 'Understand the complex mechanics of setting up the warp threads on a traditional wooden loom.' },
+                { step: 3, title: 'Weaving Demonstration', desc: 'Watch the rhythmic and fast-paced weaving process.' },
+                { step: 4, title: 'Try Weaving', desc: 'Sit at a loom and try weaving a few rows yourself to understand the skill involved.' }
+            ]
+        },
+        'culinary-walk': {
+            title: "Village Culinary & Heritage Walk",
+            subtitle: "Walk through heritage villages and participate in traditional clay-pot culinary experiences.",
+            rating: 4.9,
+            reviewsCount: 210,
+            location: "Mihintale Village",
+            price: 40,
+            priceLkr: 12000,
+            mainImage: "/images/village_culinary.png",
+            gallery: ["/images/clay_workshop.png", "/images/handloom_experience.png", "/images/heritage_crafts.png", "/images/stone_demo.png"],
+            duration: "4 Hours",
+            groupSize: "Max 6 People",
+            hostName: "Mihintale Heritage Kitchen",
+            hostAvatar: "Heritage+Kitchen",
+            overview: "Embark on a culinary journey through a traditional Sri Lankan village. Learn to identify local spices, harvest fresh vegetables, and cook an authentic meal in clay pots over an open wood fire.",
+            itinerary: [
+                { step: 1, title: 'Village & Farm Walk', desc: 'Take a guided walk through the village farms to pick fresh vegetables and herbs.' },
+                { step: 2, title: 'Spice Preparation', desc: 'Learn the secrets of Sri Lankan spices and help grind them using a traditional stone mortar.' },
+                { step: 3, title: 'Clay Pot Cooking', desc: 'Cook alongside village women over an open wood fire using traditional clay pots.' },
+                { step: 4, title: 'Traditional Feast', desc: 'Sit down to enjoy the delicious meal you helped prepare, served on a lotus leaf.' }
+            ]
+        }
     };
+
+    const experience = experienceDetails[experienceId] || experienceDetails['craft-village-tour'];
 
     const [guests, setGuests] = useState({ adults: 1, children: 0 });
     const [date, setDate] = useState('');
@@ -159,12 +234,12 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
                                     <Clock className="w-6 h-6 text-royalGold-500 mb-2" />
                                     <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Duration</span>
-                                    <span className="text-sm font-semibold text-slate-800">3-4 Hours</span>
+                                    <span className="text-sm font-semibold text-slate-800">{experience.duration}</span>
                                 </div>
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
                                     <Users className="w-6 h-6 text-royalGold-500 mb-2" />
                                     <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Group Size</span>
-                                    <span className="text-sm font-semibold text-slate-800">Max 10 People</span>
+                                    <span className="text-sm font-semibold text-slate-800">{experience.groupSize}</span>
                                 </div>
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
                                     <Globe className="w-6 h-6 text-royalGold-500 mb-2" />
@@ -191,18 +266,13 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             <section className="mb-12">
                                 <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-4">Experience Overview</h2>
                                 <p className="text-slate-600 leading-relaxed mb-8 text-lg">
-                                    Step into the living history of Sri Lanka with a guided journey through Kala Grama, dedicated artisan villages where ancient techniques are preserved. Hear the stories of heritage families, witness their dedication, and provide direct economic support to local MSME artisans keeping these traditions alive.
+                                    {experience.overview}
                                 </p>
 
                                 <h3 className="text-xl font-bold text-slate-800 mb-6 font-display">Itinerary Timeline</h3>
                                 <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
                                     
-                                    {[
-                                        { step: 1, title: 'Welcome & Refreshments', desc: 'Arrive at the village and enjoy traditional Sri Lankan herbal tea (Belimal or Ranawara) served with jaggery.' },
-                                        { step: 2, title: 'Live Master Class Demo', desc: 'Watch master artisans demonstrating metal, wood, or pottery crafting techniques passed down through generations.' },
-                                        { step: 3, title: 'Hands-on Crafting Session', desc: 'Roll up your sleeves! Guided by an artisan, try your hand at the craft and create your own small keepsake.' },
-                                        { step: 4, title: 'MSME Artisan Shop Visit', desc: 'Browse the cooperative shop to purchase authentic crafts directly from the makers, supporting the local economy.' }
-                                    ].map((item, idx) => (
+                                    {experience.itinerary.map((item, idx) => (
                                         <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                                             <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-royalGold-500 text-white font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10">
                                                 {item.step}
@@ -246,10 +316,10 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             <section className="mb-12 pt-10 border-t border-slate-200">
                                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                                     <div className="w-24 h-24 rounded-full overflow-hidden shrink-0 border-4 border-royalGold-500/30">
-                                        <img src="https://ui-avatars.com/api/?name=Rajarata+Craftsmen&background=40030a&color=fff&size=128" alt="Host Avatar" className="w-full h-full object-cover" />
+                                        <img src={`https://ui-avatars.com/api/?name=${experience.hostAvatar}&background=40030a&color=fff&size=128`} alt="Host Avatar" className="w-full h-full object-cover" />
                                     </div>
                                     <div className="text-center sm:text-left">
-                                        <h2 className="text-3xl font-light text-slate-800 font-display mb-1">Hosted by Rajarata Craftsmen Cooperative</h2>
+                                        <h2 className="text-3xl font-light text-slate-800 font-display mb-1">Hosted by {experience.hostName}</h2>
                                         <p className="text-sm text-slate-500 mb-4">Multi-generational artisans • Hosting since 2018</p>
                                         <p className="text-slate-600 mb-4 max-w-2xl">
                                             Our cooperative unites over 40 family-run MSMEs across the region. We are passionate about sharing our ancestral crafting techniques with visitors to preserve our heritage and sustain our rural communities.
