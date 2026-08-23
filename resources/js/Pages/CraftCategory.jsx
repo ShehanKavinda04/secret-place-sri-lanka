@@ -18,8 +18,7 @@ export default function CraftCategory({ auth, category, laravelVersion, phpVersi
         'lotus-silk-experience': { title: 'Lotus Silk Farm Visit', desc: 'Experience the magical process of transforming raw lotus stems into exquisite fabric.' },
     };
 
-    const currentCat = categoryDatabase[category] || 
-        (categoryInfo[category] ? { ...categoryInfo[category], filters: [], products: [] } : categoryDatabase['rajarata-pottery']);
+    const currentCat = categoryDatabase[category] || { title: "Category Not Found", desc: "This category does not exist or has no products.", filters: [], products: [] };
 
     const [selectedFilters, setSelectedFilters] = useState([]);
 

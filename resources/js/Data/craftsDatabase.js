@@ -82,8 +82,11 @@ export const categoryDatabase = {
         banner: '/images/woodcraft.png',
         filters: [ { id: 'carvings', label: 'Wood Carvings' }, { id: 'furniture', label: 'Furniture' } ],
         products: [
-            { id: 401, filterId: 'carvings', title: "Traditional Wooden Mask", subtitle: "Hand-carved and painted mask.", price: "Rs. 4,500.00", rating: "4.8", reviewsCount: 124, description: "This exquisite traditional wooden mask is hand-carved by master artisans.", features: ["Hand-carved from sustainable Kaduru wood", "Painted with traditional, vibrant colors"], image: "/images/woodcraft.png", subImages: ["/images/woodcraft.png"] },
-            { id: 402, filterId: 'furniture', title: "Carved Wooden Table", subtitle: "Small intricately carved side table.", price: "Rs. 15,000.00", rating: "4.9", reviewsCount: 45, description: "A small intricately carved wooden side table perfect for any living room.", features: ["Teak wood", "Intricate carving", "Polished finish"], image: "/images/woodcraft.png", subImages: ["/images/woodcraft.png"] }
+            { id: 401, filterId: 'carvings', title: "Traditional Raksha Mask", subtitle: "Hand-carved and painted mask.", price: "Rs. 4,500.00", rating: "4.8", reviewsCount: 124, description: "This exquisite traditional wooden mask is hand-carved by master artisans.", features: ["Hand-carved from sustainable Kaduru wood", "Painted with traditional, vibrant colors"], image: "/images/crafts/raksha_mask.jpg", subImages: ["/images/crafts/raksha_mask.jpg"] },
+            { id: 402, filterId: 'furniture', title: "Carved Wooden Table", subtitle: "Small intricately carved side table.", price: "Rs. 15,000.00", rating: "4.9", reviewsCount: 45, description: "A small intricately carved wooden side table perfect for any living room.", features: ["Teak wood", "Intricate carving", "Polished finish"], image: "/images/crafts/carved_table.jpg", subImages: ["/images/crafts/carved_table.jpg"] },
+            { id: 403, filterId: 'carvings', title: "Floral Wall Panel", subtitle: "Traditional Liyawela carved panel.", price: "Rs. 8,500.00", rating: "4.7", reviewsCount: 78, description: "A traditional Sri Lankan carved wooden wall panel with floral motifs.", features: ["Dark wood", "Liyawela motif", "High quality"], image: "/images/crafts/floral_panel.jpg", subImages: ["/images/crafts/floral_panel.jpg"] },
+            { id: 404, filterId: 'carvings', title: "Sanni Healing Mask", subtitle: "Antique finish healing ritual mask.", price: "Rs. 5,200.00", rating: "4.8", reviewsCount: 112, description: "A traditional Sri Lankan Sanni healing mask with an antique finish.", features: ["Antique finish", "Ritual mask", "Expressive design"], image: "/images/crafts/sanni_mask.jpg", subImages: ["/images/crafts/sanni_mask.jpg"] },
+            { id: 405, filterId: 'carvings', title: "Wooden Buddha Statue", subtitle: "Serene seated meditation posture.", price: "Rs. 18,000.00", rating: "5.0", reviewsCount: 231, description: "A serene, hand-carved wooden statue of Lord Buddha in a seated meditation posture.", features: ["Teak finish", "Meditation posture", "Hand-carved"], image: "/images/crafts/buddha_statue.jpg", subImages: ["/images/crafts/buddha_statue.jpg"] }
         ]
     },
     'handloom-textiles': {
@@ -102,8 +105,8 @@ export const categoryDatabase = {
         banner: '/images/heritage_crafts.png',
         filters: [ { id: 'tickets', label: 'Tour Tickets' }, { id: 'souvenirs', label: 'Local Souvenirs' } ],
         products: [
-            { id: 601, filterId: 'tickets', title: 'Standard Village Tour Ticket', subtitle: 'A half-day immersive tour.', price: 'Rs. 2,000.00', rating: '4.8', reviewsCount: 142, description: 'Experience the artisan village first-hand.', features: ['Guided tour', 'Meet artisans'], image: '/images/heritage_crafts.png', subImages: ['/images/heritage_crafts.png'] },
-            { id: 602, filterId: 'souvenirs', title: 'Artisan Support Package', subtitle: 'Support the village and get a souvenir.', price: 'Rs. 5,000.00', rating: '4.9', reviewsCount: 56, description: 'A package that directly supports the MSME families.', features: ['Direct support', 'Handmade souvenir'], image: '/images/heritage_crafts.png', subImages: ['/images/heritage_crafts.png'] }
+            { id: 601, filterId: 'tickets', title: 'Standard Village Tour Ticket', subtitle: 'A half-day immersive tour.', price: 'Rs. 2,000.00', rating: '4.8', reviewsCount: 142, description: 'Experience the artisan village first-hand.', features: ['Guided tour', 'Meet artisans'], image: '/images/crafts/village_tour_ticket.jpg', subImages: ['/images/crafts/village_tour_ticket.jpg'] },
+            { id: 602, filterId: 'souvenirs', title: 'Artisan Support Package', subtitle: 'Support the village and get a souvenir.', price: 'Rs. 5,000.00', rating: '4.9', reviewsCount: 56, description: 'A package that directly supports the MSME families.', features: ['Direct support', 'Handmade souvenir'], image: '/images/crafts/artisan_support_package.jpg', subImages: ['/images/crafts/artisan_support_package.jpg'] }
         ]
     },
     'pottery-workshop': {
@@ -119,9 +122,18 @@ export const categoryDatabase = {
         title: 'Stone Sculpting Experience',
         desc: 'Watch mesmerising demonstrations of granite carving, learning about the ancient tools, sacred geometry, and sheer patience required.',
         banner: '/images/stone_demo.png',
-        filters: [ { id: 'demo', label: 'Demonstrations' } ],
+        filters: [ 
+            { id: 'demo', label: 'Demonstrations' },
+            { id: 'workshop', label: 'Hands-on Workshops' },
+            { id: 'souvenir', label: 'Souvenirs & Kits' },
+            { id: 'class', label: 'Design Classes' }
+        ],
         products: [
-            { id: 801, filterId: 'demo', title: 'Stone Carving Masterclass Demo', subtitle: 'Watch and learn from master stonemasons.', price: 'Rs. 1,500.00', rating: '4.7', reviewsCount: 115, description: 'Watch mesmerising demonstrations of granite carving.', features: ['1 hour demo', 'Q&A session'], image: '/images/stone_demo.png', subImages: ['/images/stone_demo.png'] }
+            { id: 801, filterId: 'demo', title: 'Stone Carving Masterclass Demo', subtitle: 'Watch and learn from master stonemasons.', price: 'Rs. 1,500.00', rating: '4.7', reviewsCount: 115, description: 'Watch mesmerising demonstrations of granite carving, learning about the ancient tools and sheer patience required.', features: ['1 hour demo', 'Q&A session'], image: '/images/crafts/demo_masterclass.jpg', subImages: ['/images/crafts/demo_masterclass.jpg'] },
+            { id: 802, filterId: 'workshop', title: 'Hands-on Granite Sculpting', subtitle: 'A half-day immersive workshop where you carve your own stone.', price: 'Rs. 5,000.00', rating: '4.9', reviewsCount: 82, description: 'Join our master artisans for a hands-on session. You will be guided through the basics of using a chisel and mallet on soft granite.', features: ['3 hour session', 'Take home your carving', 'Tools provided'], image: '/images/crafts/granite_sculpting.jpg', subImages: ['/images/crafts/granite_sculpting.jpg'] },
+            { id: 803, filterId: 'souvenir', title: 'Miniature Moonstone Replica', subtitle: 'Hand-carved miniature moonstone souvenir.', price: 'Rs. 3,500.00', rating: '4.8', reviewsCount: 240, description: 'A beautifully detailed, palm-sized replica of the Anuradhapura moonstone, carved by the artisans you meet on your tour.', features: ['Hand-carved', 'Authentic design', 'Perfect gift'], image: '/images/crafts/moonstone_replica.jpg', subImages: ['/images/crafts/moonstone_replica.jpg'] },
+            { id: 804, filterId: 'class', title: 'Sacred Geometry Design Class', subtitle: 'Learn the ancient mathematical principles behind the carvings.', price: 'Rs. 2,000.00', rating: '4.6', reviewsCount: 54, description: 'Before the chisel meets the stone, the design must be drawn. Learn the sacred geometry used by ancient Sri Lankan architects.', features: ['1.5 hour class', 'Drawing materials included'], image: '/images/crafts/geometry_design.jpg', subImages: ['/images/crafts/geometry_design.jpg'] },
+            { id: 805, filterId: 'souvenir', title: 'Personalised Granite Nameplate', subtitle: 'Custom engraved granite plaque made during your visit.', price: 'Rs. 4,500.00', rating: '5.0', reviewsCount: 19, description: 'Commission a beautiful, custom engraved granite nameplate. Watch as the artisan carves your name in traditional Sinhalese script.', features: ['Custom engraving', 'Traditional script', 'Ready in 2 hours'], image: '/images/crafts/granite_nameplate.jpg', subImages: ['/images/crafts/granite_nameplate.jpg'] }
         ]
     },
     'reed-weaving-class': {

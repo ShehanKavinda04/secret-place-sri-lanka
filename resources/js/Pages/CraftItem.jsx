@@ -1,8 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
-import { useState } from 'react';
-import { getProductById } from '../data/craftsDatabase';
+import { useState, useEffect } from 'react';
+import { getProductById, categoryDatabase } from '../data/craftsDatabase';
 import { ShoppingCart, Star, ShieldCheck, Truck, ArrowLeft, Heart } from 'lucide-react';
 
 export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) {
@@ -37,15 +37,26 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
         ]
     };
 
-    const relatedProducts = [
-        { id: 402, title: "Carved Wooden Table", subtitle: "Small intricately carved side table.", price: "Rs. 15,000.00", rating: "4.9 stars", image: "/images/woodcraft.png" },
-        { id: 105, title: "Stone Carved Elephant", subtitle: "Decorative wall plaque featuring the royal elephant.", price: "Rs. 6,500.00", rating: "4.8 stars", image: "/images/crafts/stone_elephant.png" },
-        { id: 104, title: "Lotus Pillar Capital", subtitle: "Traditional Pekada design stone pillar top.", price: "Rs. 8,000.00", rating: "4.7 stars", image: "/images/crafts/pillar.png" },
-        { id: 201, title: "Traditional Pan Padura", subtitle: "Handwoven reed mat featuring vibrant geometric patterns.", price: "Rs. 4,500.00", rating: "4.9 stars", image: "/images/crafts/reed_mat.png" }
-    ];
+    const categoryKey = fetchedProduct ? fetchedProduct.categoryKey : 'rajarata-pottery';
+    const allCategoryProducts = categoryDatabase[categoryKey]?.products || [];
+    let relatedProducts = allCategoryProducts.filter(p => p.id !== itemId).slice(0, 4);
+    
+    // Fallback if no related products in the same category
+    if (relatedProducts.length === 0) {
+        relatedProducts = [
+            { id: 402, title: "Carved Wooden Table", subtitle: "Small intricately carved side table.", price: "Rs. 15,000.00", rating: "4.9 stars", image: "/images/woodcraft.png" },
+            { id: 105, title: "Stone Carved Elephant", subtitle: "Decorative wall plaque featuring the royal elephant.", price: "Rs. 6,500.00", rating: "4.8 stars", image: "/images/crafts/stone_elephant.png" }
+        ];
+    }
 
     const [activeImage, setActiveImage] = useState(product.mainImage);
     const [quantity, setQuantity] = useState(1);
+
+    // Ensure state updates when navigating between different items
+    useEffect(() => {
+        setActiveImage(product.mainImage);
+        setQuantity(1);
+    }, [product.mainImage, itemId]);
 
     const handleQuantityChange = (type) => {
         if (type === 'dec' && quantity > 1) setQuantity(quantity - 1);
