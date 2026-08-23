@@ -211,6 +211,9 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
             <header className="bg-royalMaroon-900 text-white border-b border-white/10 sticky top-0 z-50">
                 <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between text-sm font-medium">
                     <div className="flex items-center gap-6">
+                        <Link href="/" className="flex items-center gap-2 text-white/80 hover:text-white transition-colors border-r border-white/20 pr-6 mr-2">
+                            <ArrowLeft size={18} /> <span className="hidden sm:inline">Back</span>
+                        </Link>
                         <button 
                             onClick={() => {setActiveTab('listing'); setSelectedProperty(null);}} 
                             className={`flex items-center gap-2 px-4 py-1.5 rounded-full transition-colors ${activeTab === 'listing' && !selectedProperty ? 'bg-royalGold-400 text-royalMaroon-900 font-bold shadow-sm' : 'text-white hover:text-royalGold-400'}`}
@@ -423,7 +426,45 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
 // Subcomponents
 
 function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggleWishlist }) {
-    const [activeFilter, setActiveFilter] = useState('All Escapes (6)');
+    const [activeFilter, setActiveFilter] = useState('All Escapes');
+    const [maxPrice, setMaxPrice] = useState(750000);
+    const [minRating, setMinRating] = useState(0);
+    const [selectedAmenities, setSelectedAmenities] = useState([]);
+    const [sortBy, setSortBy] = useState('Featured Curations');
+
+    const toggleAmenity = (amenity) => {
+        setSelectedAmenities(prev => 
+            prev.includes(amenity) ? prev.filter(a => a !== amenity) : [...prev, amenity]
+        );
+    };
+
+    const resetFilters = () => {
+        setMaxPrice(750000);
+        setMinRating(0);
+        setSelectedAmenities([]);
+        setActiveFilter('All Escapes');
+        setSortBy('Featured Curations');
+    };
+
+    // Filter logic
+    const filteredAccommodations = accommodations.filter(prop => {
+        if (activeFilter !== 'All Escapes' && !prop.category?.toLowerCase().includes(activeFilter.toLowerCase())) return false;
+        if (prop.price > maxPrice) return false;
+        if (Number(prop.rating) < minRating) return false;
+        // if we have amenities in the prop
+        if (selectedAmenities.length > 0 && prop.amenities) {
+            const hasAllAmenities = selectedAmenities.every(a => 
+                prop.amenities.some(pa => typeof pa === 'string' && pa.toLowerCase() === a.toLowerCase())
+            );
+            if (!hasAllAmenities) return false;
+        }
+        return true;
+    }).sort((a, b) => {
+        if (sortBy === 'Price: Low to High') return a.price - b.price;
+        if (sortBy === 'Price: High to Low') return b.price - a.price;
+        if (sortBy === 'Highest Rated') return Number(b.rating) - Number(a.rating);
+        return 0; // Featured Curations (default)
+    });
 
     return (
         <motion.div 
@@ -434,7 +475,7 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
             {/* Category Tab Bar (Sub-header) */}
             <div className="flex items-center justify-between mb-10 pb-6 border-b border-gray-100">
                 <div className="flex flex-wrap gap-3">
-                    {['All Escapes (6)', 'Hotels', 'Resorts', 'Villas', 'Fine Dining'].map(cat => (
+                    {['All Escapes', 'Hotels', 'Resorts', 'Villas', 'Fine Dining'].map(cat => (
                         <button 
                             key={cat}
                             onClick={() => setActiveFilter(cat)}
@@ -444,18 +485,22 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
                                 : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
                             }`}
                         >
-                            {cat === 'All Escapes (6)' && <Compass size={16} />}
+                            {cat === 'All Escapes' && <Compass size={16} />}
                             {cat === 'Hotels' && <Home size={16} />}
                             {cat === 'Resorts' && <Wind size={16} />}
                             {cat === 'Villas' && <Home size={16} />}
                             {cat === 'Fine Dining' && <Utensils size={16} />}
-                            {cat}
+                            {cat}{cat === 'All Escapes' && ` (${accommodations.length})`}
                         </button>
                     ))}
                 </div>
                 <div className="hidden lg:flex items-center gap-3 text-sm text-gray-500">
                     Sort by: 
-                    <select className="border-none bg-transparent font-semibold text-gray-800 focus:ring-0 cursor-pointer">
+                    <select 
+                        value={sortBy} 
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="border-none bg-transparent font-semibold text-gray-800 focus:ring-0 cursor-pointer"
+                    >
                         <option>Featured Curations</option>
                         <option>Price: Low to High</option>
                         <option>Price: High to Low</option>
@@ -472,7 +517,7 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
                             <h3 className="text-lg font-serif font-bold text-royalTeal flex items-center gap-2">
                                 <Filter size={20} className="text-royalTeal" /> Filter Sanctuaries
                             </h3>
-                            <button className="text-sm font-medium text-gray-500 hover:text-gray-800 flex items-center gap-1">
+                            <button onClick={resetFilters} className="text-sm font-medium text-gray-500 hover:text-gray-800 flex items-center gap-1">
                                 <RotateCcw size={14} /> Reset
                             </button>
                         </div>
@@ -481,9 +526,17 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
                             <div>
                                 <div className="flex justify-between items-end mb-4">
                                     <label className="block text-sm font-bold text-gray-800">Max Starting Price</label>
-                                    <span className="text-sm font-bold text-royalTeal">LKR 750,000 / night</span>
+                                    <span className="text-sm font-bold text-royalTeal">{formatPrice(maxPrice)} / night</span>
                                 </div>
-                                <input type="range" min="300" max="2500" defaultValue="2500" className="w-full h-2 bg-slider-track rounded-lg appearance-none cursor-pointer accent-royalMaroon-800" />
+                                <input 
+                                    type="range" 
+                                    min="90000" 
+                                    max="750000" 
+                                    step="10000"
+                                    value={maxPrice} 
+                                    onChange={(e) => setMaxPrice(Number(e.target.value))}
+                                    className="w-full h-2 bg-slider-track rounded-lg appearance-none cursor-pointer accent-royalMaroon-800" 
+                                />
                                 <div className="flex justify-between text-xs font-medium text-gray-400 mt-2">
                                     <span>LKR 90,000</span>
                                     <span>LKR 420,000</span>
@@ -494,9 +547,13 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
                             <div>
                                 <label className="block text-sm font-bold text-gray-800 mb-3">Minimum Star Rating</label>
                                 <div className="flex gap-2">
-                                    {['4.5+', '4.8+', '4.9+'].map((rating, idx) => (
-                                        <button key={rating} className={`flex-1 py-2 rounded-lg text-sm font-semibold border flex items-center justify-center gap-1 ${idx === 0 ? 'bg-royalMaroon-800 text-royalGold-400 border-royalMaroon-800' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`}>
-                                            <Star size={14} className={idx === 0 ? "fill-theme-gold" : ""} /> {rating}
+                                    {[{label: '4.5+', val: 4.5}, {label: '4.8+', val: 4.8}, {label: '4.9+', val: 4.9}].map((rating) => (
+                                        <button 
+                                            key={rating.label} 
+                                            onClick={() => setMinRating(rating.val === minRating ? 0 : rating.val)}
+                                            className={`flex-1 py-2 rounded-lg text-sm font-semibold border flex items-center justify-center gap-1 ${minRating === rating.val ? 'bg-royalMaroon-800 text-royalGold-400 border-royalMaroon-800' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`}
+                                        >
+                                            <Star size={14} className={minRating === rating.val ? "fill-theme-gold" : ""} /> {rating.label}
                                         </button>
                                     ))}
                                 </div>
@@ -508,7 +565,12 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
                                     {['Wi-Fi', 'Pool', 'Parking', 'AC', 'Spa'].map(amenity => (
                                         <label key={amenity} className="flex items-center gap-3 cursor-pointer group">
                                             <div className="relative flex items-center justify-center">
-                                                <input type="checkbox" className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md checked:bg-royalMaroon-800 checked:border-royalMaroon-800 transition-colors" />
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={selectedAmenities.includes(amenity)}
+                                                    onChange={() => toggleAmenity(amenity)}
+                                                    className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md checked:bg-royalMaroon-800 checked:border-royalMaroon-800 transition-colors" 
+                                                />
                                                 <Check size={14} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
                                             </div>
                                             <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900">{amenity}</span>
@@ -522,9 +584,9 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
 
                 {/* Grid */}
                 <div className="w-full lg:w-3/4 xl:w-4/5">
-                    <div className="text-sm font-medium text-gray-500 mb-4">Showing 6 luxury stays found</div>
+                    <div className="text-sm font-medium text-gray-500 mb-4">Showing {filteredAccommodations.length} luxury stays found</div>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {accommodations.map((prop, idx) => (
+                        {filteredAccommodations.map((prop, idx) => (
                             <motion.div 
                                 key={prop.id}
                                 initial={{ opacity: 0, scale: 0.95 }}

@@ -2,127 +2,10 @@ import { Head, Link } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { useState } from 'react';
+import { categoryDatabase } from '../data/craftsDatabase';
 
 export default function CraftCategory({ auth, category, laravelVersion, phpVersion }) {
-    const categoryDatabase = {
-        'stone-carving': { 
-            title: 'Traditional Stone Sculpting', 
-            desc: 'Master stonemasons recreate the glory of ancient Anuradhapura.',
-            filters: [
-                { id: 'moonstones', label: 'Moonstones (Sandakada Pahana)' },
-                { id: 'guardstones', label: 'Guardstones (Muragala)' },
-                { id: 'statues', label: 'Buddha Statues' },
-                { id: 'pillars', label: 'Carved Pillars' },
-                { id: 'plaques', label: 'Decorative Plaques' },
-            ],
-            products: [
-                { id: 101, filterId: 'moonstones', title: "Granite Moonstone Replica", subtitle: "Intricately carved granite half-lotus moonstone replica.", price: "Rs. 15,000.00", rating: "4.9 stars", image: "/images/crafts/moonstone.png" },
-                { id: 102, filterId: 'guardstones', title: "Traditional Guardstone", subtitle: "Detailed Muragala carving for entrance protection.", price: "Rs. 12,500.00", rating: "4.8 stars", image: "/images/crafts/guardstone.png" },
-                { id: 103, filterId: 'statues', title: "Samadhi Buddha Statue", subtitle: "Serene Buddha statue carved from solid black granite.", price: "Rs. 25,000.00", rating: "5.0 stars", image: "/images/crafts/samadhi.png" },
-                { id: 104, filterId: 'pillars', title: "Lotus Pillar Capital", subtitle: "Traditional Pekada design stone pillar top.", price: "Rs. 8,000.00", rating: "4.7 stars", image: "/images/crafts/pillar.png" },
-                { id: 105, filterId: 'plaques', title: "Stone Carved Elephant", subtitle: "Decorative wall plaque featuring the royal elephant.", price: "Rs. 6,500.00", rating: "4.8 stars", image: "/images/crafts/stone_elephant.png" },
-            ]
-        },
-        'rajarata-pottery': { 
-            title: 'Rajarata Clay Pottery', 
-            desc: 'Discover a world of unique, decorative items, cooking pots, lamps, and more. A heritage of artistry in every piece, crafted from the rich red laterite clay of the dry zone.',
-            filters: [
-                { id: 'clay-pots', label: 'Clay Pots & Jugs' },
-                { id: 'oil-lamps', label: 'Ritual Oil Lamps' },
-                { id: 'vases', label: 'Decorative Vases' },
-                { id: 'bowls', label: 'Serving Bowls' },
-                { id: 'figurines', label: 'Figurines & Decor' },
-                { id: 'mugs', label: 'Mugs & Cups' },
-                { id: 'planters', label: 'Planters' },
-            ],
-            products: [
-                { id: 1, filterId: 'clay-pots', title: "Traditional Terracotta Water Jug", subtitle: "Hand-thrown Gurulethu with intricate etched patterns, naturally cools water.", price: "Rs. 4,500.00", rating: "4.9 stars", image: "/images/crafts/jug.png" },
-                { id: 2, filterId: 'oil-lamps', title: "Multi-spout Ritual Oil Lamp", subtitle: "Traditional Pahana used for temple offerings and blessings.", price: "Rs. 3,200.00", rating: "4.8 stars", image: "/images/crafts/lamp.png" },
-                { id: 3, filterId: 'clay-pots', title: "Rustic Clay Cooking Pot", subtitle: "Authentic Chatti for slow-cooking curries, retains heat perfectly.", price: "Rs. 2,800.00", rating: "4.7 stars", image: "/images/crafts/pot.png" },
-                { id: 4, filterId: 'vases', title: "Decorative Terracotta Vase", subtitle: "Elegant vase featuring ancient Sri Lankan floral motifs.", price: "Rs. 6,500.00", rating: "4.9 stars", image: "/images/crafts/vase.png" },
-                { id: 5, filterId: 'bowls', title: "Wide Serving Bowl", subtitle: "Perfect for serving rice and traditional dishes, unglazed inside.", price: "Rs. 3,000.00", rating: "4.8 stars", image: "/images/crafts/bowl.png" },
-                { id: 6, filterId: 'figurines', title: "Handcrafted Clay Elephant", subtitle: "Intricately detailed figurine representing majestic Sri Lankan wildlife.", price: "Rs. 5,000.00", rating: "4.9 stars", image: "/images/crafts/elephant.png" },
-                { id: 7, filterId: 'mugs', title: "Rustic Tea Mug", subtitle: "Enjoy Ceylon tea in a traditional, earthy clay mug.", price: "Rs. 1,200.00", rating: "4.6 stars", image: "/images/crafts/mug.png" },
-                { id: 8, filterId: 'planters', title: "Traditional Planter Pot", subtitle: "Wide base terracotta planter for indoor and outdoor plants.", price: "Rs. 4,000.00", rating: "4.8 stars", image: "/images/crafts/planter.png" }
-            ]
-        },
-        'rush-reed-weaving': {
-            title: 'Rush & Reed Weaving (Pan)',
-            desc: 'Women from communities surrounding the ancient reservoirs expertly weave dried reeds and rushes into beautiful, eco-friendly mats, baskets, and intricate household items.',
-            filters: [
-                { id: 'mats', label: 'Mats (Paduru)' },
-                { id: 'baskets', label: 'Baskets' },
-                { id: 'bags', label: 'Bags & Totes' },
-                { id: 'coasters', label: 'Tableware & Coasters' }
-            ],
-            products: [
-                { id: 201, filterId: 'mats', title: "Traditional Pan Padura", subtitle: "Handwoven reed mat featuring vibrant geometric patterns, perfect for lounging or decoration.", price: "Rs. 4,500.00", rating: "4.9 stars", image: "/images/crafts/reed_mat.png" },
-                { id: 202, filterId: 'baskets', title: "Woven Storage Basket", subtitle: "Sturdy and eco-friendly circular reed basket with woven handles.", price: "Rs. 2,800.00", rating: "4.8 stars", image: "/images/crafts/woven_basket.png" },
-                { id: 203, filterId: 'bags', label: 'Bags & Totes', title: "Stylish Pan Tote Bag", subtitle: "Fashionable and durable reed tote bag with sturdy leather handles.", price: "Rs. 3,500.00", rating: "4.7 stars", image: "/images/crafts/reed_bag.png" },
-                { id: 204, filterId: 'coasters', title: "Woven Coaster Set", subtitle: "Set of 6 intricately patterned circular coasters to protect your tables.", price: "Rs. 1,200.00", rating: "4.6 stars", image: "/images/crafts/reed_coasters.png" }
-            ]
-        },
-        'lotus-fibre-craft': {
-            title: 'Lotus Stem Silk Extraction',
-            desc: 'An innovative, highly sustainable MSME craft where artisans extract delicate micro-fibres from the lotus stems gathered from Anuradhapura’s ancient lakes to weave rare, luxurious textiles.',
-            filters: [
-                { id: 'scarves', label: 'Scarves & Shawls' },
-                { id: 'fabric', label: 'Fabric Rolls' },
-                { id: 'yarn', label: 'Lotus Yarn' },
-                { id: 'accessories', label: 'Accessories' }
-            ],
-            products: [
-                { id: 301, filterId: 'scarves', title: "Handwoven Lotus Silk Scarf", subtitle: "Delicate, breathable and luxurious scarf naturally dyed.", price: "Rs. 18,500.00", rating: "5.0 stars", image: "/images/crafts/lotus_scarf.png" },
-                { id: 302, filterId: 'fabric', title: "Raw Lotus Fabric Roll", subtitle: "1 meter of unbleached artisanal lotus stem silk fabric.", price: "Rs. 25,000.00", rating: "4.9 stars", image: "/images/crafts/lotus_fabric.png" },
-                { id: 303, filterId: 'yarn', title: "Lotus Micro-Fibre Yarn", subtitle: "Spool of pure, naturally extracted lotus stem fibre for weaving.", price: "Rs. 8,500.00", rating: "4.8 stars", image: "/images/crafts/lotus_yarn.png" },
-                { id: 304, filterId: 'accessories', title: "Lotus Silk Handkerchief", subtitle: "Soft and sustainable handkerchief with fringed edges.", price: "Rs. 3,500.00", rating: "4.7 stars", image: "/images/crafts/lotus_handkerchief.png" }
-            ]
-        },
-        'wood-carving': {
-            title: 'Anuradhapura Woodcraft',
-            desc: 'Skilled carpenters shape locally sourced timber into stunning architectural elements.',
-            filters: [ { id: 'carvings', label: 'Wood Carvings' }, { id: 'furniture', label: 'Furniture' } ],
-            products: [
-                { id: 401, filterId: 'carvings', title: "Traditional Wooden Mask", subtitle: "Hand-carved and painted mask.", price: "Rs. 4,500.00", rating: "4.8 stars", image: "/images/woodcraft.png" },
-                { id: 402, filterId: 'furniture', title: "Carved Wooden Table", subtitle: "Small intricately carved side table.", price: "Rs. 15,000.00", rating: "4.9 stars", image: "/images/woodcraft.png" }
-            ]
-        },
-        'handloom-textiles': {
-            title: 'Rajarata Handloom Centres',
-            desc: 'Local handloom cooperatives supporting female artisans who weave vibrant cotton fabrics.',
-            filters: [ { id: 'clothing', label: 'Clothing' }, { id: 'homedecor', label: 'Home Decor' } ],
-            products: [
-                { id: 501, filterId: 'clothing', title: "Handloom Saree", subtitle: "Beautifully woven cotton saree.", price: "Rs. 6,000.00", rating: "4.7 stars", image: "/images/handloom.png" },
-                { id: 502, filterId: 'homedecor', title: "Woven Table Runner", subtitle: "Colorful handloom table runner.", price: "Rs. 2,500.00", rating: "4.6 stars", image: "/images/handloom.png" }
-            ]
-        },
-        'craft-village-tour': {
-            title: 'Kala Grama Artisan Tour', desc: 'A guided immersive tour through dedicated artisan villages.',
-            filters: [{ id: 'tickets', label: 'Tickets' }],
-            products: [{ id: 601, filterId: 'tickets', title: "Tour Ticket", subtitle: "Full day guided tour.", price: "Rs. 10,000.00", rating: "5.0 stars", image: "/images/crafts/banner.png" }]
-        },
-        'pottery-workshop': {
-            title: 'Hands-on Clay Workshop', desc: 'Learn the ancient techniques of wheel-throwing.',
-            filters: [{ id: 'tickets', label: 'Tickets' }],
-            products: [{ id: 701, filterId: 'tickets', title: "Workshop Ticket", subtitle: "3 hour pottery class.", price: "Rs. 5,000.00", rating: "4.9 stars", image: "/images/crafts/pot.png" }]
-        },
-        'stone-carving-demo': {
-            title: 'Stone Sculpting Experience', desc: 'Watch mesmerising demonstrations of granite carving.',
-            filters: [{ id: 'tickets', label: 'Tickets' }],
-            products: [{ id: 801, filterId: 'tickets', title: "Demo Ticket", subtitle: "2 hour carving demonstration.", price: "Rs. 3,500.00", rating: "4.8 stars", image: "/images/stone_demo.png" }]
-        },
-        'reed-weaving-class': {
-            title: 'Pan Weaving Masterclass', desc: 'Sit alongside local weavers to learn processing reeds.',
-            filters: [{ id: 'tickets', label: 'Tickets' }],
-            products: [{ id: 901, filterId: 'tickets', title: "Class Ticket", subtitle: "Half-day weaving masterclass.", price: "Rs. 4,500.00", rating: "4.9 stars", image: "/images/crafts/reed_mat.png" }]
-        },
-        'lotus-silk-experience': {
-            title: 'Lotus Silk Farm Visit', desc: 'Experience the magical process of transforming raw lotus stems.',
-            filters: [{ id: 'tickets', label: 'Tickets' }],
-            products: [{ id: 1001, filterId: 'tickets', title: "Farm Visit Ticket", subtitle: "Guided tour of the lotus silk farm.", price: "Rs. 6,000.00", rating: "5.0 stars", image: "/images/crafts/lotus_fabric.png" }]
-        }
-    };
-
+    
     const categoryInfo = {
         'rush-reed-weaving': { title: 'Rush & Reed Weaving (Pan)', desc: 'Women from communities surrounding the ancient reservoirs expertly weave dried reeds and rushes into beautiful mats.' },
         'lotus-fibre-craft': { title: 'Lotus Stem Silk Extraction', desc: 'An innovative MSME craft where artisans extract delicate micro-fibres from lotus stems to weave luxurious textiles.' },
@@ -170,7 +53,7 @@ export default function CraftCategory({ auth, category, laravelVersion, phpVersi
                             </p>
                         </div>
                         <div className="w-full md:w-1/2 h-64 md:h-80 relative">
-                            <img src="/images/crafts/banner.png" alt="Artisan working" className="w-full h-full object-cover object-center" />
+                            <img src={currentCat.banner || "/images/crafts/banner.png"} alt={currentCat.title || "Artisan working"} className="w-full h-full object-cover object-center" />
                             <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-royalMaroon-950 to-transparent"></div>
                         </div>
                     </div>

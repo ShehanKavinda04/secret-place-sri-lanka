@@ -2,13 +2,19 @@ import { Head, Link } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { useState } from 'react';
+import { getProductById } from '../data/craftsDatabase';
 import { ShoppingCart, Star, ShieldCheck, Truck, ArrowLeft, Heart } from 'lucide-react';
 
 export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) {
-    // Mocking the specific product details based on the item ID 401 (Traditional Wooden Mask)
-    // If it's a different item, we would ideally fetch this from a database, 
-    // but for the UI design we'll use a rich mock dataset.
-    const product = {
+    const fetchedProduct = getProductById(itemId);
+    const product = fetchedProduct ? {
+        ...fetchedProduct,
+        description: fetchedProduct.description || "An exquisite piece of Sri Lankan heritage, carefully crafted by master artisans.",
+        features: fetchedProduct.features || ["Authentic craftsmanship", "Locally sourced materials"],
+        mainImage: fetchedProduct.image,
+        subImages: fetchedProduct.subImages || [fetchedProduct.image],
+        reviewsCount: fetchedProduct.reviewsCount || 124
+    } : {
         id: itemId,
         title: "Traditional Wooden Mask",
         subtitle: "Hand-carved and painted mask, depicting ancient Sri Lankan folklore.",
@@ -55,9 +61,9 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                 <main className="flex-grow max-w-[1200px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12">
                     {/* Back Button */}
                     <div className="mb-6">
-                        <Link href="/crafts/wood-carving" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-royalMaroon-900 transition-colors">
+                        <Link href={`/crafts/${product.categoryKey || 'wood-carving'}`} className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-royalMaroon-900 transition-colors">
                             <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back to Wood Carving
+                            Back to {product.categoryKey ? product.categoryKey.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Wood Carving'}
                         </Link>
                     </div>
 

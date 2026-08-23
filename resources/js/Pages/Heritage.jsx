@@ -75,7 +75,7 @@ const heritageExperiences = [
         rating: '4.8',
         reviews: '142',
         description: 'A guided immersive tour through dedicated artisan villages (Kala Grama) where you can interact directly with master craftspeople and support local MSME families.',
-        image: '/images/artisan_tour.png',
+        image: '/images/heritage_crafts.png',
         href: '/crafts/craft-village-tour'
     },
     {
