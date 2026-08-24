@@ -960,11 +960,56 @@ Route::get('/crafts/{category}', function ($category) {
 });
 
 Route::get('/crafts/item/{id}', function ($id) {
+    $item = \App\Models\CraftItem::with('reviews')->findOrFail($id);
     return Inertia::render('CraftItem', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'itemId' => $id
+        'item' => $item
     ]);
+});
+
+Route::post('/crafts/item/{id}/reviews', function (\Illuminate\Http\Request $request, $id) {
+    $item = \App\Models\CraftItem::findOrFail($id);
+    
+    $request->validate([
+        'reviewer_name' => 'required|string|max:255',
+        'rating' => 'required|integer|min:1|max:5',
+        'comment' => 'required|string'
+    ]);
+    
+    $item->reviews()->create([
+        'reviewer_name' => $request->reviewer_name,
+        'rating' => $request->rating,
+        'comment' => $request->comment
+    ]);
+
+    $avgRating = $item->reviews()->avg('rating');
+    $count = $item->reviews()->count();
+    $item->update([
+        'rating' => round($avgRating, 1),
+        'reviews_count' => $count
+    ]);
+    
+    broadcast(new \App\Events\CraftItemUpdated($item->load('reviews')))->toOthers();
+    
+    return back();
+});
+
+Route::post('/api/crafts/item/{id}/simulate-update', function (\Illuminate\Http\Request $request, $id) {
+    $item = \App\Models\CraftItem::findOrFail($id);
+    
+    if ($request->has('price')) {
+        $item->price = $request->price;
+    }
+    if ($request->has('description')) {
+        $item->description = $request->description;
+    }
+    
+    $item->save();
+    
+    broadcast(new \App\Events\CraftItemUpdated($item->load('reviews')));
+    
+    return response()->json(['success' => true, 'item' => $item]);
 });
 
 Route::middleware('auth')->group(function () {
@@ -982,7 +1027,7 @@ Route::post('/api/smart-pricing/predict', [SmartPricingController::class, 'predi
 
 // Vendor Dashboard Route
 Route::get('/vendor/pricing/optimization', function () {
-    return Inertia\Inertia::render('Vendor/PriceOptimization');
+    return Inertia::render('Vendor/PriceOptimization');
 })->middleware(['auth', 'verified'])->name('vendor.pricing.optimization');
 
 Route::get('/translator', function () {

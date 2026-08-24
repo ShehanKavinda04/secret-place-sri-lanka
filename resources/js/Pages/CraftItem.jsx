@@ -1,66 +1,72 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { useState, useEffect } from 'react';
-import { getProductById, categoryDatabase } from '../data/craftsDatabase';
-import { ShoppingCart, Star, ShieldCheck, Truck, ArrowLeft, Heart } from 'lucide-react';
+import { categoryDatabase } from '../data/craftsDatabase';
+import { ShoppingCart, Star, ShieldCheck, Truck, ArrowLeft, Heart, Send } from 'lucide-react';
 
-export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) {
-    const fetchedProduct = getProductById(itemId);
-    const product = fetchedProduct ? {
-        ...fetchedProduct,
-        description: fetchedProduct.description || "An exquisite piece of Sri Lankan heritage, carefully crafted by master artisans.",
-        features: fetchedProduct.features || ["Authentic craftsmanship", "Locally sourced materials"],
-        mainImage: fetchedProduct.image,
-        subImages: fetchedProduct.subImages || [fetchedProduct.image],
-        reviewsCount: fetchedProduct.reviewsCount || 124
-    } : {
-        id: itemId,
-        title: "Traditional Wooden Mask",
-        subtitle: "Hand-carved and painted mask, depicting ancient Sri Lankan folklore.",
-        price: "Rs. 4,500.00",
-        rating: 4.8,
-        reviewsCount: 124,
-        description: "This exquisite traditional wooden mask is hand-carved by master artisans in Anuradhapura using locally sourced Kaduru wood. These masks are historically used in healing rituals (Kolam and Thovil) and traditional dances. Each vibrant color is carefully applied by hand, representing different characters from Sri Lankan mythology. It serves as a beautiful wall hanging that brings cultural heritage and protection into your home.",
-        features: [
-            "Hand-carved from sustainable Kaduru wood",
-            "Painted with traditional, vibrant colors",
-            "Dimensions: 14\" x 8\" x 4\"",
-            "Ready to hang with an attached loop on the back"
-        ],
-        mainImage: "/images/woodcraft.png",
-        subImages: [
-            "/images/woodcraft.png",
-            "/images/crafts/stone_elephant.png",
-            "/images/crafts/pillar.png",
-            "/images/crafts/guardstone.png"
-        ]
-    };
-
-    const categoryKey = fetchedProduct ? fetchedProduct.categoryKey : 'rajarata-pottery';
-    const allCategoryProducts = categoryDatabase[categoryKey]?.products || [];
-    let relatedProducts = allCategoryProducts.filter(p => p.id !== itemId).slice(0, 4);
-    
-    // Fallback if no related products in the same category
-    if (relatedProducts.length === 0) {
-        relatedProducts = [
-            { id: 402, title: "Carved Wooden Table", subtitle: "Small intricately carved side table.", price: "Rs. 15,000.00", rating: "4.9 stars", image: "/images/woodcraft.png" },
-            { id: 105, title: "Stone Carved Elephant", subtitle: "Decorative wall plaque featuring the royal elephant.", price: "Rs. 6,500.00", rating: "4.8 stars", image: "/images/crafts/stone_elephant.png" }
-        ];
-    }
-
-    const [activeImage, setActiveImage] = useState(product.mainImage);
+export default function CraftItem({ auth, item: initialItem, laravelVersion, phpVersion }) {
+    const [product, setProduct] = useState(initialItem);
+    const [activeImage, setActiveImage] = useState(product.image);
     const [quantity, setQuantity] = useState(1);
 
-    // Ensure state updates when navigating between different items
+    // Sync product state when initialItem changes (e.g. after a form submission refresh)
     useEffect(() => {
-        setActiveImage(product.mainImage);
+        setProduct(initialItem);
+    }, [initialItem]);
+
+    // Setup Laravel Echo for real-time updates
+    useEffect(() => {
+        if (window.Echo) {
+            const channel = window.Echo.channel(`craft-item.${product.id}`);
+            channel.listen('CraftItemUpdated', (e) => {
+                setProduct(e.craftItem);
+            });
+            
+            return () => {
+                channel.stopListening('CraftItemUpdated');
+                window.Echo.leaveChannel(`craft-item.${product.id}`);
+            };
+        }
+    }, [product.id]);
+
+    useEffect(() => {
+        setActiveImage(product.image);
         setQuantity(1);
-    }, [product.mainImage, itemId]);
+    }, [product.image, product.id]);
 
     const handleQuantityChange = (type) => {
         if (type === 'dec' && quantity > 1) setQuantity(quantity - 1);
         if (type === 'inc') setQuantity(quantity + 1);
+    };
+
+    const categoryKey = product.category_key || 'rajarata-pottery';
+    const allCategoryProducts = categoryDatabase[categoryKey]?.products || [];
+    let relatedProducts = allCategoryProducts.filter(p => p.id !== product.id).slice(0, 4);
+    
+    if (relatedProducts.length === 0) {
+        relatedProducts = [
+            { id: 402, title: "Carved Wooden Table", subtitle: "Small intricately carved side table.", price: "Rs. 15,000.00", rating: "4.9", image: "/images/woodcraft.png" },
+            { id: 105, title: "Stone Carved Elephant", subtitle: "Decorative wall plaque featuring the royal elephant.", price: "Rs. 6,500.00", rating: "4.8", image: "/images/crafts/stone_elephant.png" }
+        ];
+    }
+
+    // Review Form setup
+    const { data, setData, post, processing, reset, errors } = useForm({
+        reviewer_name: '',
+        rating: 5,
+        comment: ''
+    });
+
+    const submitReview = (e) => {
+        e.preventDefault();
+        post(`/crafts/item/${product.id}/reviews`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                reset();
+                router.reload({ only: ['item'] });
+            }
+        });
     };
 
     return (
@@ -72,9 +78,9 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                 <main className="flex-grow max-w-[1200px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12">
                     {/* Back Button */}
                     <div className="mb-6">
-                        <Link href={`/crafts/${product.categoryKey || 'wood-carving'}`} className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-royalMaroon-900 transition-colors">
+                        <Link href={`/crafts/${product.category_key || 'wood-carving'}`} className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-royalMaroon-900 transition-colors">
                             <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back to {product.categoryKey ? product.categoryKey.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Wood Carving'}
+                            Back to {product.category_key ? product.category_key.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Wood Carving'}
                         </Link>
                     </div>
 
@@ -92,7 +98,7 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                                 </div>
                                 {/* Sub Images (Thumbnails) */}
                                 <div className="flex gap-4 justify-center w-full">
-                                    {product.subImages.map((img, idx) => (
+                                    {product.sub_images && product.sub_images.map((img, idx) => (
                                         <button 
                                             key={idx}
                                             onClick={() => setActiveImage(img)}
@@ -114,7 +120,7 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                                                 <Star key={i} className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-slate-300'}`} />
                                             ))}
                                         </div>
-                                        <span className="text-sm text-slate-500 font-medium">{product.rating} Rating ({product.reviewsCount} Reviews)</span>
+                                        <span className="text-sm text-slate-500 font-medium">{product.rating} Rating ({product.reviews_count} Reviews)</span>
                                     </div>
                                     <p className="text-3xl font-bold text-royalMaroon-950 mb-2">{product.price}</p>
                                     <p className="text-slate-500 text-sm">{product.subtitle}</p>
@@ -128,7 +134,7 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                                     
                                     <h3 className="font-bold text-slate-900 mb-3 text-[15px]">Key Features</h3>
                                     <ul className="list-disc pl-5 text-slate-600 space-y-1.5 text-[15px]">
-                                        {product.features.map((feature, idx) => (
+                                        {product.features && product.features.map((feature, idx) => (
                                             <li key={idx}>{feature}</li>
                                         ))}
                                     </ul>
@@ -176,19 +182,14 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                             <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Seller Information</h3>
                             <div className="flex items-center gap-4">
                                 <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-200 shrink-0">
-                                    <img src="/images/woodcraft.png" alt="Seller Avatar" className="w-full h-full object-cover" />
+                                    <img src={product.seller_avatar || "/images/woodcraft.png"} alt="Seller Avatar" className="w-full h-full object-cover" />
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-slate-900 text-sm">
-                                        {categoryKey === 'stone-carving-demo' ? 'Master Stonemasons Guild' :
-                                         categoryKey === 'lotus-silk-experience' ? 'Lotus Weavers Co-op' :
-                                         categoryKey === 'wood-carving' ? 'Anuradhapura Woodworks' :
-                                         'Pottery Shop by Anusha Perera'}
+                                        {product.seller_name}
                                     </h4>
                                     <p className="text-slate-500 text-[13px] mt-0.5">
-                                        {categoryKey === 'stone-carving-demo' ? 'Expert stone sculptors dedicated to preserving ancient architecture.' :
-                                         categoryKey === 'lotus-silk-experience' ? 'Empowering local women through eco-friendly fabric production.' :
-                                         'Passionate artisans bringing generations of craft to your home.'}
+                                        {product.seller_description}
                                     </p>
                                 </div>
                             </div>
@@ -199,45 +200,85 @@ export default function CraftItem({ auth, itemId, laravelVersion, phpVersion }) 
                             <h3 className="text-[15px] font-semibold text-slate-800 mb-1">Customer Reviews</h3>
                             <div className="flex items-center gap-2 mb-5">
                                 <div className="flex text-[#FFC107]">
-                                    <Star className="w-4 h-4 fill-current" />
-                                    <Star className="w-4 h-4 fill-current" />
-                                    <Star className="w-4 h-4 fill-current" />
-                                    <Star className="w-4 h-4 fill-current" />
-                                    <Star className="w-4 h-4 text-slate-200 fill-current" />
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-slate-200 fill-current'}`} />
+                                    ))}
                                 </div>
-                                <span className="text-[11px] text-slate-500 font-medium ml-1">4.0 out of 5</span>
+                                <span className="text-[11px] text-slate-500 font-medium ml-1">{product.rating} out of 5</span>
                             </div>
 
                             <div className="space-y-4">
-                                {/* Review 1 */}
-                                <div className="border-t border-slate-100 pt-4">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <h4 className="font-bold text-slate-900 text-[13px]">Nimali Perera</h4>
-                                        <div className="flex text-[#FFC107]">
-                                            <Star className="w-3.5 h-3.5 fill-current" />
-                                            <Star className="w-3.5 h-3.5 fill-current" />
-                                            <Star className="w-3.5 h-3.5 fill-current" />
-                                            <Star className="w-3.5 h-3.5 fill-current" />
-                                            <Star className="w-3.5 h-3.5 text-slate-200 fill-current" />
+                                {product.reviews && product.reviews.length > 0 ? (
+                                    product.reviews.map((review) => (
+                                        <div key={review.id} className="border-t border-slate-100 pt-4">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <h4 className="font-bold text-slate-900 text-[13px]">{review.reviewer_name}</h4>
+                                                <div className="flex text-[#FFC107]">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-current' : 'text-slate-200 fill-current'}`} />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <p className="text-slate-400 text-[12px] leading-relaxed">{review.comment}</p>
                                         </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-slate-500 italic py-2">No reviews yet. Be the first to review!</p>
+                                )}
+                            </div>
+                            
+                            {/* Write a Review */}
+                            <div className="border-t border-slate-100 pt-6 mt-6">
+                                <h4 className="font-bold text-slate-800 text-[14px] mb-4">Write a Review</h4>
+                                <form onSubmit={submitReview} className="space-y-4">
+                                    <div>
+                                        <label className="block text-[12px] font-semibold text-slate-700 mb-1">Your Name</label>
+                                        <input 
+                                            type="text" 
+                                            value={data.reviewer_name}
+                                            onChange={e => setData('reviewer_name', e.target.value)}
+                                            className="w-full text-sm border-slate-200 rounded-lg focus:ring-royalMaroon-500 focus:border-royalMaroon-500"
+                                            placeholder="Enter your name"
+                                            required
+                                        />
+                                        {errors.reviewer_name && <p className="text-red-500 text-xs mt-1">{errors.reviewer_name}</p>}
                                     </div>
-                                    <p className="text-slate-400 text-[12px] leading-relaxed">Absolutely stunning! The craftsmanship is incredible, and it looks even more beautiful in person. Arrived safely packaged.</p>
-                                </div>
-
-                                {/* Review 2 */}
-                                <div className="border-t border-slate-100 pt-4">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <h4 className="font-bold text-slate-900 text-[13px]">Rajiv de Silva</h4>
-                                        <div className="flex text-[#FFC107]">
-                                            <Star className="w-3.5 h-3.5 fill-current" />
-                                            <Star className="w-3.5 h-3.5 fill-current" />
-                                            <Star className="w-3.5 h-3.5 fill-current" />
-                                            <Star className="w-3.5 h-3.5 fill-current" />
-                                            <Star className="w-3.5 h-3.5 text-slate-200 fill-current" />
+                                    <div>
+                                        <label className="block text-[12px] font-semibold text-slate-700 mb-1">Rating</label>
+                                        <div className="flex gap-1">
+                                            {[1, 2, 3, 4, 5].map(star => (
+                                                <button
+                                                    type="button"
+                                                    key={star}
+                                                    onClick={() => setData('rating', star)}
+                                                    className={`p-1 transition-colors ${data.rating >= star ? 'text-[#FFC107]' : 'text-slate-200 hover:text-[#FFC107]'}`}
+                                                >
+                                                    <Star className="w-6 h-6 fill-current" />
+                                                </button>
+                                            ))}
                                         </div>
+                                        {errors.rating && <p className="text-red-500 text-xs mt-1">{errors.rating}</p>}
                                     </div>
-                                    <p className="text-slate-400 text-[12px] leading-relaxed">A lovely piece of art. My only minor issue was that the color was slightly different from the photos, but I still love it.</p>
-                                </div>
+                                    <div>
+                                        <label className="block text-[12px] font-semibold text-slate-700 mb-1">Your Review</label>
+                                        <textarea 
+                                            value={data.comment}
+                                            onChange={e => setData('comment', e.target.value)}
+                                            className="w-full text-sm border-slate-200 rounded-lg focus:ring-royalMaroon-500 focus:border-royalMaroon-500 min-h-[80px]"
+                                            placeholder="Share your experience with this item..."
+                                            required
+                                        />
+                                        {errors.comment && <p className="text-red-500 text-xs mt-1">{errors.comment}</p>}
+                                    </div>
+                                    <button 
+                                        type="submit" 
+                                        disabled={processing}
+                                        className="bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-6 py-2.5 rounded-lg flex items-center transition-colors disabled:opacity-50"
+                                    >
+                                        {processing ? 'Submitting...' : 'Submit Review'}
+                                        <Send className="w-4 h-4 ml-2" />
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
