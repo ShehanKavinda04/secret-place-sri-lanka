@@ -136,6 +136,29 @@ Route::post('/api/experience-reviews', function (Illuminate\Http\Request $reques
     return back();
 });
 
+Route::post('/api/experience-contact', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'experience_key' => 'required|string',
+        'experience_title' => 'required|string',
+        'experience_host' => 'required|string',
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'message' => 'required|string',
+    ]);
+
+    $inquiry = $request->only(['name', 'email', 'phone', 'message']);
+
+    // Send to the default configured address because of Resend Sandbox domain verification
+    $toAddress = config('mail.from.address'); 
+    
+    \Illuminate\Support\Facades\Mail::to($toAddress)->send(
+        new \App\Mail\ExperienceInquiry($inquiry, $request->experience_title, $request->experience_host)
+    );
+
+    return response()->json(['success' => true]);
+});
+
 Route::post('/accommodations/{id}/like', function ($id) {
     $accommodation = \App\Models\Accommodation::findOrFail($id);
     $accommodation->increment('likes');

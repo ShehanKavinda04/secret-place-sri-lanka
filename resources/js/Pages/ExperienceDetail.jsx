@@ -184,8 +184,10 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
     const [isWishlisted, setIsWishlisted] = useState(false);
 
     const [showContactModal, setShowContactModal] = useState(false);
-    const [contactMessage, setContactMessage] = useState('');
+    const [contactName, setContactName] = useState(auth?.user?.name || '');
+    const [contactEmail, setContactEmail] = useState(auth?.user?.email || '');
     const [contactPhone, setContactPhone] = useState('');
+    const [contactMessage, setContactMessage] = useState('');
     const [contactStatus, setContactStatus] = useState('idle');
 
     const toggleAccordion = (index) => {
@@ -218,18 +220,31 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
         }, 1500);
     };
 
-    const handleContactSubmit = (e) => {
+    const handleContactSubmit = async (e) => {
         e.preventDefault();
         setContactStatus('sending');
-        setTimeout(() => {
+        try {
+            await window.axios.post('/api/experience-contact', {
+                experience_key: experienceId,
+                experience_title: experience.title,
+                experience_host: experience.hostName,
+                name: contactName,
+                email: contactEmail,
+                phone: contactPhone,
+                message: contactMessage
+            });
             setContactStatus('sent');
             setTimeout(() => {
                 setShowContactModal(false);
                 setContactStatus('idle');
                 setContactMessage('');
                 setContactPhone('');
-            }, 2000);
-        }, 1000);
+            }, 3000);
+        } catch (error) {
+            console.error(error);
+            setContactStatus('idle');
+            alert('Failed to send email. Please try again.');
+        }
     };
 
     return (
@@ -744,30 +759,64 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     <p className="text-slate-600">The host will get back to you shortly.</p>
                                 </div>
                             ) : (
-                                <div className="flex flex-col gap-4">
-                                    <p className="text-slate-600 mb-2">Choose your preferred method to contact the host directly regarding the <strong>{experience.title}</strong> experience.</p>
-                                    
-                                    <a 
-                                        href={`https://wa.me/94771234567?text=${encodeURIComponent('Hi ' + experience.hostName + ', I am interested in the ' + experience.title + ' experience. Could you tell me more about...')}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="w-full flex items-center justify-center gap-3 bg-[#25D366] text-white font-semibold rounded-lg py-4 hover:bg-[#20bd5a] transition-colors"
-                                    >
-                                        <MessageCircle className="w-6 h-6" />
-                                        Message on WhatsApp
-                                    </a>
-
+                                <form onSubmit={handleContactSubmit}>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Inquiry regarding</label>
+                                        <input type="text" disabled value={experience.title} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-slate-600" />
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-2">Your Name</label>
+                                            <input 
+                                                type="text" 
+                                                required
+                                                value={contactName}
+                                                onChange={(e) => setContactName(e.target.value)}
+                                                placeholder="John Doe" 
+                                                className="w-full border border-slate-300 rounded-lg px-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500 transition-all" 
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-2">Your Email</label>
+                                            <input 
+                                                type="email" 
+                                                required
+                                                value={contactEmail}
+                                                onChange={(e) => setContactEmail(e.target.value)}
+                                                placeholder="john@example.com" 
+                                                className="w-full border border-slate-300 rounded-lg px-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500 transition-all" 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Your Contact Number (Optional)</label>
+                                        <input 
+                                            type="tel" 
+                                            value={contactPhone}
+                                            onChange={(e) => setContactPhone(e.target.value)}
+                                            placeholder="+94 77 123 4567" 
+                                            className="w-full border border-slate-300 rounded-lg px-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500 transition-all" 
+                                        />
+                                    </div>
+                                    <div className="mb-6">
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Your Message</label>
+                                        <textarea 
+                                            required
+                                            rows="4"
+                                            value={contactMessage}
+                                            onChange={(e) => setContactMessage(e.target.value)}
+                                            placeholder={`Hi ${experience.hostName}, I am very interested in this experience. Could you tell me more about...`}
+                                            className="w-full border border-slate-300 rounded-lg px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500 transition-all"
+                                        ></textarea>
+                                    </div>
                                     <button 
-                                        onClick={() => {
-                                            navigator.clipboard.writeText('host@secretplacessrilanka.com');
-                                            alert('Email address (host@secretplacessrilanka.com) copied to clipboard!');
-                                        }}
-                                        className="w-full flex items-center justify-center gap-3 bg-slate-800 text-white font-semibold rounded-lg py-4 hover:bg-slate-700 transition-colors"
+                                        type="submit"
+                                        disabled={contactStatus === 'sending'}
+                                        className="w-full bg-royalMaroon-950 text-white font-semibold rounded-lg py-3 hover:bg-royalMaroon-900 transition-colors disabled:opacity-70"
                                     >
-                                        <Mail className="w-6 h-6" />
-                                        Copy Email Address
+                                        {contactStatus === 'sending' ? 'Sending...' : 'Send Message'}
                                     </button>
-                                </div>
+                                </form>
                             )}
                         </div>
                     </div>
