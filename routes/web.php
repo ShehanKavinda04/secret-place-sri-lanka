@@ -89,12 +89,15 @@ Route::get('/category/accommodations', function () {
 Route::get('/experience/{id}', function ($id) {
     $location = \App\Models\ExperienceLocation::where('experience_key', $id)->first();
     $policies = \App\Models\ExperiencePolicy::where('experience_key', $id)->get();
+    $reviews = \App\Models\ExperienceReview::where('experience_key', $id)->latest()->get();
+    
     return Inertia::render('ExperienceDetail', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'experienceId' => $id,
         'initialLocation' => $location,
         'initialPolicies' => $policies,
+        'initialReviews' => $reviews,
     ]);
 });
 
@@ -110,6 +113,27 @@ Route::post('/api/experience-policy/{id}/simulate-update', function (Illuminate\
     $policies = \App\Models\ExperiencePolicy::where('experience_key', $id)->get();
     event(new \App\Events\ExperiencePolicyUpdated($id, $policies));
     return response()->json(['success' => true]);
+});
+
+Route::post('/api/experience-reviews', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'experience_key' => 'required|string',
+        'name' => 'required|string|max:255',
+        'rating' => 'required|integer|min:1|max:5',
+        'review_text' => 'required|string',
+    ]);
+
+    $review = \App\Models\ExperienceReview::create([
+        'experience_key' => $request->experience_key,
+        'name' => $request->name,
+        'avatar' => 'https://ui-avatars.com/api/?name=' . urlencode($request->name) . '&background=random',
+        'rating' => $request->rating,
+        'review_text' => $request->review_text,
+    ]);
+
+    event(new \App\Events\ExperienceReviewSubmitted($review));
+
+    return back();
 });
 
 Route::post('/accommodations/{id}/like', function ($id) {

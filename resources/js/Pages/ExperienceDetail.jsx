@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { useState, useEffect } from 'react';
@@ -8,9 +8,25 @@ import {
     ChevronRight, ChevronDown, Map, Camera
 } from 'lucide-react';
 
-export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion, initialLocation, initialPolicies = [] }) {
+export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion, initialLocation, initialPolicies = [], initialReviews = [] }) {
     const [locationData, setLocationData] = useState(initialLocation);
     const [policyData, setPolicyData] = useState(initialPolicies);
+    const [reviewsData, setReviewsData] = useState(initialReviews);
+    
+    const { data: reviewForm, setData: setReviewForm, post: postReview, processing: submittingReview, reset: resetReview } = useForm({
+        experience_key: experienceId,
+        name: auth?.user?.name || '',
+        rating: 5,
+        review_text: ''
+    });
+
+    const submitReview = (e) => {
+        e.preventDefault();
+        postReview('/api/experience-reviews', {
+            preserveScroll: true,
+            onSuccess: () => resetReview('rating', 'review_text')
+        });
+    };
 
     useEffect(() => {
         if (!experienceId) return;
@@ -30,10 +46,19 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                     setPolicyData(e.policies);
                 }
             });
+            
+        const reviewChannel = `experience-reviews.${experienceId}`;
+        window.Echo.channel(reviewChannel)
+            .listen('ExperienceReviewSubmitted', (e) => {
+                if (e.review) {
+                    setReviewsData(prev => [e.review, ...prev]);
+                }
+            });
 
         return () => {
             window.Echo.leaveChannel(locationChannel);
             window.Echo.leaveChannel(policyChannel);
+            window.Echo.leaveChannel(reviewChannel);
         };
     }, [experienceId]);
     const experienceDetails = {
@@ -153,8 +178,10 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
     const [guests, setGuests] = useState({ adults: 1, children: 0 });
     const [date, setDate] = useState('');
-    const [timeSlot, setTimeSlot] = useState('9:00 AM');
+    const [timeSlot, setTimeSlot] = useState('9:00 AM (Morning Session)');
     const [openAccordion, setOpenAccordion] = useState(null);
+    const [bookingState, setBookingState] = useState({ status: 'idle', error: '' });
+    const [isWishlisted, setIsWishlisted] = useState(false);
 
     const toggleAccordion = (index) => {
         setOpenAccordion(prev => prev === index ? null : index);
@@ -171,6 +198,20 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
     const totalCost = (guests.adults * experience.price) + (guests.children * (experience.price * 0.5));
     const totalCostLkr = (guests.adults * experience.priceLkr) + (guests.children * (experience.priceLkr * 0.5));
+
+    const handleBooking = () => {
+        if (!date) {
+            setBookingState({ status: 'error', error: 'Please select a date for your experience.' });
+            return;
+        }
+        
+        setBookingState({ status: 'processing', error: '' });
+        
+        // Simulate a network request
+        setTimeout(() => {
+            setBookingState({ status: 'confirmed', error: '' });
+        }, 1500);
+    };
 
     return (
         <>
@@ -423,27 +464,81 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                 <div className="flex items-center gap-3 mb-6">
                                     <Star className="w-8 h-8 fill-royalGold-500 text-royalGold-500" />
                                     <h2 className="text-4xl font-light text-slate-800 font-display">4.8 <span className="text-xl font-normal text-slate-500">/ 5.0</span></h2>
-                                    <span className="text-slate-500 ml-2">({experience.reviewsCount} verified reviews)</span>
+                                    <span className="text-slate-500 ml-2">({reviewsData.length} verified reviews)</span>
                                 </div>
-
-                                <div className="space-y-6">
-                                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex items-center gap-3">
-                                                <img src="https://ui-avatars.com/api/?name=Sarah+M&background=random" className="w-10 h-10 rounded-full" />
-                                                <div>
-                                                    <h4 className="font-bold text-slate-800">Sarah M.</h4>
-                                                    <p className="text-xs text-slate-500">August 2026 • Verified Buyer</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-1 text-royalGold-500">
-                                                {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
+                                
+                                {/* Write a Review Form */}
+                                <form onSubmit={submitReview} className="mb-8 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                                    <h3 className="text-xl font-bold text-slate-800 mb-4">Leave a Review</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-1">Your Name</label>
+                                            <input 
+                                                type="text" 
+                                                className="w-full rounded-lg border-slate-300 focus:border-royalMaroon-950 focus:ring-royalMaroon-950" 
+                                                value={reviewForm.name}
+                                                onChange={e => setReviewForm('name', e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-1">Rating</label>
+                                            <div className="flex items-center gap-2 h-[42px]">
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <button 
+                                                        type="button" 
+                                                        key={star} 
+                                                        onClick={() => setReviewForm('rating', star)}
+                                                        className="focus:outline-none transition-transform hover:scale-110"
+                                                    >
+                                                        <Star className={`w-6 h-6 ${reviewForm.rating >= star ? 'fill-royalGold-500 text-royalGold-500' : 'text-slate-300'}`} />
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
-                                        <p className="text-slate-600 text-sm">
-                                            "Incredible experience! The artisans were so patient while teaching us to carve. It was amazing to see how much skill goes into these traditional crafts. The herbal tea was a lovely touch. Highly recommend to anyone visiting Anuradhapura!"
-                                        </p>
                                     </div>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-semibold text-slate-700 mb-1">Your Review</label>
+                                        <textarea 
+                                            rows="3" 
+                                            className="w-full rounded-lg border-slate-300 focus:border-royalMaroon-950 focus:ring-royalMaroon-950"
+                                            value={reviewForm.review_text}
+                                            onChange={e => setReviewForm('review_text', e.target.value)}
+                                            required
+                                        ></textarea>
+                                    </div>
+                                    <button 
+                                        type="submit" 
+                                        disabled={submittingReview}
+                                        className="bg-royalMaroon-950 text-white px-6 py-2 rounded-lg font-semibold hover:bg-royalMaroon-900 transition-colors disabled:opacity-50"
+                                    >
+                                        {submittingReview ? 'Submitting...' : 'Submit Review'}
+                                    </button>
+                                </form>
+
+                                <div className="space-y-6">
+                                    {reviewsData.map((rev) => (
+                                        <div key={rev.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex items-center gap-3">
+                                                    <img src={rev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(rev.name)}&background=random`} className="w-10 h-10 rounded-full" />
+                                                    <div>
+                                                        <h4 className="font-bold text-slate-800">{rev.name}</h4>
+                                                        <p className="text-xs text-slate-500">{new Date(rev.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} • Verified Buyer</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-1 text-royalGold-500">
+                                                    {[1,2,3,4,5].map(i => <Star key={i} className={`w-4 h-4 ${i <= rev.rating ? 'fill-current' : 'text-slate-200'}`} />)}
+                                                </div>
+                                            </div>
+                                            <p className="text-slate-600 text-sm">
+                                                "{rev.review_text}"
+                                            </p>
+                                        </div>
+                                    ))}
+                                    {reviewsData.length === 0 && (
+                                        <p className="text-slate-500 text-center py-4">No reviews yet. Be the first to leave one!</p>
+                                    )}
                                 </div>
                             </section>
 
@@ -460,13 +555,16 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         </div>
                                         <p className="text-xs text-slate-400 mt-1">LKR {experience.priceLkr.toLocaleString()} approx.</p>
                                     </div>
-                                    <button className="p-2 text-slate-400 hover:text-[#FF6B35] transition-colors rounded-full hover:bg-[#FF6B35]/10">
-                                        <Heart className="w-6 h-6" />
+                                    <button 
+                                        onClick={() => setIsWishlisted(!isWishlisted)}
+                                        className={`p-2 transition-colors rounded-full ${isWishlisted ? 'text-[#FF6B35] bg-[#FF6B35]/10' : 'text-slate-400 hover:text-[#FF6B35] hover:bg-[#FF6B35]/10'}`}
+                                    >
+                                        <Heart className={`w-6 h-6 ${isWishlisted ? 'fill-current' : ''}`} />
                                     </button>
                                 </div>
 
                                 <div className="border border-slate-300 rounded-xl overflow-hidden mb-6">
-                                    <div className="p-3 border-b border-slate-300 bg-slate-50">
+                                    <div className={`p-3 border-b border-slate-300 bg-slate-50 ${bookingState.status === 'error' && !date ? 'ring-2 ring-red-500' : ''}`}>
                                         <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Date</label>
                                         <div className="flex items-center">
                                             <CalendarIcon className="w-4 h-4 text-slate-400 mr-2" />
@@ -474,7 +572,10 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 type="date" 
                                                 className="w-full bg-transparent border-none p-0 text-sm focus:ring-0 text-slate-800"
                                                 value={date}
-                                                onChange={(e) => setDate(e.target.value)}
+                                                onChange={(e) => {
+                                                    setDate(e.target.value);
+                                                    if (bookingState.status === 'error') setBookingState({ status: 'idle', error: '' });
+                                                }}
                                             />
                                         </div>
                                     </div>
@@ -485,8 +586,8 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             value={timeSlot}
                                             onChange={(e) => setTimeSlot(e.target.value)}
                                         >
-                                            <option>9:00 AM (Morning Session)</option>
-                                            <option>2:00 PM (Afternoon Session)</option>
+                                            <option value="9:00 AM (Morning Session)">9:00 AM (Morning Session)</option>
+                                            <option value="2:00 PM (Afternoon Session)">2:00 PM (Afternoon Session)</option>
                                         </select>
                                     </div>
                                     <div className="p-4 bg-slate-50 flex flex-col gap-4">
@@ -530,14 +631,42 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         <div className="text-xs text-slate-500">LKR {totalCostLkr.toLocaleString()}</div>
                                     </div>
                                 </div>
-
-                                <button className="w-full bg-[#FF6B35] text-white font-bold text-lg py-4 rounded-xl hover:bg-[#e85a25] transition-colors shadow-lg shadow-[#FF6B35]/30 mb-3">
-                                    Book Now
-                                </button>
-                                <button className="w-full bg-white text-slate-700 font-semibold py-3 rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors">
-                                    Add to Wishlist
-                                </button>
-                                <p className="text-center text-xs text-slate-500 mt-4">You won't be charged yet.</p>
+                                
+                                {bookingState.status === 'error' && (
+                                    <div className="text-red-600 text-sm font-semibold mb-4 text-center">
+                                        {bookingState.error}
+                                    </div>
+                                )}
+                                
+                                {bookingState.status === 'confirmed' ? (
+                                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center mb-3">
+                                        <div className="flex justify-center mb-2">
+                                            <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                                                <Check className="w-6 h-6 text-emerald-600" />
+                                            </div>
+                                        </div>
+                                        <h4 className="font-bold text-emerald-800 text-lg mb-1">Booking Confirmed!</h4>
+                                        <p className="text-sm text-emerald-600">See you on {new Date(date).toLocaleDateString()} at {timeSlot.split(' ')[0]}.</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <button 
+                                            onClick={handleBooking}
+                                            disabled={bookingState.status === 'processing'}
+                                            className="w-full flex justify-center items-center gap-2 bg-[#FF6B35] text-white font-bold text-lg py-4 rounded-xl hover:bg-[#e85a25] transition-colors shadow-lg shadow-[#FF6B35]/30 mb-3 disabled:opacity-70"
+                                        >
+                                            {bookingState.status === 'processing' ? 'Processing...' : 'Book Now'}
+                                        </button>
+                                        <button 
+                                            onClick={() => setIsWishlisted(!isWishlisted)}
+                                            className="w-full flex justify-center items-center gap-2 bg-white text-slate-700 font-semibold py-3 rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
+                                        >
+                                            <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-[#FF6B35] text-[#FF6B35]' : 'text-slate-400'}`} />
+                                            {isWishlisted ? 'Saved to Wishlist' : 'Add to Wishlist'}
+                                        </button>
+                                        <p className="text-center text-xs text-slate-500 mt-4">You won't be charged yet.</p>
+                                    </>
+                                )}
                             </div>
                         </div>
 
