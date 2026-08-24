@@ -299,7 +299,7 @@ export default function CraftItem({ auth, item: initialItem, laravelVersion, php
                                     </div>
                                     <div className="mt-4 flex flex-col flex-1">
                                         <h3 className="font-bold text-slate-800 text-[15px] mb-1 leading-tight group-hover:text-royalMaroon-900 transition-colors">{rel.title}</h3>
-                                        <span className="text-[11.5px] text-slate-500 line-clamp-1 mb-2">{rel.subtitle}</span>
+                                        <span className="text-[11.5px] text-slate-500 mb-2">{rel.subtitle}</span>
                                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-100">
                                             <span className="text-[13px] font-bold text-slate-900"><PriceDisplay amount={rel.price} /></span>
                                             <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{rel.rating}</span>

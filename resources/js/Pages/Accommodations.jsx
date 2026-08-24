@@ -343,7 +343,7 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                                             <div key={item.id} onClick={() => { handleViewDetails(item.accommodation); setShowWishlist(false); }} className="flex gap-4 p-3 border border-gray-100 rounded-xl hover:border-royalMaroon-800/30 transition-colors cursor-pointer relative group">
                                                 <img src={item.accommodation.image || "https://images.unsplash.com/photo-1540541338287-41700207dee6?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80"} className="w-20 h-20 rounded-lg object-cover" />
                                                 <div className="flex-1">
-                                                    <h4 className="font-bold text-royalTeal line-clamp-1">{item.accommodation.name}</h4>
+                                                    <h4 className="font-bold text-royalTeal">{item.accommodation.name}</h4>
                                                     <p className="text-xs text-gray-500 mb-2">{item.accommodation.location || 'Sri Lanka'}</p>
                                                     <span className="text-xs font-bold text-royalMaroon-900">{formatPrice(item.accommodation.price_per_night || 720000)} / night</span>
                                                 </div>
@@ -633,13 +633,13 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
                                         <span className="text-xs font-semibold text-royalTeal bg-royalMaroon-800/10 px-2 py-1 rounded-md">{prop.distance}</span>
                                     </div>
                                     
-                                    <h3 className="text-xl font-bold text-royalTeal font-serif leading-tight group-hover:text-royalGold-400 transition-colors line-clamp-1 mb-2">{prop.name}</h3>
+                                    <h3 className="text-xl font-bold text-royalTeal font-serif leading-tight group-hover:text-royalGold-400 transition-colors mb-2">{prop.name}</h3>
                                     
                                     <div className="flex items-center gap-1 text-sm text-gray-500 mb-3">
                                         <MapPin size={14} className="text-royalTeal" /> {prop.location}
                                     </div>
 
-                                    <p className="text-sm text-gray-600 line-clamp-2 mb-4 leading-relaxed">
+                                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">
                                         {prop.description}
                                     </p>
 
@@ -1009,7 +1009,7 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                                     <span className="text-[10px]">/ night</span>
                                                 </div>
                                             </div>
-                                            <p className="text-xs text-gray-500 mb-4 flex-1 line-clamp-2 leading-relaxed">{room.desc}</p>
+                                            <p className="text-xs text-gray-500 mb-4 flex-1 leading-relaxed">{room.desc}</p>
                                             
                                             <div className="flex flex-wrap gap-4 text-xs font-medium text-gray-600 mb-3">
                                                 <span className="flex items-center gap-1"><Users size={14}/> {room.cap} Guests</span>

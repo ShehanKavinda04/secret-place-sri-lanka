@@ -125,7 +125,7 @@ export default function CraftCategory({ auth, category, laravelVersion, phpVersi
                                         <div className="mt-3 flex flex-col flex-1">
                                             <h3 className="font-bold text-slate-800 text-[15px] mb-2 leading-tight group-hover:text-royalMaroon-900 transition-colors">{product.title}</h3>
                                             <div className="flex flex-col gap-1 mb-4">
-                                                <span className="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">{product.subtitle}</span>
+                                                <span className="text-[11px] text-slate-500 mt-1 leading-relaxed">{product.subtitle}</span>
                                                 <div className="flex flex-col gap-0.5">
                                                     <span className="text-[11.5px] font-bold text-slate-900">{product.price}</span>
                                                     <span className="text-[11px] font-bold text-amber-600">{product.rating}</span>
