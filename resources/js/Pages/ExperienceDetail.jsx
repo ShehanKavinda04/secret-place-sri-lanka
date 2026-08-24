@@ -327,7 +327,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                 <div className="bg-royalMaroon-950/5 rounded-xl p-5 border border-royalMaroon-950/10">
                                     <h4 className="font-bold text-royalMaroon-950 mb-2 text-sm uppercase tracking-wider">How to get there</h4>
                                     <ul className="text-sm text-slate-700 space-y-2">
-                                        <li><strong>By Tuk-Tuk:</strong> Approx. 15 mins from Anuradhapura new town (Rs. 500 - 800).</li>
+                                        <li><strong>By Tuk-Tuk:</strong> Approx. 15 mins from Anuradhapura new town (Rs. 500 - 800 / ~$1.67 - $2.67).</li>
                                         <li><strong>By Bus:</strong> Take route 34/2 towards Mihintale, alight at the cooperative junction.</li>
                                         <li><strong>By Private Car:</strong> Ample free parking available at the visitor center.</li>
                                     </ul>

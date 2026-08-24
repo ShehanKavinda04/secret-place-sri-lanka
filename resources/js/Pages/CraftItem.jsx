@@ -4,6 +4,7 @@ import Footer from '@/Layouts/Footer';
 import { useState, useEffect } from 'react';
 import { categoryDatabase } from '../data/craftsDatabase';
 import { ShoppingCart, Star, ShieldCheck, Truck, ArrowLeft, Heart, Send } from 'lucide-react';
+import PriceDisplay from '@/Utils/PriceFormatter';
 
 export default function CraftItem({ auth, item: initialItem, laravelVersion, phpVersion }) {
     const [product, setProduct] = useState(initialItem);
@@ -122,7 +123,7 @@ export default function CraftItem({ auth, item: initialItem, laravelVersion, php
                                         </div>
                                         <span className="text-sm text-slate-500 font-medium">{product.rating} Rating ({product.reviews_count} Reviews)</span>
                                     </div>
-                                    <p className="text-3xl font-bold text-royalMaroon-950 mb-2">{product.price}</p>
+                                    <p className="text-3xl font-bold text-royalMaroon-950 mb-2"><PriceDisplay amount={product.price} /></p>
                                     <p className="text-slate-500 text-sm">{product.subtitle}</p>
                                 </div>
 
@@ -300,7 +301,7 @@ export default function CraftItem({ auth, item: initialItem, laravelVersion, php
                                         <h3 className="font-bold text-slate-800 text-[15px] mb-1 leading-tight group-hover:text-royalMaroon-900 transition-colors">{rel.title}</h3>
                                         <span className="text-[11.5px] text-slate-500 line-clamp-1 mb-2">{rel.subtitle}</span>
                                         <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-100">
-                                            <span className="text-[13px] font-bold text-slate-900">{rel.price}</span>
+                                            <span className="text-[13px] font-bold text-slate-900"><PriceDisplay amount={rel.price} /></span>
                                             <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{rel.rating}</span>
                                         </div>
                                     </div>

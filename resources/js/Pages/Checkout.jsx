@@ -3,6 +3,7 @@ import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { ShieldCheck, Truck, ArrowLeft, CreditCard, Lock, MoreHorizontal, Plus, Minus, Trash2, Calendar, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import PriceDisplay, { parsePriceToNumber } from '@/Utils/PriceFormatter';
 
 export default function Checkout({ auth, item, quantity, laravelVersion, phpVersion }) {
     const initialQty = parseInt(quantity) || 1;
@@ -21,13 +22,7 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
         };
     }, [item?.id]);
 
-    const parsePrice = (priceStr) => {
-        if (typeof priceStr === 'number') return priceStr;
-        if (!priceStr) return 0;
-        return parseFloat(priceStr.toString().replace(/[^0-9.]/g, '')) || 0;
-    };
-    
-    const numericPrice = parsePrice(liveProduct?.price);
+    const numericPrice = parsePriceToNumber(liveProduct?.price);
 
     const { flash } = usePage().props;
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -122,7 +117,7 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                         <div className="flex flex-col justify-center flex-1">
                                             <h3 className="font-medium text-slate-800 text-[13px] leading-tight">{liveProduct?.title}</h3>
                                             <p className="text-[10px] text-slate-500 mt-1">High - Quality Craft for your home</p>
-                                            <p className="font-bold text-slate-900 text-[14px] mt-2">Rs. {(numericPrice * data.quantity).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                                            <p className="font-bold text-slate-900 text-[14px] mt-2"><PriceDisplay amount={numericPrice * data.quantity} /></p>
                                         </div>
                                         {/* Right controls */}
                                         <div className="flex flex-col items-end justify-between">
@@ -153,7 +148,7 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                 <div className="space-y-3 text-[13px] text-slate-600 mb-6">
                                     <div className="flex justify-between">
                                         <span>Subtotal</span>
-                                        <span className="font-bold text-slate-900">Rs. {subtotal.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                                        <span className="font-bold text-slate-900"><PriceDisplay amount={subtotal} /></span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>Shipping</span>
@@ -164,7 +159,7 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                 {/* Total */}
                                 <div className="flex justify-between items-center text-sm font-bold text-slate-900 mb-4 pt-4 border-t border-slate-100">
                                     <span>Total</span>
-                                    <span>Rs. {total.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                                    <span><PriceDisplay amount={total} /></span>
                                 </div>
 
                                 {/* Proceed Button */}

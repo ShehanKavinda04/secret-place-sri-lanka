@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
+import PriceDisplay, { formatUSD } from '@/Utils/PriceFormatter';
 import { TrendingUp, DollarSign, Package, Activity, Info, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
@@ -80,7 +81,7 @@ export default function SmartPricing({ auth, laravelVersion, phpVersion }) {
                             <div className="mb-8">
                                 <label className="block text-sm font-medium text-slate-700 mb-2 flex justify-between">
                                     <span>Room Rate per Night (Rs.)</span>
-                                    <span className="text-blue-600 font-bold">Rs. {Number(price).toLocaleString()}</span>
+                                    <span className="text-blue-600 font-bold"><PriceDisplay amount={price} /></span>
                                 </label>
                                 
                                 <input 
@@ -94,8 +95,8 @@ export default function SmartPricing({ auth, laravelVersion, phpVersion }) {
                                 />
                                 
                                 <div className="flex justify-between text-xs text-slate-400 mt-2">
-                                    <span>Rs. 2,000</span>
-                                    <span>Rs. 50,000</span>
+                                    <span>Rs. 2,000 <span className="text-[0.8em] text-slate-500">({formatUSD(2000)})</span></span>
+                                    <span>Rs. 50,000 <span className="text-[0.8em] text-slate-500">({formatUSD(50000)})</span></span>
                                 </div>
                             </div>
                             
@@ -180,7 +181,7 @@ export default function SmartPricing({ auth, laravelVersion, phpVersion }) {
                                             <div className="mt-auto">
                                                 <div className="flex items-end gap-2">
                                                     <span className="text-3xl font-bold text-white font-display">
-                                                        Rs. {results.revenue.toLocaleString('en-US', {maximumFractionDigits: 2})}
+                                                        <PriceDisplay amount={results.revenue} />
                                                     </span>
                                                 </div>
                                                 <div className="text-slate-400 font-medium mt-1">Calculated Total</div>
@@ -193,7 +194,7 @@ export default function SmartPricing({ auth, laravelVersion, phpVersion }) {
                                                 <Activity className="w-4 h-4" /> AI Insight
                                             </h4>
                                             <p className="text-slate-300 text-sm leading-relaxed">
-                                                Based on the elasticity curve, setting the room price at <strong>Rs. {Number(price).toLocaleString()}</strong> yields an estimated revenue of <strong>Rs. {results.revenue.toLocaleString('en-US', {maximumFractionDigits: 2})}</strong>. If demand elasticity is high, small price reductions could significantly boost total booking volume.
+                                                Based on the elasticity curve, setting the room price at <strong><PriceDisplay amount={price} /></strong> yields an estimated revenue of <strong><PriceDisplay amount={results.revenue} /></strong>. If demand elasticity is high, small price reductions could significantly boost total booking volume.
                                             </p>
                                         </div>
                                     </div>
