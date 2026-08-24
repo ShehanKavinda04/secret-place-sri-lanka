@@ -1,14 +1,31 @@
 import { Head, Link } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
     MapPin, Star, ShieldCheck, Clock, Users, Globe, Check, 
     Accessibility, Calendar as CalendarIcon, Minus, Plus, Heart, 
     ChevronRight, ChevronDown, Map, Camera
 } from 'lucide-react';
 
-export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion }) {
+export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion, initialLocation }) {
+    const [locationData, setLocationData] = useState(initialLocation);
+
+    useEffect(() => {
+        if (!experienceId) return;
+
+        const channelName = `experience-location.${experienceId}`;
+        window.Echo.channel(channelName)
+            .listen('ExperienceLocationUpdated', (e) => {
+                if (e.location) {
+                    setLocationData(e.location);
+                }
+            });
+
+        return () => {
+            window.Echo.leaveChannel(channelName);
+        };
+    }, [experienceId]);
     const experienceDetails = {
         'craft-village-tour': {
             title: "Kala Grama Artisan Tour",
@@ -130,7 +147,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
     const [openAccordion, setOpenAccordion] = useState(null);
 
     const toggleAccordion = (index) => {
-        setOpenAccordion(openAccordion === index ? null : index);
+        setOpenAccordion(prev => prev === index ? null : index);
     };
 
     const handleGuestChange = (type, operation) => {
@@ -313,25 +330,35 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             {/* 6. Location & Interactive Map View */}
                             <section className="mb-12">
                                 <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-4">Location & Meeting Point</h2>
-                                <p className="text-slate-600 mb-6 flex items-start gap-2">
-                                    <MapPin className="w-5 h-5 text-[#FF6B35] shrink-0 mt-0.5" />
-                                    <span>Main Entrance, Kala Grama Cooperative Center, Anuradhapura Surroundings.<br/>GPS: 8.3114° N, 80.4037° E</span>
-                                </p>
-                                <div className="w-full h-[300px] bg-slate-200 rounded-2xl overflow-hidden relative mb-6 border border-slate-300">
-                                    {/* Placeholder for actual Mapbox/Leaflet map */}
-                                    <div className="absolute inset-0 bg-[#e5e7eb] flex flex-col items-center justify-center">
-                                        <Map className="w-12 h-12 text-slate-400 mb-2" />
-                                        <span className="text-slate-500 font-medium text-sm">Interactive Map View</span>
-                                    </div>
-                                </div>
-                                <div className="bg-royalMaroon-950/5 rounded-xl p-5 border border-royalMaroon-950/10">
-                                    <h4 className="font-bold text-royalMaroon-950 mb-2 text-sm uppercase tracking-wider">How to get there</h4>
-                                    <ul className="text-sm text-slate-700 space-y-2">
-                                        <li><strong>By Tuk-Tuk:</strong> Approx. 15 mins from Anuradhapura new town (Rs. 500 - 800 / ~$1.67 - $2.67).</li>
-                                        <li><strong>By Bus:</strong> Take route 34/2 towards Mihintale, alight at the cooperative junction.</li>
-                                        <li><strong>By Private Car:</strong> Ample free parking available at the visitor center.</li>
-                                    </ul>
-                                </div>
+                                {locationData ? (
+                                    <>
+                                        <p className="text-slate-600 mb-6 flex items-start gap-2">
+                                            <MapPin className="w-5 h-5 text-[#FF6B35] shrink-0 mt-0.5" />
+                                            <span>{locationData.address}<br/>GPS: {locationData.gps_lat}° N, {locationData.gps_lng}° E</span>
+                                        </p>
+                                        <div className="w-full h-[300px] bg-slate-200 rounded-2xl overflow-hidden relative mb-6 border border-slate-300">
+                                            <iframe 
+                                                width="100%" 
+                                                height="100%" 
+                                                style={{ border: 0 }} 
+                                                loading="lazy" 
+                                                allowFullScreen 
+                                                referrerPolicy="no-referrer-when-downgrade" 
+                                                src={`https://maps.google.com/maps?q=${locationData.gps_lat},${locationData.gps_lng}&hl=en&z=14&output=embed`}
+                                            ></iframe>
+                                        </div>
+                                        <div className="bg-royalMaroon-950/5 rounded-xl p-5 border border-royalMaroon-950/10">
+                                            <h4 className="font-bold text-royalMaroon-950 mb-2 text-sm uppercase tracking-wider">How to get there</h4>
+                                            <ul className="text-sm text-slate-700 space-y-2">
+                                                {locationData.directions_tuktuk && <li><strong>By Tuk-Tuk:</strong> {locationData.directions_tuktuk}</li>}
+                                                {locationData.directions_bus && <li><strong>By Bus:</strong> {locationData.directions_bus}</li>}
+                                                {locationData.directions_car && <li><strong>By Private Car:</strong> {locationData.directions_car}</li>}
+                                            </ul>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <p className="text-slate-500 italic">Location details will be available soon.</p>
+                                )}
                             </section>
 
                             {/* 7. MSME Host Profile */}
@@ -364,8 +391,9 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     ].map((acc, idx) => (
                                         <div key={idx} className="border border-slate-200 rounded-xl overflow-hidden bg-white">
                                             <button 
+                                                type="button"
                                                 onClick={() => toggleAccordion(idx)}
-                                                className="w-full px-6 py-4 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors"
+                                                className="w-full px-6 py-4 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none"
                                             >
                                                 <span className="font-semibold text-slate-800">{acc.title}</span>
                                                 <ChevronDown className={`w-5 h-5 text-slate-500 transition-transform ${openAccordion === idx ? 'rotate-180' : ''}`} />

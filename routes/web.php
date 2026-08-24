@@ -87,10 +87,12 @@ Route::get('/category/accommodations', function () {
 });
 
 Route::get('/experience/{id}', function ($id) {
+    $location = \App\Models\ExperienceLocation::where('experience_key', $id)->first();
     return Inertia::render('ExperienceDetail', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'experienceId' => $id,
+        'initialLocation' => $location,
     ]);
 });
 
@@ -1054,4 +1056,9 @@ Route::get('/translate/status', [App\Http\Controllers\TranslationController::cla
 
 require __DIR__.'/auth.php';
 
-
+Route::post('/api/experience-location/{experience_key}/simulate-update', function (\Illuminate\Http\Request $request, $experience_key) {
+    $location = \App\Models\ExperienceLocation::where('experience_key', $experience_key)->firstOrFail();
+    $location->update($request->all());
+    broadcast(new \App\Events\ExperienceLocationUpdated($location));
+    return response()->json(['message' => 'Location updated and broadcasted successfully', 'location' => $location]);
+});

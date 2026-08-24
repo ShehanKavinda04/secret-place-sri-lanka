@@ -102,10 +102,8 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                         <div className="w-full">
                             <div className="bg-white rounded-md shadow-sm border border-slate-100 p-6">
                                 {/* Header */}
-                                <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-50">
-                                    <ArrowLeft className="w-5 h-5 text-[#F25C2C] cursor-pointer" />
+                                <div className="flex items-center justify-center mb-6 pb-4 border-b border-slate-50">
                                     <h2 className="text-base font-medium text-slate-800">My Cart</h2>
-                                    <MoreHorizontal className="w-5 h-5 text-[#F25C2C] cursor-pointer" />
                                 </div>
                                 
                                 {/* Item Details */}
