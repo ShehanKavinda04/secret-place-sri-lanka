@@ -17,11 +17,7 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
     
     // Default to Wooden Mask if not found
     const product = productList[itemId] || productList[401];
-    const qty = parseInt(quantity) || 1;
-    
-    const subtotal = product.price * qty;
-    const shipping = 500.00;
-    const total = subtotal + shipping;
+    const initialQty = parseInt(quantity) || 1;
 
     const { flash } = usePage().props;
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,8 +54,12 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
         valid_date: '',
         cvv: '',
         item_id: itemId,
-        quantity: qty
+        quantity: initialQty
     });
+
+    const subtotal = product.price * data.quantity;
+    const shipping = data.quantity > 0 ? 500.00 : 0;
+    const total = subtotal + shipping;
 
     const handleConfirm = (e) => {
         e.preventDefault();
@@ -104,31 +104,40 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                 </div>
                                 
                                 {/* Item Details */}
-                                <div className="flex gap-4 p-3 rounded-lg border border-[#F25C2C] border-opacity-40 mb-10 relative bg-white">
-                                    <div className="w-16 h-16 bg-slate-900 rounded-lg overflow-hidden shrink-0 border border-slate-800">
-                                        <img src={product.image} alt={product.title} className="w-full h-full object-cover mix-blend-screen" />
-                                    </div>
-                                    <div className="flex flex-col justify-center flex-1">
-                                        <h3 className="font-medium text-slate-800 text-[13px] leading-tight">{product.title}</h3>
-                                        <p className="text-[10px] text-slate-500 mt-1">High - Quality Craft for your home</p>
-                                        <p className="font-bold text-slate-900 text-[14px] mt-2">Rs. {(product.price * qty).toLocaleString('en-US')}</p>
-                                    </div>
-                                    {/* Right controls */}
-                                    <div className="flex flex-col items-end justify-between">
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <button className="w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 transition-colors">
-                                                <Plus className="w-3 h-3" />
-                                            </button>
-                                            <span className="text-[13px] font-medium w-4 text-center border border-orange-200 rounded px-3 py-0.5 text-[#F25C2C] bg-orange-50">{qty}</span>
-                                            <button className="w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 transition-colors">
-                                                <Minus className="w-3 h-3" />
+                                {data.quantity > 0 ? (
+                                    <div className="flex gap-4 p-3 rounded-lg border border-[#F25C2C] border-opacity-40 mb-10 relative bg-white">
+                                        <div className="w-16 h-16 bg-slate-900 rounded-lg overflow-hidden shrink-0 border border-slate-800">
+                                            <img src={product.image} alt={product.title} className="w-full h-full object-cover mix-blend-screen" />
+                                        </div>
+                                        <div className="flex flex-col justify-center flex-1">
+                                            <h3 className="font-medium text-slate-800 text-[13px] leading-tight">{product.title}</h3>
+                                            <p className="text-[10px] text-slate-500 mt-1">High - Quality Craft for your home</p>
+                                            <p className="font-bold text-slate-900 text-[14px] mt-2">Rs. {(product.price * data.quantity).toLocaleString('en-US')}</p>
+                                        </div>
+                                        {/* Right controls */}
+                                        <div className="flex flex-col items-end justify-between">
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <button type="button" onClick={() => setData('quantity', Math.max(1, data.quantity - 1))} className="w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 transition-colors">
+                                                    <Minus className="w-3 h-3" />
+                                                </button>
+                                                <span className="text-[13px] font-medium w-4 text-center border border-orange-200 rounded px-3 py-0.5 text-[#F25C2C] bg-orange-50">{data.quantity}</span>
+                                                <button type="button" onClick={() => setData('quantity', data.quantity + 1)} className="w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 transition-colors">
+                                                    <Plus className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                            <button type="button" onClick={() => setData('quantity', 0)} className="text-[#F25C2C] hover:text-red-600 mt-3 mr-1 transition-colors">
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>
-                                        <button className="text-[#F25C2C] hover:text-red-600 mt-3 mr-1 transition-colors">
-                                            <Trash2 className="w-4 h-4" />
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center p-8 border border-dashed border-slate-300 rounded-lg mb-10 bg-slate-50">
+                                        <p className="text-slate-500 mb-4">Your cart is empty.</p>
+                                        <button type="button" onClick={() => setData('quantity', 1)} className="text-sm font-medium text-[#F25C2C] hover:underline">
+                                            Undo
                                         </button>
                                     </div>
-                                </div>
+                                )}
 
                                 {/* Cost Breakdown */}
                                 <div className="space-y-3 text-[13px] text-slate-600 mb-6">
@@ -149,7 +158,7 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                 </div>
 
                                 {/* Proceed Button */}
-                                <button className="w-full bg-[#F25C2C] hover:bg-[#E04B1A] text-white text-[15px] font-medium py-3 rounded shadow-sm text-center transition-all">
+                                <button type="button" onClick={() => document.getElementById('checkout-form').scrollIntoView({ behavior: 'smooth' })} disabled={data.quantity === 0} className="w-full bg-[#F25C2C] hover:bg-[#E04B1A] text-white text-[15px] font-medium py-3 rounded shadow-sm text-center transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                                     Proceed to Checkout
                                 </button>
                             </div>
@@ -160,7 +169,7 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
                                 <h1 className="text-2xl font-display font-bold text-slate-900 mb-6">Secure Checkout</h1>
                                 
-                                <form onSubmit={handleConfirm} className="space-y-8">
+                                <form id="checkout-form" onSubmit={handleConfirm} className="space-y-8">
                                     {/* Contact Info */}
                                     <section>
                                         <h2 className="text-lg font-bold text-slate-800 mb-4">Contact Information</h2>
