@@ -8,22 +8,32 @@ import {
     ChevronRight, ChevronDown, Map, Camera
 } from 'lucide-react';
 
-export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion, initialLocation }) {
+export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion, initialLocation, initialPolicies = [] }) {
     const [locationData, setLocationData] = useState(initialLocation);
+    const [policyData, setPolicyData] = useState(initialPolicies);
 
     useEffect(() => {
         if (!experienceId) return;
 
-        const channelName = `experience-location.${experienceId}`;
-        window.Echo.channel(channelName)
+        const locationChannel = `experience-location.${experienceId}`;
+        window.Echo.channel(locationChannel)
             .listen('ExperienceLocationUpdated', (e) => {
                 if (e.location) {
                     setLocationData(e.location);
                 }
             });
+            
+        const policyChannel = `experience-policy.${experienceId}`;
+        window.Echo.channel(policyChannel)
+            .listen('ExperiencePolicyUpdated', (e) => {
+                if (e.policies) {
+                    setPolicyData(e.policies);
+                }
+            });
 
         return () => {
-            window.Echo.leaveChannel(channelName);
+            window.Echo.leaveChannel(locationChannel);
+            window.Echo.leaveChannel(policyChannel);
         };
     }, [experienceId]);
     const experienceDetails = {
@@ -384,11 +394,11 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             <section className="mb-12">
                                 <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-6">Important Information</h2>
                                 <div className="space-y-3">
-                                    {[
+                                    {(policyData && policyData.length > 0 ? policyData : [
                                         { title: 'Dress Code', content: 'We recommend comfortable, loose-fitting cotton clothing suitable for the tropical climate. Modest attire is appreciated when visiting village homes.' },
                                         { title: 'Cancellation Policy', content: 'Free cancellation up to 24 hours before the experience starts for a full refund. Cancellations within 24 hours are non-refundable.' },
                                         { title: 'Safety Guidelines', content: 'Safety goggles and aprons will be provided during the hands-on crafting session. Please follow all instructions given by the master artisans when handling tools.' }
-                                    ].map((acc, idx) => (
+                                    ]).map((acc, idx) => (
                                         <div key={idx} className="border border-slate-200 rounded-xl overflow-hidden bg-white">
                                             <button 
                                                 type="button"
@@ -414,25 +424,6 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     <Star className="w-8 h-8 fill-royalGold-500 text-royalGold-500" />
                                     <h2 className="text-4xl font-light text-slate-800 font-display">4.8 <span className="text-xl font-normal text-slate-500">/ 5.0</span></h2>
                                     <span className="text-slate-500 ml-2">({experience.reviewsCount} verified reviews)</span>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-8 border-b border-slate-200 pb-8">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-slate-700">Value for Money</span>
-                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[95%] h-full bg-royalMaroon-950"></div></div>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-slate-700">Guide Knowledge</span>
-                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[100%] h-full bg-royalMaroon-950"></div></div>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-slate-700">Experience</span>
-                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[98%] h-full bg-royalMaroon-950"></div></div>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-slate-700">Cleanliness</span>
-                                        <div className="w-1/2 h-2 bg-slate-200 rounded-full overflow-hidden"><div className="w-[90%] h-full bg-royalMaroon-950"></div></div>
-                                    </div>
                                 </div>
 
                                 <div className="space-y-6">

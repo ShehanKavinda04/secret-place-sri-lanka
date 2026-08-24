@@ -88,12 +88,28 @@ Route::get('/category/accommodations', function () {
 
 Route::get('/experience/{id}', function ($id) {
     $location = \App\Models\ExperienceLocation::where('experience_key', $id)->first();
+    $policies = \App\Models\ExperiencePolicy::where('experience_key', $id)->get();
     return Inertia::render('ExperienceDetail', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'experienceId' => $id,
         'initialLocation' => $location,
+        'initialPolicies' => $policies,
     ]);
+});
+
+Route::post('/api/experience-policy/{id}/simulate-update', function (Illuminate\Http\Request $request, $id) {
+    $policy = \App\Models\ExperiencePolicy::where('experience_key', $id)
+                ->where('title', $request->title)
+                ->first();
+                
+    if ($policy) {
+        $policy->update(['content' => $request->content]);
+    }
+    
+    $policies = \App\Models\ExperiencePolicy::where('experience_key', $id)->get();
+    event(new \App\Events\ExperiencePolicyUpdated($id, $policies));
+    return response()->json(['success' => true]);
 });
 
 Route::post('/accommodations/{id}/like', function ($id) {
