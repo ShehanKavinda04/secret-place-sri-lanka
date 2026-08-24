@@ -1,0 +1,871 @@
+[
+  {
+    "id": 101,
+    "filterId": "moonstones",
+    "title": "Granite Moonstone Replica",
+    "subtitle": "Intricately carved granite half-lotus moonstone replica.",
+    "price": "Rs. 15,000.00",
+    "rating": "4.9",
+    "reviewsCount": 310,
+    "description": "A beautifully detailed replica of the Anuradhapura era moonstone, carved from pure granite.",
+    "features": [
+      "Pure granite",
+      "Hand chiseled",
+      "Authentic design"
+    ],
+    "image": "/images/crafts/moonstone.png",
+    "subImages": [
+      "/images/crafts/moonstone.png"
+    ],
+    "category_key": "stone-carving"
+  },
+  {
+    "id": 102,
+    "filterId": "guardstones",
+    "title": "Traditional Guardstone",
+    "subtitle": "Detailed Muragala carving for entrance protection.",
+    "price": "Rs. 12,500.00",
+    "rating": "4.8",
+    "reviewsCount": 154,
+    "description": "Protect your home with this traditional guardstone featuring the Nagaraja.",
+    "features": [
+      "Granite",
+      "Traditional motif",
+      "Durable"
+    ],
+    "image": "/images/crafts/guardstone.png",
+    "subImages": [
+      "/images/crafts/guardstone.png"
+    ],
+    "category_key": "stone-carving"
+  },
+  {
+    "id": 103,
+    "filterId": "statues",
+    "title": "Samadhi Buddha Statue",
+    "subtitle": "Serene Buddha statue carved from solid black granite.",
+    "price": "Rs. 25,000.00",
+    "rating": "5.0",
+    "reviewsCount": 89,
+    "description": "A serene statue of Lord Buddha in the Samadhi posture, carved from black granite.",
+    "features": [
+      "Black granite",
+      "Samadhi posture",
+      "Highly detailed"
+    ],
+    "image": "/images/crafts/samadhi.png",
+    "subImages": [
+      "/images/crafts/samadhi.png"
+    ],
+    "category_key": "stone-carving"
+  },
+  {
+    "id": 104,
+    "filterId": "pillars",
+    "title": "Lotus Pillar Capital",
+    "subtitle": "Traditional Pekada design stone pillar top.",
+    "price": "Rs. 8,000.00",
+    "rating": "4.7",
+    "reviewsCount": 42,
+    "description": "A beautiful lotus motif pillar capital to add heritage charm to your architecture.",
+    "features": [
+      "Stone carving",
+      "Lotus motif",
+      "Architectural"
+    ],
+    "image": "/images/crafts/pillar.png",
+    "subImages": [
+      "/images/crafts/pillar.png"
+    ],
+    "category_key": "stone-carving"
+  },
+  {
+    "id": 105,
+    "filterId": "plaques",
+    "title": "Stone Carved Elephant",
+    "subtitle": "Decorative wall plaque featuring the royal elephant.",
+    "price": "Rs. 6,500.00",
+    "rating": "4.8",
+    "reviewsCount": 67,
+    "description": "A decorative wall plaque featuring the majestic royal elephant of ancient Sri Lanka.",
+    "features": [
+      "Wall plaque",
+      "Elephant motif",
+      "Granite finish"
+    ],
+    "image": "/images/crafts/stone_elephant.png",
+    "subImages": [
+      "/images/crafts/stone_elephant.png"
+    ],
+    "category_key": "stone-carving"
+  },
+  {
+    "id": 1,
+    "filterId": "clay-pots",
+    "title": "Traditional Terracotta Water Jug",
+    "subtitle": "Hand-thrown Gurulethu with intricate etched patterns, naturally cools water.",
+    "price": "Rs. 4,500.00",
+    "rating": "4.9",
+    "reviewsCount": 204,
+    "description": "A beautifully hand-thrown water jug that naturally cools drinking water.",
+    "features": [
+      "Terracotta",
+      "Natural cooling",
+      "Etched patterns"
+    ],
+    "image": "/images/crafts/jug.png",
+    "subImages": [
+      "/images/crafts/jug.png"
+    ],
+    "category_key": "rajarata-pottery"
+  },
+  {
+    "id": 2,
+    "filterId": "oil-lamps",
+    "title": "Multi-spout Ritual Oil Lamp",
+    "subtitle": "Traditional Pahana used for temple offerings and blessings.",
+    "price": "Rs. 3,200.00",
+    "rating": "4.8",
+    "reviewsCount": 145,
+    "description": "A traditional clay oil lamp used in Buddhist rituals and cultural ceremonies.",
+    "features": [
+      "Clay",
+      "Multi-spout",
+      "Cultural artifact"
+    ],
+    "image": "/images/crafts/lamp.png",
+    "subImages": [
+      "/images/crafts/lamp.png"
+    ],
+    "category_key": "rajarata-pottery"
+  },
+  {
+    "id": 3,
+    "filterId": "clay-pots",
+    "title": "Rustic Clay Cooking Pot",
+    "subtitle": "Authentic Chatti for slow-cooking curries, retains heat perfectly.",
+    "price": "Rs. 2,800.00",
+    "rating": "4.7",
+    "reviewsCount": 382,
+    "description": "The perfect authentic clay pot for slow-cooking delicious Sri Lankan curries.",
+    "features": [
+      "Heat retaining",
+      "Authentic flavor",
+      "Durable clay"
+    ],
+    "image": "/images/crafts/pot.png",
+    "subImages": [
+      "/images/crafts/pot.png"
+    ],
+    "category_key": "rajarata-pottery"
+  },
+  {
+    "id": 4,
+    "filterId": "vases",
+    "title": "Decorative Terracotta Vase",
+    "subtitle": "Elegant vase featuring ancient Sri Lankan floral motifs.",
+    "price": "Rs. 6,500.00",
+    "rating": "4.9",
+    "reviewsCount": 56,
+    "description": "An elegant decorative vase featuring traditional Sri Lankan Liyawela floral motifs.",
+    "features": [
+      "Terracotta",
+      "Hand painted",
+      "Floral motifs"
+    ],
+    "image": "/images/crafts/vase.png",
+    "subImages": [
+      "/images/crafts/vase.png"
+    ],
+    "category_key": "rajarata-pottery"
+  },
+  {
+    "id": 5,
+    "filterId": "bowls",
+    "title": "Wide Serving Bowl",
+    "subtitle": "Perfect for serving rice and traditional dishes, unglazed inside.",
+    "price": "Rs. 3,000.00",
+    "rating": "4.8",
+    "reviewsCount": 94,
+    "description": "A wide clay serving bowl perfect for serving rice or large portions of curries.",
+    "features": [
+      "Unglazed inside",
+      "Wide base",
+      "Food safe"
+    ],
+    "image": "/images/crafts/bowl.png",
+    "subImages": [
+      "/images/crafts/bowl.png"
+    ],
+    "category_key": "rajarata-pottery"
+  },
+  {
+    "id": 6,
+    "filterId": "figurines",
+    "title": "Handcrafted Clay Elephant",
+    "subtitle": "Intricately detailed figurine representing majestic Sri Lankan wildlife.",
+    "price": "Rs. 5,000.00",
+    "rating": "4.9",
+    "reviewsCount": 112,
+    "description": "A beautifully detailed clay figurine of a majestic Sri Lankan elephant.",
+    "features": [
+      "Handcrafted",
+      "Detailed texture",
+      "Decorative"
+    ],
+    "image": "/images/crafts/elephant.png",
+    "subImages": [
+      "/images/crafts/elephant.png"
+    ],
+    "category_key": "rajarata-pottery"
+  },
+  {
+    "id": 7,
+    "filterId": "mugs",
+    "title": "Rustic Tea Mug",
+    "subtitle": "Enjoy Ceylon tea in a traditional, earthy clay mug.",
+    "price": "Rs. 1,200.00",
+    "rating": "4.6",
+    "reviewsCount": 420,
+    "description": "Enjoy your morning Ceylon tea in this rustic, earthy clay mug.",
+    "features": [
+      "Clay",
+      "Rustic finish",
+      "Comfortable handle"
+    ],
+    "image": "/images/crafts/mug.png",
+    "subImages": [
+      "/images/crafts/mug.png"
+    ],
+    "category_key": "rajarata-pottery"
+  },
+  {
+    "id": 8,
+    "filterId": "planters",
+    "title": "Traditional Planter Pot",
+    "subtitle": "Wide base terracotta planter for indoor and outdoor plants.",
+    "price": "Rs. 4,000.00",
+    "rating": "4.8",
+    "reviewsCount": 73,
+    "description": "A wide-base terracotta planter perfect for your indoor or outdoor plants.",
+    "features": [
+      "Terracotta",
+      "Breathable for roots",
+      "Wide base"
+    ],
+    "image": "/images/crafts/planter.png",
+    "subImages": [
+      "/images/crafts/planter.png"
+    ],
+    "category_key": "rajarata-pottery"
+  },
+  {
+    "id": 201,
+    "filterId": "mats",
+    "title": "Traditional Pan Padura",
+    "subtitle": "Handwoven reed mat featuring vibrant geometric patterns, perfect for lounging or decoration.",
+    "price": "Rs. 4,500.00",
+    "rating": "4.9",
+    "reviewsCount": 156,
+    "description": "A beautifully handwoven traditional Pan Padura (reed mat) with vibrant geometric patterns.",
+    "features": [
+      "Eco-friendly",
+      "Handwoven",
+      "Vibrant colors"
+    ],
+    "image": "/images/crafts/reed_mat.png",
+    "subImages": [
+      "/images/crafts/reed_mat.png"
+    ],
+    "category_key": "rush-reed-weaving"
+  },
+  {
+    "id": 202,
+    "filterId": "baskets",
+    "title": "Woven Storage Basket",
+    "subtitle": "Sturdy and eco-friendly circular reed basket with woven handles.",
+    "price": "Rs. 2,800.00",
+    "rating": "4.8",
+    "reviewsCount": 89,
+    "description": "A sturdy, circular storage basket handwoven from natural reeds.",
+    "features": [
+      "Sturdy handles",
+      "Eco-friendly",
+      "Spacious"
+    ],
+    "image": "/images/crafts/woven_basket.png",
+    "subImages": [
+      "/images/crafts/woven_basket.png"
+    ],
+    "category_key": "rush-reed-weaving"
+  },
+  {
+    "id": 203,
+    "filterId": "bags",
+    "title": "Stylish Pan Tote Bag",
+    "subtitle": "Fashionable and durable reed tote bag with sturdy leather handles.",
+    "price": "Rs. 3,500.00",
+    "rating": "4.7",
+    "reviewsCount": 210,
+    "description": "A stylish and durable tote bag woven from natural pan reeds with leather handles.",
+    "features": [
+      "Leather handles",
+      "Durable",
+      "Fashionable"
+    ],
+    "image": "/images/crafts/reed_bag.png",
+    "subImages": [
+      "/images/crafts/reed_bag.png"
+    ],
+    "category_key": "rush-reed-weaving"
+  },
+  {
+    "id": 204,
+    "filterId": "coasters",
+    "title": "Woven Coaster Set",
+    "subtitle": "Set of 6 intricately patterned circular coasters to protect your tables.",
+    "price": "Rs. 1,200.00",
+    "rating": "4.6",
+    "reviewsCount": 340,
+    "description": "A set of 6 intricately handwoven coasters to protect your tables in style.",
+    "features": [
+      "Set of 6",
+      "Heat resistant",
+      "Intricate patterns"
+    ],
+    "image": "/images/crafts/reed_coasters.png",
+    "subImages": [
+      "/images/crafts/reed_coasters.png"
+    ],
+    "category_key": "rush-reed-weaving"
+  },
+  {
+    "id": 301,
+    "filterId": "scarves",
+    "title": "Handwoven Lotus Silk Scarf",
+    "subtitle": "Delicate, breathable and luxurious scarf naturally dyed.",
+    "price": "Rs. 18,500.00",
+    "rating": "5.0",
+    "reviewsCount": 45,
+    "description": "A highly luxurious, breathable scarf woven entirely from lotus stem micro-fibres.",
+    "features": [
+      "100% Lotus Silk",
+      "Naturally dyed",
+      "Ultra soft"
+    ],
+    "image": "/images/crafts/lotus_scarf.png",
+    "subImages": [
+      "/images/crafts/lotus_scarf.png"
+    ],
+    "category_key": "lotus-fibre-craft"
+  },
+  {
+    "id": 302,
+    "filterId": "fabric",
+    "title": "Raw Lotus Fabric Roll",
+    "subtitle": "1 meter of unbleached artisanal lotus stem silk fabric.",
+    "price": "Rs. 25,000.00",
+    "rating": "4.9",
+    "reviewsCount": 12,
+    "description": "One meter of premium unbleached artisanal lotus stem silk fabric for custom tailoring.",
+    "features": [
+      "Unbleached",
+      "Raw silk texture",
+      "Sustainable"
+    ],
+    "image": "/images/crafts/lotus_fabric.png",
+    "subImages": [
+      "/images/crafts/lotus_fabric.png"
+    ],
+    "category_key": "lotus-fibre-craft"
+  },
+  {
+    "id": 303,
+    "filterId": "yarn",
+    "title": "Lotus Micro-Fibre Yarn",
+    "subtitle": "Spool of pure, naturally extracted lotus stem fibre for weaving.",
+    "price": "Rs. 8,500.00",
+    "rating": "4.8",
+    "reviewsCount": 34,
+    "description": "A spool of pure, naturally extracted lotus stem fibre, ready for your own weaving projects.",
+    "features": [
+      "Pure micro-fibre",
+      "Strong",
+      "Natural color"
+    ],
+    "image": "/images/crafts/lotus_yarn.png",
+    "subImages": [
+      "/images/crafts/lotus_yarn.png"
+    ],
+    "category_key": "lotus-fibre-craft"
+  },
+  {
+    "id": 304,
+    "filterId": "accessories",
+    "title": "Lotus Silk Handkerchief",
+    "subtitle": "Soft and sustainable handkerchief with fringed edges.",
+    "price": "Rs. 3,500.00",
+    "rating": "4.7",
+    "reviewsCount": 78,
+    "description": "A soft, sustainable handkerchief woven from lotus silk with delicate fringed edges.",
+    "features": [
+      "Fringed edges",
+      "Hypoallergenic",
+      "Ultra soft"
+    ],
+    "image": "/images/crafts/lotus_handkerchief.png",
+    "subImages": [
+      "/images/crafts/lotus_handkerchief.png"
+    ],
+    "category_key": "lotus-fibre-craft"
+  },
+  {
+    "id": 401,
+    "filterId": "carvings",
+    "title": "Traditional Raksha Mask",
+    "subtitle": "Hand-carved and painted mask.",
+    "price": "Rs. 4,500.00",
+    "rating": "4.8",
+    "reviewsCount": 124,
+    "description": "This exquisite traditional wooden mask is hand-carved by master artisans.",
+    "features": [
+      "Hand-carved from sustainable Kaduru wood",
+      "Painted with traditional, vibrant colors"
+    ],
+    "image": "/images/crafts/raksha_mask.jpg",
+    "subImages": [
+      "/images/crafts/raksha_mask.jpg"
+    ],
+    "category_key": "wood-carving"
+  },
+  {
+    "id": 402,
+    "filterId": "furniture",
+    "title": "Carved Wooden Table",
+    "subtitle": "Small intricately carved side table.",
+    "price": "Rs. 15,000.00",
+    "rating": "4.9",
+    "reviewsCount": 45,
+    "description": "A small intricately carved wooden side table perfect for any living room.",
+    "features": [
+      "Teak wood",
+      "Intricate carving",
+      "Polished finish"
+    ],
+    "image": "/images/crafts/carved_table.jpg",
+    "subImages": [
+      "/images/crafts/carved_table.jpg"
+    ],
+    "category_key": "wood-carving"
+  },
+  {
+    "id": 403,
+    "filterId": "carvings",
+    "title": "Floral Wall Panel",
+    "subtitle": "Traditional Liyawela carved panel.",
+    "price": "Rs. 8,500.00",
+    "rating": "4.7",
+    "reviewsCount": 78,
+    "description": "A traditional Sri Lankan carved wooden wall panel with floral motifs.",
+    "features": [
+      "Dark wood",
+      "Liyawela motif",
+      "High quality"
+    ],
+    "image": "/images/crafts/floral_panel.jpg",
+    "subImages": [
+      "/images/crafts/floral_panel.jpg"
+    ],
+    "category_key": "wood-carving"
+  },
+  {
+    "id": 404,
+    "filterId": "carvings",
+    "title": "Sanni Healing Mask",
+    "subtitle": "Antique finish healing ritual mask.",
+    "price": "Rs. 5,200.00",
+    "rating": "4.8",
+    "reviewsCount": 112,
+    "description": "A traditional Sri Lankan Sanni healing mask with an antique finish.",
+    "features": [
+      "Antique finish",
+      "Ritual mask",
+      "Expressive design"
+    ],
+    "image": "/images/crafts/sanni_mask.jpg",
+    "subImages": [
+      "/images/crafts/sanni_mask.jpg"
+    ],
+    "category_key": "wood-carving"
+  },
+  {
+    "id": 405,
+    "filterId": "carvings",
+    "title": "Wooden Buddha Statue",
+    "subtitle": "Serene seated meditation posture.",
+    "price": "Rs. 18,000.00",
+    "rating": "5.0",
+    "reviewsCount": 231,
+    "description": "A serene, hand-carved wooden statue of Lord Buddha in a seated meditation posture.",
+    "features": [
+      "Teak finish",
+      "Meditation posture",
+      "Hand-carved"
+    ],
+    "image": "/images/crafts/buddha_statue.jpg",
+    "subImages": [
+      "/images/crafts/buddha_statue.jpg"
+    ],
+    "category_key": "wood-carving"
+  },
+  {
+    "id": 501,
+    "filterId": "clothing",
+    "title": "Handloom Saree",
+    "subtitle": "Beautifully woven cotton saree.",
+    "price": "Rs. 6,000.00",
+    "rating": "4.7",
+    "reviewsCount": 312,
+    "description": "A beautifully woven cotton handloom saree with vibrant traditional colors.",
+    "features": [
+      "100% Cotton",
+      "Handwoven",
+      "Vibrant colors"
+    ],
+    "image": "/images/crafts/handloom_saree.jpg",
+    "subImages": [
+      "/images/crafts/handloom_saree.jpg"
+    ],
+    "category_key": "handloom-textiles"
+  },
+  {
+    "id": 502,
+    "filterId": "homedecor",
+    "title": "Woven Table Runner",
+    "subtitle": "Colorful handloom table runner.",
+    "price": "Rs. 2,500.00",
+    "rating": "4.6",
+    "reviewsCount": 89,
+    "description": "A colorful handloom table runner to brighten up your dining area.",
+    "features": [
+      "Handloom",
+      "Durable cotton",
+      "Washable"
+    ],
+    "image": "/images/crafts/woven_table_runner.jpg",
+    "subImages": [
+      "/images/crafts/woven_table_runner.jpg"
+    ],
+    "category_key": "handloom-textiles"
+  },
+  {
+    "id": 503,
+    "filterId": "clothing",
+    "title": "Handloom Sarong",
+    "subtitle": "Comfortable and breathable cotton sarong.",
+    "price": "Rs. 3,500.00",
+    "rating": "4.8",
+    "reviewsCount": 156,
+    "description": "Traditional Sri Lankan handloom sarong made from soft, breathable cotton.",
+    "features": [
+      "100% Cotton",
+      "Traditional wear",
+      "Breathable"
+    ],
+    "image": "/images/crafts/handloom_sarong.jpg",
+    "subImages": [
+      "/images/crafts/handloom_sarong.jpg"
+    ],
+    "category_key": "handloom-textiles"
+  },
+  {
+    "id": 504,
+    "filterId": "homedecor",
+    "title": "Woven Cushion Cover",
+    "subtitle": "Brighten up your living room with traditional patterns.",
+    "price": "Rs. 1,800.00",
+    "rating": "4.9",
+    "reviewsCount": 75,
+    "description": "Add a splash of color to your home with these intricately woven cushion covers.",
+    "features": [
+      "Vibrant patterns",
+      "Durable",
+      "Square fit"
+    ],
+    "image": "/images/crafts/woven_cushion_cover.jpg",
+    "subImages": [
+      "/images/crafts/woven_cushion_cover.jpg"
+    ],
+    "category_key": "handloom-textiles"
+  },
+  {
+    "id": 505,
+    "filterId": "clothing",
+    "title": "Cotton Handloom Scarf",
+    "subtitle": "Lightweight scarf perfect for tropical weather.",
+    "price": "Rs. 2,200.00",
+    "rating": "4.7",
+    "reviewsCount": 110,
+    "description": "A versatile, lightweight handloom scarf that pairs well with any outfit.",
+    "features": [
+      "Lightweight",
+      "Versatile",
+      "Soft cotton"
+    ],
+    "image": "/images/crafts/cotton_handloom_scarf.jpg",
+    "subImages": [
+      "/images/crafts/cotton_handloom_scarf.jpg"
+    ],
+    "category_key": "handloom-textiles"
+  },
+  {
+    "id": 601,
+    "filterId": "tickets",
+    "title": "Standard Village Tour Ticket",
+    "subtitle": "A half-day immersive tour.",
+    "price": "Rs. 2,000.00",
+    "rating": "4.8",
+    "reviewsCount": 142,
+    "description": "Experience the artisan village first-hand.",
+    "features": [
+      "Guided tour",
+      "Meet artisans"
+    ],
+    "image": "/images/crafts/village_tour_ticket.jpg",
+    "subImages": [
+      "/images/crafts/village_tour_ticket.jpg"
+    ],
+    "category_key": "craft-village-tour"
+  },
+  {
+    "id": 602,
+    "filterId": "souvenirs",
+    "title": "Artisan Support Package",
+    "subtitle": "Support the village and get a souvenir.",
+    "price": "Rs. 5,000.00",
+    "rating": "4.9",
+    "reviewsCount": 56,
+    "description": "A package that directly supports the MSME families.",
+    "features": [
+      "Direct support",
+      "Handmade souvenir"
+    ],
+    "image": "/images/crafts/artisan_support_package.jpg",
+    "subImages": [
+      "/images/crafts/artisan_support_package.jpg"
+    ],
+    "category_key": "craft-village-tour"
+  },
+  {
+    "id": 701,
+    "filterId": "classes",
+    "title": "Beginner Pottery Class",
+    "subtitle": "Learn wheel-throwing basics.",
+    "price": "Rs. 3,500.00",
+    "rating": "4.9",
+    "reviewsCount": 188,
+    "description": "Learn the ancient techniques of wheel-throwing.",
+    "features": [
+      "2 hour class",
+      "Materials provided"
+    ],
+    "image": "/images/clay_workshop.png",
+    "subImages": [
+      "/images/clay_workshop.png"
+    ],
+    "category_key": "pottery-workshop"
+  },
+  {
+    "id": 801,
+    "filterId": "demo",
+    "title": "Stone Carving Masterclass Demo",
+    "subtitle": "Watch and learn from master stonemasons.",
+    "price": "Rs. 1,500.00",
+    "rating": "4.7",
+    "reviewsCount": 115,
+    "description": "Watch mesmerising demonstrations of granite carving, learning about the ancient tools and sheer patience required.",
+    "features": [
+      "1 hour demo",
+      "Q&A session"
+    ],
+    "image": "/images/crafts/demo_masterclass.jpg",
+    "subImages": [
+      "/images/crafts/demo_masterclass.jpg"
+    ],
+    "category_key": "stone-carving-demo"
+  },
+  {
+    "id": 802,
+    "filterId": "workshop",
+    "title": "Hands-on Granite Sculpting",
+    "subtitle": "A half-day immersive workshop where you carve your own stone.",
+    "price": "Rs. 5,000.00",
+    "rating": "4.9",
+    "reviewsCount": 82,
+    "description": "Join our master artisans for a hands-on session. You will be guided through the basics of using a chisel and mallet on soft granite.",
+    "features": [
+      "3 hour session",
+      "Take home your carving",
+      "Tools provided"
+    ],
+    "image": "/images/crafts/granite_sculpting.jpg",
+    "subImages": [
+      "/images/crafts/granite_sculpting.jpg"
+    ],
+    "category_key": "stone-carving-demo"
+  },
+  {
+    "id": 803,
+    "filterId": "souvenir",
+    "title": "Miniature Moonstone Replica",
+    "subtitle": "Hand-carved miniature moonstone souvenir.",
+    "price": "Rs. 3,500.00",
+    "rating": "4.8",
+    "reviewsCount": 240,
+    "description": "A beautifully detailed, palm-sized replica of the Anuradhapura moonstone, carved by the artisans you meet on your tour.",
+    "features": [
+      "Hand-carved",
+      "Authentic design",
+      "Perfect gift"
+    ],
+    "image": "/images/crafts/moonstone_replica.jpg",
+    "subImages": [
+      "/images/crafts/moonstone_replica.jpg"
+    ],
+    "category_key": "stone-carving-demo"
+  },
+  {
+    "id": 804,
+    "filterId": "class",
+    "title": "Sacred Geometry Design Class",
+    "subtitle": "Learn the ancient mathematical principles behind the carvings.",
+    "price": "Rs. 2,000.00",
+    "rating": "4.6",
+    "reviewsCount": 54,
+    "description": "Before the chisel meets the stone, the design must be drawn. Learn the sacred geometry used by ancient Sri Lankan architects.",
+    "features": [
+      "1.5 hour class",
+      "Drawing materials included"
+    ],
+    "image": "/images/crafts/geometry_design.jpg",
+    "subImages": [
+      "/images/crafts/geometry_design.jpg"
+    ],
+    "category_key": "stone-carving-demo"
+  },
+  {
+    "id": 805,
+    "filterId": "souvenir",
+    "title": "Personalised Granite Nameplate",
+    "subtitle": "Custom engraved granite plaque made during your visit.",
+    "price": "Rs. 4,500.00",
+    "rating": "5.0",
+    "reviewsCount": 19,
+    "description": "Commission a beautiful, custom engraved granite nameplate. Watch as the artisan carves your name in traditional Sinhalese script.",
+    "features": [
+      "Custom engraving",
+      "Traditional script",
+      "Ready in 2 hours"
+    ],
+    "image": "/images/crafts/granite_nameplate.jpg",
+    "subImages": [
+      "/images/crafts/granite_nameplate.jpg"
+    ],
+    "category_key": "stone-carving-demo"
+  },
+  {
+    "id": 901,
+    "filterId": "masterclass",
+    "title": "Half-Day Weaving Class",
+    "subtitle": "Learn to weave your own pan mat.",
+    "price": "Rs. 2,500.00",
+    "rating": "4.8",
+    "reviewsCount": 95,
+    "description": "Sit alongside local weavers and learn the delicate art of processing reeds.",
+    "features": [
+      "Take home your mat",
+      "Local guide"
+    ],
+    "image": "/images/weaving_class.png",
+    "subImages": [
+      "/images/weaving_class.png"
+    ],
+    "category_key": "reed-weaving-class"
+  },
+  {
+    "id": 1001,
+    "filterId": "visit",
+    "title": "Lotus Silk Extraction Tour",
+    "subtitle": "See the magic of lotus silk.",
+    "price": "Rs. 3,000.00",
+    "rating": "5.0",
+    "reviewsCount": 134,
+    "description": "Experience the magical process of transforming raw lotus stems into exquisite fabric.",
+    "features": [
+      "Guided walk",
+      "Demonstration"
+    ],
+    "image": "/images/lotus_farm.png",
+    "subImages": [
+      "/images/lotus_farm.png"
+    ],
+    "category_key": "lotus-silk-experience"
+  },
+  {
+    "id": 1002,
+    "filterId": "souvenir",
+    "title": "Lotus Silk Handkerchief",
+    "subtitle": "Woven by you during your visit.",
+    "price": "Rs. 2,000.00",
+    "rating": "4.8",
+    "reviewsCount": 45,
+    "description": "Support the artisans directly by purchasing a handkerchief woven during your visit.",
+    "features": [
+      "Direct support",
+      "Handwoven"
+    ],
+    "image": "/images/lotus_farm.png",
+    "subImages": [
+      "/images/lotus_farm.png"
+    ],
+    "category_key": "lotus-silk-experience"
+  },
+  {
+    "id": 1101,
+    "filterId": "experience",
+    "title": "Handloom Weaving Session",
+    "subtitle": "Create your own custom woven keepsake.",
+    "price": "Rs. 3,000.00",
+    "rating": "4.7",
+    "reviewsCount": 96,
+    "description": "Experience the art of authentic handloom weaving and natural dyeing techniques.",
+    "features": [
+      "Interact with weavers",
+      "Custom keepsake"
+    ],
+    "image": "/images/handloom_experience.png",
+    "subImages": [
+      "/images/handloom_experience.png"
+    ],
+    "category_key": "handloom-experience"
+  },
+  {
+    "id": 1201,
+    "filterId": "walk",
+    "title": "Clay-pot Culinary Experience",
+    "subtitle": "Discover authentic local recipes.",
+    "price": "Rs. 4,500.00",
+    "rating": "4.9",
+    "reviewsCount": 210,
+    "description": "Walk through heritage villages and participate in traditional clay-pot culinary experiences.",
+    "features": [
+      "Rural living traditions",
+      "Authentic recipes"
+    ],
+    "image": "/images/village_culinary.png",
+    "subImages": [
+      "/images/village_culinary.png"
+    ],
+    "category_key": "culinary-walk"
+  }
+]
