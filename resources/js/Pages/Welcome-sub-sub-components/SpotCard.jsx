@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 
 export default function SpotCard({ spot }) {
@@ -9,7 +9,8 @@ export default function SpotCard({ spot }) {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.5 }}
             whileHover={{ y: -5 }}
-            className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden hover:border-royalGold-500/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-md"
+            onClick={() => router.visit(spot.href || `/places/${spot.id}/history`)}
+            className="group cursor-pointer bg-white border border-slate-200/80 rounded-3xl overflow-hidden hover:border-royalGold-500/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-md"
         >
             <div className="relative aspect-[4/3] overflow-hidden bg-slate-950">
                 <img 
@@ -41,10 +42,10 @@ export default function SpotCard({ spot }) {
 
                 <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
                     <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Verified Spot</span>
-                    <Link href={spot.href || `/places/${spot.id}/history`} className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-royalTeal hover:text-[#0c6b65] transition-colors">
+                    <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-royalTeal group-hover:text-[#0c6b65] transition-colors">
                         View Details
                         <span>→</span>
-                    </Link>
+                    </span>
                 </div>
 
             </div>

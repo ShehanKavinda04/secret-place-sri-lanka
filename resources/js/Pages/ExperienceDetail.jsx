@@ -62,6 +62,50 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
         };
     }, [experienceId]);
     const experienceDetails = {
+        'atamasthana': {
+            title: "Atamasthana One-Day Circuit Pass",
+            subtitle: "A highly optimized, pre-planned transport route linking all 8 main worship sites in the sacred city sequentially.",
+            rating: 4.9,
+            reviewsCount: 1240,
+            location: "Anuradhapura Sacred City",
+            price: 45,
+            priceLkr: 13500,
+            mainImage: "/images/atamasthana.jpg",
+            gallery: ["/images/ruwanweli_maha_seya.png", "/images/jaya_sri_maha_bodhi.png", "/images/thuparamaya_1779380449379.png", "/images/abhayagiri_1779380471030.png"],
+            duration: "8 Hours",
+            groupSize: "Flexible",
+            hostName: "Anuradhapura Transport Coop",
+            hostAvatar: "ATC",
+            overview: "Experience a seamless pilgrimage across the eight most sacred sites (Atamasthana) of Anuradhapura. Our optimized route avoids the midday heat and coordinates perfectly with pooja timings, offering an uninterrupted spiritual journey.",
+            itinerary: [
+                { step: 1, title: 'Morning Pooja at Sri Maha Bodhi', desc: 'Start early with the morning pooja at the sacred fig tree.' },
+                { step: 2, title: 'Ruwanwelisaya & Thuparamaya', desc: 'Visit the majestic Ruwanwelisaya followed by the oldest stupa, Thuparamaya.' },
+                { step: 3, title: 'Midday Rest & Dansal', desc: 'Rest during the peak heat at a local pilgrims rest house.' },
+                { step: 4, title: 'Evening Monastic Tour', desc: 'Visit Abhayagiriya, Jetavanaramaya, and remaining sites as the evening cools.' }
+            ]
+        },
+        'mihintale': {
+            title: "Solosmasthana & Mihintale Sunrise Package",
+            subtitle: "Early morning transport to Mihintale to witness the sunrise, followed by ancient monastery tours.",
+            rating: 4.8,
+            reviewsCount: 856,
+            location: "Mihintale & Surroundings",
+            price: 35,
+            priceLkr: 10500,
+            mainImage: "/images/mihintale_steps.png",
+            gallery: ["/images/mihintale_steps.png", "/images/atamasthana.jpg", "/images/ancient_hydraulic.png", "/images/ruwanweli_maha_seya.png"],
+            duration: "6 Hours",
+            groupSize: "Flexible",
+            hostName: "Heritage Travels",
+            hostAvatar: "HT",
+            overview: "An unforgettable early morning pilgrimage. We pick you up before dawn to climb Mihintale's ancient stone steps and witness a breathtaking sunrise from Aradhana Gala, the birthplace of Buddhism in Sri Lanka.",
+            itinerary: [
+                { step: 1, title: 'Pre-Dawn Pickup', desc: 'Hotel pickup in Anuradhapura and comfortable transport to Mihintale.' },
+                { step: 2, title: 'Sunrise at Aradhana Gala', desc: 'Climb the steps in the cool morning air and watch the sunrise over the plains.' },
+                { step: 3, title: 'Mihintale Monastic Ruins', desc: 'Guided or self-guided exploration of the ancient hospital, Kantaka Cetiya, and refectory.' },
+                { step: 4, title: 'Return Journey', desc: 'Smooth return transport to your accommodation in Anuradhapura.' }
+            ]
+        },
         'craft-village-tour': {
             title: "Kala Grama Artisan Tour",
             subtitle: "Guided immersive journey through traditional artisan villages in Anuradhapura.",
