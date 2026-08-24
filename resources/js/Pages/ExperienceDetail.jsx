@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { 
     MapPin, Star, ShieldCheck, Clock, Users, Globe, Check, 
     Accessibility, Calendar as CalendarIcon, Minus, Plus, Heart, 
-    ChevronRight, ChevronDown, Map, Camera
+    ChevronRight, ChevronDown, Map, Camera, X, MessageCircle, Mail
 } from 'lucide-react';
 
 export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion, initialLocation, initialPolicies = [], initialReviews = [] }) {
@@ -183,6 +183,11 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
     const [bookingState, setBookingState] = useState({ status: 'idle', error: '' });
     const [isWishlisted, setIsWishlisted] = useState(false);
 
+    const [showContactModal, setShowContactModal] = useState(false);
+    const [contactMessage, setContactMessage] = useState('');
+    const [contactPhone, setContactPhone] = useState('');
+    const [contactStatus, setContactStatus] = useState('idle');
+
     const toggleAccordion = (index) => {
         setOpenAccordion(prev => prev === index ? null : index);
     };
@@ -211,6 +216,20 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
         setTimeout(() => {
             setBookingState({ status: 'confirmed', error: '' });
         }, 1500);
+    };
+
+    const handleContactSubmit = (e) => {
+        e.preventDefault();
+        setContactStatus('sending');
+        setTimeout(() => {
+            setContactStatus('sent');
+            setTimeout(() => {
+                setShowContactModal(false);
+                setContactStatus('idle');
+                setContactMessage('');
+                setContactPhone('');
+            }, 2000);
+        }, 1000);
     };
 
     return (
@@ -424,7 +443,10 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         <p className="text-slate-600 mb-4 max-w-2xl">
                                             Our cooperative unites over 40 family-run MSMEs across the region. We are passionate about sharing our ancestral crafting techniques with visitors to preserve our heritage and sustain our rural communities.
                                         </p>
-                                        <button className="px-6 py-2 border-2 border-royalMaroon-950 text-royalMaroon-950 font-semibold rounded-lg hover:bg-royalMaroon-950 hover:text-white transition-colors">
+                                        <button 
+                                            onClick={() => setShowContactModal(true)}
+                                            className="px-6 py-2 border-2 border-royalMaroon-950 text-royalMaroon-950 font-semibold rounded-lg hover:bg-royalMaroon-950 hover:text-white transition-colors"
+                                        >
                                             Contact Host
                                         </button>
                                     </div>
@@ -701,6 +723,56 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                 </main>
                 <Footer auth={auth} laravelVersion={laravelVersion} phpVersion={phpVersion} />
             </div>
+
+            {/* Contact Host Modal */}
+            {showContactModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+                        <div className="flex justify-between items-center p-6 border-b border-slate-100">
+                            <h3 className="font-display text-2xl text-royalMaroon-950">Contact {experience.hostName}</h3>
+                            <button onClick={() => setShowContactModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            {contactStatus === 'sent' ? (
+                                <div className="text-center py-8">
+                                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Check className="w-8 h-8" />
+                                    </div>
+                                    <h4 className="text-xl font-bold text-slate-800 mb-2">Message Sent!</h4>
+                                    <p className="text-slate-600">The host will get back to you shortly.</p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col gap-4">
+                                    <p className="text-slate-600 mb-2">Choose your preferred method to contact the host directly regarding the <strong>{experience.title}</strong> experience.</p>
+                                    
+                                    <a 
+                                        href={`https://wa.me/94771234567?text=${encodeURIComponent('Hi ' + experience.hostName + ', I am interested in the ' + experience.title + ' experience. Could you tell me more about...')}`} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="w-full flex items-center justify-center gap-3 bg-[#25D366] text-white font-semibold rounded-lg py-4 hover:bg-[#20bd5a] transition-colors"
+                                    >
+                                        <MessageCircle className="w-6 h-6" />
+                                        Message on WhatsApp
+                                    </a>
+
+                                    <button 
+                                        onClick={() => {
+                                            navigator.clipboard.writeText('host@secretplacessrilanka.com');
+                                            alert('Email address (host@secretplacessrilanka.com) copied to clipboard!');
+                                        }}
+                                        className="w-full flex items-center justify-center gap-3 bg-slate-800 text-white font-semibold rounded-lg py-4 hover:bg-slate-700 transition-colors"
+                                    >
+                                        <Mail className="w-6 h-6" />
+                                        Copy Email Address
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
