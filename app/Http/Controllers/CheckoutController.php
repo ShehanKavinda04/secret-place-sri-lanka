@@ -52,22 +52,22 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Mock Koko payment processing if selected
+        // Process Koko payment processing if selected
         if ($validated['payment_method'] === 'koko') {
             // In a real integration, we would create a Koko session and redirect to their gateway
             // For now, we simulate a successful payment locally.
+            Log::info("Simulating Koko Checkout for: " . $validated['email']);
+        } elseif ($validated['payment_method'] === 'card') {
+            // Process Card payment processing
+            Log::info("Simulating Card Payment for card ending in: " . substr($validated['card_number'] ?? '0000', -4));
         }
 
-        // Hardcode product details for the email (would normally come from DB)
-        $productList = [
-            401 => ['title' => "Traditional Wooden Mask", 'price' => 4500.00],
-            402 => ['title' => "Carved Wooden Table", 'price' => 15000.00],
-            105 => ['title' => "Stone Carved Elephant", 'price' => 6500.00],
-            104 => ['title' => "Lotus Pillar Capital", 'price' => 8000.00],
-            201 => ['title' => "Traditional Pan Padura", 'price' => 4500.00],
+        $productModel = \App\Models\CraftItem::findOrFail($validated['item_id']);
+        
+        $product = [
+            'title' => $productModel->title,
+            'price' => (float) preg_replace('/[^0-9.]/', '', $productModel->price)
         ];
-
-        $product = $productList[$validated['item_id']] ?? $productList[401];
         
         $orderData = [
             'payment_code' => $paymentCode,

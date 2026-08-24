@@ -141,10 +141,13 @@ Route::post('/reviews', function (Illuminate\Http\Request $request) {
 });
 
 Route::get('/checkout', function (Illuminate\Http\Request $request) {
+    $itemId = $request->query('item', 101);
+    $item = \App\Models\CraftItem::findOrFail($itemId);
+
     return Inertia::render('Checkout', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'itemId' => $request->query('item', 401),
+        'item' => $item,
         'quantity' => $request->query('qty', 1),
     ]);
 });

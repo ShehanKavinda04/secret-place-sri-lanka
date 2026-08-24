@@ -4,20 +4,30 @@ import Footer from '@/Layouts/Footer';
 import { ShieldCheck, Truck, ArrowLeft, CreditCard, Lock, MoreHorizontal, Plus, Minus, Trash2, Calendar, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVersion }) {
-    // Determine product based on itemId.
-    // Ideally this comes from a database via the controller, but we'll use a local mock for UI purposes.
-    const productList = {
-        401: { title: "Traditional Wooden Mask", price: 4500.00, image: "/images/woodcraft.png" },
-        402: { title: "Carved Wooden Table", price: 15000.00, image: "/images/woodcraft.png" },
-        105: { title: "Stone Carved Elephant", price: 6500.00, image: "/images/crafts/stone_elephant.png" },
-        104: { title: "Lotus Pillar Capital", price: 8000.00, image: "/images/crafts/pillar.png" },
-        201: { title: "Traditional Pan Padura", price: 4500.00, image: "/images/crafts/reed_mat.png" }
+export default function Checkout({ auth, item, quantity, laravelVersion, phpVersion }) {
+    const initialQty = parseInt(quantity) || 1;
+    const [liveProduct, setLiveProduct] = useState(item);
+
+    useEffect(() => {
+        if (!item?.id) return;
+        const channel = window.Echo.channel(`craft-item.${item.id}`);
+        channel.listen('CraftItemUpdated', (e) => {
+            if (e.item) {
+                setLiveProduct(e.item);
+            }
+        });
+        return () => {
+            window.Echo.leaveChannel(`craft-item.${item.id}`);
+        };
+    }, [item?.id]);
+
+    const parsePrice = (priceStr) => {
+        if (typeof priceStr === 'number') return priceStr;
+        if (!priceStr) return 0;
+        return parseFloat(priceStr.toString().replace(/[^0-9.]/g, '')) || 0;
     };
     
-    // Default to Wooden Mask if not found
-    const product = productList[itemId] || productList[401];
-    const initialQty = parseInt(quantity) || 1;
+    const numericPrice = parsePrice(liveProduct?.price);
 
     const { flash } = usePage().props;
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,11 +63,11 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
         card_number: '',
         valid_date: '',
         cvv: '',
-        item_id: itemId,
+        item_id: liveProduct?.id,
         quantity: initialQty
     });
 
-    const subtotal = product.price * data.quantity;
+    const subtotal = numericPrice * data.quantity;
     const shipping = data.quantity > 0 ? 500.00 : 0;
     const total = subtotal + shipping;
 
@@ -85,7 +95,7 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                 <main className="flex-grow max-w-[1200px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12">
                     {/* Back Button */}
                     <div className="mb-6">
-                        <Link href={`/crafts/item/${itemId}`} className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-royalMaroon-900 transition-colors">
+                        <Link href={`/crafts/item/${liveProduct?.id}`} className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-royalMaroon-900 transition-colors">
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Back to Item
                         </Link>
@@ -107,12 +117,12 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                 {data.quantity > 0 ? (
                                     <div className="flex gap-4 p-3 rounded-lg border border-[#F25C2C] border-opacity-40 mb-10 relative bg-white">
                                         <div className="w-16 h-16 bg-slate-900 rounded-lg overflow-hidden shrink-0 border border-slate-800">
-                                            <img src={product.image} alt={product.title} className="w-full h-full object-cover mix-blend-screen" />
+                                            <img src={liveProduct?.image} alt={liveProduct?.title} className="w-full h-full object-cover mix-blend-screen" />
                                         </div>
                                         <div className="flex flex-col justify-center flex-1">
-                                            <h3 className="font-medium text-slate-800 text-[13px] leading-tight">{product.title}</h3>
+                                            <h3 className="font-medium text-slate-800 text-[13px] leading-tight">{liveProduct?.title}</h3>
                                             <p className="text-[10px] text-slate-500 mt-1">High - Quality Craft for your home</p>
-                                            <p className="font-bold text-slate-900 text-[14px] mt-2">Rs. {(product.price * data.quantity).toLocaleString('en-US')}</p>
+                                            <p className="font-bold text-slate-900 text-[14px] mt-2">Rs. {(numericPrice * data.quantity).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
                                         </div>
                                         {/* Right controls */}
                                         <div className="flex flex-col items-end justify-between">
@@ -143,7 +153,7 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                 <div className="space-y-3 text-[13px] text-slate-600 mb-6">
                                     <div className="flex justify-between">
                                         <span>Subtotal</span>
-                                        <span className="font-bold text-slate-900">Rs. {subtotal.toLocaleString('en-US')}</span>
+                                        <span className="font-bold text-slate-900">Rs. {subtotal.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>Shipping</span>
@@ -154,7 +164,7 @@ export default function Checkout({ auth, itemId, quantity, laravelVersion, phpVe
                                 {/* Total */}
                                 <div className="flex justify-between items-center text-sm font-bold text-slate-900 mb-4 pt-4 border-t border-slate-100">
                                     <span>Total</span>
-                                    <span>Rs. {total.toLocaleString('en-US')}</span>
+                                    <span>Rs. {total.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                                 </div>
 
                                 {/* Proceed Button */}
