@@ -216,10 +216,16 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                             <span className="text-slate-500">Booking ID</span>
                                             <span className="font-mono font-bold text-slate-800">#TRP-847291</span>
                                         </div>
-                                        <button className="flex items-center justify-center gap-2 text-teal-700 font-bold text-sm hover:text-teal-800 mt-2">
+                                        <button 
+                                            onClick={() => window.open('/api/transport-booking/ticket.pdf', '_blank')}
+                                            className="flex items-center justify-center gap-2 text-teal-700 font-bold text-sm hover:text-teal-800 mt-2"
+                                        >
                                             <Download className="w-4 h-4" /> Download QR E-Ticket PDF
                                         </button>
-                                        <button className="flex items-center justify-center gap-2 text-slate-600 font-bold text-sm hover:text-slate-800">
+                                        <button 
+                                            onClick={() => window.open('/transport/tracking', '_blank')}
+                                            className="flex items-center justify-center gap-2 text-slate-600 font-bold text-sm hover:text-slate-800"
+                                        >
                                             <ExternalLink className="w-4 h-4" /> View Live Tracking Link
                                         </button>
                                     </div>

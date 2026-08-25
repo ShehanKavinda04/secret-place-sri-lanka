@@ -183,6 +183,37 @@ Route::post('/api/transport-booking', function (Illuminate\Http\Request $request
     return response()->json(['success' => true]);
 });
 
+Route::get('/api/transport-booking/ticket.pdf', function () {
+    $html = '
+        <div style="font-family: sans-serif; padding: 20px;">
+            <h1 style="color: #0f766e; margin-bottom: 5px;">E-Ticket</h1>
+            <h3 style="color: #64748b; margin-top: 0;">#TRP-847291</h3>
+            <div style="border-top: 2px solid #e2e8f0; margin: 20px 0;"></div>
+            <h2>Booking Confirmed!</h2>
+            <p><strong>Passenger:</strong> Traveler</p>
+            <p><strong>Pickup:</strong> Anuradhapura Central Station</p>
+            <p><strong>Date:</strong> 2024-03-15</p>
+            <p><strong>Total Amount:</strong> LKR 16,500</p>
+            <div style="border-top: 2px solid #e2e8f0; margin: 20px 0;"></div>
+            <p style="color: #64748b;">Enjoy your sacred journey in Sri Lanka.</p>
+        </div>
+    ';
+    
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html);
+    $output = $pdf->output();
+    
+    return response($output, 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="TRP-847291-ticket.pdf"',
+        'Content-Length' => strlen($output),
+    ]);
+});
+
+Route::get('/transport/tracking', function () {
+    // Just a placeholder response for the mock live tracking
+    return "<h1>Live Tracking Simulator</h1><p>Vehicle WP-KD 4521 is 15 minutes away from your pickup location.</p>";
+});
+
 Route::post('/accommodations/{id}/like', function ($id) {
     $accommodation = \App\Models\Accommodation::findOrFail($id);
     $accommodation->increment('likes');
