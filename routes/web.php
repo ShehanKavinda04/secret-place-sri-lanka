@@ -159,6 +159,30 @@ Route::post('/api/experience-contact', function (Illuminate\Http\Request $reques
     return response()->json(['success' => true]);
 });
 
+Route::post('/api/transport-booking', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'nullable|string|max:20',
+        'vehicleName' => 'required|string',
+        'pickup' => 'nullable|string',
+        'date' => 'nullable|string',
+        'passengers' => 'nullable|string',
+        'totalAmount' => 'nullable|string',
+    ]);
+
+    $bookingDetails = $request->all();
+
+    // Send to the default configured address because of Resend Sandbox domain verification
+    $toAddress = config('mail.from.address'); 
+    
+    \Illuminate\Support\Facades\Mail::to($toAddress)->send(
+        new \App\Mail\TransportBookingConfirmed($bookingDetails)
+    );
+
+    return response()->json(['success' => true]);
+});
+
 Route::post('/accommodations/{id}/like', function ($id) {
     $accommodation = \App\Models\Accommodation::findOrFail($id);
     $accommodation->increment('likes');
