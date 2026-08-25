@@ -21,7 +21,7 @@ class TransportVehicleSeeder extends Seeder
             'description' => 'Spacious and comfortable AC van perfect for large family pilgrimage groups. Plenty of luggage space and wide aisles.',
             'features' => ['AC', 'Luggage Carrier', 'Wheelchair Accessible', 'Driver Included'],
             'rating' => 4.9,
-            'image' => 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=800&auto=format&fit=crop',
+            'image' => '/vehicles/kdh_van.jpg',
         ]);
 
         \App\Models\TransportVehicle::create([
@@ -33,7 +33,7 @@ class TransportVehicleSeeder extends Seeder
             'description' => 'Dedicated local driver for an all-day tour covering the Atamasthana with local knowledge of optimal visiting hours.',
             'features' => ['Flexible stops', 'Local Guide', 'Open Air'],
             'rating' => 4.8,
-            'image' => 'https://images.unsplash.com/photo-1596700589139-4cb50c268808?q=80&w=800&auto=format&fit=crop',
+            'image' => '/vehicles/tuk_tuk.jpg',
         ]);
 
         \App\Models\TransportVehicle::create([
@@ -45,7 +45,7 @@ class TransportVehicleSeeder extends Seeder
             'description' => 'Silent, comfortable hybrid car for small families or couples looking for a premium private transport experience.',
             'features' => ['AC', 'Premium Seats', 'Driver Included', 'Silent Cabin'],
             'rating' => 5.0,
-            'image' => 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop',
+            'image' => '/vehicles/sedan_car.jpg',
         ]);
         
         \App\Models\TransportVehicle::create([
@@ -57,7 +57,7 @@ class TransportVehicleSeeder extends Seeder
             'description' => 'Perfect for large society or temple organized tours. Reclining seats, onboard TV, and PA system for chanting.',
             'features' => ['AC', 'PA System', 'TV/DVD', 'Luggage Compartments'],
             'rating' => 4.7,
-            'image' => 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800&auto=format&fit=crop',
+            'image' => '/vehicles/luxury_bus.jpg',
         ]);
     }
 }
