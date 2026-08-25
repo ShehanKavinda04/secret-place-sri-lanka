@@ -20,69 +20,6 @@ import PackageOverviewModal from './Transport-components/PackageOverviewModal';
 import CustomRouteBuilderModal from './Transport-components/CustomRouteBuilderModal';
 
 
-const pilgrimageCircuits = [
-    {
-        id: 'atamasthana-circuit',
-        name: 'Atamasthana One-Day Circuit',
-        location: 'Anuradhapura Sacred City',
-        rating: '4.9',
-        reviews: '1240',
-        description: 'A highly optimized, pre-planned transport route linking all 8 main worship sites in the sacred city sequentially to avoid midday heat.',
-        image: '/images/atamasthana_procession.jpg',
-        href: '/experience/atamasthana'
-    },
-    {
-        id: 'solosmasthana-mihintale',
-        name: 'Sri Pada Shuttle & Stay',
-        location: 'Adam\'s Peak (Sri Pada)',
-        rating: '4.8',
-        reviews: '856',
-        description: 'End-to-end transport from your hotel to the Nallathanniya base camp, including overnight waiting for your return.',
-        image: '/images/sri_pada_sunrise.jpg',
-        href: '/experience/mihintale'
-    },
-    {
-        id: 'mihintale-sunrise',
-        name: 'Mihintale Sunrise & Cradle of Buddhism Tour',
-        location: 'Anuradhapura & Mihintale',
-        rating: '4.9',
-        reviews: '980',
-        description: 'Early morning transport to Mihintale rock temple to witness the sunrise, followed by visits to Kantaka Cetiya and Kaludiya Pokuna.',
-        image: '/images/mihintale_sunrise.jpg',
-        href: '/experience/mihintale-sunrise'
-    },
-    {
-        id: 'ritigala-forest',
-        name: 'Ritigala & Western Monasteries Circuit',
-        location: 'Anuradhapura Forest Monastery',
-        rating: '4.8',
-        reviews: '640',
-        description: 'A quiet heritage route focused on ancient meditation monasteries, double-platform structures, and lush forest pathways around Ritigala.',
-        image: '/images/ritigala_jungle.jpg',
-        href: '/experience/ritigala-forest'
-    },
-    {
-        id: 'tantirimale-temple',
-        name: 'Tantirimale Sacred Rock Temple Package',
-        location: 'Tantirimale / Anuradhapura',
-        rating: '4.7',
-        reviews: '510',
-        description: 'Half-day dedicated shuttle service to the historic Tantirimale Rajamaha Viharaya, famous for its ancient samadhi statue and stone carvings.',
-        image: '/images/tantirimale_buddha.jpg',
-        href: '/experience/tantirimale'
-    },
-    {
-        id: 'heritage-lakes',
-        name: 'Tissa Wewa & Isurumuniya Sunset Route',
-        location: 'Anuradhapura Heritage Lakes',
-        rating: '4.9',
-        reviews: '1120',
-        description: 'Late afternoon route covering Isurumuniya Lovers\' rock, Ranmasu Uyana royal gardens, and a peaceful walk along Tissa Wewa bund at sunset.',
-        image: '/images/tissa_wewa_sunset.jpg',
-        href: '/experience/heritage-lakes'
-    }
-];
-
 export default function Transport({ auth, laravelVersion, phpVersion }) {
     const [bookingModalOpen, setBookingModalOpen] = useState(false);
     const [liveTrackingModalOpen, setLiveTrackingModalOpen] = useState(false);
@@ -93,6 +30,23 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [vehicles, setVehicles] = useState([]);
     const [searchFilters, setSearchFilters] = useState({ type: 'Any Vehicle' });
+    const [pilgrimageCircuits, setPilgrimageCircuits] = useState([]);
+
+    useEffect(() => {
+        const fetchPackages = async () => {
+            try {
+                const response = await axios.get('/api/pilgrimage-packages');
+                setPilgrimageCircuits(response.data);
+            } catch (error) {
+                console.error("Error fetching packages:", error);
+            }
+        };
+
+        fetchPackages();
+        const intervalId = setInterval(fetchPackages, 30000); // Poll every 30 seconds
+
+        return () => clearInterval(intervalId);
+    }, []);
 
     useEffect(() => {
         const fetchVehicles = async () => {

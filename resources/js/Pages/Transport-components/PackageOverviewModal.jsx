@@ -8,7 +8,7 @@ export default function PackageOverviewModal({ isOpen, onClose, packageData }) {
     if (!isOpen || !packageData) return null;
 
     // Mock itinerary based on the selected package
-    const itinerary = packageData.id === 'atamasthana-circuit' ? [
+    const itinerary = packageData.package_id === 'atamasthana-circuit' ? [
         { time: '07:00 AM', title: 'Hotel Pickup', desc: 'Driver arrives at your location' },
         { time: '07:30 AM', title: 'Sri Maha Bodhi', desc: 'Avoid the crowds and morning heat' },
         { time: '09:00 AM', title: 'Ruwanwelisaya', desc: 'Walking distance from Bodhi' },
