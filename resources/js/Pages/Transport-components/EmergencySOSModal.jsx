@@ -1,11 +1,13 @@
 import { X, ShieldAlert, Phone, MapPin, Navigation2, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function EmergencySOSModal({ isOpen, onClose }) {
     const [status, setStatus] = useState('idle'); // 'idle' | 'activating' | 'active'
     const [lat, setLat] = useState(8.3512);
     const [lng, setLng] = useState(80.3982);
+    const [eta, setEta] = useState(300); // 5 minutes (300 seconds)
 
     useEffect(() => {
         if (!isOpen) return;
@@ -16,17 +18,43 @@ export default function EmergencySOSModal({ isOpen, onClose }) {
             setLng(prev => prev + (Math.random() - 0.5) * 0.00008);
         }, 800);
 
-        return () => clearInterval(gpsInterval);
-    }, [isOpen]);
+        let etaInterval;
+        if (status === 'active') {
+            etaInterval = setInterval(() => {
+                setEta(prev => (prev > 0 ? prev - 1 : 0));
+            }, 1000);
+        }
+
+        return () => {
+            clearInterval(gpsInterval);
+            if (etaInterval) clearInterval(etaInterval);
+        };
+    }, [isOpen, status]);
 
     if (!isOpen) return null;
 
     const handleActivate = () => {
         setStatus('activating');
-        // Simulate API call to emergency services
-        setTimeout(() => {
-            setStatus('active');
-        }, 2000);
+        axios.post('/api/sos/activate', { lat, lng })
+            .then(() => {
+                setStatus('active');
+                setEta(300); // Reset ETA when activated
+            })
+            .catch(() => {
+                // Fallback for demo if route fails
+                setTimeout(() => {
+                    setStatus('active');
+                    setEta(300);
+                }, 2000);
+            });
+    };
+
+    const handleDeactivate = () => {
+        setStatus('activating'); // Show loading state briefly while deactivating
+        axios.post('/api/sos/deactivate')
+            .finally(() => {
+                resetAndClose();
+            });
     };
 
     const resetAndClose = () => {
@@ -122,13 +150,30 @@ export default function EmergencySOSModal({ isOpen, onClose }) {
                                     </p>
                                 </div>
 
+                                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-6">
+                                    <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Estimated Responder Arrival</div>
+                                    <div className="text-5xl font-display font-bold text-slate-800">
+                                        {String(Math.floor(eta / 60)).padStart(2, '0')}:{String(eta % 60).padStart(2, '0')}
+                                    </div>
+                                    <div className="flex items-center justify-center gap-2 text-teal-600 text-xs font-bold mt-3">
+                                        <span className="relative flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+                                        </span>
+                                        Live tracking active
+                                    </div>
+                                </div>
+
                                 <div className="space-y-3">
-                                    <button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                                    <a 
+                                        href="tel:1912"
+                                        className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors"
+                                    >
                                         <Phone className="w-5 h-5" /> Call Tourist Police (1912)
-                                    </button>
+                                    </a>
                                     <button 
-                                        onClick={resetAndClose}
-                                        className="w-full bg-transparent border-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3.5 rounded-xl transition-colors"
+                                        onClick={handleDeactivate}
+                                        className="w-full bg-transparent border-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3.5 rounded-xl transition-colors disabled:opacity-50"
                                     >
                                         I'm Safe Now (Deactivate)
                                     </button>

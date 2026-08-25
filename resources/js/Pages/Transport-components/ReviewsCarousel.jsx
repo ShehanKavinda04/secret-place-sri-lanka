@@ -1,39 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
-
-const reviews = [
-    {
-        id: 1,
-        name: 'Saman Kumara',
-        date: 'Oct 2024',
-        rating: 5,
-        text: 'The driver for our Atamasthana tour was exceptionally punctual and polite. He knew exactly which temples were less crowded during the morning. The AC van was very clean and comfortable for my elderly parents.',
-        service: 'Private AC Van - 10 Seater'
-    },
-    {
-        id: 2,
-        name: 'Meena & Family',
-        date: 'Nov 2024',
-        rating: 5,
-        text: 'We booked a Tuk-Tuk for the day. Our driver was essentially a guide! He explained the history of Abhayagiriya in deep detail. The vehicle felt safe, and they even had an umbrella ready for the sudden rain.',
-        service: 'Atamasthana Tuk-Tuk Tour'
-    },
-    {
-        id: 3,
-        name: 'David R.',
-        date: 'Dec 2024',
-        rating: 4,
-        text: 'Great logistics service. The station-to-hotel luggage transfer was a lifesaver. We arrived on the Yal Devi train and headed straight to Sri Maha Bodhi without worrying about our bags.',
-        service: 'Luggage Transfer & Station Pickup'
-    }
-];
+import axios from 'axios';
 
 export default function ReviewsCarousel() {
+    const [reviews, setReviews] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const next = () => setCurrentIndex((prev) => (prev + 1) % reviews.length);
-    const prev = () => setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+    const fetchReviews = async () => {
+        try {
+            const response = await axios.get('/api/transport-reviews');
+            setReviews(response.data);
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchReviews();
+        // Poll for real-time updates every 30 seconds
+        const interval = setInterval(fetchReviews, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const next = () => setCurrentIndex((prev) => (prev + 1) % (reviews.length || 1));
+    const prev = () => setCurrentIndex((prev) => (prev - 1 + reviews.length) % (reviews.length || 1));
+
+    if (reviews.length === 0) return null; // or a loading spinner
 
     return (
         <div className="relative max-w-4xl mx-auto px-12 pb-8">

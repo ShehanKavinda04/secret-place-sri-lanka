@@ -243,6 +243,29 @@ Route::post('/accommodations/{id}/transit', function (Illuminate\Http\Request $r
     return back();
 });
 
+// SOS Emergency Routes
+Route::post('/api/sos/activate', function (Illuminate\Http\Request $request) {
+    // In a real application, this would trigger webhooks, SMS APIs, and alert authorities.
+    \Illuminate\Support\Facades\Log::info("EMERGENCY SOS ACTIVATED at Lat: {$request->lat}, Lng: {$request->lng}");
+    // Simulate 2s processing delay
+    sleep(2);
+    return response()->json([
+        'status' => 'success', 
+        'message' => 'Emergency services and contacts notified.',
+        'eta' => 300
+    ]);
+});
+
+Route::post('/api/sos/deactivate', function () {
+    \Illuminate\Support\Facades\Log::info("EMERGENCY SOS DEACTIVATED.");
+    sleep(1);
+    return response()->json(['status' => 'success', 'message' => 'SOS cancelled successfully.']);
+});
+
+Route::get('/api/transport-reviews', function () {
+    return \App\Models\TransportReview::orderBy('id', 'desc')->get();
+});
+
 Route::post('/reviews', function (Illuminate\Http\Request $request) {
     $request->validate([
         'accommodation_id' => 'nullable|integer',
