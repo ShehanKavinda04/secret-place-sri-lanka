@@ -1,7 +1,7 @@
 import { Link, router } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 
-export default function SpotCard({ spot, onBook }) {
+export default function SpotCard({ spot, onBook, onDetails }) {
     return (
         <motion.article 
             initial={{ opacity: 0, y: 30 }}
@@ -10,7 +10,9 @@ export default function SpotCard({ spot, onBook }) {
             transition={{ duration: 0.5 }}
             whileHover={{ y: -5 }}
             onClick={() => {
-                if (onBook) {
+                if (onDetails) {
+                    onDetails(spot);
+                } else if (onBook) {
                     onBook(spot);
                 } else {
                     router.visit(spot.href || `/places/${spot.id}/history`);

@@ -16,6 +16,8 @@ import LiveTrackingModal from './Transport-components/LiveTrackingModal';
 import EmergencySOSModal from './Transport-components/EmergencySOSModal';
 import LiveMapWidget from './Transport-components/LiveMapWidget';
 import SpotCard from './Welcome-sub-sub-components/SpotCard';
+import PackageOverviewModal from './Transport-components/PackageOverviewModal';
+import CustomRouteBuilderModal from './Transport-components/CustomRouteBuilderModal';
 
 
 const pilgrimageCircuits = [
@@ -45,6 +47,9 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
     const [bookingModalOpen, setBookingModalOpen] = useState(false);
     const [liveTrackingModalOpen, setLiveTrackingModalOpen] = useState(false);
     const [emergencySOSModalOpen, setEmergencySOSModalOpen] = useState(false);
+    const [packageOverviewModalOpen, setPackageOverviewModalOpen] = useState(false);
+    const [customRouteModalOpen, setCustomRouteModalOpen] = useState(false);
+    const [selectedPackage, setSelectedPackage] = useState(null);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [vehicles, setVehicles] = useState([]);
     const [searchFilters, setSearchFilters] = useState({ type: 'Any Vehicle' });
@@ -69,6 +74,11 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
     const handleBook = (vehicle) => {
         setSelectedVehicle(vehicle);
         setBookingModalOpen(true);
+    };
+
+    const handlePackageDetails = (pkg) => {
+        setSelectedPackage(pkg);
+        setPackageOverviewModalOpen(true);
     };
 
     return (
@@ -114,7 +124,7 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                                     <p className="text-slate-600 mt-2 font-light text-lg">Select a pre-configured package or craft your own sacred path.</p>
                                 </div>
                                 <button 
-                                    onClick={() => window.scrollTo({ top: 400, behavior: 'smooth' })}
+                                    onClick={() => setCustomRouteModalOpen(true)}
                                     className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl border border-slate-300 transition-colors flex items-center gap-2"
                                 >
                                     <Navigation2 className="w-5 h-5" /> Build My Own Route
@@ -123,7 +133,7 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                             
                             <div className="grid md:grid-cols-2 gap-8">
                                 {pilgrimageCircuits.map(spot => (
-                                    <SpotCard key={spot.id} spot={spot} onBook={handleBook} />
+                                    <SpotCard key={spot.id} spot={spot} onDetails={handlePackageDetails} />
                                 ))}
                             </div>
                         </section>
@@ -224,6 +234,19 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                 <EmergencySOSModal 
                     isOpen={emergencySOSModalOpen} 
                     onClose={() => setEmergencySOSModalOpen(false)} 
+                />
+
+                {/* 9. Package Overview Modal */}
+                <PackageOverviewModal 
+                    isOpen={packageOverviewModalOpen} 
+                    onClose={() => setPackageOverviewModalOpen(false)} 
+                    packageData={selectedPackage}
+                />
+
+                {/* 10. Custom Route Builder Modal */}
+                <CustomRouteBuilderModal 
+                    isOpen={customRouteModalOpen} 
+                    onClose={() => setCustomRouteModalOpen(false)} 
                 />
             </div>
         </>
