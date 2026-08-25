@@ -12,6 +12,9 @@ import VehicleCard from './Transport-components/VehicleCard';
 import BookingModal from './Transport-components/BookingModal';
 import PublicTransportTable from './Transport-components/PublicTransportTable';
 import ReviewsCarousel from './Transport-components/ReviewsCarousel';
+import LiveTrackingModal from './Transport-components/LiveTrackingModal';
+import EmergencySOSModal from './Transport-components/EmergencySOSModal';
+import LiveMapWidget from './Transport-components/LiveMapWidget';
 import SpotCard from './Welcome-sub-sub-components/SpotCard';
 
 
@@ -40,6 +43,8 @@ const pilgrimageCircuits = [
 
 export default function Transport({ auth, laravelVersion, phpVersion }) {
     const [bookingModalOpen, setBookingModalOpen] = useState(false);
+    const [liveTrackingModalOpen, setLiveTrackingModalOpen] = useState(false);
+    const [emergencySOSModalOpen, setEmergencySOSModalOpen] = useState(false);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [vehicles, setVehicles] = useState([]);
     const [searchFilters, setSearchFilters] = useState({ type: 'Any Vehicle' });
@@ -174,29 +179,17 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                                             <div className="text-slate-400 text-xs">Within 2 hours anywhere</div>
                                         </div>
                                     </div>
-                                    <button className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2">
+                                    <button 
+                                        onClick={() => setEmergencySOSModalOpen(true)}
+                                        className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2"
+                                    >
                                         <ShieldAlert className="w-5 h-5" /> Emergency SOS Support
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="w-full md:w-1/2 relative z-10 h-72 sm:h-96 bg-slate-800 rounded-3xl overflow-hidden border border-slate-700 shadow-inner flex items-center justify-center">
-                                {/* Simulated Live Map Widget */}
-                                <div className="absolute inset-0 opacity-40">
-                                    <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop" alt="Map View" className="w-full h-full object-cover blur-[2px]" />
-                                </div>
-                                <div className="relative bg-white/95 p-4 rounded-xl shadow-xl backdrop-blur-sm border border-slate-200 w-64 flex flex-col items-center">
-                                    <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mb-3">
-                                        <div className="w-4 h-4 bg-teal-600 rounded-full animate-ping absolute"></div>
-                                        <div className="w-4 h-4 bg-teal-600 rounded-full relative z-10"></div>
-                                    </div>
-                                    <h4 className="font-bold text-slate-800">Vehicle WP-KD 4521</h4>
-                                    <p className="text-xs text-slate-500 mb-3">Moving towards Ruwanwelisaya...</p>
-                                    <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                        <div className="bg-teal-600 h-full w-3/4 rounded-full"></div>
-                                    </div>
-                                </div>
-                            </div>
+                            {/* Extracted to its own component with real-time state stream */}
+                            <LiveMapWidget onClick={() => setLiveTrackingModalOpen(true)} />
                         </section>
 
                         {/* 5. Social Proof & Reviews */}
@@ -219,6 +212,18 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                     isOpen={bookingModalOpen} 
                     onClose={() => setBookingModalOpen(false)} 
                     vehicle={selectedVehicle} 
+                />
+
+                {/* 7. Live Tracking Modal */}
+                <LiveTrackingModal 
+                    isOpen={liveTrackingModalOpen} 
+                    onClose={() => setLiveTrackingModalOpen(false)} 
+                />
+
+                {/* 8. Emergency SOS Modal */}
+                <EmergencySOSModal 
+                    isOpen={emergencySOSModalOpen} 
+                    onClose={() => setEmergencySOSModalOpen(false)} 
                 />
             </div>
         </>
