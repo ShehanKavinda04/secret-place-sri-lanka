@@ -210,6 +210,7 @@ Route::get('/api/transport-booking/ticket.pdf', function () {
 });
 
 Route::get('/api/transport-vehicles', [\App\Http\Controllers\TransportVehicleController::class, 'index']);
+Route::get('/api/public-transports', [\App\Http\Controllers\PublicTransportController::class, 'index']);
 
 Route::get('/transport/tracking', function () {
     // Just a placeholder response for the mock live tracking

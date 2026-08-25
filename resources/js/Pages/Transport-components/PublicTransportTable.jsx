@@ -1,13 +1,26 @@
+import { useState, useEffect } from 'react';
 import { Ticket, Train, Bus, Clock } from 'lucide-react';
-
-const scheduleData = [
-    { id: 1, type: 'train', route: 'Colombo Fort → Anuradhapura', dep: '05:45 AM', arr: '09:30 AM', name: 'Yal Devi (Express)', price: 'Rs. 1,200', link: 'https://seatreservation.railway.gov.lk/cra/' },
-    { id: 2, type: 'train', route: 'Kandy → Anuradhapura', dep: '07:00 AM', arr: '12:15 PM', name: 'Rajarata Rejini', price: 'Rs. 800', link: 'https://seatreservation.railway.gov.lk/cra/' },
-    { id: 3, type: 'bus', route: 'Colombo (Pettah) → Anuradhapura', dep: 'Every 30 Mins', arr: '~ 4.5 Hours', name: 'Route 15 - Super Luxury AC', price: 'Rs. 1,500', link: 'https://sltb.eseat.lk/' },
-    { id: 4, type: 'bus', route: 'Mihintale Feeder (Local)', dep: 'Every 20 Mins', arr: '~ 30 Mins', name: 'CTB Local Route', price: 'Rs. 100', link: null },
-];
+import axios from 'axios';
 
 export default function PublicTransportTable() {
+    const [scheduleData, setScheduleData] = useState([]);
+
+    useEffect(() => {
+        const fetchSchedule = async () => {
+            try {
+                const response = await axios.get('/api/public-transports');
+                setScheduleData(response.data);
+            } catch (error) {
+                console.error("Error fetching public transport data:", error);
+            }
+        };
+
+        fetchSchedule();
+        
+        // Polling for real-time updates every 30 seconds
+        const intervalId = setInterval(fetchSchedule, 30000);
+        return () => clearInterval(intervalId);
+    }, []);
     return (
         <div className="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
             <div className="overflow-x-auto">
@@ -37,11 +50,11 @@ export default function PublicTransportTable() {
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-2 text-sm text-slate-700">
-                                        <Clock className="w-4 h-4 text-slate-400" /> {item.dep}
+                                        <Clock className="w-4 h-4 text-slate-400" /> {item.departure}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span className="text-sm font-medium text-slate-700">{item.arr}</span>
+                                    <span className="text-sm font-medium text-slate-700">{item.arrival}</span>
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     {item.link ? (
