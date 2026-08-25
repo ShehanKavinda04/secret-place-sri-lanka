@@ -108,14 +108,17 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">Pilgrimage Route & Package Builder</h2>
                                     <p className="text-slate-600 mt-2 font-light text-lg">Select a pre-configured package or craft your own sacred path.</p>
                                 </div>
-                                <button className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl border border-slate-300 transition-colors flex items-center gap-2">
+                                <button 
+                                    onClick={() => window.scrollTo({ top: 400, behavior: 'smooth' })}
+                                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl border border-slate-300 transition-colors flex items-center gap-2"
+                                >
                                     <Navigation2 className="w-5 h-5" /> Build My Own Route
                                 </button>
                             </div>
                             
                             <div className="grid md:grid-cols-2 gap-8">
                                 {pilgrimageCircuits.map(spot => (
-                                    <SpotCard key={spot.id} spot={spot} />
+                                    <SpotCard key={spot.id} spot={spot} onBook={handleBook} />
                                 ))}
                             </div>
                         </section>

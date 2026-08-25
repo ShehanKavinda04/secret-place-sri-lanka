@@ -33,7 +33,7 @@ class TransportVehicleSeeder extends Seeder
             'description' => 'Dedicated local driver for an all-day tour covering the Atamasthana with local knowledge of optimal visiting hours.',
             'features' => ['Flexible stops', 'Local Guide', 'Open Air'],
             'rating' => 4.8,
-            'image' => 'https://images.unsplash.com/photo-1623880486001-f2f45cb75fbf?q=80&w=800&auto=format&fit=crop',
+            'image' => 'https://images.unsplash.com/photo-1596700589139-4cb50c268808?q=80&w=800&auto=format&fit=crop',
         ]);
 
         \App\Models\TransportVehicle::create([

@@ -1,7 +1,7 @@
 import { Link, router } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 
-export default function SpotCard({ spot }) {
+export default function SpotCard({ spot, onBook }) {
     return (
         <motion.article 
             initial={{ opacity: 0, y: 30 }}
@@ -9,7 +9,13 @@ export default function SpotCard({ spot }) {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.5 }}
             whileHover={{ y: -5 }}
-            onClick={() => router.visit(spot.href || `/places/${spot.id}/history`)}
+            onClick={() => {
+                if (onBook) {
+                    onBook(spot);
+                } else {
+                    router.visit(spot.href || `/places/${spot.id}/history`);
+                }
+            }}
             className="group cursor-pointer bg-white border border-slate-200/80 rounded-3xl overflow-hidden hover:border-royalGold-500/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-md"
         >
             <div className="relative aspect-[4/3] overflow-hidden bg-slate-950">
