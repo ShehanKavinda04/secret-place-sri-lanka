@@ -209,6 +209,8 @@ Route::get('/api/transport-booking/ticket.pdf', function () {
     ]);
 });
 
+Route::get('/api/transport-vehicles', [\App\Http\Controllers\TransportVehicleController::class, 'index']);
+
 Route::get('/transport/tracking', function () {
     // Just a placeholder response for the mock live tracking
     return "<h1>Live Tracking Simulator</h1><p>Vehicle WP-KD 4521 is 15 minutes away from your pickup location.</p>";

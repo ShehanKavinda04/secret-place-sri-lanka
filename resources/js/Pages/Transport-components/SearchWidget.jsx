@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { MapPin, Calendar, Users, Car, Search, Map, Train, Bus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function SearchWidget() {
+export default function SearchWidget({ onSearchChange }) {
     const [activeTab, setActiveTab] = useState('private');
     const [destinations, setDestinations] = useState([]);
     const [destinationInput, setDestinationInput] = useState('');
+    const [vehicleType, setVehicleType] = useState('Any Vehicle');
 
     const handleAddDestination = (e) => {
         if (e.key === 'Enter' && destinationInput.trim() !== '') {
@@ -84,7 +85,16 @@ export default function SearchWidget() {
                                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Vehicle Type</label>
                                 <div className="relative">
                                     <Car className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                    <select className="w-full pl-9 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-teal-500 focus:border-teal-500 text-sm appearance-none">
+                                    <select 
+                                        className="w-full pl-9 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-teal-500 focus:border-teal-500 text-sm appearance-none"
+                                        value={vehicleType}
+                                        onChange={(e) => {
+                                            setVehicleType(e.target.value);
+                                            if (onSearchChange) {
+                                                onSearchChange({ type: e.target.value });
+                                            }
+                                        }}
+                                    >
                                         <option>Any Vehicle</option>
                                         <option>Bus</option>
                                         <option>Coaster</option>
@@ -124,7 +134,13 @@ export default function SearchWidget() {
                                         <option>Wheelchair Included</option>
                                     </select>
                                 </div>
-                                <button className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-teal-900/20 transition-all flex items-center justify-center gap-2 whitespace-nowrap h-full">
+                                <button onClick={() => {
+                                    const el = document.getElementById('vehicles-section');
+                                    if(el) {
+                                        const y = el.getBoundingClientRect().top + window.scrollY - 100;
+                                        window.scrollTo({top: y, behavior: 'smooth'});
+                                    }
+                                }} className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-teal-900/20 transition-all flex items-center justify-center gap-2 whitespace-nowrap h-full">
                                     <Search className="w-4 h-4" /> Search Transport Options
                                 </button>
                             </div>
@@ -135,7 +151,13 @@ export default function SearchWidget() {
                 {activeTab === 'packages' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col md:flex-row gap-4 items-center justify-between">
                         <p className="text-slate-600 font-light">Explore our curated Atamasthana and Solosmasthana circuits designed for seamless pilgrimage.</p>
-                        <button className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                        <button onClick={() => {
+                            const el = document.getElementById('packages-section');
+                            if(el) {
+                                const y = el.getBoundingClientRect().top + window.scrollY - 100;
+                                window.scrollTo({top: y, behavior: 'smooth'});
+                            }
+                        }} className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2">
                             <Map className="w-4 h-4" /> View Pre-planned Packages
                         </button>
                     </motion.div>
@@ -144,7 +166,13 @@ export default function SearchWidget() {
                 {activeTab === 'public' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col md:flex-row gap-4 items-center justify-between">
                         <p className="text-slate-600 font-light">Check live schedules for Intercity Express trains and SLTB AC buses to sacred destinations.</p>
-                        <button className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                        <button onClick={() => {
+                            const el = document.getElementById('public-section');
+                            if(el) {
+                                const y = el.getBoundingClientRect().top + window.scrollY - 100;
+                                window.scrollTo({top: y, behavior: 'smooth'});
+                            }
+                        }} className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2">
                             <Bus className="w-4 h-4" /> Check Timetables
                         </button>
                     </motion.div>

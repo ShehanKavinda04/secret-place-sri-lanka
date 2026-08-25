@@ -2,8 +2,9 @@ import { Head } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { ShieldAlert, Accessibility, Navigation2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { ShieldAlert, Accessibility, Navigation2, Car } from 'lucide-react';
 
 // New Modular Components
 import SearchWidget from './Transport-components/SearchWidget';
@@ -13,44 +14,6 @@ import PublicTransportTable from './Transport-components/PublicTransportTable';
 import ReviewsCarousel from './Transport-components/ReviewsCarousel';
 import SpotCard from './Welcome-sub-sub-components/SpotCard';
 
-const privateVehicles = [
-    {
-        id: 'kdh-1',
-        type: 'Van',
-        name: 'Toyota KDH High Roof - 14 Seater',
-        capacity: '10-14 passengers',
-        price: 'LKR 18,000 / day',
-        priceValue: 18000,
-        description: 'Spacious and comfortable AC van perfect for large family pilgrimage groups. Plenty of luggage space and wide aisles.',
-        features: ['AC', 'Luggage Carrier', 'Wheelchair Accessible', 'Driver Included'],
-        rating: 4.9,
-        image: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-        id: 'tuk-tuk-1',
-        type: 'Tuk-Tuk',
-        name: 'Atamasthana Tuk-Tuk Sacred Tour',
-        capacity: '2-3 passengers',
-        price: 'LKR 4,500 / day',
-        priceValue: 4500,
-        description: 'Dedicated local driver for an all-day tour covering the Atamasthana with local knowledge of optimal visiting hours.',
-        features: ['Flexible stops', 'Local Guide', 'Open Air'],
-        rating: 4.8,
-        image: 'https://images.unsplash.com/photo-1623880486001-f2f45cb75fbf?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-        id: 'car-1',
-        type: 'Car',
-        name: 'Hybrid Sedan / VIP Cruiser',
-        capacity: '3-4 passengers',
-        price: 'LKR 12,000 / day',
-        priceValue: 12000,
-        description: 'Silent, comfortable hybrid car for small families or couples looking for a premium private transport experience.',
-        features: ['AC', 'Premium Seats', 'Driver Included', 'Silent Cabin'],
-        rating: 5.0,
-        image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop',
-    }
-];
 
 const pilgrimageCircuits = [
     {
@@ -78,6 +41,25 @@ const pilgrimageCircuits = [
 export default function Transport({ auth, laravelVersion, phpVersion }) {
     const [bookingModalOpen, setBookingModalOpen] = useState(false);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
+    const [vehicles, setVehicles] = useState([]);
+    const [searchFilters, setSearchFilters] = useState({ type: 'Any Vehicle' });
+
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            try {
+                const response = await axios.get('/api/transport-vehicles', { params: searchFilters });
+                setVehicles(response.data);
+            } catch (error) {
+                console.error("Error fetching vehicles:", error);
+            }
+        };
+
+        const debounceTimer = setTimeout(() => {
+            fetchVehicles();
+        }, 300);
+
+        return () => clearTimeout(debounceTimer);
+    }, [searchFilters]);
 
     const handleBook = (vehicle) => {
         setSelectedVehicle(vehicle);
@@ -115,12 +97,12 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                 <main className="flex-grow w-full relative z-10 pb-24">
                     
                     {/* 2. Main Interactive Search & Filter Card (Floating Widget) */}
-                    <SearchWidget />
+                    <SearchWidget onSearchChange={(filters) => setSearchFilters(prev => ({...prev, ...filters}))} />
 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
                         
                         {/* 3A. Pilgrimage Route & Package Builder */}
-                        <section className="space-y-10">
+                        <section id="packages-section" className="space-y-10">
                             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                                 <div>
                                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">Pilgrimage Route & Package Builder</h2>
@@ -139,21 +121,29 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                         </section>
 
                         {/* 3B. Vehicle Fleet Selection Grid */}
-                        <section className="space-y-10">
+                        <section id="vehicles-section" className="space-y-10">
                             <div>
                                 <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">Vehicle Fleet Selection</h2>
                                 <p className="text-slate-600 mt-2 font-light text-lg">Safe, comfortable, and reliable transport driven by experienced locals.</p>
                             </div>
                             
                             <div className="grid lg:grid-cols-2 gap-8">
-                                {privateVehicles.map(vehicle => (
-                                    <VehicleCard key={vehicle.id} vehicle={vehicle} onBook={handleBook} />
-                                ))}
+                                {vehicles.length > 0 ? (
+                                    vehicles.map(vehicle => (
+                                        <VehicleCard key={vehicle.id} vehicle={vehicle} onBook={handleBook} />
+                                    ))
+                                ) : (
+                                    <div className="col-span-2 text-center py-12 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                                        <Car className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                                        <h3 className="text-xl font-bold text-slate-700">No vehicles found</h3>
+                                        <p className="text-slate-500 mt-2">Try adjusting your search criteria to see more options.</p>
+                                    </div>
+                                )}
                             </div>
                         </section>
 
                         {/* 3C. Public Transport Logistics Table */}
-                        <section className="space-y-10">
+                        <section id="public-section" className="space-y-10">
                             <div>
                                 <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">Public Transport Logistics</h2>
                                 <p className="text-slate-600 mt-2 font-light text-lg">Live schedules for Intercity Express trains and CTB/SLTB buses.</p>
