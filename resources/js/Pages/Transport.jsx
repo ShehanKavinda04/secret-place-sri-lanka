@@ -134,8 +134,8 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                     transition={{ duration: 0.8 }}
                     className="relative h-[80vh] sm:h-[650px] overflow-hidden"
                 >
-                    <img src="https://images.unsplash.com/photo-1588667503923-010077b949c8?q=80&w=2000&auto=format&fit=crop" alt="Scenic Sri Lankan Railway" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-[#F8F9FA]" />
+                    <img src="/images/sri_lankan_transport_hero.jpg" alt="Scenic Sri Lankan Railway" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-slate-900/90 via-slate-900/60 to-[#F8F9FA]" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pt-16">
                         <span className="text-xs uppercase tracking-widest font-bold text-teal-400 mb-6 bg-slate-900/50 px-4 py-1.5 rounded-full border border-teal-500/30 backdrop-blur-sm">
                             Logistics Module
