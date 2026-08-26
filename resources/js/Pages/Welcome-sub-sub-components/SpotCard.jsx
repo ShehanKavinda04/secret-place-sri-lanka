@@ -15,7 +15,13 @@ export default function SpotCard({ spot, onBook, onDetails }) {
                 } else if (onBook) {
                     onBook(spot);
                 } else {
-                    router.visit(spot.href || `/places/${spot.id}/history`);
+                    router.visit(spot.href || `/places/${spot.id}/history`, {
+                        data: {
+                            name: spot.name,
+                            topic: spot.description,
+                            image: spot.image
+                        }
+                    });
                 }
             }}
             className="group cursor-pointer bg-white border border-slate-200/80 rounded-3xl overflow-hidden hover:border-royalGold-500/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-md"

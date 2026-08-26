@@ -41,8 +41,6 @@ export default function History({ auth, spot }) {
     const sidebarItems = [
         { id: 'history', label: 'History of the Sacred Site', icon: 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' },
         { id: 'gallery', label: 'Gallery / Photos', icon: 'M2.25 15.75l5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z' },
-        { id: 'videos', label: 'AI-Generated Videos', icon: 'M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z' },
-        { id: 'rituals', label: 'Rituals (Thewawa) & Bookings', icon: 'M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z' },
         { id: 'location', label: 'Location & Map Information', icon: 'M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z' },
     ];
 
@@ -232,8 +230,8 @@ export default function History({ auth, spot }) {
                                                         <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
                                                     </svg>
                                                 </div>
-                                                <audio controls className="w-full h-10 outline-none">
-                                                    <source src="#" type="audio/mpeg" />
+                                                <audio key={spot.history_audio} controls className="w-full h-10 outline-none">
+                                                    <source src={spot.history_audio || "#"} type="audio/mpeg" />
                                                 </audio>
                                             </div>
                                         </div>
@@ -268,7 +266,7 @@ export default function History({ auth, spot }) {
                                                     </svg>
                                                 </div>
                                                 <audio controls className="w-full h-10 outline-none">
-                                                    <source src="#" type="audio/mpeg" />
+                                                    <source src={spot.blueprint_audio || "#"} type="audio/mpeg" />
                                                 </audio>
                                             </div>
                                         </div>

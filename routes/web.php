@@ -1073,9 +1073,53 @@ EOD
                 '/images/mihintale_gallery_4.jpg',
             ],
         ],
+        'mahamevnawa-anuradhapura' => [
+            'name' => 'Mahamevnawa Meditation Centre',
+            'lat' => null,
+            'lng' => null,
+            'image' => '/images/mahamevnawa_meditation_1779804848418.png',
+            'topic' => 'A serene monastery offering guided meditation and Dhamma teachings in English and Sinhala, ideal for seekers looking to learn traditional Theravada practices.',
+            'history_narrative' => <<<'EOD'
+The Story of Mahamevnawa Buddhist Monastery: From Past to Present
+
+Born on July 1, 1961, the young child entered the order of monkhood on March 26, 1979, at the Seruwila Mangala Raja Maha Viharaya as Venerable Kiribathgoda Gnanananda Thero. Although he was admitted to the University of Sri Jayewardenepura to pursue a Bachelor of Arts degree, a different aspiration arose in his mind while studying the original Buddhist teachings in the Tipitaka. Setting his degree aside, he stepped away from university education and engaged in extensive meditation and Dhamma study in forest hermitages and regions across the Himalayas.
+
+After years of spiritual quest, on August 14, 1999, the foundation stone for the Mahamevnawa Buddhist Monastery was laid on a small piece of land in Wadanawa, Polgahawela.
+
+The primary insight he gained was that ordinary people found it difficult to understand the Dhamma preserved in the complex Pali language. Accordingly, the Sutta Pitaka, Dhammapada, and major Paritta texts were translated into simple, accessible Sinhala. Along with this, a cultural practice of greeting one another with "Namo Buddhaya" was reintroduced into society.
+
+Over time, this small hermitage evolved into a massive monastic network. Registered under the Amarapura Sri Kalyaniwansa Nikaya of the Sri Lanka Amarapura Maha Nikaya, the institution expanded to over 80 monasteries across Sri Lanka and more than 45 overseas branches in countries including the United States, the United Kingdom, Australia, Canada, and Germany. Nearly 1,000 monks and a large number of Dasa Sil Mathas dedicated themselves to the Sambuddha Sasana within the monasteries. The spread of the Dhamma accelerated globally with the establishment of "Shraddha TV" and "Shraddha Radio" in 2012.
+
+However, alongside this rapid transformation, various discussions and debate arose within society and among traditional Buddhist clergy.
+
+While many acknowledged that translating the Tipitaka into plain language was a tremendous catalyst for bringing laypeople closer to the Dhamma, some traditional scholar-monks expressed concern that certain profound concepts found in the Pali commentaries (Atthakatha) lost their original meaning during the simplification process. Additionally, practices differing from traditional temple culture, along with training monks within the monasteries rather than through traditional monastic colleges (Pirivenas), became subjects of public discourse.
+
+Nevertheless, by leveraging modern technology, plain language, and an organized structural framework, the Mahamevnawa Buddhist Monastery has undeniably etched its place in history as an institution that sparked one of the largest Buddhist revivals of the 21st century.
+EOD
+            ,
+            'history_audio' => '/audio/mahamevnawa_history.mp3',
+            'blueprint_text' => 'The monastery features serene meditation halls and residential quarters harmonizing with the natural surroundings.',
+            'blueprint_image' => null,
+            'gallery' => []
+        ],
     ];
 
-    $spotInfo = isset($spotsData[$id]) ? $spotsData[$id] : $spotsData['jaya-sri'];
+    $request = request();
+    
+    if (isset($spotsData[$id])) {
+        $spotInfo = $spotsData[$id];
+    } else {
+        $spotInfo = [
+            'name' => $request->query('name', $spotsData['jaya-sri']['name']),
+            'image' => $request->query('image', $spotsData['jaya-sri']['image']),
+            'topic' => $request->query('topic', $spotsData['jaya-sri']['topic']),
+            'history_narrative' => 'Detailed historical narrative is currently not available for this specific location. Please check back later.',
+            'blueprint_text' => 'Architectural details and blueprint information are currently not available.',
+            'blueprint_image' => null,
+            'lat' => null,
+            'lng' => null,
+        ];
+    }
 
     $mockSpot = [
         'id' => $id,
@@ -1083,6 +1127,7 @@ EOD
         'image' => $spotInfo['image'],
         'topic' => $spotInfo['topic'],
         'history_narrative' => $spotInfo['history_narrative'],
+        'history_audio' => $spotInfo['history_audio'] ?? null,
         'blueprint_text' => $spotInfo['blueprint_text'],
         'blueprint_image' => $spotInfo['blueprint_image'],
         'lat' => $spotInfo['lat'] ?? null,
