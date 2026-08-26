@@ -308,9 +308,10 @@ Route::get('/places/{id}/history', function ($id) {
     $spotsData = [
         'jaya-sri' => [
             'name' => 'Jaya Sri Maha Bodhi',
-                        'lat' => 8.3447,
+            'category' => 'Sacred Sites',
+            'lat' => 8.3447,
             'lng' => 80.3970,
-'image' => '/images/jaya_sri_maha_bodhi.png',
+            'image' => '/images/jaya_sri_maha_bodhi.png',
             'topic' => 'The oldest historically documented tree in the world, serving as the living heartbeat of Sri Lankan Buddhism.',
             'history_narrative' => <<<'EOD'
 Chapter 1: The Great Act of Truth by Emperor Ashoka of Jambudvipa
@@ -998,6 +999,7 @@ EOD
         ],
         'mihintale' => [
             'name' => 'Mihintale',
+            'category' => 'Sacred Sites',
                         'lat' => 8.3514,
             'lng' => 80.5167,
 'image' => '/images/mihintale_peak.png',
@@ -1075,8 +1077,9 @@ EOD
         ],
         'mahamevnawa-anuradhapura' => [
             'name' => 'Mahamevnawa Meditation Centre',
-            'lat' => null,
-            'lng' => null,
+            'category' => 'Spiritual Experiences & Wellness',
+            'lat' => 8.3622,
+            'lng' => 80.3736,
             'image' => '/images/mahamevnawa_meditation_1779804848418.png',
             'topic' => 'A serene monastery offering guided meditation and Dhamma teachings in English and Sinhala, ideal for seekers looking to learn traditional Theravada practices.',
             'history_narrative' => <<<'EOD'
@@ -1116,6 +1119,7 @@ EOD
     } else {
         $spotInfo = [
             'name' => $request->query('name', $spotsData['jaya-sri']['name']),
+            'category' => $request->query('category', 'Sacred Sites'),
             'image' => $request->query('image', $spotsData['jaya-sri']['image']),
             'topic' => $request->query('topic', $spotsData['jaya-sri']['topic']),
             'history_narrative' => 'Detailed historical narrative is currently not available for this specific location. Please check back later.',
@@ -1129,6 +1133,7 @@ EOD
     $mockSpot = [
         'id' => $id,
         'name' => $spotInfo['name'],
+        'category' => $spotInfo['category'] ?? $request->query('category', 'Sacred Sites'),
         'image' => $spotInfo['image'],
         'topic' => $spotInfo['topic'],
         'history_narrative' => $spotInfo['history_narrative'],

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -46,6 +46,7 @@ function MapController({ spotLocation, userLocation, searchedLocation }) {
 export default function InteractiveMap({ spot, searchedLocation }) {
   const [userLocation, setUserLocation] = useState(null);
   const [error, setError] = useState(null);
+  const [routePolyline, setRoutePolyline] = useState([]);
 
   const spotLocation = spot && spot.lat && spot.lng ? [spot.lat, spot.lng] : null;
 
@@ -75,6 +76,27 @@ export default function InteractiveMap({ spot, searchedLocation }) {
     };
   }, []);
 
+  // Fetch shortest route using OSRM when user and destination are available
+  useEffect(() => {
+    const destination = spotLocation || (searchedLocation ? [searchedLocation.lat, searchedLocation.lng] : null);
+    
+    if (userLocation && destination) {
+      // OSRM expects longitude,latitude
+      const url = `https://router.project-osrm.org/route/v1/driving/${userLocation[1]},${userLocation[0]};${destination[1]},${destination[0]}?overview=full&geometries=geojson`;
+      
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data.routes && data.routes.length > 0) {
+            // OSRM geojson returns coordinates as [longitude, latitude], leaflet needs [latitude, longitude]
+            const coords = data.routes[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
+            setRoutePolyline(coords);
+          }
+        })
+        .catch(err => console.error("Routing error:", err));
+    }
+  }, [userLocation, spotLocation, searchedLocation]);
+
   if (!spotLocation && !searchedLocation && !userLocation) {
     return (
       <div className="w-full h-full bg-slate-200 flex items-center justify-center text-slate-500">
@@ -102,6 +124,11 @@ export default function InteractiveMap({ spot, searchedLocation }) {
         />
         
         <MapController spotLocation={spotLocation} userLocation={userLocation} searchedLocation={searchedLocation} />
+
+        {/* Route Polyline */}
+        {routePolyline.length > 0 && (
+          <Polyline positions={routePolyline} color="#0c6b65" weight={5} opacity={0.7} dashArray="10, 10" />
+        )}
 
         {/* Spot Marker */}
         {spotLocation && (

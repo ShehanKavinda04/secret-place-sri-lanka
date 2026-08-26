@@ -109,8 +109,27 @@ export default function History({ auth, spot }) {
         }
     };
 
+    const category = spot?.category || 'Sacred Sites';
+    let historyLabel = 'History of the Sacred Site'; // Default fallback
+    
+    if (category === 'Spiritual Experiences & Wellness') {
+        historyLabel = 'History of the Sacred Site'; 
+    } else if (category === 'Nature & Wildlife') {
+        historyLabel = 'About the Nature Reserve';
+    } else if (category === 'Historical Ruins' || category === 'Heritage') {
+        historyLabel = 'History of the Ruins';
+    } else if (category === 'Hydraulic') {
+        historyLabel = 'History of the Hydraulic Site';
+    } else if (category === 'Rituals') {
+        historyLabel = 'About the Rituals';
+    } else if (category === 'Sacred Sites') {
+        historyLabel = 'History of the Sacred Site';
+    } else {
+        historyLabel = `About the ${category}`;
+    }
+
     const sidebarItems = [
-        { id: 'history', label: 'History of the Sacred Site', icon: 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' },
+        { id: 'history', label: historyLabel, icon: 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' },
         { id: 'gallery', label: 'Gallery / Photos', icon: 'M2.25 15.75l5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z' },
         { id: 'location', label: 'Location & Map Information', icon: 'M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z' },
     ];
