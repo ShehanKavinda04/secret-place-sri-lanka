@@ -1256,3 +1256,27 @@ Route::post('/api/experience-location/{experience_key}/simulate-update', functio
     broadcast(new \App\Events\ExperienceLocationUpdated($location));
     return response()->json(['message' => 'Location updated and broadcasted successfully', 'location' => $location]);
 });
+
+Route::post('/api/retreat-booking', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email',
+        'phone' => 'required|string',
+        'language' => 'required|string',
+        'attendance' => 'required|integer|min:1',
+        'agreement' => 'accepted',
+        'date' => 'required|string',
+        'slot' => 'required|string',
+    ]);
+
+    // Mock backend logic to "save" the booking and generate a reference number
+    $referenceId = 'RETREAT-' . strtoupper(substr(uniqid(), -6));
+    
+    // In a real app, this would send an email/SMS and store in DB.
+    
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Your meditation retreat has been booked successfully.',
+        'reference' => $referenceId,
+    ]);
+});
