@@ -15,7 +15,11 @@ export default function PageLoader() {
         let timeout;
         let startTimeout;
 
-        const handleStart = () => {
+        const handleStart = (event) => {
+            if (event.detail.visit.showProgress === false) {
+                return;
+            }
+
             // Delay loader appearance slightly so fast/prefetched pages don't cause a flash
             startTimeout = setTimeout(() => {
                 setLoading(true);

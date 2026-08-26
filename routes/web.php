@@ -1100,7 +1100,12 @@ EOD
             'history_audio' => '/audio/mahamevnawa_history.mp3',
             'blueprint_text' => 'The monastery features serene meditation halls and residential quarters harmonizing with the natural surroundings.',
             'blueprint_image' => null,
-            'gallery' => []
+            'gallery' => [
+                '/images/mahamevnawa_gallery_1.jpg',
+                '/images/mahamevnawa_gallery_2.jpg',
+                '/images/mahamevnawa_gallery_3.jpg',
+                '/images/mahamevnawa_gallery_4.jpg',
+            ]
         ],
     ];
 

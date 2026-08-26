@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { motion } from 'framer-motion';
@@ -12,6 +12,24 @@ export default function History({ auth, spot }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchedLocation, setSearchedLocation] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
+
+    // Auto-refresh spot data for real-time updates when on the location tab
+    useEffect(() => {
+        let interval;
+        if (activeTab === 'location') {
+            interval = setInterval(() => {
+                router.reload({
+                    only: ['spot'],
+                    preserveState: true,
+                    preserveScroll: true,
+                    showProgress: false,
+                });
+            }, 3000);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [activeTab]);
 
     const handleSearch = async (e) => {
         if (e.key === 'Enter' && searchQuery.trim()) {

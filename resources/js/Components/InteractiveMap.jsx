@@ -21,14 +21,12 @@ const userIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-// Component to handle dynamic map bounds and tracking
 function MapController({ spotLocation, userLocation, searchedLocation }) {
   const map = useMap();
 
   useEffect(() => {
-    if (!spotLocation) return;
-    
-    const locations = [spotLocation];
+    const locations = [];
+    if (spotLocation) locations.push(spotLocation);
     if (userLocation) locations.push(userLocation);
     if (searchedLocation) locations.push([searchedLocation.lat, searchedLocation.lng]);
     
@@ -36,9 +34,9 @@ function MapController({ spotLocation, userLocation, searchedLocation }) {
       // Create bounds containing all available locations
       const bounds = L.latLngBounds(locations);
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
-    } else {
-      // Just fly to the spot
-      map.flyTo(spotLocation, 16);
+    } else if (locations.length === 1) {
+      // Just fly to the available location
+      map.flyTo(locations[0], 16);
     }
   }, [spotLocation, userLocation, searchedLocation, map]);
 
@@ -77,7 +75,7 @@ export default function InteractiveMap({ spot, searchedLocation }) {
     };
   }, []);
 
-  if (!spotLocation) {
+  if (!spotLocation && !searchedLocation && !userLocation) {
     return (
       <div className="w-full h-full bg-slate-200 flex items-center justify-center text-slate-500">
         Coordinates not available for {spot?.name || 'this location'}.
@@ -93,7 +91,7 @@ export default function InteractiveMap({ spot, searchedLocation }) {
         </div>
       )}
       <MapContainer 
-        center={spotLocation} 
+        center={spotLocation || searchedLocation || userLocation || [7.8731, 80.7718]} 
         zoom={16} 
         scrollWheelZoom={true} 
         style={{ height: '100%', width: '100%', zIndex: 1 }}
@@ -106,12 +104,14 @@ export default function InteractiveMap({ spot, searchedLocation }) {
         <MapController spotLocation={spotLocation} userLocation={userLocation} searchedLocation={searchedLocation} />
 
         {/* Spot Marker */}
-        <Marker position={spotLocation}>
-          <Popup>
-            <div className="font-bold">{spot.name}</div>
-            <div className="text-xs text-slate-500">Sacred Site</div>
-          </Popup>
-        </Marker>
+        {spotLocation && (
+          <Marker position={spotLocation}>
+            <Popup>
+              <div className="font-bold">{spot.name}</div>
+              <div className="text-xs text-slate-500">Sacred Site</div>
+            </Popup>
+          </Marker>
+        )}
 
         {/* User Location Marker */}
         {userLocation && (
