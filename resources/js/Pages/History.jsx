@@ -367,9 +367,15 @@ export default function History({ auth, spot }) {
 
                                         {/* Booking Section */}
                                         <div className="bg-white border border-slate-200 shadow-sm p-6 rounded-xl mt-8" id="booking-section">
-                                            <h2 className="text-xl font-bold text-royalMaroon-900 mb-2">Join a Meditation Session / Book a Retreat at {spot?.name}</h2>
+                                            <h2 className="text-xl font-bold text-royalMaroon-900 mb-2">
+                                                {spot?.id === 'rajarata-ayurveda' 
+                                                    ? `Book an Ayurvedic Consultation / Treatment at ${spot?.name}`
+                                                    : `Join a Meditation Session / Book a Retreat at ${spot?.name}`}
+                                            </h2>
                                             <p className="text-slate-600 text-sm mb-6 max-w-2xl">
-                                                Select a preferred date and time slot to register for our guided meditation programs or a longer retreat at this serene center.
+                                                {spot?.id === 'rajarata-ayurveda'
+                                                    ? `Select a preferred date and time slot to register for your wellness therapies and healing sessions at this serene center.`
+                                                    : `Select a preferred date and time slot to register for our guided meditation programs or a longer retreat at this serene center.`}
                                             </p>
 
                                             <div className="space-y-6">
@@ -410,7 +416,10 @@ export default function History({ auth, spot }) {
                                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                                                         <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide mb-3">Select a Session</h3>
                                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                                            {['Morning Session (6 AM - 10 AM)', 'Afternoon Session (2 PM - 6 PM)', 'Full Day Retreat'].map((slot) => (
+                                                            {(spot?.id === 'rajarata-ayurveda' 
+                                                                ? ['Morning Consultation (8 AM - 12 PM)', 'Afternoon Treatment (2 PM - 6 PM)', 'Full Day Wellness Program']
+                                                                : ['Morning Session (6 AM - 10 AM)', 'Afternoon Session (2 PM - 6 PM)', 'Full Day Retreat']
+                                                            ).map((slot) => (
                                                                 <button
                                                                     key={slot}
                                                                     onClick={() => setSelectedSlot(slot)}

@@ -1162,6 +1162,12 @@ EOD
             'history_audio' => '/audio/rajarata_ayurveda_history.mp3',
             'blueprint_text' => 'Architectural details and blueprint information are currently not available.',
             'blueprint_image' => null,
+            'gallery' => [
+                '/images/rajarata_gallery_1.jpg',
+                '/images/rajarata_gallery_2.jpg',
+                '/images/rajarata_gallery_3.jpg',
+                '/images/rajarata_gallery_4.jpg',
+            ]
         ],
     ];
 
