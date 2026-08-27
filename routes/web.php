@@ -1169,6 +1169,36 @@ EOD
                 '/images/rajarata_gallery_4.jpg',
             ]
         ],
+        'isinbessagala-hermitage' => [
+            'id' => 'isinbessagala-hermitage',
+            'name' => 'Isinbessagala Meditation Hermitage',
+            'category' => 'Spiritual Experiences & Wellness',
+            'lat' => 8.4485,
+            'lng' => 80.4984,
+            'image' => '/images/isinbessagala_hermitage_1779804909550.png',
+            'topic' => 'A serene and historic meditation hermitage perched on a rocky outcrop, offering panoramic views and spiritual tranquility.',
+            'history_narrative' => <<<'EOD'
+The Story of Isinbassagala Meditation Hermitage: From Past to Present
+
+Near the northern boundary of the ancient Anuradhapura Kingdom, close to the present-day town of Medawachchiya, lies a massive rocky complex that was known in ancient times as a sacred ground visited by Arhats endowed with psychic powers. Named "Isinbassagala"—meaning "the rock where sages descended"—this hill became one of the earliest forest hermitages to receive the light of Buddhism following the arrival of Arahat Mahinda in Sri Lanka in the 3rd century BCE. Historical inscriptions indicate that King Devanampiyatissa dedicated this sacred land to the Buddhist Order (Sasana) for the meditative lives of monks.
+
+Situated along the main ancient route connecting Anuradhapura to the northern region (Uttara Desha or Nagadipa), the site received generous patronage from local leaders and the Naga tribes who governed the region at the time. Sacred footprints carved in stone (Siripatul gal) dating back to the pre-image era of Buddhist art, Nagaraja carvings, drip-ledged caves inscribed with Brahmi script, ancient stone pillars, and stupa foundations all bear witness to the glorious religious renaissance that once flourished here.
+
+However, as the capital shifted toward the southwest, this sacred rock lay forgotten for centuries, overgrown by dense jungle. Ending that dark era in the mid-20th century, the Most Venerable Kudappane Chandrajothi Nayaka Thero and fellow monks rediscovered this sacred land and initiated its restoration. Through their relentless determination, the long-abandoned caves and ancient ruins re-emerged, igniting a fresh wave of religious devotion.
+
+Today, the gleaming white stupa and Samadhi Buddha statue standing atop the summit of Isinbassagala bring immense pride to the entire Medawachchiya area. Offering a breathtaking 360-degree panoramic view of the Rajarata plains and tank system, this picturesque rock continues to provide sanctuary to meditating monks while standing as a living historical heritage that safeguards the spiritual well-being of devotees both local and foreign.
+EOD
+            ,
+            'history_audio' => '/audio/isinbessagala_history.mp3',
+            'blueprint_text' => 'Architectural details and blueprint information are currently not available.',
+            'blueprint_image' => null,
+            'gallery' => [
+                '/images/isinbessagala_gallery_1.jpg',
+                '/images/isinbessagala_gallery_2.jpg',
+                '/images/isinbessagala_gallery_3.jpg',
+                '/images/isinbessagala_gallery_4.jpg',
+            ]
+        ],
     ];
 
     $request = request();
