@@ -256,7 +256,7 @@ export default function History({ auth, spot }) {
                                     {/* Topics & Details */}
                                     <div className="space-y-8 text-slate-700">
 
-                                        <div>
+                                        <div className="bg-white border border-slate-200 shadow-sm p-6 rounded-xl">
                                             <h2 className="text-xl font-bold text-royalMaroon-900 mb-4">Historical Narrative (Sub Topic 1)</h2>
                                             <div className="prose prose-slate max-w-none text-sm leading-relaxed mb-6">
                                                 {(() => {
@@ -314,7 +314,7 @@ export default function History({ auth, spot }) {
                                                 })()}
                                             </div>
                                             
-                                            <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-xl flex items-center gap-4">
+                                            <div className="pt-4 border-t border-slate-100 flex items-center gap-4">
                                                 <div className="w-10 h-10 rounded-full bg-royalGold-100 flex items-center justify-center shrink-0">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-royalGold-700 ml-1">
                                                         <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
@@ -326,40 +326,44 @@ export default function History({ auth, spot }) {
                                             </div>
                                         </div>
 
-                                        <div className="h-px w-full bg-slate-200"></div>
+                                        {category !== 'Spiritual Experiences & Wellness' && (
+                                            <>
+                                                <div className="h-px w-full bg-slate-200"></div>
 
-                                        <div>
-                                            <h2 className="text-xl font-bold text-royalMaroon-900 mb-4">Blueprint / Architectural Layout (Sub Topic 2)</h2>
-                                            
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
-                                                <div className="bg-slate-100 aspect-square border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                                                    {spot.blueprint_image ? (
-                                                        <img 
-                                                            src={spot.blueprint_image} 
-                                                            alt="Architectural Blueprint" 
-                                                            className="w-full h-full object-cover"
-                                                            onError={(e) => { e.target.src = 'https://placehold.co/600x600/e2e8f0/64748b?text=Blueprint+Image' }}
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">Blueprint Placeholder</div>
-                                                    )}
-                                                </div>
-                                                <div className="prose prose-slate max-w-none text-sm leading-relaxed">
-                                                    <p>{spot.blueprint_text}</p>
-                                                </div>
-                                            </div>
+                                                <div>
+                                                    <h2 className="text-xl font-bold text-royalMaroon-900 mb-4">Blueprint / Architectural Layout (Sub Topic 2)</h2>
+                                                    
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                                                        <div className="bg-slate-100 aspect-square border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                                            {spot.blueprint_image ? (
+                                                                <img 
+                                                                    src={spot.blueprint_image} 
+                                                                    alt="Architectural Blueprint" 
+                                                                    className="w-full h-full object-cover"
+                                                                    onError={(e) => { e.target.src = 'https://placehold.co/600x600/e2e8f0/64748b?text=Blueprint+Image' }}
+                                                                />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">Blueprint Placeholder</div>
+                                                            )}
+                                                        </div>
+                                                        <div className="prose prose-slate max-w-none text-sm leading-relaxed">
+                                                            <p>{spot.blueprint_text}</p>
+                                                        </div>
+                                                    </div>
 
-                                            <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-xl flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-full bg-royalGold-100 flex items-center justify-center shrink-0">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-royalGold-700 ml-1">
-                                                        <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
-                                                    </svg>
+                                                    <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-xl flex items-center gap-4">
+                                                        <div className="w-10 h-10 rounded-full bg-royalGold-100 flex items-center justify-center shrink-0">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-royalGold-700 ml-1">
+                                                                <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
+                                                            </svg>
+                                                        </div>
+                                                        <audio controls className="w-full h-10 outline-none">
+                                                            <source src={spot.blueprint_audio || "#"} type="audio/mpeg" />
+                                                        </audio>
+                                                    </div>
                                                 </div>
-                                                <audio controls className="w-full h-10 outline-none">
-                                                    <source src={spot.blueprint_audio || "#"} type="audio/mpeg" />
-                                                </audio>
-                                            </div>
-                                        </div>
+                                            </>
+                                        )}
 
                                         {/* Booking Section */}
                                         <div className="pt-8 border-t border-slate-200 mt-8" id="booking-section">

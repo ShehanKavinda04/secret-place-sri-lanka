@@ -173,7 +173,7 @@ export default function Spiritual({ auth, laravelVersion, phpVersion }) {
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {retreatCenters.map(spot => (
-                                <SpotCard key={spot.id} spot={spot} />
+                                <SpotCard key={spot.id} spot={{...spot, category: 'Spiritual Experiences & Wellness'}} />
                             ))}
                         </div>
                     </section>
@@ -189,7 +189,7 @@ export default function Spiritual({ auth, laravelVersion, phpVersion }) {
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {wellnessSites.map(spot => (
-                                <SpotCard key={spot.id} spot={spot} />
+                                <SpotCard key={spot.id} spot={{...spot, category: 'Spiritual Experiences & Wellness'}} />
                             ))}
                         </div>
                     </section>

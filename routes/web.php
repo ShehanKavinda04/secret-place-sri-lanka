@@ -1110,6 +1110,29 @@ EOD
                 '/images/mahamevnawa_gallery_4.jpg',
             ]
         ],
+        'sri-subodharama' => [
+            'name' => 'Subodharama Buddhist Centre',
+            'category' => 'Spiritual Experiences & Wellness',
+            'lat' => 7.2647,
+            'lng' => 80.5971,
+            'image' => '/images/subodharama_centre_1779804944450.png',
+            'topic' => 'A welcoming meditation center close to the sacred city, providing comfortable facilities and expert guidance for beginners exploring mindfulness and breath meditation.',
+            'history_narrative' => <<<'EOD'
+The Story of Peradeniya Sri Subodharama International Buddhist Centre: From Past to Present
+
+Near the Kandy-Colombo main road, close to the University of Peradeniya campus and the scenic Botanical Gardens, the serene environment of Keeriweldeniya served as the fertile ground for laying the foundation of a historic Sasana mission. This is none other than the Peradeniya Puranapraptha Sri Subodharama International Buddhist Centre, a highly sacred and prominent religious center belonging to the Sri Lanka Ramanya Maha Nikaya.
+
+The foundational roots of this center were established through the unwavering courage and dedication to the Sasana of the Most Venerable Wataddara Sri Medhankara Nayaka Thero. His vision was to create an international center that could share the timeless message of the Buddha's teachings not only with local devotees but with the entire world. Accordingly, under the guidance of venerable monks who held the position of Chief Sanghanayaka of the Central Province of the Ramanya Maha Nikaya, this monastery became the primary spiritual hub of the region.
+
+Over time, Subodharama did not remain confined to being just a local temple. It spread its wings as an international Dhamma propagation center by providing residential facilities for local and foreign practitioners, offering them the opportunity to practice the Buddha Dhamma and meditation in the English medium. Likewise, several educational institutions, including the Subodharama Dhamma School, were established to nurture the wisdom of novice monks in the area and foster moral values among children. In addition to its religious mission, the center has rendered immense community service through free medical clinics and social welfare programs.
+
+Today, this noble religious mission continues forward under the leadership of Venerable Wataddara Nandarathana Nayaka Thero and the resident Mahasangha. Comprising a magnificent Shrine Room, a tranquil Relic Chamber, a Bodhi Wall, and meditation halls, the Subodharama premises stand to this day as a living symbol of the Kandyan Buddhist renaissance, open for the spiritual well-being of devotees both local and foreign.
+EOD
+            ,
+            'history_audio' => '/audio/subodharama_history.mp3',
+            'blueprint_text' => 'Architectural details and blueprint information are currently not available.',
+            'blueprint_image' => null,
+        ],
     ];
 
     $request = request();
