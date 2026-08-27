@@ -1259,6 +1259,39 @@ EOD
                 '/images/kaludiya_gallery_4.jpg',
             ]
         ],
+        'nuwara-wewa-yoga' => [
+            'name' => 'Nuwara Wewa Lakeside Yoga & Wellness Experience',
+            'category' => 'Spiritual Experience',
+            'image' => '/images/nuwara_wewa_gallery_1.jpg',
+            'topic' => 'From Ancient Heritage to Modern Spiritual Well-being',
+            'history_narrative' => "Spanning across thousands of acres along the eastern boundary of the sacred city of Anuradhapura, the giant Nuwara Wewa is not merely another marvel of ancient irrigation technology. Believed to have been constructed by King Vattagamani Abhaya (Walagamba) in the 1st century BCE, this historical reservoir has sustained the paddy fields of the Rajarata region while bestowing an unwavering sense of tranquility upon the entire city since antiquity.\n\nNurtured for centuries under the shadow of the Ruwanwelisaya and the sacred breezes blowing from the Jaya Sri Maha Bodhi, this lakeside became a captivating retreat for local and foreign travelers in the modern era who deeply seek nature and spiritual serenity. Although not an ancient religious shrine, the \"Lakeside Yoga & Mindfulness\" experience was born out of this pure natural calm, taking advantage of the quiet environment surrounded by the cool foliage of the Nuwara Wewa bank.\n\nWhether as the morning sunbeams fall upon the water surface of Nuwara Wewa or as the sun sets against the backdrop of the quiet forest in the evening, the minds of wellness seekers resting on the lakeside are enveloped in a deep spiritual focus. Through breathing exercises, yoga postures (asanas), and meditation techniques practiced amidst the cool breeze blowing off Nuwara Wewa, weary minds and bodies worn out by the noisy modern world find unmatched rejuvenation.\n\nThough this experience is neither an ancient archaeological ruin nor a temple, it continues to shine on the banks of Nuwara Wewa as a beautiful, living spiritual bridge connecting the historic soil of the Anuradhapura Kingdom, the gentle ripples of the lake, and modern healthy wellness practices.",
+            'history_audio' => '/audio/nuwara_wewa_history.mp3',
+            'blueprint_text' => 'Natural landscape layout and lakeside environment.',
+            'blueprint_image' => null,
+            'lat' => 8.3370,
+            'lng' => 80.4200,
+            'gallery' => [
+                '/images/nuwara_wewa_gallery_1.jpg',
+                '/images/nuwara_wewa_gallery_2.jpg',
+                '/images/nuwara_wewa_gallery_3.jpg',
+                '/images/nuwara_wewa_gallery_4.jpg'
+            ]
+        ],
+        'ranmasu-uyana' => [
+            'name' => 'Ranmasu Uyana Mindfulness Walk',
+            'category' => 'Spiritual Experience',
+            'image' => '/images/ranmasu_uyana.png',
+            'topic' => 'An Ancient Royal Garden of Tranquility',
+            'history_narrative' => "Ranmasu Uyana, also known as the Royal Goldfish Park, is an ancient pleasure garden located in the sacred city of Anuradhapura. Spanning approximately 40 acres, this beautifully designed park dates back to the 3rd century BCE, during the reign of King Tissa. It served as a serene retreat for the royals, masterfully integrating nature, water management, and stunning rock carvings.\n\nThe garden features intricate bathing pavilions built among massive boulders, fed by the waters of the Tissa Wewa reservoir. However, what truly captivates visitors today is the mysterious Sakwala Chakraya, often referred to as the 'Stargate'. Carved into a rock face, this enigmatic circular diagram is believed by some to be an ancient map of the universe, or perhaps a meditation tool used by monks in later centuries.\n\nWalking through Ranmasu Uyana today, one can almost hear the echoes of royal laughter and feel the deep, contemplative silence that later settled over the ruins. The park stands as a testament to the advanced hydraulic engineering, artistic brilliance, and the seamless blend of luxury and spirituality in ancient Sri Lanka.",
+            'history_audio' => '/audio/ranmasu_uyana_history.mp3',
+            'blueprint_text' => 'Ancient hydraulic and garden layout',
+            'blueprint_image' => null,
+            'lat' => 8.3414,
+            'lng' => 80.3951,
+            'gallery' => [
+                '/images/ranmasu_uyana.png'
+            ]
+        ],
     ];
 
     $request = request();

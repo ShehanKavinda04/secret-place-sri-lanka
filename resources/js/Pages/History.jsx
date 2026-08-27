@@ -314,19 +314,21 @@ export default function History({ auth, spot }) {
                                                 })()}
                                             </div>
                                             
-                                            <div className="pt-4 border-t border-slate-100 flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-full bg-royalGold-100 flex items-center justify-center shrink-0">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-royalGold-700 ml-1">
-                                                        <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
-                                                    </svg>
+                                            {spot.history_audio && (
+                                                <div className="pt-4 border-t border-slate-100 flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-full bg-royalGold-100 flex items-center justify-center shrink-0">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-royalGold-700 ml-1">
+                                                            <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <audio key={spot.history_audio} controls className="w-full h-10 outline-none">
+                                                        <source src={spot.history_audio} type="audio/mpeg" />
+                                                    </audio>
                                                 </div>
-                                                <audio key={spot.history_audio} controls className="w-full h-10 outline-none">
-                                                    <source src={spot.history_audio || "#"} type="audio/mpeg" />
-                                                </audio>
-                                            </div>
+                                            )}
                                         </div>
 
-                                        {category !== 'Spiritual Experiences & Wellness' && (
+                                        {!category?.includes('Spiritual') && (
                                             <>
                                                 <div className="h-px w-full bg-slate-200"></div>
 
@@ -351,16 +353,18 @@ export default function History({ auth, spot }) {
                                                         </div>
                                                     </div>
 
-                                                    <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-xl flex items-center gap-4">
-                                                        <div className="w-10 h-10 rounded-full bg-royalGold-100 flex items-center justify-center shrink-0">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-royalGold-700 ml-1">
-                                                                <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
-                                                            </svg>
+                                                    {spot.blueprint_audio && (
+                                                        <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-xl flex items-center gap-4 mt-6">
+                                                            <div className="w-10 h-10 rounded-full bg-royalGold-100 flex items-center justify-center shrink-0">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-royalGold-700 ml-1">
+                                                                    <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
+                                                                </svg>
+                                                            </div>
+                                                            <audio controls className="w-full h-10 outline-none">
+                                                                <source src={spot.blueprint_audio} type="audio/mpeg" />
+                                                            </audio>
                                                         </div>
-                                                        <audio controls className="w-full h-10 outline-none">
-                                                            <source src={spot.blueprint_audio || "#"} type="audio/mpeg" />
-                                                        </audio>
-                                                    </div>
+                                                    )}
                                                 </div>
                                             </>
                                         )}
@@ -370,11 +374,15 @@ export default function History({ auth, spot }) {
                                             <h2 className="text-xl font-bold text-royalMaroon-900 mb-2">
                                                 {spot?.id === 'rajarata-ayurveda' 
                                                     ? `Book an Ayurvedic Consultation / Treatment at ${spot?.name}`
+                                                    : spot?.id === 'nuwara-wewa-yoga'
+                                                    ? `Join a Lakeside Yoga Session / Book a Wellness Retreat at ${spot?.name}`
                                                     : `Join a Meditation Session / Book a Retreat at ${spot?.name}`}
                                             </h2>
                                             <p className="text-slate-600 text-sm mb-6 max-w-2xl">
                                                 {spot?.id === 'rajarata-ayurveda'
                                                     ? `Select a preferred date and time slot to register for your wellness therapies and healing sessions at this serene center.`
+                                                    : spot?.id === 'nuwara-wewa-yoga'
+                                                    ? `Select a preferred date and time slot to register for our guided lakeside yoga programs or a longer wellness retreat.`
                                                     : `Select a preferred date and time slot to register for our guided meditation programs or a longer retreat at this serene center.`}
                                             </p>
 
@@ -418,6 +426,8 @@ export default function History({ auth, spot }) {
                                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                             {(spot?.id === 'rajarata-ayurveda' 
                                                                 ? ['Morning Consultation (8 AM - 12 PM)', 'Afternoon Treatment (2 PM - 6 PM)', 'Full Day Wellness Program']
+                                                                : spot?.id === 'nuwara-wewa-yoga'
+                                                                ? ['Morning Sunrise Yoga (6 AM - 8 AM)', 'Evening Sunset Yoga (4 PM - 6 PM)', 'Full Day Wellness Retreat']
                                                                 : ['Morning Session (6 AM - 10 AM)', 'Afternoon Session (2 PM - 6 PM)', 'Full Day Retreat']
                                                             ).map((slot) => (
                                                                 <button
@@ -529,8 +539,16 @@ export default function History({ auth, spot }) {
                 <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] p-4 flex justify-center pb-8 lg:pb-4">
                     <div className="max-w-6xl w-full flex flex-col sm:flex-row items-center justify-between gap-4 px-4">
                         <div className="text-sm">
-                            <span className="font-bold text-royalMaroon-900 block sm:inline">Seeking Inner Peace?</span>
-                            <span className="text-slate-600 sm:ml-2">Join a guided meditation session or book a retreat today.</span>
+                            <span className="font-bold text-royalMaroon-900 block sm:inline">
+                                {spot?.id === 'rajarata-ayurveda' ? 'Seeking Natural Healing?' : spot?.id === 'nuwara-wewa-yoga' ? 'Seeking Wellness & Calm?' : 'Seeking Inner Peace?'}
+                            </span>
+                            <span className="text-slate-600 sm:ml-2">
+                                {spot?.id === 'rajarata-ayurveda' 
+                                    ? 'Book an Ayurvedic consultation or treatment today.' 
+                                    : spot?.id === 'nuwara-wewa-yoga'
+                                    ? 'Join a lakeside yoga session or book a wellness retreat today.'
+                                    : 'Join a guided meditation session or book a retreat today.'}
+                            </span>
                         </div>
                         <PrimaryButton 
                             onClick={() => {
@@ -541,7 +559,7 @@ export default function History({ auth, spot }) {
                             }}
                             className="w-full sm:w-auto px-6 py-3 bg-[#0f4a45] hover:bg-[#0c3935] border-none"
                         >
-                            Book a Retreat
+                            {spot?.id === 'rajarata-ayurveda' ? 'Book Treatment' : spot?.id === 'nuwara-wewa-yoga' ? 'Book Yoga Session' : 'Book a Retreat'}
                         </PrimaryButton>
                     </div>
                 </div>

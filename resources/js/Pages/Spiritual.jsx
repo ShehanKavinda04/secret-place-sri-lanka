@@ -73,12 +73,18 @@ const wellnessSites = [
     },
     {
         id: 'nuwara-wewa-yoga',
-        name: 'Nuwara Wewa Lakeside Yoga',
+        name: 'Nuwara Wewa Lakeside Yoga & Wellness Experience',
         location: 'Nuwara Wewa, Anuradhapura',
         rating: '4.8',
         reviews: '190',
         description: 'Gentle morning and sunset yoga sessions on the banks of the massive Nuwara Wewa reservoir, harmonizing breathwork with the cooling breeze of the ancient waters.',
-        image: '/images/ancient_hydraulic.png'
+        image: '/images/nuwara_wewa_gallery_1.jpg',
+        gallery: [
+            '/images/nuwara_wewa_gallery_1.jpg',
+            '/images/nuwara_wewa_gallery_2.jpg',
+            '/images/nuwara_wewa_gallery_3.jpg',
+            '/images/nuwara_wewa_gallery_4.jpg'
+        ]
     },
     {
         id: 'ranmasu-uyana',
