@@ -2,16 +2,13 @@ from gtts import gTTS
 import os
 
 narrative = """
-Ranmasu Uyana, also known as the Royal Goldfish Park, is an ancient pleasure garden located in the sacred city of Anuradhapura. 
-Spanning approximately 40 acres, this beautifully designed park dates back to the 3rd century BCE, during the reign of King Tissa. 
-It served as a serene retreat for the royals, masterfully integrating nature, water management, and stunning rock carvings.
+Located below the bund of Tissa Wewa in the sacred city of Anuradhapura, near the Isurumuniya Temple, Ranmasu Uyana is a unique royal garden where ancient Sri Lankan royal luxury and breathtaking water engineering seamlessly intertwined. Originating in the 3rd century BCE and magnificently developed during the 8th to 10th centuries CE (especially under the reign of King Sena IV/Mahinda IV), this sanctuary was reserved for the leisure and bathing of the kings and royal family members of Anuradhapura. Ancient slab inscriptions testify that the garden earned the name "Ranmasu Uyana" (Goldfish Park) due to the golden fish that swam in the waters flowing among its natural rocks and stone pavilions.
 
-The garden features intricate bathing pavilions built among massive boulders, fed by the waters of the Tissa Wewa reservoir. 
-However, what truly captivates visitors today is the mysterious Sakwala Chakraya, often referred to as the 'Stargate'. 
-Carved into a rock face, this enigmatic circular diagram is believed by some to be an ancient map of the universe, or perhaps a meditation tool used by monks in later centuries.
+The royal bathing ponds carved out of stone and the intricate water circulation system found here showcase the pride of ancient Sinhala engineering. Water flowing from Tissa Wewa first passed through the garden's bathing pools, stone channels, and artificial waterfalls before being directed to irrigate the royal paddy fields without any waste. Furthermore, it was within this sacred and picturesque land that Prince Saliya met Asokamala and shared their romance, and where the unique "Sakwala Chakraya" (Stargate / Starmap)—which still astounds the world today—is carved onto a rock face.
 
-Walking through Ranmasu Uyana today, one can almost hear the echoes of royal laughter and feel the deep, contemplative silence that later settled over the ruins. 
-The park stands as a testament to the advanced hydraulic engineering, artistic brilliance, and the seamless blend of luxury and spirituality in ancient Sri Lanka.
+Nurtured for centuries under the historical shadow of the Anuradhapura Kingdom, this royal garden became an attractive retreat for seekers of nature and spiritual peace in the modern era. Taking advantage of this serene environment filled with massive natural boulders, shade-giving trees, and ancient ruins, the modern "Ranmasu Uyana Mindfulness Walk" (Walking Meditation) experience was introduced.
+
+By walking slowly through this historical garden during the morning and evening, taking in the beauty of the natural woodland and the cool breeze, weary minds and bodies worn down by the noisy modern world receive an unparalleled spiritual refresh. Ranmasu Uyana stands today as a beautiful, living spiritual bridge connecting the historic royal pride of Anuradhapura with modern healthy mental wellness practices.
 """
 
 tts = gTTS(text=narrative, lang='en', slow=False)

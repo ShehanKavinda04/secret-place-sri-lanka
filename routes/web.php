@@ -1281,15 +1281,56 @@ EOD
             'name' => 'Ranmasu Uyana Mindfulness Walk',
             'category' => 'Spiritual Experience',
             'image' => '/images/ranmasu_uyana.png',
-            'topic' => 'An Ancient Royal Garden of Tranquility',
-            'history_narrative' => "Ranmasu Uyana, also known as the Royal Goldfish Park, is an ancient pleasure garden located in the sacred city of Anuradhapura. Spanning approximately 40 acres, this beautifully designed park dates back to the 3rd century BCE, during the reign of King Tissa. It served as a serene retreat for the royals, masterfully integrating nature, water management, and stunning rock carvings.\n\nThe garden features intricate bathing pavilions built among massive boulders, fed by the waters of the Tissa Wewa reservoir. However, what truly captivates visitors today is the mysterious Sakwala Chakraya, often referred to as the 'Stargate'. Carved into a rock face, this enigmatic circular diagram is believed by some to be an ancient map of the universe, or perhaps a meditation tool used by monks in later centuries.\n\nWalking through Ranmasu Uyana today, one can almost hear the echoes of royal laughter and feel the deep, contemplative silence that later settled over the ruins. The park stands as a testament to the advanced hydraulic engineering, artistic brilliance, and the seamless blend of luxury and spirituality in ancient Sri Lanka.",
+            'topic' => 'The Story of Anuradhapura Ranmasu Uyana and the Mindfulness Walk: From Ancient Royal Heritage to Modern Mental Well-being',
+            'history_narrative' => "Located below the bund of Tissa Wewa in the sacred city of Anuradhapura, near the Isurumuniya Temple, Ranmasu Uyana is a unique royal garden where ancient Sri Lankan royal luxury and breathtaking water engineering seamlessly intertwined. Originating in the 3rd century BCE and magnificently developed during the 8th to 10th centuries CE (especially under the reign of King Sena IV/Mahinda IV), this sanctuary was reserved for the leisure and bathing of the kings and royal family members of Anuradhapura. Ancient slab inscriptions testify that the garden earned the name \"Ranmasu Uyana\" (Goldfish Park) due to the golden fish that swam in the waters flowing among its natural rocks and stone pavilions.\n\nThe royal bathing ponds carved out of stone and the intricate water circulation system found here showcase the pride of ancient Sinhala engineering. Water flowing from Tissa Wewa first passed through the garden's bathing pools, stone channels, and artificial waterfalls before being directed to irrigate the royal paddy fields without any waste. Furthermore, it was within this sacred and picturesque land that Prince Saliya met Asokamala and shared their romance, and where the unique \"Sakwala Chakraya\" (Stargate / Starmap)—which still astounds the world today—is carved onto a rock face.\n\nNurtured for centuries under the historical shadow of the Anuradhapura Kingdom, this royal garden became an attractive retreat for seekers of nature and spiritual peace in the modern era. Taking advantage of this serene environment filled with massive natural boulders, shade-giving trees, and ancient ruins, the modern \"Ranmasu Uyana Mindfulness Walk\" (Walking Meditation) experience was introduced.\n\nBy walking slowly through this historical garden during the morning and evening, taking in the beauty of the natural woodland and the cool breeze, weary minds and bodies worn down by the noisy modern world receive an unparalleled spiritual refresh. Ranmasu Uyana stands today as a beautiful, living spiritual bridge connecting the historic royal pride of Anuradhapura with modern healthy mental wellness practices.",
             'history_audio' => '/audio/ranmasu_uyana_history.mp3',
             'blueprint_text' => 'Ancient hydraulic and garden layout',
             'blueprint_image' => null,
             'lat' => 8.3414,
             'lng' => 80.3951,
             'gallery' => [
+                '/images/ranmasu_uyana_gallery_1.jpg',
+                '/images/ranmasu_uyana_gallery_2.jpg',
+                '/images/ranmasu_uyana_gallery_3.jpg',
                 '/images/ranmasu_uyana.png'
+            ]
+        ],
+        'mihintale-sunrise' => [
+            'id' => 'mihintale-sunrise',
+            'name' => 'Mihintale Sunrise Meditation',
+            'category' => 'Spiritual Experience',
+            'image' => '/images/mihintale_peak.png',
+            'topic' => 'Mihintale Peak',
+            'history_narrative' => "Mihintale, a mountain peak near Anuradhapura, holds profound spiritual significance as the cradle of Buddhism in Sri Lanka. It was here in the 3rd century BCE that the Indian monk Mahinda, son of Emperor Ashoka, met King Devanampiyatissa and delivered the first Buddhist teachings on the island. Ascending the ancient granite stairway in the pre-dawn hours offers a deeply meditative experience, tracing the footsteps of countless pilgrims over millennia.\n\nAs the sun begins its ascent, casting golden hues over the vast plains and ancient stupas below, the morning chant of monks echoes through the misty air. The tranquil environment at the peak, particularly around the Ambasthala Dagoba where the historic meeting took place, naturally encourages a state of inner peace and mindfulness. The cool morning breeze and the panoramic views of the surrounding forests and reservoirs provide a perfect setting for reflection and meditation.\n\nThe Mihintale Sunrise Meditation experience is designed to align your mind with the awakening rhythms of nature. Guided by experienced practitioners, participants engage in mindfulness of breathing and loving-kindness meditation while overlooking the sacred city. This practice not only rejuvenates the spirit but also connects you deeply with the historical and spiritual heritage of Sri Lanka's oldest monastic city.",
+            'history_audio' => '/audio/mihintale_sunrise_history.mp3',
+            'blueprint_text' => null,
+            'blueprint_image' => null,
+            'lat' => 8.3512,
+            'lng' => 80.5173,
+            'gallery' => [
+                '/images/mihintale_sunrise_real_1.jpg',
+                '/images/mihintale_sunrise_real_2.jpg',
+                '/images/mihintale_sunrise_real_3.jpg',
+                '/images/mihintale_sunrise_real_4.jpg'
+            ]
+        ],
+        'ritigala-forest-bathing' => [
+            'id' => 'ritigala-forest-bathing',
+            'name' => 'Ritigala Ancient Forest Bathing',
+            'category' => 'Spiritual Experience',
+            'image' => '/images/vessagiriya_monastery.png',
+            'topic' => 'Ritigala Ancient Contemplative Monastery',
+            'history_narrative' => "Ritigala, an ancient mountain steeped in myth and history, rises majestically from the dry plains of the North Central Province. According to legend, it is a fragment of the Himalayas dropped by Hanuman the monkey god during his flight in the epic Ramayana. However, its verifiable history is equally fascinating. In the 1st century BCE, King Lanjatissa built a strictly contemplative monastery (Pamsukulika) deep within this mystical forest. Unlike other grand monasteries of Anuradhapura, Ritigala has no stupas or image houses. It was designed purely for deep meditation, asceticism, and connecting with nature.\n\nWalking along the ancient, beautifully laid stone paths that wind through the dense, medicinal forest (which features a unique microclimate distinct from the surrounding plains) is a profound experience in itself. The ruins of meditation platforms, stone bridges, and the ancient hospital suggest a life of absolute simplicity and natural healing. The practice of Shinrin-yoku, or forest bathing, is effortlessly achieved here as the symphony of the jungle and the cool, unpolluted breeze naturally calm the mind.\n\nToday, engaging in a meditative walk through Ritigala allows seekers to retrace the steps of the ancient ascetic monks. The absolute silence, broken only by the rustling of leaves and the calls of endemic birds, provides a perfect environment to detach from modern chaos and immerse oneself in therapeutic tranquility.",
+            'history_audio' => '/audio/ritigala_history.mp3',
+            'blueprint_text' => null,
+            'blueprint_image' => null,
+            'lat' => 8.1147,
+            'lng' => 80.6558,
+            'gallery' => [
+                '/images/vessagiriya_gallery_1.jpg',
+                '/images/vessagiriya_gallery_2.jpg',
+                '/images/vessagiriya_gallery_3.jpg',
+                '/images/vessagiriya_gallery_4.jpg'
             ]
         ],
     ];

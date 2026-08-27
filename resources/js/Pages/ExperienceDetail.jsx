@@ -5,13 +5,21 @@ import { useState, useEffect } from 'react';
 import { 
     MapPin, Star, ShieldCheck, Clock, Users, Globe, Check, 
     Accessibility, Calendar as CalendarIcon, Minus, Plus, Heart, 
-    ChevronRight, ChevronDown, Map, Camera, X, MessageCircle, Mail
+    ChevronRight, ChevronDown, ChevronLeft, Map, Camera, X, MessageCircle, Mail
 } from 'lucide-react';
 
 export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion, initialLocation, initialPolicies = [], initialReviews = [] }) {
     const [locationData, setLocationData] = useState(initialLocation);
     const [policyData, setPolicyData] = useState(initialPolicies);
     const [reviewsData, setReviewsData] = useState(initialReviews);
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % 4);
+        }, 10000); // 10s auto slide
+        return () => clearInterval(timer);
+    }, []);
     
     const { data: reviewForm, setData: setReviewForm, post: postReview, processing: submittingReview, reset: resetReview } = useForm({
         experience_key: experienceId,
@@ -93,7 +101,12 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
             price: 35,
             priceLkr: 10500,
             mainImage: "/images/mihintale_steps.png",
-            gallery: ["/images/mihintale_steps.png", "/images/atamasthana.jpg", "/images/ancient_hydraulic.png", "/images/ruwanweli_maha_seya.png"],
+            gallery: [
+                "/images/mihintale_sunrise_real_1.jpg", 
+                "/images/mihintale_sunrise_real_2.jpg", 
+                "/images/mihintale_sunrise_real_3.jpg", 
+                "/images/mihintale_sunrise_real_4.jpg"
+            ],
             duration: "6 Hours",
             groupSize: "Flexible",
             hostName: "Heritage Travels",
@@ -361,31 +374,72 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                 </div>
                             </div>
 
-                            {/* Grid Image Gallery */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[400px] md:h-[500px]">
-                                <div className="md:col-span-2 relative rounded-2xl overflow-hidden group">
-                                    <img src={experience.mainImage} alt={experience.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                    <button className="absolute bottom-6 right-6 bg-white/90 backdrop-blur text-royalMaroon-950 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white transition-colors shadow-lg">
-                                        <Camera className="w-5 h-5" /> Video Preview
-                                    </button>
-                                </div>
-                                <div className="hidden md:grid grid-rows-2 gap-4 h-full">
-                                    <div className="rounded-2xl overflow-hidden relative group">
-                                        <img src={experience.gallery[0]} alt="Gallery 1" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="rounded-2xl overflow-hidden relative group">
-                                            <img src={experience.gallery[1]} alt="Gallery 2" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            {/* Grid Image Gallery or Slider */}
+                            {experienceId === 'mihintale' ? (
+                                <div className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden group">
+                                    {experience.gallery.map((img, idx) => (
+                                        <div 
+                                            key={idx} 
+                                            className={`absolute inset-0 transition-opacity duration-1000 ${currentSlide === idx ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                                        >
+                                            <img src={img} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
                                         </div>
+                                    ))}
+                                    
+                                    {/* Slider Controls */}
+                                    <button 
+                                        onClick={() => setCurrentSlide((prev) => (prev === 0 ? experience.gallery.length - 1 : prev - 1))}
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur transition-all opacity-0 group-hover:opacity-100 z-20 shadow-lg"
+                                        aria-label="Previous image"
+                                    >
+                                        <ChevronLeft className="w-6 h-6" />
+                                    </button>
+                                    <button 
+                                        onClick={() => setCurrentSlide((prev) => (prev + 1) % experience.gallery.length)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur transition-all opacity-0 group-hover:opacity-100 z-20 shadow-lg"
+                                        aria-label="Next image"
+                                    >
+                                        <ChevronRight className="w-6 h-6" />
+                                    </button>
+                                    
+                                    {/* Slider Indicators */}
+                                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                                        {experience.gallery.map((_, idx) => (
+                                            <button 
+                                                key={idx}
+                                                onClick={() => setCurrentSlide(idx)}
+                                                aria-label={`Go to slide ${idx + 1}`}
+                                                className={`w-2.5 h-2.5 rounded-full transition-all shadow-sm ${currentSlide === idx ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'}`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[400px] md:h-[500px]">
+                                    <div className="md:col-span-2 relative rounded-2xl overflow-hidden group">
+                                        <img src={experience.mainImage} alt={experience.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        <button className="absolute bottom-6 right-6 bg-white/90 backdrop-blur text-royalMaroon-950 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white transition-colors shadow-lg">
+                                            <Camera className="w-5 h-5" /> Video Preview
+                                        </button>
+                                    </div>
+                                    <div className="hidden md:grid grid-rows-2 gap-4 h-full">
                                         <div className="rounded-2xl overflow-hidden relative group">
-                                            <img src={experience.gallery[2]} alt="Gallery 3" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                            <div className="absolute inset-0 bg-royalMaroon-950/40 flex items-center justify-center cursor-pointer hover:bg-royalMaroon-950/50 transition-colors">
-                                                <span className="text-white font-bold text-lg">+4 Photos</span>
+                                            <img src={experience.gallery[0]} alt="Gallery 1" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="rounded-2xl overflow-hidden relative group">
+                                                <img src={experience.gallery[1]} alt="Gallery 2" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                            </div>
+                                            <div className="rounded-2xl overflow-hidden relative group">
+                                                <img src={experience.gallery[2]} alt="Gallery 3" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                                <div className="absolute inset-0 bg-royalMaroon-950/40 flex items-center justify-center cursor-pointer hover:bg-royalMaroon-950/50 transition-colors">
+                                                    <span className="text-white font-bold text-lg">+4 Photos</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>
