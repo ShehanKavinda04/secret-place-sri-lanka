@@ -1145,7 +1145,7 @@ EOD
             'category' => 'Spiritual Experiences & Wellness',
             'lat' => 8.3114,
             'lng' => 80.4037,
-            'image' => '/images/ayurveda_1779382626509.png',
+            'image' => '/images/rajarata_ayurveda_1779804888516.png',
             'topic' => 'Authentic Ayurvedic treatments and wellness therapies offered in a serene, traditional setting, focusing on holistic healing and rejuvenation.',
             'history_narrative' => <<<'EOD'
 The Story of Anuradhapura North Central Province Ayurvedic Hospital: From Past to Present
