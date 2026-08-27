@@ -469,8 +469,16 @@ export default function History({ auth, spot }) {
                                         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex-1">
                                             <h4 className="font-bold text-slate-800 text-sm mb-2">Nearby Sites</h4>
                                             <div className="text-xs text-slate-500 flex flex-col gap-2">
-                                                <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-royalGold-500"></div> Ruwanwelisaya (0.5 km)</span>
-                                                <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-royalTeal"></div> Thuparamaya (1.2 km)</span>
+                                                {spot?.nearby_sites && spot.nearby_sites.length > 0 ? (
+                                                    spot.nearby_sites.map((site, index) => (
+                                                        <span key={index} className="flex items-center gap-2">
+                                                            <div className={`w-2 h-2 rounded-full ${index === 0 ? 'bg-royalGold-500' : 'bg-royalTeal'}`}></div> 
+                                                            {site.name} ({site.distance} km)
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span>No nearby sites found.</span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

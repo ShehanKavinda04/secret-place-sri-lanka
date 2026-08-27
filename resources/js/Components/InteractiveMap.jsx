@@ -21,24 +21,29 @@ const userIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-function MapController({ spotLocation, userLocation, searchedLocation }) {
+function MapController({ spotLocation, searchedLocation, nearbySites }) {
   const map = useMap();
 
   useEffect(() => {
     const locations = [];
     if (spotLocation) locations.push(spotLocation);
-    if (userLocation) locations.push(userLocation);
     if (searchedLocation) locations.push([searchedLocation.lat, searchedLocation.lng]);
     
+    if (nearbySites && nearbySites.length > 0) {
+        nearbySites.forEach(site => {
+            if (site.lat && site.lng) {
+                locations.push([site.lat, site.lng]);
+            }
+        });
+    }
+    
     if (locations.length > 1) {
-      // Create bounds containing all available locations
       const bounds = L.latLngBounds(locations);
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
     } else if (locations.length === 1) {
-      // Just fly to the available location
       map.flyTo(locations[0], 16);
     }
-  }, [spotLocation, userLocation, searchedLocation, map]);
+  }, [spotLocation, searchedLocation, nearbySites, map]);
 
   return null;
 }
@@ -46,56 +51,15 @@ function MapController({ spotLocation, userLocation, searchedLocation }) {
 export default function InteractiveMap({ spot, searchedLocation }) {
   const [userLocation, setUserLocation] = useState(null);
   const [error, setError] = useState(null);
-  const [routePolyline, setRoutePolyline] = useState([]);
 
   const spotLocation = spot && spot.lat && spot.lng ? [spot.lat, spot.lng] : null;
+  const nearbySites = spot?.nearby_sites || [];
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
-      return;
-    }
-
-    const watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        setUserLocation([position.coords.latitude, position.coords.longitude]);
-      },
-      (error) => {
-        console.error("Error watching position", error);
-        setError('Unable to retrieve your location. Please check browser permissions.');
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 10000,
-        timeout: 5000
-      }
-    );
-
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
+    // Only fetch user location if they explicitly ask for it, 
+    // for now we disable the automatic tracking to prevent map zooming out
+    // away from the actual destination.
   }, []);
-
-  // Fetch shortest route using OSRM when user and destination are available
-  useEffect(() => {
-    const destination = spotLocation || (searchedLocation ? [searchedLocation.lat, searchedLocation.lng] : null);
-    
-    if (userLocation && destination) {
-      // OSRM expects longitude,latitude
-      const url = `https://router.project-osrm.org/route/v1/driving/${userLocation[1]},${userLocation[0]};${destination[1]},${destination[0]}?overview=full&geometries=geojson`;
-      
-      fetch(url)
-        .then(res => res.json())
-        .then(data => {
-          if (data.routes && data.routes.length > 0) {
-            // OSRM geojson returns coordinates as [longitude, latitude], leaflet needs [latitude, longitude]
-            const coords = data.routes[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
-            setRoutePolyline(coords);
-          }
-        })
-        .catch(err => console.error("Routing error:", err));
-    }
-  }, [userLocation, spotLocation, searchedLocation]);
 
   if (!spotLocation && !searchedLocation && !userLocation) {
     return (
@@ -113,7 +77,7 @@ export default function InteractiveMap({ spot, searchedLocation }) {
         </div>
       )}
       <MapContainer 
-        center={spotLocation || searchedLocation || userLocation || [7.8731, 80.7718]} 
+        center={spotLocation || searchedLocation || [7.8731, 80.7718]} 
         zoom={16} 
         scrollWheelZoom={true} 
         style={{ height: '100%', width: '100%', zIndex: 1 }}
@@ -123,12 +87,7 @@ export default function InteractiveMap({ spot, searchedLocation }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        <MapController spotLocation={spotLocation} userLocation={userLocation} searchedLocation={searchedLocation} />
-
-        {/* Route Polyline */}
-        {routePolyline.length > 0 && (
-          <Polyline positions={routePolyline} color="#0c6b65" weight={5} opacity={0.7} dashArray="10, 10" />
-        )}
+        <MapController spotLocation={spotLocation} searchedLocation={searchedLocation} nearbySites={nearbySites} />
 
         {/* Spot Marker */}
         {spotLocation && (
@@ -140,14 +99,17 @@ export default function InteractiveMap({ spot, searchedLocation }) {
           </Marker>
         )}
 
-        {/* User Location Marker */}
-        {userLocation && (
-          <Marker position={userLocation} icon={userIcon}>
-            <Popup>
-              <div className="font-bold">You are here</div>
-            </Popup>
-          </Marker>
-        )}
+        {/* Nearby Sites Markers */}
+        {nearbySites.map((site, index) => (
+            site.lat && site.lng ? (
+                <Marker key={index} position={[site.lat, site.lng]}>
+                    <Popup>
+                        <div className="font-bold">{site.name}</div>
+                        <div className="text-xs text-slate-500">Nearby Site ({site.distance} km)</div>
+                    </Popup>
+                </Marker>
+            ) : null
+        ))}
 
         {/* Searched Location Marker */}
         {searchedLocation && (

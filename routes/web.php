@@ -1199,6 +1199,66 @@ EOD
                 '/images/isinbessagala_gallery_4.jpg',
             ]
         ],
+        'tapovana-anuradhapura' => [
+            'id' => 'tapovana-anuradhapura',
+            'name' => 'Tapovana Forest Monastery',
+            'category' => 'Spiritual Experiences & Wellness',
+            'lat' => 8.3500,
+            'lng' => 80.4000,
+            'image' => '/images/tapovana_forest_1779804927418.png',
+            'topic' => 'A remarkably serene and sacred retreat established within the holy land of Anuradhapura to preserve the traditional forest-dwelling monastic discipline.',
+            'history_narrative' => <<<'EOD'
+The Story of Anuradhapura Tapovana Forest Monastery: From Past to Present
+
+Located near the sacred land of Mihintale, as well as the Ruwanwelisaya and the Jaya Sri Maha Bodhi, the sanctuary dense with foliage continues to offer solace to monks seeking silence and spiritual well-being. This is none other than the Anuradhapura Tapovana Forest Monastery, a remarkably serene and sacred retreat established within the holy land of Anuradhapura to preserve the traditional forest-dwelling monastic discipline.
+
+The historical concept of this monastery traces back to the noble spiritual lifestyle of the Pamsukulika—the austere forest-dwelling monks who resided along the western boundaries of the Anuradhapura Kingdom between the 8th and 10th centuries. Breathing new life into this incomparable heritage in the modern era, the foundation stone of the Anuradhapura Tapovana Forest Monastery was laid under the guidance of the Sri Kalyani Dharmashrama Samstha, founded under the leadership of the Most Venerable Kahapola Sumangala Nayaka Thero and the Most Venerable Matara Sri Nyanarama Maha Nayaka Thero of the Sri Lanka Ramanya Maha Nikaya.
+
+Stepping away from the village temple culture and the noisy urban environment, practicing asceticism in the forest became the primary lifestyle of the resident monks. Within these grounds, which feature small meditation huts (Kuti) surrounded by dense trees, walking meditation paths (Cankamana), and tranquil Bodhi platforms, the monks scrupulously preserve the disciplined forest monastic tradition—even going on alms rounds (Pindapata) with bowl in hand, just as in ancient Sri Lanka.
+
+Over time, this hermitage did not remain exclusive to the resident monks; it also became a spiritual haven for thousands of local and foreign devotees visiting the Atamasthana in Anuradhapura. By bringing peace to restless minds through daily Satipatthana meditation programs, Dhamma discussions, and Poya day observance retreats, the Anuradhapura Tapovana Forest Monastery continues to shine today as a quiet spiritual beacon in the Rajarata region.
+EOD
+            ,
+            'history_audio' => '/audio/tapovana_history.mp3',
+            'blueprint_text' => 'Architectural details and blueprint information are currently not available.',
+            'blueprint_image' => null,
+            'gallery' => [
+                '/images/tapovana_gallery_1.jpg',
+                '/images/tapovana_gallery_2.jpg',
+                '/images/tapovana_gallery_3.jpg',
+                '/images/tapovana_gallery_4.jpg',
+            ]
+        ],
+        'kaludiya-pokuna' => [
+            'id' => 'kaludiya-pokuna',
+            'name' => 'Kaludiya Pokuna Forest Monastery',
+            'category' => 'Spiritual Experiences & Wellness',
+            'lat' => 8.3512,
+            'lng' => 80.5284,
+            'image' => '/images/sri_lanka_hero.png',
+            'topic' => 'A living sanctuary of ancient Sri Lankan forest-monastic discipline and remarkable engineering craftsmanship.',
+            'history_narrative' => <<<'EOD'
+The Story of Anuradhapura Kaludiya Pokuna Forest Monastery: From Past to Present
+
+Located on the southern boundary of the Mihintale Chetiyagiri rock complex within the sacred kingdom of Anuradhapura, surrounded by a silent, dense forest, Kaludiya Pokuna stands as a living sanctuary of ancient Sri Lankan forest-monastic discipline and remarkable engineering craftsmanship. Mentioned in the ancient Mahavamsa and early inscriptions as "Kaladighavapi," this sacred ground earned the name "Kaludiya Pokuna" (Black Water Pond) because the shadows of natural rock formations and the dense forest canopy cast dark reflections upon its natural reservoir, making the water appear deep black.
+
+The historical narrative begins in the 3rd century BCE with the arrival of Arahat Mahinda in Sri Lanka. It was initially constructed as a cave hermitage complex—carved with drip ledges into the rock—offered for the meditative lives of Arhats residing around the Mihintale sanctuary. Over time, during the late Anuradhapura period, King Kassapa IV (898–914 CE) restored this hermitage and dedicated it to the Pamsukulika (austere forest-dwelling) monks under the name "Hadasunna." Slab inscriptions further reveal that King Sena IV (950–953 CE) donated villages for the upkeep and daily alms of the monks residing here.
+
+Featuring simple "Padhanaghara" (double-platform) meditation structures devoid of ornate carvings, over 30 caves inscribed with early Brahmi script, and ancient bathing pond technology integrated seamlessly into the natural rock, the site showcases the exceptionally austere spiritual lifestyle of that era.
+
+As the kingdom shifted toward the southwest, this sanctuary lay buried beneath dense jungle for centuries. Today, it stands as a protected reserve under the Department of Forest Conservation and the Department of Archaeology. Within the quiet forest, meditating forest-dwelling monks continue to reside, making Kaludiya Pokuna shine as a profoundly tranquil haven that safeguards its historical monastic heritage in the Rajarata region.
+EOD
+            ,
+            'history_audio' => '/audio/kaludiya_pokuna_history.mp3',
+            'blueprint_text' => 'Architectural details and blueprint information are currently not available.',
+            'blueprint_image' => null,
+            'gallery' => [
+                '/images/kaludiya_gallery_1.jpg',
+                '/images/kaludiya_gallery_2.jpg',
+                '/images/kaludiya_gallery_3.jpg',
+                '/images/kaludiya_gallery_4.jpg',
+            ]
+        ],
     ];
 
     $request = request();
@@ -1235,6 +1295,36 @@ EOD
             return "https://picsum.photos/seed/" . crc32($id . $i) . "/800/600";
         }, range(1, 12))
     ];
+
+    $nearbySites = [];
+    if (isset($mockSpot['lat']) && isset($mockSpot['lng'])) {
+        foreach ($spotsData as $otherId => $otherSpot) {
+            if ($otherId !== $id && isset($otherSpot['lat']) && isset($otherSpot['lng'])) {
+                $earthRadius = 6371;
+                $latFrom = deg2rad($mockSpot['lat']);
+                $lonFrom = deg2rad($mockSpot['lng']);
+                $latTo = deg2rad($otherSpot['lat']);
+                $lonTo = deg2rad($otherSpot['lng']);
+                $latDelta = $latTo - $latFrom;
+                $lonDelta = $lonTo - $lonFrom;
+                $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+                $distance = round($angle * $earthRadius, 1);
+                
+                $nearbySites[] = [
+                    'id' => $otherId,
+                    'name' => $otherSpot['name'],
+                    'lat' => $otherSpot['lat'],
+                    'lng' => $otherSpot['lng'],
+                    'distance' => $distance
+                ];
+            }
+        }
+        usort($nearbySites, function($a, $b) {
+            return $a['distance'] <=> $b['distance'];
+        });
+        $nearbySites = array_slice($nearbySites, 0, 2);
+    }
+    $mockSpot['nearby_sites'] = $nearbySites;
 
     return Inertia::render('History', [
         'canLogin' => Route::has('login'),
