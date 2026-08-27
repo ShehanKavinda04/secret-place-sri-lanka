@@ -1132,6 +1132,36 @@ EOD
             'history_audio' => '/audio/subodharama_history.mp3',
             'blueprint_text' => 'Architectural details and blueprint information are currently not available.',
             'blueprint_image' => null,
+            'gallery' => [
+                '/images/subodharama_gallery_1.jpg',
+                '/images/subodharama_gallery_2.jpg',
+                '/images/subodharama_gallery_3.jpg',
+                '/images/subodharama_gallery_4.jpg',
+            ]
+        ],
+        'rajarata-ayurveda' => [
+            'id' => 'rajarata-ayurveda',
+            'name' => 'Rajarata Ayurvedic Healing',
+            'category' => 'Spiritual Experiences & Wellness',
+            'lat' => 8.3114,
+            'lng' => 80.4037,
+            'image' => '/images/ayurveda_1779382626509.png',
+            'topic' => 'Authentic Ayurvedic treatments and wellness therapies offered in a serene, traditional setting, focusing on holistic healing and rejuvenation.',
+            'history_narrative' => <<<'EOD'
+The Story of Anuradhapura North Central Province Ayurvedic Hospital: From Past to Present
+
+In the sacred soil of Rajarata, where the world's first hospital culture originated in Mihintale during ancient royal times, the historic story of giving new life to modern indigenous medicine began in the 1950s. Taking the first step towards transforming the traditional Ayurvedic heritage of the Anuradhapura kingdom into a systematic state service for the well-being of the public, the foundation stone for this Ayurvedic hospital was laid on September 14, 1956, by the then Prime Minister S. W. R. D. Bandaranaike.
+
+After several years of constructive development, the hospital was officially handed over to the public with in-patient and out-patient facilities on February 22, 1964, by the then Prime Minister Sirimavo Bandaranaike, with Dr. Nanayakkara assuming duties as its first Medical Superintendent. The Anuradhapura hospital premises marked a unique milestone in the healthcare sector by becoming the only medical complex in Sri Lanka where a major Western (allopathic) teaching hospital and a major state Ayurvedic hospital are situated within the same adjoining premises.
+
+Over time, its services expanded, and with the 13th Constitutional Amendment in 1987, the institution came under the purview of the Department of Ayurveda, North Central Province. The institution continued to develop under the guidance of its first Provincial Ayurvedic Commissioner, Dr. W. Peedadasa, up to the present day. Through the new two-storied Out-Patient Department (OPD) opened on March 4, 2006, by Prime Minister Ratnasiri Wickremanayake, services became even more accessible to patients.
+
+Today, the hospital comprises 15 specialized clinics, including those for joint diseases (arthritis), kidney ailments, respiratory disorders, Panchakarma treatments, and yoga. Producing a large portion of the required medicines within its own pharmacy and adjoining medicinal plant garden, and having won National Productivity Awards, this Anuradhapura Ayurvedic Hospital shines as a proud sanctuary protecting both the spiritual and physical well-being of the people of Rajarata.
+EOD
+            ,
+            'history_audio' => '/audio/rajarata_ayurveda_history.mp3',
+            'blueprint_text' => 'Architectural details and blueprint information are currently not available.',
+            'blueprint_image' => null,
         ],
     ];
 

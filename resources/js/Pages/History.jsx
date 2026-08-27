@@ -366,10 +366,10 @@ export default function History({ auth, spot }) {
                                         )}
 
                                         {/* Booking Section */}
-                                        <div className="pt-8 border-t border-slate-200 mt-8" id="booking-section">
-                                            <h2 className="text-2xl font-bold text-royalMaroon-900 mb-2">Join a Meditation Session / Book a Retreat</h2>
+                                        <div className="bg-white border border-slate-200 shadow-sm p-6 rounded-xl mt-8" id="booking-section">
+                                            <h2 className="text-xl font-bold text-royalMaroon-900 mb-2">Join a Meditation Session / Book a Retreat at {spot?.name}</h2>
                                             <p className="text-slate-600 text-sm mb-6 max-w-2xl">
-                                                Select a preferred date and time slot to register for our guided meditation programs or a longer retreat.
+                                                Select a preferred date and time slot to register for our guided meditation programs or a longer retreat at this serene center.
                                             </p>
 
                                             <div className="space-y-6">
