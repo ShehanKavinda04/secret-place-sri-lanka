@@ -127,6 +127,29 @@ export default function History({ auth, spot }) {
     const [bookingErrors, setBookingErrors] = useState({});
     const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState(null);
+    const [thewawaBookingOpen, setThewawaBookingOpen] = useState(false);
+    const [thewawaPaymentOpen, setThewawaPaymentOpen] = useState(false);
+    const [thewawaReceipt, setThewawaReceipt] = useState(null);
+    const [thewawaForm, setThewawaForm] = useState({
+        date: "",
+        puja: "Kanchuka Puja",
+        name: "",
+        email: "",
+        phone: "",
+        amount: "5000",
+    });
+
+    const handleThewawaBooking = (event) => {
+        event.preventDefault();
+        setThewawaPaymentOpen(true);
+    };
+
+    const completeThewawaPayment = (event) => {
+        event.preventDefault();
+        setThewawaPaymentOpen(false);
+        setThewawaBookingOpen(false);
+        setThewawaReceipt(`TW-${Date.now().toString().slice(-8)}`);
+    };
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
@@ -953,6 +976,220 @@ export default function History({ auth, spot }) {
                                         )}
                                     </div>
                                 </div>
+                            ) : activeTab === "thewawa" ? (
+                                <div className="max-w-6xl mx-auto space-y-8 text-slate-700">
+                                    <div className="relative overflow-hidden rounded-2xl bg-[#3a0d18] text-white min-h-[280px] flex items-end">
+                                        <img
+                                            src="/images/ruwanweli_maha_seya.png"
+                                            alt="Ruwanwelisaya"
+                                            className="absolute inset-0 w-full h-full object-cover opacity-60"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#260711] via-[#3a0d18]/55 to-transparent" />
+                                        <div className="relative p-6 md:p-10 max-w-2xl">
+                                            <p className="text-[#f4d58b] text-sm font-semibold tracking-[0.18em] uppercase mb-3">
+                                                Sacred Service Schedule
+                                            </p>
+                                            <h1 className="font-display text-3xl md:text-5xl font-bold leading-tight">
+                                                Daily Thewawa and Special Pujas
+                                            </h1>
+                                            <p className="mt-3 text-white/85 text-sm md:text-base">
+                                                A puja guide prepared for
+                                                devotees visiting the Jaya Sri
+                                                Maha Bodhi and Ruwanwelisaya.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <section>
+                                        <div className="flex items-end justify-between gap-4 mb-4">
+                                            <div>
+                                                <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase">
+                                                    Daily schedule
+                                                </p>
+                                                <h2 className="text-2xl font-bold text-royalMaroon-900">
+                                                    Daily Thewawa Schedule
+                                                </h2>
+                                            </div>
+                                            <span className="hidden sm:inline-flex items-center gap-2 text-xs text-slate-500">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                                                Every day
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                            {[
+                                                {
+                                                    title: "Aluyama Thewawa",
+                                                    time: "05:15 AM - 06:00 AM",
+                                                    image: "/images/bodhi_pooja_isurumuniya_1779804442648.png",
+                                                    detail: "The early-morning offering period, including Buddha Puja and Kiripindu Puja. Devotees observe quietly and follow the officiating monks' instructions.",
+                                                    steps: ["Arrive before the published start time and dress respectfully.", "Place flowers or other permitted offerings only where the temple attendants direct.", "Stand or sit quietly during the chanting and offering; do not interrupt the clergy."],
+                                                },
+                                                {
+                                                    title: "Dawal Buddha Puja Thewawa",
+                                                    time: "10:15 AM - 11:30 AM",
+                                                    image: "/images/atavisi_buddha_pooja_1779804459576.png",
+                                                    detail: "The midday Buddha Puja period associated here with 108 curry offerings, Gilanpasa, and traditional Hevisi. The offering is made by the temple or dana organisers, not self-served by visitors.",
+                                                    steps: ["Register or coordinate with the temple or dana organiser if you are sponsoring an offering.", "Deliver prepared food or materials through the designated receiving point and observe food-safety instructions.", "Remain outside restricted areas while monks conduct the offering and musical observances."],
+                                                },
+                                                {
+                                                    title: "Gilanpasa and Sandhya Thewawa",
+                                                    time: "06:00 PM - 07:00 PM",
+                                                    image: "/images/gilanpasa_pooja_1779804420756.png",
+                                                    detail: "The evening offering period for Gilanpasa, flowers, and lamps. Gilanpasa is traditionally a non-solid beverage or medicinal refreshment offered to the monastic community according to the temple's practice.",
+                                                    steps: ["Offer permitted drinks, flowers, or lamps through the appointed attendant.", "Never place a flame, liquid, or flower directly on a sacred object unless instructed.", "Keep pathways clear and leave quietly after the service."],
+                                                },
+                                            ].map((schedule, index) => (
+                                                    <div
+                                                        key={schedule.title}
+                                                        className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"
+                                                    >
+                                                        <img src={schedule.image} alt={schedule.title} className="w-full h-36 object-cover" />
+                                                        <div className="p-5">
+                                                        <div className="flex items-center justify-between mb-5">
+                                                            <span className="w-9 h-9 rounded-full bg-[#f8edcf] text-[#8b6414] flex items-center justify-center font-bold">
+                                                                0{index + 1}
+                                                            </span>
+                                                            <span className="text-xs font-bold text-royalTeal">
+                                                                LIVE SCHEDULE
+                                                            </span>
+                                                        </div>
+                                                        <h3 className="font-bold text-royalMaroon-900 text-lg">
+                                                                {schedule.title}
+                                                        </h3>
+                                                        <p className="text-[#8b6414] font-bold mt-2">
+                                                            {schedule.time}
+                                                        </p>
+                                                        <p className="text-sm leading-relaxed mt-3 text-slate-600">
+                                                            {schedule.detail}
+                                                        </p>
+                                                        <h4 className="mt-4 text-xs font-bold uppercase tracking-wide text-royalTeal">Visitor sequence</h4>
+                                                        <ol className="mt-2 space-y-2 text-xs text-slate-600 list-decimal list-inside">
+                                                            {schedule.steps.map((step) => <li key={step}>{step}</li>)}
+                                                        </ol>
+                                                        </div>
+                                                    </div>
+                                                ),
+                                            )}
+                                        </div>
+                                    </section>
+
+                                    <section className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6">
+                                        <div>
+                                            <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase">
+                                                Sacred offerings
+                                            </p>
+                                            <h2 className="text-2xl font-bold text-royalMaroon-900 mb-4">
+                                                Special Pujas
+                                            </h2>
+                                            <div className="grid sm:grid-cols-3 gap-4">
+                                                {[
+                                                    [
+                                                        "Kanchuka Puja",
+                                                        "/images/kanchuka_pooja_1779804339624.png",
+                                                        "A robe offering presented around a stupa during an organised ceremony.",
+                                                        ["Confirm the date, route, and role permitted to visitors with the temple organiser.", "Join the procession only when directed and keep the robe clean and off the ground.", "Do not climb the stupa or enter restricted areas."],
+                                                    ],
+                                                    [
+                                                        "Kapruka Puja",
+                                                        "/images/kapruk_pooja_1779804403588.png",
+                                                        "A devotional offering associated with a kapruk or wish-fulfilling-tree arrangement and prayer thread.",
+                                                        ["Receive the thread or offering from the appointed organiser.", "Make your intention privately and participate without pulling or tying anything to a sacred structure.", "Leave the arrangement intact after the ceremony."],
+                                                    ],
+                                                    [
+                                                        "Atawisi and 108-Bowl Puja",
+                                                        "/images/atavisi_buddha_pooja_1779804459576.png",
+                                                        "An offering honouring the 28 Buddhas; the 108-bowl form is a special food and flower offering when arranged by the temple or dana sponsor.",
+                                                        ["Coordinate the menu, quantity, and delivery time with the temple or organiser.", "Submit food and flowers at the designated receiving point.", "Allow the clergy to conduct the offering and follow directions for distribution afterward."],
+                                                    ],
+                                                ].map(([title, image, detail, steps]) => (
+                                                    <div
+                                                        key={title}
+                                                        className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"
+                                                    >
+                                                        <img src={image} alt={title} className="w-full h-32 object-cover" />
+                                                        <div className="p-4">
+                                                        <h3 className="font-bold text-royalMaroon-900 text-sm">
+                                                            {title}
+                                                        </h3>
+                                                        <p className="text-xs text-slate-600 leading-relaxed mt-2">
+                                                            {detail}
+                                                        </p>
+                                                        <h4 className="mt-3 text-xs font-bold uppercase tracking-wide text-royalTeal">Visitor sequence</h4>
+                                                        <ol className="mt-2 space-y-1 text-xs text-slate-600 list-decimal list-inside">
+                                                            {steps.map((step) => <li key={step}>{step}</li>)}
+                                                        </ol>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <p className="mt-4 text-xs text-slate-500">Ritual names, eligibility, routes, and materials can differ by temple and date. Confirm the current procedure with the relevant temple office before making an offering.</p>
+                                        </div>
+                                        <div className="bg-[#f8f3e8] rounded-xl p-5 border border-[#ead9b3]">
+                                            <h2 className="text-xl font-bold text-royalMaroon-900">
+                                                Pilgrim Participation Guide
+                                            </h2>
+                                            <ul className="mt-4 space-y-3 text-sm text-slate-700">
+                                                <li className="flex gap-3">
+                                                    <span className="text-royalGold-700">
+                                                        01
+                                                    </span>
+                                                    <span>
+                                                        Wear pure white attire.
+                                                    </span>
+                                                </li>
+                                                <li className="flex gap-3">
+                                                    <span className="text-royalGold-700">
+                                                        02
+                                                    </span>
+                                                    <span>
+                                                        Remove shoes and hats,
+                                                        and remain silent during
+                                                        rituals.
+                                                    </span>
+                                                </li>
+                                                <li className="flex gap-3">
+                                                    <span className="text-royalGold-700">
+                                                        03
+                                                    </span>
+                                                    <span>
+                                                        Participate respectfully
+                                                        in daily pujas at the
+                                                        Upper Maluwa.
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </section>
+
+                                    <section className="bg-[#0f4a45] rounded-2xl p-6 md:p-8 text-white flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                                        <div>
+                                            <p className="text-[#f4d58b] text-xs font-bold tracking-[0.18em] uppercase">
+                                                Reserve a sacred offering
+                                            </p>
+                                            <h2 className="text-2xl font-bold mt-2">
+                                                Online Puja Booking and
+                                                Donations
+                                            </h2>
+                                            <p className="text-white/75 text-sm mt-2 max-w-xl">
+                                                Reserve a date for Kanchuka
+                                                Puja, Gilanpasa Puja, or
+                                                alms-giving and take part in
+                                                this meritorious offering.
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setThewawaReceipt(null);
+                                                setThewawaBookingOpen(true);
+                                            }}
+                                            className="shrink-0 inline-flex items-center justify-center gap-2 bg-[#f4d58b] text-[#3a0d18] font-bold px-5 py-3 rounded-lg hover:bg-white transition-colors"
+                                        >
+                                            Reserve a Puja{" "}
+                                            <span aria-hidden="true">→</span>
+                                        </button>
+                                    </section>
+                                </div>
                             ) : activeTab === "location" ? (
                                 /* Location / Map View matching the wireframe */
                                 <div className="h-full min-h-[500px] flex gap-6 relative">
@@ -1101,6 +1338,322 @@ export default function History({ auth, spot }) {
 
                 <Footer auth={auth} />
             </div>
+
+            <Modal
+                show={thewawaBookingOpen}
+                onClose={() => setThewawaBookingOpen(false)}
+                maxWidth="lg"
+            >
+                <form onSubmit={handleThewawaBooking} className="p-6 md:p-8">
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase">
+                                Online puja booking
+                            </p>
+                            <h2 className="text-2xl font-bold text-royalMaroon-900 mt-1">
+                                Reserve a Puja
+                            </h2>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setThewawaBookingOpen(false)}
+                            className="text-slate-500 hover:text-slate-900 text-2xl leading-none"
+                            aria-label="Close booking form"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4 mt-6">
+                        <div className="sm:col-span-2">
+                            <label
+                                htmlFor="thewawa-puja"
+                                className="block text-sm font-semibold text-slate-700 mb-1"
+                            >
+                                Puja type
+                            </label>
+                            <select
+                                id="thewawa-puja"
+                                value={thewawaForm.puja}
+                                onChange={(event) =>
+                                    setThewawaForm({
+                                        ...thewawaForm,
+                                        puja: event.target.value,
+                                        amount:
+                                            event.target.value === "Alms-giving"
+                                                ? "10000"
+                                                : "5000",
+                                    })
+                                }
+                                className="w-full bg-white text-slate-900 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
+                            >
+                                <option>Kanchuka Puja</option>
+                                <option>Gilanpasa Puja</option>
+                                <option>Alms-giving</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                htmlFor="thewawa-date"
+                                className="block text-sm font-semibold text-slate-700 mb-1"
+                            >
+                                Puja date
+                            </label>
+                            <input
+                                id="thewawa-date"
+                                required
+                                type="date"
+                                min={new Date().toISOString().split("T")[0]}
+                                value={thewawaForm.date}
+                                onChange={(event) =>
+                                    setThewawaForm({
+                                        ...thewawaForm,
+                                        date: event.target.value,
+                                    })
+                                }
+                                className="w-full bg-white text-slate-900 placeholder:text-slate-400 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                htmlFor="thewawa-amount"
+                                className="block text-sm font-semibold text-slate-700 mb-1"
+                            >
+                                Donation amount (LKR)
+                            </label>
+                            <input
+                                id="thewawa-amount"
+                                required
+                                type="number"
+                                min="1000"
+                                step="500"
+                                value={thewawaForm.amount}
+                                onChange={(event) =>
+                                    setThewawaForm({
+                                        ...thewawaForm,
+                                        amount: event.target.value,
+                                    })
+                                }
+                                className="w-full bg-white text-slate-900 placeholder:text-slate-400 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                htmlFor="thewawa-name"
+                                className="block text-sm font-semibold text-slate-700 mb-1"
+                            >
+                                Name
+                            </label>
+                            <input
+                                id="thewawa-name"
+                                required
+                                value={thewawaForm.name}
+                                onChange={(event) =>
+                                    setThewawaForm({
+                                        ...thewawaForm,
+                                        name: event.target.value,
+                                    })
+                                }
+                                className="w-full bg-white text-slate-900 placeholder:text-slate-400 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                htmlFor="thewawa-phone"
+                                className="block text-sm font-semibold text-slate-700 mb-1"
+                            >
+                                Phone number
+                            </label>
+                            <input
+                                id="thewawa-phone"
+                                required
+                                value={thewawaForm.phone}
+                                onChange={(event) =>
+                                    setThewawaForm({
+                                        ...thewawaForm,
+                                        phone: event.target.value,
+                                    })
+                                }
+                                className="w-full bg-white text-slate-900 placeholder:text-slate-400 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
+                            />
+                        </div>
+                        <div className="sm:col-span-2">
+                            <label
+                                htmlFor="thewawa-email"
+                                className="block text-sm font-semibold text-slate-700 mb-1"
+                            >
+                                Email address
+                            </label>
+                            <input
+                                id="thewawa-email"
+                                required
+                                type="email"
+                                value={thewawaForm.email}
+                                onChange={(event) =>
+                                    setThewawaForm({
+                                        ...thewawaForm,
+                                        email: event.target.value,
+                                    })
+                                }
+                                className="w-full bg-white text-slate-900 placeholder:text-slate-400 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
+                            />
+                        </div>
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                        <button
+                            type="submit"
+                            className="bg-[#0f4a45] text-white font-bold px-5 py-3 rounded-lg hover:bg-[#0c3935] transition-colors"
+                        >
+                            Continue to payment →
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+
+            <Modal
+                show={thewawaPaymentOpen}
+                onClose={() => setThewawaPaymentOpen(false)}
+                maxWidth="md"
+            >
+                <form onSubmit={completeThewawaPayment} className="p-6 md:p-8">
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase">
+                                Secure payment simulation
+                            </p>
+                            <h2 className="text-2xl font-bold text-royalMaroon-900 mt-1">
+                                Online payment
+                            </h2>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setThewawaPaymentOpen(false)}
+                            className="text-slate-500 hover:text-slate-900 text-2xl leading-none"
+                            aria-label="Close payment form"
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="bg-slate-50 rounded-lg p-4 mt-6 text-sm">
+                        <div className="flex justify-between">
+                            <span>Puja</span>
+                            <strong>{thewawaForm.puja.split(" (")[0]}</strong>
+                        </div>
+                        <div className="flex justify-between mt-2">
+                            <span>Date</span>
+                            <strong>{thewawaForm.date}</strong>
+                        </div>
+                        <div className="flex justify-between mt-2 text-royalMaroon-900">
+                            <span>Amount</span>
+                            <strong>
+                                LKR{" "}
+                                {Number(thewawaForm.amount).toLocaleString()}
+                            </strong>
+                        </div>
+                    </div>
+                    <div className="flex gap-2 mt-5 text-xs">
+                        <span className="border border-royalGold-400 bg-royalGold-50 rounded px-3 py-2 font-semibold">
+                            Credit / Debit Card
+                        </span>
+                        <span className="border border-slate-200 rounded px-3 py-2">
+                            Mobile Banking
+                        </span>
+                    </div>
+                    <div className="grid gap-4 mt-5">
+                        <div>
+                            <label
+                                htmlFor="card-number"
+                                className="block text-sm font-semibold text-slate-700 mb-1"
+                            >
+                                Card number
+                            </label>
+                            <input
+                                id="card-number"
+                                required
+                                inputMode="numeric"
+                                pattern="[0-9 ]{12,19}"
+                                placeholder="4242 4242 4242 4242"
+                                className="w-full bg-white text-slate-900 placeholder:text-slate-400 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label
+                                    htmlFor="card-expiry"
+                                    className="block text-sm font-semibold text-slate-700 mb-1"
+                                >
+                                    Expiry
+                                </label>
+                                <input
+                                    id="card-expiry"
+                                    required
+                                    placeholder="MM / YY"
+                                    className="w-full bg-white text-slate-900 placeholder:text-slate-400 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="card-cvc"
+                                    className="block text-sm font-semibold text-slate-700 mb-1"
+                                >
+                                    CVC
+                                </label>
+                                <input
+                                    id="card-cvc"
+                                    required
+                                    inputMode="numeric"
+                                    pattern="[0-9]{3,4}"
+                                    placeholder="123"
+                                    className="w-full bg-white text-slate-900 placeholder:text-slate-400 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-4">
+                        This is a payment interface simulation. No real money
+                        will be charged.
+                    </p>
+                    <div className="mt-6 flex justify-end">
+                        <button
+                            type="submit"
+                            className="bg-[#3a0d18] text-white font-bold px-5 py-3 rounded-lg hover:bg-[#260711] transition-colors"
+                        >
+                            Confirm payment
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+
+            <Modal
+                show={Boolean(thewawaReceipt)}
+                onClose={() => setThewawaReceipt(null)}
+                maxWidth="md"
+            >
+                <div className="p-6 md:p-8 text-center">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl">
+                        ✓
+                    </div>
+                    <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase mt-4">
+                        Booking confirmed
+                    </p>
+                    <h2 className="text-2xl font-bold text-royalMaroon-900 mt-1">
+                        Puja booking confirmed
+                    </h2>
+                    <p className="text-sm text-slate-600 mt-3">
+                        Thank you for your puja booking. Your confirmation
+                        number is:
+                    </p>
+                    <p className="font-bold text-lg text-royalTeal mt-2">
+                        {thewawaReceipt}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() => setThewawaReceipt(null)}
+                        className="mt-6 bg-[#0f4a45] text-white font-bold px-5 py-3 rounded-lg"
+                    >
+                        Done
+                    </button>
+                </div>
+            </Modal>
 
             {/* Floating CTA for Booking */}
             {activeTab === "history" && (
