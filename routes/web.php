@@ -354,6 +354,7 @@ EOD
 ,
             'blueprint_text' => 'The sacred tree is planted on a high terrace about 6.5 meters (21.3 ft) above the ground and surrounded by railings. The wall was constructed during the reign of King Kirthi Sri Rajasingha to protect it from wild elephants. Multiple smaller bodhi trees known as "Parivara Bodhi" surround the central sacred tree.',
             'blueprint_image' => '/images/jaya_sri_maha_bodhi_blueprint.jpg',
+            'history_audio' => '/audio/bodhi_contemplation_history.mp3',
             'gallery' => [
                 '/images/jaya_sri_gallery_1.jpg',
                 '/images/jaya_sri_gallery_2.jpg',

@@ -19,6 +19,8 @@ export default function History({ auth, spot }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchedLocation, setSearchedLocation] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
+    const [locationAddress, setLocationAddress] = useState(null);
+    const [isGeocodingAddress, setIsGeocodingAddress] = useState(false);
 
     // Auto-refresh spot data for real-time updates when on the location tab
     useEffect(() => {
@@ -37,6 +39,45 @@ export default function History({ auth, spot }) {
             if (interval) clearInterval(interval);
         };
     }, [activeTab]);
+
+    // Reverse-geocode the active location (searched location takes priority over spot coords)
+    useEffect(() => {
+        const lat = searchedLocation ? searchedLocation.lat : spot?.lat;
+        const lng = searchedLocation ? searchedLocation.lng : spot?.lng;
+
+        if (searchedLocation?.name) {
+            // Nominatim already gave us a display_name — use it directly
+            setLocationAddress(searchedLocation.name);
+            return;
+        }
+
+        if (!lat || !lng) {
+            setLocationAddress(null);
+            return;
+        }
+
+        setIsGeocodingAddress(true);
+        fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,
+            { headers: { 'Accept-Language': 'en' } }
+        )
+            .then((res) => res.json())
+            .then((data) => {
+                if (data && data.display_name) {
+                    const addr = data.address || {};
+                    const parts = [
+                        addr.village || addr.town || addr.city || addr.municipality || addr.county,
+                        addr.state_district || addr.state,
+                        addr.country,
+                    ].filter(Boolean);
+                    setLocationAddress(parts.length > 0 ? parts.join(', ') : data.display_name);
+                } else {
+                    setLocationAddress(null);
+                }
+            })
+            .catch(() => setLocationAddress(null))
+            .finally(() => setIsGeocodingAddress(false));
+    }, [spot?.lat, spot?.lng, searchedLocation]);
 
     const handleSearch = async (e) => {
         if (e.key === 'Enter' && searchQuery.trim()) {
@@ -343,17 +384,20 @@ export default function History({ auth, spot }) {
                                                     );
                                                 })()}
                                             </div>
-                                            
+
                                             {spot.history_audio && (
-                                                <div className="pt-4 border-t border-slate-100 flex items-center gap-4">
+                                                <div className="mt-4 pt-4 border-t border-slate-200 flex items-center gap-4">
                                                     <div className="w-10 h-10 rounded-full bg-royalGold-100 flex items-center justify-center shrink-0">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-royalGold-700 ml-1">
                                                             <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
                                                         </svg>
                                                     </div>
-                                                    <audio key={spot.history_audio} controls className="w-full h-10 outline-none">
-                                                        <source src={spot.history_audio} type="audio/mpeg" />
-                                                    </audio>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Listen to the Narrative</p>
+                                                        <audio key={spot.history_audio} controls className="w-full h-10 outline-none">
+                                                            <source src={spot.history_audio} type="audio/mpeg" />
+                                                        </audio>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
@@ -524,21 +568,40 @@ export default function History({ auth, spot }) {
                                         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                                             <h4 className="font-bold text-slate-800 text-sm mb-2">Location Details</h4>
                                             <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                                                Anuradhapura, North Central Province, Sri Lanka.
+                                                {isGeocodingAddress ? (
+                                                    <span className="inline-flex items-center gap-1 text-slate-400">
+                                                        <span className="w-3 h-3 border-2 border-slate-300 border-t-slate-500 rounded-full animate-spin inline-block"></span>
+                                                        Fetching address…
+                                                    </span>
+                                                ) : locationAddress ? (
+                                                    locationAddress
+                                                ) : (
+                                                    <span className="text-slate-400 italic">Address not available.</span>
+                                                )}
                                             </p>
-                                            <button className="w-full bg-[#0f4a45] text-white text-xs font-bold py-2 rounded-md hover:bg-[#0c3935] transition-colors">
+                                            <a
+                                                href={`https://www.google.com/maps/dir/?api=1&destination=${searchedLocation ? searchedLocation.lat : spot?.lat},${searchedLocation ? searchedLocation.lng : spot?.lng}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={`w-full block text-center bg-[#0f4a45] text-white text-xs font-bold py-2 rounded-md hover:bg-[#0c3935] transition-colors ${(!spot?.lat && !spot?.lng && !searchedLocation) ? 'opacity-50 pointer-events-none' : ''}`}
+                                            >
                                                 Get Directions
-                                            </button>
+                                            </a>
                                         </div>
                                         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex-1">
                                             <h4 className="font-bold text-slate-800 text-sm mb-2">Nearby Sites</h4>
                                             <div className="text-xs text-slate-500 flex flex-col gap-2">
                                                 {spot?.nearby_sites && spot.nearby_sites.length > 0 ? (
                                                     spot.nearby_sites.map((site, index) => (
-                                                        <span key={index} className="flex items-center gap-2">
-                                                            <div className={`w-2 h-2 rounded-full ${index === 0 ? 'bg-royalGold-500' : 'bg-royalTeal'}`}></div> 
-                                                            {site.name} ({site.distance} km)
-                                                        </span>
+                                                        <Link
+                                                            key={index}
+                                                            href={`/places/${site.id}/history`}
+                                                            className="flex items-center gap-2 hover:text-[#0f4a45] transition-colors group"
+                                                        >
+                                                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${index === 0 ? 'bg-royalGold-500' : 'bg-royalTeal'}`}></div>
+                                                            <span className="group-hover:underline">{site.name}</span>
+                                                            <span className="text-slate-400 ml-auto">({site.distance} km)</span>
+                                                        </Link>
                                                     ))
                                                 ) : (
                                                     <span>No nearby sites found.</span>
