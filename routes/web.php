@@ -1318,9 +1318,17 @@ EOD
             'id' => 'ritigala-forest-bathing',
             'name' => 'Ritigala Ancient Forest Bathing',
             'category' => 'Spiritual Experience',
-            'image' => '/images/vessagiriya_monastery.png',
+            'image' => '/images/ritigala_forest_real_1.jpg',
             'topic' => 'Ritigala Ancient Contemplative Monastery',
-            'history_narrative' => "Ritigala, an ancient mountain steeped in myth and history, rises majestically from the dry plains of the North Central Province. According to legend, it is a fragment of the Himalayas dropped by Hanuman the monkey god during his flight in the epic Ramayana. However, its verifiable history is equally fascinating. In the 1st century BCE, King Lanjatissa built a strictly contemplative monastery (Pamsukulika) deep within this mystical forest. Unlike other grand monasteries of Anuradhapura, Ritigala has no stupas or image houses. It was designed purely for deep meditation, asceticism, and connecting with nature.\n\nWalking along the ancient, beautifully laid stone paths that wind through the dense, medicinal forest (which features a unique microclimate distinct from the surrounding plains) is a profound experience in itself. The ruins of meditation platforms, stone bridges, and the ancient hospital suggest a life of absolute simplicity and natural healing. The practice of Shinrin-yoku, or forest bathing, is effortlessly achieved here as the symphony of the jungle and the cool, unpolluted breeze naturally calm the mind.\n\nToday, engaging in a meditative walk through Ritigala allows seekers to retrace the steps of the ancient ascetic monks. The absolute silence, broken only by the rustling of leaves and the calls of endemic birds, provides a perfect environment to detach from modern chaos and immerse oneself in therapeutic tranquility.",
+            'history_narrative' => <<<'EOD'
+Rising like a massive rock kissing the sky near the sacred kingdom of Anuradhapura, Ritigala is an unparalleled forest hermitage where the spiritual serenity of ancient Sri Lanka seamlessly intertwines with unique medicinal nature. Mentioned as "Arittha Pabbata" in ancient Pali chronicles, the historical narrative of this sacred land begins in the 3rd century BCE, when King Suratissa offered over 70 drip-ledged caves to the Sangha.
+
+Over time, receiving royal patronage under King Sena IV in the 9th century CE, Ritigala developed into a vast monastic complex built specifically for the highly austere *Pamsukulika* (rag-robe wearing) forest-dwelling monks. Characterized by simple *Padhanaghara* meditation platforms devoid of ornate carvings, long stone-paved pathways, and medicinal baths (*Jantaghara*), this sanctuary was illuminated by the deep meditative states of noble monks. Furthermore, legend has it that a piece of the medicinal mountain carried by Hanuman from the Himalayas fell here, transforming the Ritigala woodland into a wondrous botanical haven filled with rare medicinal plants found nowhere else in Sri Lanka.
+
+Buried beneath centuries of historical shadows and dense forest, this sanctuary re-emerged in the modern era as a captivating retreat for those seeking the healing touch of nature. Drawing strength from the pristine environment and the herbal breezes bordering the Ritigala Strict Nature Reserve, the modern "Ritigala Ancient Forest Bathing" wellness experience was born.
+
+By walking slowly through the dense canopy, inhaling the clean air enriched with medicinal herbs, and embracing the quiet shade of ancient trees, weary minds and bodies worn down by the modern world find unmatched rejuvenation through this practice of Forest Bathing. Ritigala stands as a beautiful, living spiritual bridge connecting the monastic legacy of ancient *Pamsukulika* monks with modern natural wellness practices.
+EOD,
             'history_audio' => '/audio/ritigala_history.mp3',
             'blueprint_text' => null,
             'blueprint_image' => null,
@@ -1331,6 +1339,33 @@ EOD
                 '/images/vessagiriya_gallery_2.jpg',
                 '/images/vessagiriya_gallery_3.jpg',
                 '/images/vessagiriya_gallery_4.jpg'
+            ]
+        ],
+        'jaya-sri-maha-bodhi-contemplation' => [
+            'id' => 'jaya-sri-maha-bodhi-contemplation',
+            'name' => 'Sacred Bodhi Contemplation',
+            'category' => 'Spiritual Experience',
+            'image' => '/images/srimaha_bodhi_malu_1779380597304.png',
+            'topic' => 'The oldest historically documented tree in the world, serving as the living heartbeat of Sri Lankan Buddhism.',
+            'history_narrative' => <<<'EOD'
+Residing serenely upon a raised 21-foot platform within the sacred Mahamewna Gardens of Anuradhapura, the Jaya Sri Maha Bodhi is not merely the crown jewel of Sri Lanka; it stands as the oldest human-planted living tree in the world with a continuously documented history. Originating in the 3rd century BCE (around 249–248 BCE), the sacred southern branch of the historical Bodhi tree—under which Supreme Buddha attained Enlightenment in Buddhagaya, India—was brought to Sri Lanka by Venerable Sanghamitta Theri, daughter of Emperor Ashoka. Planted under the royal patronage of King Devanampiyatissa, this sacred heritage has endured uninterrupted to this day.
+
+Nurtured across centuries with golden fences, protective ramparts, and golden pinnacles erected by ancient Sinhala monarchs such as King Dhatusena and King Kirti Sri Rajasinha, this holy ground was fiercely safeguarded through foreign invasions and plagues by generations of dedicated *Bodhipalaka* guardians and the Maha Sangha. Over more than 2,300 years, the hopes, Bodhi Pujas, and continuous chanting of protective scriptures by millions of devotees have built an unparalleled spiritual energy within this sanctuary.
+
+Drawing strength from this divine shadow and peaceful atmosphere, the modern "Sacred Bodhi Contemplation" (Mindfulness & Devotional Meditation) emerged as a unique wellness practice for both local devotees and international seekers searching for inner peace.
+
+By sitting quietly on the cool sandy terrace in the soft morning or peaceful dusk, feeling the gentle breeze rustling through the sacred Bodhi leaves, and engaging in recollections of the Buddha, loving-kindness, and breath awareness, weary minds and bodies worn out by the noisy modern world find profound spiritual serenity. The Jaya Sri Maha Bodhi stands today as a beautiful, living spiritual bridge connecting the historic sacred legacy—revered as the living presence of the Buddha—with modern healthy mental well-being.
+EOD,
+            'history_audio' => '/audio/bodhi_contemplation_history.mp3',
+            'blueprint_text' => null,
+            'blueprint_image' => null,
+            'lat' => 8.3447,
+            'lng' => 80.3970,
+            'gallery' => [
+                '/images/jaya_sri_maha_bodhi.png',
+                '/images/jaya_sri_gallery_1.jpg',
+                '/images/jaya_sri_gallery_2.jpg',
+                '/images/jaya_sri_gallery_3.jpg',
             ]
         ],
     ];

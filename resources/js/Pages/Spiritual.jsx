@@ -111,7 +111,7 @@ const wellnessSites = [
         rating: '4.9',
         reviews: '255',
         description: 'Therapeutic Shinrin-yoku (forest bathing) amidst the ruins of a 1st-century BCE strictly contemplative monastery, hidden deep within a mystical mountain nature reserve.',
-        image: '/images/vessagiriya_monastery.png'
+        image: '/images/ritigala_forest_real_1.jpg'
     },
     {
         id: 'jaya-sri-maha-bodhi-contemplation',

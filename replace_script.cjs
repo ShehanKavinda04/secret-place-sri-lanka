@@ -1,3 +1,4 @@
+
 const fs = require('fs');
 
 // Process CraftCategory.jsx

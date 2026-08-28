@@ -154,9 +154,27 @@ export default function History({ auth, spot }) {
                         className="w-full md:w-64 shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col h-fit md:sticky md:top-8 md:self-start z-10"
                     >
                         <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-                            <Link href="/places" className="text-royalTeal hover:text-[#0c6b65] text-sm font-bold tracking-wider uppercase inline-flex items-center gap-2 transition-colors">
-                                <span>←</span> Back to Places
-                            </Link>
+                            {(() => {
+                                let backHref = '/places';
+                                let backLabel = 'Back to Places';
+                                if (category === 'Spiritual Experiences & Wellness' || category === 'Spiritual Experience') {
+                                    backHref = '/category/spiritual';
+                                    backLabel = 'Back to Spiritual';
+                                } else if (category === 'Nature & Wildlife') {
+                                    backHref = '/places';
+                                } else if (category === 'Historical Ruins' || category === 'Heritage') {
+                                    backHref = '/category/heritage';
+                                } else if (category === 'Hydraulic') {
+                                    backHref = '/category/hydraulic';
+                                } else if (category === 'Rituals') {
+                                    backHref = '/category/rituals';
+                                }
+                                return (
+                                    <Link href={backHref} className="text-royalTeal hover:text-[#0c6b65] text-sm font-bold tracking-wider uppercase inline-flex items-center gap-2 transition-colors">
+                                        <span>←</span> {backLabel}
+                                    </Link>
+                                );
+                            })()}
                         </div>
                         
                         <nav className="flex flex-col py-2">
@@ -265,14 +283,26 @@ export default function History({ auth, spot }) {
                                                     const needsTruncation = wordCount > 100;
                                                     const paragraphs = text.split(/\n\s*\n+/).filter(Boolean);
 
+                                                    const parseMarkdown = (str) => {
+                                                        const parts = str.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+                                                        return parts.map((part, i) => {
+                                                            if (part.startsWith('**') && part.endsWith('**')) {
+                                                                return <strong key={i} className="font-semibold text-royalMaroon-800">{part.slice(2, -2)}</strong>;
+                                                            } else if (part.startsWith('*') && part.endsWith('*')) {
+                                                                return <em key={i} className="italic text-slate-600">{part.slice(1, -1)}</em>;
+                                                            }
+                                                            return part;
+                                                        });
+                                                    };
+
                                                     if (!needsTruncation) {
-                                                        return <p className="whitespace-pre-line">{text}</p>;
+                                                        return <p className="whitespace-pre-line">{parseMarkdown(text)}</p>;
                                                     }
 
                                                     if (!isExpanded) {
                                                         return (
                                                             <div className="space-y-4">
-                                                                <p className="whitespace-pre-line">{paragraphs[0]}</p>
+                                                                <p className="whitespace-pre-line">{parseMarkdown(paragraphs[0])}</p>
                                                                 <button
                                                                     onClick={() => setIsExpanded(true)}
                                                                     className="mt-2 text-[#0f4a45] hover:text-[#0c3935] font-bold text-sm flex items-center gap-1 transition-colors group cursor-pointer"
@@ -288,7 +318,7 @@ export default function History({ auth, spot }) {
                                                         <div className="space-y-6">
                                                             {paragraphs.map((p, idx) => {
                                                                 if (idx === 0) {
-                                                                    return <p key={idx} className="whitespace-pre-line">{p}</p>;
+                                                                    return <p key={idx} className="whitespace-pre-line">{parseMarkdown(p)}</p>;
                                                                 }
                                                                 return (
                                                                     <motion.p
@@ -298,7 +328,7 @@ export default function History({ auth, spot }) {
                                                                         transition={{ duration: 0.4, delay: (idx - 1) * 0.12 }}
                                                                         className="whitespace-pre-line"
                                                                     >
-                                                                        {p}
+                                                                        {parseMarkdown(p)}
                                                                     </motion.p>
                                                                 );
                                                             })}
@@ -380,6 +410,10 @@ export default function History({ auth, spot }) {
                                                     ? `Book a Guided Mindfulness Walk at ${spot?.name}`
                                                     : spot?.id === 'mihintale-sunrise'
                                                     ? `Book a Guided Sunrise Meditation at Mihintale`
+                                                    : spot?.id === 'ritigala-forest-bathing'
+                                                    ? `Book a Guided Forest Bathing Session at Ritigala`
+                                                    : spot?.id === 'jaya-sri-maha-bodhi-contemplation'
+                                                    ? `Book a Sacred Bodhi Contemplation Session at Jaya Sri Maha Bodhi`
                                                     : `Join a Meditation Session / Book a Retreat at ${spot?.name}`}
                                             </h2>
                                             <p className="text-slate-600 text-sm mb-6 max-w-2xl">
@@ -391,6 +425,10 @@ export default function History({ auth, spot }) {
                                                     ? `Select a preferred date and time slot to book a guided walking meditation tour through the ancient royal gardens.`
                                                     : spot?.id === 'mihintale-sunrise'
                                                     ? `Select a preferred date and time slot to register for our early morning guided meditation sessions at the sacred Mihintale peak.`
+                                                    : spot?.id === 'ritigala-forest-bathing'
+                                                    ? `Select a preferred date and time slot to register for our guided Shinrin-yoku (forest bathing) sessions in the ancient strict nature reserve.`
+                                                    : spot?.id === 'jaya-sri-maha-bodhi-contemplation'
+                                                    ? `Select a preferred date and time slot to sit in guided silent contemplation beneath the world's oldest historically documented tree.`
                                                     : `Select a preferred date and time slot to register for our guided meditation programs or a longer retreat at this serene center.`}
                                             </p>
 
@@ -440,6 +478,10 @@ export default function History({ auth, spot }) {
                                                                 ? ['Morning Guided Walk (7 AM - 9 AM)', 'Evening Guided Walk (4 PM - 6 PM)']
                                                                 : spot?.id === 'mihintale-sunrise'
                                                                 ? ['Pre-dawn Ascent & Meditation (4:30 AM - 7:30 AM)', 'Early Morning Session (6 AM - 9 AM)']
+                                                                : spot?.id === 'ritigala-forest-bathing'
+                                                                ? ['Morning Forest Bathing (7 AM - 10 AM)', 'Evening Forest Bathing (3 PM - 6 PM)', 'Full Day Nature Retreat']
+                                                                : spot?.id === 'jaya-sri-maha-bodhi-contemplation'
+                                                                ? ['Dawn Pooja & Contemplation (5 AM - 8 AM)', 'Morning Sit (8 AM - 11 AM)', 'Evening Lamp Offering (5 PM - 7 PM)']
                                                                 : ['Morning Session (6 AM - 10 AM)', 'Afternoon Session (2 PM - 6 PM)', 'Full Day Retreat']
                                                             ).map((slot) => (
                                                                 <button
