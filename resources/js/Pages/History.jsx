@@ -151,6 +151,19 @@ export default function History({ auth, spot }) {
         setThewawaReceipt(`TW-${Date.now().toString().slice(-8)}`);
     };
 
+    const openThewawaBooking = (puja = "Kanchuka Puja") => {
+        setThewawaReceipt(null);
+        setThewawaForm((current) => ({
+            ...current,
+            puja,
+            amount:
+                puja === "Atawisi and 108-Bowl Puja" || puja === "Alms-giving"
+                    ? "10000"
+                    : "5000",
+        }));
+        setThewawaBookingOpen(true);
+    };
+
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
         setBookingErrors({});
@@ -1022,29 +1035,64 @@ export default function History({ auth, spot }) {
                                                     time: "05:15 AM - 06:00 AM",
                                                     image: "/images/bodhi_pooja_isurumuniya_1779804442648.png",
                                                     detail: "The early-morning offering period, including Buddha Puja and Kiripindu Puja. Devotees observe quietly and follow the officiating monks' instructions.",
-                                                    steps: ["Arrive before the published start time and dress respectfully.", "Place flowers or other permitted offerings only where the temple attendants direct.", "Stand or sit quietly during the chanting and offering; do not interrupt the clergy."],
+                                                    steps: [
+                                                        "Arrive before the published start time and dress respectfully.",
+                                                        "Place flowers or other permitted offerings only where the temple attendants direct.",
+                                                        "Stand or sit quietly during the chanting and offering; do not interrupt the clergy.",
+                                                    ],
                                                 },
                                                 {
                                                     title: "Dawal Buddha Puja Thewawa",
                                                     time: "10:15 AM - 11:30 AM",
                                                     image: "/images/atavisi_buddha_pooja_1779804459576.png",
                                                     detail: "The midday Buddha Puja period associated here with 108 curry offerings, Gilanpasa, and traditional Hevisi. The offering is made by the temple or dana organisers, not self-served by visitors.",
-                                                    steps: ["Register or coordinate with the temple or dana organiser if you are sponsoring an offering.", "Deliver prepared food or materials through the designated receiving point and observe food-safety instructions.", "Remain outside restricted areas while monks conduct the offering and musical observances."],
+                                                    steps: [
+                                                        "Register or coordinate with the temple or dana organiser if you are sponsoring an offering.",
+                                                        "Deliver prepared food or materials through the designated receiving point and observe food-safety instructions.",
+                                                        "Remain outside restricted areas while monks conduct the offering and musical observances.",
+                                                    ],
                                                 },
                                                 {
                                                     title: "Gilanpasa and Sandhya Thewawa",
                                                     time: "06:00 PM - 07:00 PM",
                                                     image: "/images/gilanpasa_pooja_1779804420756.png",
                                                     detail: "The evening offering period for Gilanpasa, flowers, and lamps. Gilanpasa is traditionally a non-solid beverage or medicinal refreshment offered to the monastic community according to the temple's practice.",
-                                                    steps: ["Offer permitted drinks, flowers, or lamps through the appointed attendant.", "Never place a flame, liquid, or flower directly on a sacred object unless instructed.", "Keep pathways clear and leave quietly after the service."],
+                                                    steps: [
+                                                        "Offer permitted drinks, flowers, or lamps through the appointed attendant.",
+                                                        "Never place a flame, liquid, or flower directly on a sacred object unless instructed.",
+                                                        "Keep pathways clear and leave quietly after the service.",
+                                                    ],
                                                 },
                                             ].map((schedule, index) => (
-                                                    <div
-                                                        key={schedule.title}
-                                                        className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"
-                                                    >
-                                                        <img src={schedule.image} alt={schedule.title} className="w-full h-36 object-cover" />
-                                                        <div className="p-5">
+                                                <div
+                                                    key={schedule.title}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    onClick={() =>
+                                                        openThewawaBooking(
+                                                            schedule.title,
+                                                        )
+                                                    }
+                                                    onKeyDown={(event) => {
+                                                        if (
+                                                            event.key ===
+                                                                "Enter" ||
+                                                            event.key === " "
+                                                        ) {
+                                                            event.preventDefault();
+                                                            openThewawaBooking(
+                                                                schedule.title,
+                                                            );
+                                                        }
+                                                    }}
+                                                    className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm cursor-pointer transition-all hover:-translate-y-1 hover:border-royalGold-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-royalTeal focus:ring-offset-2"
+                                                >
+                                                    <img
+                                                        src={schedule.image}
+                                                        alt={schedule.title}
+                                                        className="w-full h-36 object-cover"
+                                                    />
+                                                    <div className="p-5">
                                                         <div className="flex items-center justify-between mb-5">
                                                             <span className="w-9 h-9 rounded-full bg-[#f8edcf] text-[#8b6414] flex items-center justify-center font-bold">
                                                                 0{index + 1}
@@ -1054,7 +1102,7 @@ export default function History({ auth, spot }) {
                                                             </span>
                                                         </div>
                                                         <h3 className="font-bold text-royalMaroon-900 text-lg">
-                                                                {schedule.title}
+                                                            {schedule.title}
                                                         </h3>
                                                         <p className="text-[#8b6414] font-bold mt-2">
                                                             {schedule.time}
@@ -1062,14 +1110,25 @@ export default function History({ auth, spot }) {
                                                         <p className="text-sm leading-relaxed mt-3 text-slate-600">
                                                             {schedule.detail}
                                                         </p>
-                                                        <h4 className="mt-4 text-xs font-bold uppercase tracking-wide text-royalTeal">Visitor sequence</h4>
+                                                        <h4 className="mt-4 text-xs font-bold uppercase tracking-wide text-royalTeal">
+                                                            Visitor sequence
+                                                        </h4>
                                                         <ol className="mt-2 space-y-2 text-xs text-slate-600 list-decimal list-inside">
-                                                            {schedule.steps.map((step) => <li key={step}>{step}</li>)}
+                                                            {schedule.steps.map(
+                                                                (step) => (
+                                                                    <li
+                                                                        key={
+                                                                            step
+                                                                        }
+                                                                    >
+                                                                        {step}
+                                                                    </li>
+                                                                ),
+                                                            )}
                                                         </ol>
-                                                        </div>
                                                     </div>
-                                                ),
-                                            )}
+                                                </div>
+                                            ))}
                                         </div>
                                     </section>
 
@@ -1087,42 +1146,111 @@ export default function History({ auth, spot }) {
                                                         "Kanchuka Puja",
                                                         "/images/kanchuka_pooja_1779804339624.png",
                                                         "A robe offering presented around a stupa during an organised ceremony.",
-                                                        ["Confirm the date, route, and role permitted to visitors with the temple organiser.", "Join the procession only when directed and keep the robe clean and off the ground.", "Do not climb the stupa or enter restricted areas."],
+                                                        [
+                                                            "Confirm the date, route, and role permitted to visitors with the temple organiser.",
+                                                            "Join the procession only when directed and keep the robe clean and off the ground.",
+                                                            "Do not climb the stupa or enter restricted areas.",
+                                                        ],
                                                     ],
                                                     [
                                                         "Kapruka Puja",
                                                         "/images/kapruk_pooja_1779804403588.png",
                                                         "A devotional offering associated with a kapruk or wish-fulfilling-tree arrangement and prayer thread.",
-                                                        ["Receive the thread or offering from the appointed organiser.", "Make your intention privately and participate without pulling or tying anything to a sacred structure.", "Leave the arrangement intact after the ceremony."],
+                                                        [
+                                                            "Receive the thread or offering from the appointed organiser.",
+                                                            "Make your intention privately and participate without pulling or tying anything to a sacred structure.",
+                                                            "Leave the arrangement intact after the ceremony.",
+                                                        ],
                                                     ],
                                                     [
                                                         "Atawisi and 108-Bowl Puja",
                                                         "/images/atavisi_buddha_pooja_1779804459576.png",
                                                         "An offering honouring the 28 Buddhas; the 108-bowl form is a special food and flower offering when arranged by the temple or dana sponsor.",
-                                                        ["Coordinate the menu, quantity, and delivery time with the temple or organiser.", "Submit food and flowers at the designated receiving point.", "Allow the clergy to conduct the offering and follow directions for distribution afterward."],
+                                                        [
+                                                            "Coordinate the menu, quantity, and delivery time with the temple or organiser.",
+                                                            "Submit food and flowers at the designated receiving point.",
+                                                            "Allow the clergy to conduct the offering and follow directions for distribution afterward.",
+                                                        ],
                                                     ],
-                                                ].map(([title, image, detail, steps]) => (
-                                                    <div
-                                                        key={title}
-                                                        className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"
-                                                    >
-                                                        <img src={image} alt={title} className="w-full h-32 object-cover" />
-                                                        <div className="p-4">
-                                                        <h3 className="font-bold text-royalMaroon-900 text-sm">
-                                                            {title}
-                                                        </h3>
-                                                        <p className="text-xs text-slate-600 leading-relaxed mt-2">
-                                                            {detail}
-                                                        </p>
-                                                        <h4 className="mt-3 text-xs font-bold uppercase tracking-wide text-royalTeal">Visitor sequence</h4>
-                                                        <ol className="mt-2 space-y-1 text-xs text-slate-600 list-decimal list-inside">
-                                                            {steps.map((step) => <li key={step}>{step}</li>)}
-                                                        </ol>
+                                                ].map(
+                                                    ([
+                                                        title,
+                                                        image,
+                                                        detail,
+                                                        steps,
+                                                    ]) => (
+                                                        <div
+                                                            key={title}
+                                                            role="button"
+                                                            tabIndex={0}
+                                                            onClick={() =>
+                                                                openThewawaBooking(
+                                                                    title,
+                                                                )
+                                                            }
+                                                            onKeyDown={(
+                                                                event,
+                                                            ) => {
+                                                                if (
+                                                                    event.key ===
+                                                                        "Enter" ||
+                                                                    event.key ===
+                                                                        " "
+                                                                ) {
+                                                                    event.preventDefault();
+                                                                    openThewawaBooking(
+                                                                        title,
+                                                                    );
+                                                                }
+                                                            }}
+                                                            className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm cursor-pointer transition-all hover:-translate-y-1 hover:border-royalGold-400 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-royalTeal focus:ring-offset-2"
+                                                        >
+                                                            <img
+                                                                src={image}
+                                                                alt={title}
+                                                                className="w-full h-32 object-cover"
+                                                            />
+                                                            <div className="p-4">
+                                                                <h3 className="font-bold text-royalMaroon-900 text-sm">
+                                                                    {title}
+                                                                </h3>
+                                                                <p className="text-xs text-slate-600 leading-relaxed mt-2">
+                                                                    {detail}
+                                                                </p>
+                                                                <h4 className="mt-3 text-xs font-bold uppercase tracking-wide text-royalTeal">
+                                                                    Visitor
+                                                                    sequence
+                                                                </h4>
+                                                                <ol className="mt-2 space-y-1 text-xs text-slate-600 list-decimal list-inside">
+                                                                    {steps.map(
+                                                                        (
+                                                                            step,
+                                                                        ) => (
+                                                                            <li
+                                                                                key={
+                                                                                    step
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    step
+                                                                                }
+                                                                            </li>
+                                                                        ),
+                                                                    )}
+                                                                </ol>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    ),
+                                                )}
                                             </div>
-                                            <p className="mt-4 text-xs text-slate-500">Ritual names, eligibility, routes, and materials can differ by temple and date. Confirm the current procedure with the relevant temple office before making an offering.</p>
+                                            <p className="mt-4 text-xs text-slate-500">
+                                                Ritual names, eligibility,
+                                                routes, and materials can differ
+                                                by temple and date. Confirm the
+                                                current procedure with the
+                                                relevant temple office before
+                                                making an offering.
+                                            </p>
                                         </div>
                                         <div className="bg-[#f8f3e8] rounded-xl p-5 border border-[#ead9b3]">
                                             <h2 className="text-xl font-bold text-royalMaroon-900">
@@ -1161,34 +1289,6 @@ export default function History({ auth, spot }) {
                                         </div>
                                     </section>
 
-                                    <section className="bg-[#0f4a45] rounded-2xl p-6 md:p-8 text-white flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                                        <div>
-                                            <p className="text-[#f4d58b] text-xs font-bold tracking-[0.18em] uppercase">
-                                                Reserve a sacred offering
-                                            </p>
-                                            <h2 className="text-2xl font-bold mt-2">
-                                                Online Puja Booking and
-                                                Donations
-                                            </h2>
-                                            <p className="text-white/75 text-sm mt-2 max-w-xl">
-                                                Reserve a date for Kanchuka
-                                                Puja, Gilanpasa Puja, or
-                                                alms-giving and take part in
-                                                this meritorious offering.
-                                            </p>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setThewawaReceipt(null);
-                                                setThewawaBookingOpen(true);
-                                            }}
-                                            className="shrink-0 inline-flex items-center justify-center gap-2 bg-[#f4d58b] text-[#3a0d18] font-bold px-5 py-3 rounded-lg hover:bg-white transition-colors"
-                                        >
-                                            Reserve a Puja{" "}
-                                            <span aria-hidden="true">→</span>
-                                        </button>
-                                    </section>
                                 </div>
                             ) : activeTab === "location" ? (
                                 /* Location / Map View matching the wireframe */
@@ -1386,8 +1486,12 @@ export default function History({ auth, spot }) {
                                 }
                                 className="w-full bg-white text-slate-900 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
                             >
+                                <option>Aluyama Thewawa</option>
+                                <option>Dawal Buddha Puja Thewawa</option>
+                                <option>Gilanpasa and Sandhya Thewawa</option>
                                 <option>Kanchuka Puja</option>
                                 <option>Gilanpasa Puja</option>
+                                <option>Atawisi and 108-Bowl Puja</option>
                                 <option>Alms-giving</option>
                             </select>
                         </div>
