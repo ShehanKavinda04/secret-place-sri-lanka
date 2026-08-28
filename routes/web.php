@@ -433,6 +433,7 @@ EOD
 ,
             'blueprint_text' => 'The Ruwanwelisaya stupa stands at a height of 103 meters (338 ft) with a circumference of 290 meters (951 ft). Its base is surrounded by a wall adorned with 1,900 relief figures of elephants, which appear to support the massive structure. The paved courtyard (Maluwa) is surrounded by four decorative gateways (Vahalkadas) pointing to the cardinal directions.',
             'blueprint_image' => '/images/ruwanweli_blueprint.jpg',
+            'history_audio' => '/audio/ruwanweli_history.mp3',
             'gallery' => [
                 '/images/ruwanweli_gallery_1.jpg',
                 '/images/ruwanweli_gallery_2.jpg',
@@ -501,6 +502,7 @@ EOD
 ,
             'blueprint_text' => 'The Thuparamaya stupa was originally built in the shape of a heap of paddy, but was reconstructed in a bell shape in 1842. The unique architectural feature is the Vatadage—a circular relic house built around the stupa. It originally supported a conical wooden roof, and its ruins are marked by concentric circles of elegant monolithic stone pillars.',
             'blueprint_image' => '/images/thuparamaya_blueprint.jpg',
+            'history_audio' => '/audio/thuparamaya_history.mp3',
             'gallery' => [
                 '/images/thuparamaya_gallery_1.jpg',
                 '/images/thuparamaya_gallery_2.jpg',
@@ -571,6 +573,7 @@ EOD
 ,
             'blueprint_text' => 'The Abhayagiri stupa stands as one of the largest brick structures in the ancient world, reaching a height of about 75 meters (246 ft). The monastic complex includes beautiful stone carvings, guardstones (Muragala), moonstones (Sandakada Pahana), and the famous twin ponds (Kuttam Pokuna), illustrating advanced ancient water engineering.',
             'blueprint_image' => '/images/abhayagiri_blueprint.jpg',
+            'history_audio' => '/audio/abhayagiriya_history.mp3',
             'gallery' => [
                 '/images/abhayagiri_gallery_1.jpg',
                 '/images/abhayagiri_gallery_2.jpg',
@@ -683,6 +686,7 @@ EOD
 ,
             'blueprint_text' => 'Mirisawetiya stupa was the first built by King Dutugemunu. Its most significant feature is that it was built around his victory scepter. The site is characterized by its tranquil atmosphere and large stone pillars, which suggest it was once surrounded by a massive vatadage or colonnaded structure.',
             'blueprint_image' => '/images/mirisawetiya_blueprint.jpg',
+            'history_audio' => '/audio/mirisawetiya_history.mp3',
             'gallery' => [
                 '/images/mirisawetiya_gallery_1.jpg',
                 '/images/mirisawetiya_gallery_2.jpg',
@@ -735,6 +739,7 @@ EOD
 ,
             'blueprint_text' => 'Similar to Thuparamaya, Lankarama features a Vatadage design. The stupa is built on a circular platform raised above the ground, surrounded by three rows of beautiful monolithic stone pillars that once supported a wooden structure. The columns are decorated with delicate carvings of lions and dwarfs.',
             'blueprint_image' => '/images/lankarama_blueprint.jpg',
+            'history_audio' => '/audio/lankarama_history.mp3',
         ],
         'lovamahaprasada-1' => [
             'name' => 'Lovamahaprasada',
@@ -795,6 +800,7 @@ EOD
 ,
             'blueprint_text' => 'The structure originally had nine stories and could accommodate up to a thousand monks. Today, the ruins consist of a forest of 1,600 stone pillars arranged in a perfect square grid of 40x40. Each stone pillar stands about 3.5 meters (11.5 ft) high, representing the foundation of this massive multi-level timber structure.',
             'blueprint_image' => '/images/lovamahaprasada_blueprint.jpg',
+            'history_audio' => '/audio/lovamahaprasada_history.mp3',
             'gallery' => [
                 '/images/lovamahaprasada_gallery_1.jpg',
                 '/images/lovamahaprasada_gallery_2.jpg',
@@ -919,6 +925,7 @@ EOD
 ,
             'blueprint_text' => 'The temple is built around a low rock cliff. It has a beautiful pond at the base of the rock, from which relief carvings of elephants emerge. Above the pond is a shrine room carved into the cave, and a small stupa sits on top of the rock boulder, offering panoramic views of the Royal Gardens.',
             'blueprint_image' => '/images/isurumuniya_blueprint.jpg',
+            'history_audio' => '/audio/isurumuniya_history.mp3',
             'gallery' => [
                 '/images/isurumuniya_gallery_1.jpg',
                 '/images/isurumuniya_gallery_2.jpg',
@@ -975,6 +982,7 @@ EOD
 ,
             'blueprint_text' => 'The complex consists of natural rock shelters modified with drip ledges to prevent rain from entering. Monks used these caves as living quarters and meditation cells. The remains of a stupa, a chapter house, and refectory buildings are scattered among the boulders, connected by ancient stone pathways.',
             'blueprint_image' => '/images/vessagiriya_blueprint.jpg',
+            'history_audio' => '/audio/vessagiriya_history.mp3',
             'gallery' => [
                 '/images/vessagiriya_gallery_1.jpg',
                 '/images/vessagiriya_gallery_2.jpg',
@@ -991,6 +999,7 @@ EOD
             'history_narrative' => 'The Sri Maha Bodhi Malu Vihara is a temple complex surrounding the sacred Mahamewna Gardens and the outer terraces of the Jaya Sri Maha Bodhi. It has been a site of continuous Buddhist worship, chanting, and meditation for over two millennia, serving as a sanctuary for pilgrims visiting the sacred tree.',
             'blueprint_text' => 'The temple grounds are arranged in a series of terraces. It features ancient stone altars, guard stones, and meditation pavilions (Pilima Ge) housing beautiful Buddha statues. The stone paths are shaded by ancient trees, creating a quiet space for spiritual reflection.',
             'blueprint_image' => '/images/srimahabodhi_malu_blueprint.jpg',
+            'history_audio' => '/audio/srimahabodhi_malu_history.mp3',
             'gallery' => [
                 '/images/srimahabodhi_malu_gallery_1.jpg',
                 '/images/srimahabodhi_malu_gallery_2.jpg',
@@ -1069,6 +1078,7 @@ EOD
 ,
             'blueprint_text' => 'A grand stone staircase of 1,840 steps leads up to the summit of the mountain. The site features several important monuments: the Kantaka Cetiya with its beautiful stone carvings, the Ambasthala Dagoba (built where the meeting took place), the Maha Stupa on the peak, and the Aradhana Gala rock where Mahinda landed.',
             'blueprint_image' => '/images/mihintale_blueprint.jpg',
+            'history_audio' => '/audio/mihintale_history.mp3',
             'gallery' => [
                 '/images/mihintale_gallery_1.jpg',
                 '/images/mihintale_gallery_2.jpg',
