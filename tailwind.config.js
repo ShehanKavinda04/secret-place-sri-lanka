@@ -8,6 +8,8 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.jsx',
+        './resources/js/**/*.tsx',
+        './resources/js/**/*.ts',
     ],
 
     theme: {
@@ -15,7 +17,9 @@ export default {
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
                 display: ['Playfair Display', 'serif'],
-                sansDisplay: ['Outfit', ...defaultTheme.fontFamily.sans],
+                sansDisplay: ['Outfit', 'Plus Jakarta Sans', ...defaultTheme.fontFamily.sans],
+                outfit: ['Outfit', 'sans-serif'],
+                jakarta: ['Plus Jakarta Sans', 'sans-serif'],
             },
             colors: {
                 royalMaroon: {
@@ -42,7 +46,7 @@ export default {
                 'heart-pink': '#ff2b5e',
                 'slider-track': '#d6e5db',
                 'craft-brown': '#6F4E37',
-                'craft-brown-dark': '#5C402E'
+                'craft-brown-dark': '#5C402E',
             },
         },
     },

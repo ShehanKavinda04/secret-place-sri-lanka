@@ -21,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'predict-demand',
             'api/predict-demand',
         ]);
+
+        $middleware->alias([
+            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

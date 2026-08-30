@@ -1,9 +1,9 @@
-import { Link, router } from '@inertiajs/react';
-import { motion } from 'framer-motion';
+import { Link, router } from "@inertiajs/react";
+import { motion } from "framer-motion";
 
 export default function SpotCard({ spot, onBook, onDetails }) {
     return (
-        <motion.article 
+        <motion.article
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -19,18 +19,17 @@ export default function SpotCard({ spot, onBook, onDetails }) {
                         data: {
                             name: spot.name,
                             topic: spot.description,
-                            image: spot.image,
-                            ...(spot.category && { category: spot.category })
-                        }
+                            ...(spot.category && { category: spot.category }),
+                        },
                     });
                 }
             }}
             className="group cursor-pointer bg-white border border-slate-200/80 rounded-3xl overflow-hidden hover:border-royalGold-500/40 hover:shadow-xl transition-all duration-300 flex flex-col h-full shadow-md"
         >
             <div className="relative aspect-[4/3] overflow-hidden bg-slate-950">
-                <img 
-                    src={spot.image} 
-                    alt={spot.name} 
+                <img
+                    src={spot.image}
+                    alt={spot.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
             </div>
@@ -41,7 +40,9 @@ export default function SpotCard({ spot, onBook, onDetails }) {
                         <span>{spot.location}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                        <span className="font-bold text-slate-700">{spot.rating}</span>
+                        <span className="font-bold text-slate-700">
+                            {spot.rating}
+                        </span>
                         <span className="text-slate-400">({spot.reviews})</span>
                     </div>
                 </div>
@@ -56,13 +57,14 @@ export default function SpotCard({ spot, onBook, onDetails }) {
                 </div>
 
                 <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Verified Spot</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                        Verified Spot
+                    </span>
                     <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-royalTeal group-hover:text-[#0c6b65] transition-colors">
                         View Details
                         <span>→</span>
                     </span>
                 </div>
-
             </div>
         </motion.article>
     );

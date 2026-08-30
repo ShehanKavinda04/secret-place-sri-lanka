@@ -11,6 +11,9 @@
         "@inertiajs/react": "^2.0.0",
         "@tailwindcss/forms": "^0.5.3",
         "@tailwindcss/vite": "^4.0.0",
+        "@types/node": "^26.4.0",
+        "@types/react": "^19.2.18",
+        "@types/react-dom": "^19.2.5",
         "@vitejs/plugin-react": "^4.2.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.11.0",
@@ -20,6 +23,7 @@
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "tailwindcss": "^3.2.1",
+        "typescript": "^7.0.2",
         "vite": "^7.0.7"
     },
     "dependencies": {
@@ -28,6 +32,7 @@
         "leaflet": "^1.9.4",
         "lucide-react": "^1.31.0",
         "pusher-js": "^8.6.0",
-        "react-leaflet": "^4.2.1"
+        "react-leaflet": "^4.2.1",
+        "recharts": "^3.10.1"
     }
 }

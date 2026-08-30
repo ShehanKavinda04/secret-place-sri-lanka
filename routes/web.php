@@ -15,6 +15,30 @@ Route::post('/api/orders', [OrderController::class, 'store']);
 Route::get('/api/wishlists', [WishlistController::class, 'index']);
 Route::post('/api/wishlists/toggle', [WishlistController::class, 'toggle']);
 
+// Admin Routes
+Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users');
+    Route::get('/businesses', [\App\Http\Controllers\Admin\BusinessApprovalController::class, 'index'])->name('businesses');
+    Route::get('/bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings');
+    Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
+});
+
+// Seller Routes
+Route::middleware(['auth', 'verified', 'role:business_owner'])->prefix('seller')->name('seller.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Seller\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/businesses', [\App\Http\Controllers\Seller\BusinessController::class, 'index'])->name('businesses');
+    Route::get('/bookings', [\App\Http\Controllers\Seller\BookingController::class, 'index'])->name('bookings');
+    Route::get('/earnings', [\App\Http\Controllers\Seller\EarningController::class, 'index'])->name('earnings');
+});
+
+// Customer Routes (Standard dashboard prefix is /dashboard)
+Route::middleware(['auth', 'verified', 'role:tourist'])->prefix('dashboard')->name('customer.')->group(function () {
+    Route::get('/bookings', [\App\Http\Controllers\Customer\BookingController::class, 'index'])->name('bookings');
+    Route::get('/orders', [\App\Http\Controllers\Customer\OrderController::class, 'index'])->name('orders');
+    Route::get('/wishlist', [\App\Http\Controllers\Customer\WishlistController::class, 'index'])->name('wishlist');
+});
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -352,8 +376,8 @@ In later centuries, even during dark eras when the Anuradhapura kingdom collapse
 Today, spanning a continuous period of over 2,300 years, the Jaya Sri Maha Bodhi stands eternally alive in the sacred grounds of Anuradhapura as the oldest historically documented, living, human-planted tree in the entire world, with an unbroken lineage of recorded guardianship.
 EOD
 ,
-            'blueprint_text' => 'Abhayagiriya, known as the Abhayagiri Vihara in Anuradhapura, was founded during the reign of King Valagamba and developed into one of the greatest monastic complexes of early Sri Lanka. At its heart stands the Abhayagiri Dagaba, a massive brick stupa with a rounded dome and a tall conical pinnacle, reaching around 75 metres (246 ft) in height. The site is famous for its carved guardstones, moonstones, monks’ chambers, and the Kuttam Pokuna (Twin Ponds), which demonstrate exceptional ancient engineering and sculptural artistry. As a major centre of learning, worship, and international exchange, Abhayagiriya became one of the defining sacred and intellectual landscapes of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Jaya Sri Maha Bodhi is the living centre of a carefully protected sacred precinct within the Mahamevnawa Gardens. The ancient Bodhi tree stands on a raised terrace surrounded by golden railings, whitewashed walls, offering platforms, shrine spaces, and paved paths that guide pilgrims in respectful circumambulation. Substantial boundary walls and carefully managed garden spaces protect the tree while keeping the worship area open and accessible. The arrangement of living landscape, ritual enclosure, ceremonial gateways, and nearby monastic architecture preserves the continuity of one of the world\'s oldest documented Buddhist pilgrimage sites.',
+            'blueprint_image' => '/images/jaya_sri_gallery_1.jpg',
             'history_audio' => '/audio/bodhi_contemplation_history.mp3',
             'gallery' => [
                 '/images/jaya_sri_gallery_1.jpg',
@@ -431,8 +455,8 @@ At that very instant, a golden chariot sent from the Tusita heaven appeared, and
 Subsequently, Prince Saddha Tissa (now King Saddha Tissa) fully finalized the genuine stone masonry and completed the permanent golden spire of the stupa. From that day to this very era, spanning over two thousand years, the Ruwanweli Maha Seya stands unshaken—regarded as the crest-jewel of the land of Lanka and a living testament to monumental faith and ultimate devotion, revered by the entire world.
 EOD
 ,
-            'blueprint_text' => 'Abhayagiriya, the Abhayagiri Vihara in Anuradhapura, was founded during the reign of King Valagamba and flourished as one of the most important monastic complexes in early Sri Lanka. Its central landmark, the Abhayagiri Dagaba, is a massive brick stupa with a rounded dome and tall conical pinnacle, reaching around 75 metres (246 ft) in height. The site is known for its carved guard stones, moonstones, monastic courts, and the Kuttam Pokuna (Twin Ponds), which reveal remarkable ancient engineering and artistic refinement. As a great centre of learning and devotion, Abhayagiriya became a major religious, scholarly, and cultural hub, shaping the sacred landscape of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Ruwanwelisaya is a monumental relic stupa planned around a carefully engineered foundation and a balanced Bubbulakara, or bubble-shaped, dome. Its white hemispherical body rises from a broad circular terrace, with the harmika and spire completing the sacred profile. The surrounding precinct is organized by processional paths, paved courtyards, shrine structures, and the great Basawakkulama reservoir landscape, while the massive enclosure and restored architectural details guide worshippers around the relic monument. Built by King Dutugemunu to enshrine sacred relics of the Buddha, Ruwanwelisaya remains one of Anuradhapura\'s defining examples of devotional architecture and monumental engineering.',
+            'blueprint_image' => '/images/ruwanweli_gallery_1.jpg',
             'history_audio' => '/audio/ruwanweli_history.mp3',
             'gallery' => [
                 '/images/ruwanweli_gallery_1.jpg',
@@ -500,8 +524,8 @@ Following the completion of the Thuparama Stupa, a massive religious renaissance
 Over the centuries, monarchs such as Vasabha, Gothabhaya, and Aggabodhi continuously renovated and preserved Thuparama. During the brutal foreign invasions of later eras, the monks and rulers of Lanka protected this Right Collarbone Relic at the risk of their own lives, concealing it in secret wilderness hideouts. Once peace returned to the country, they brought it back in grand processions to re-enshrine it within Thuparama.
 EOD
 ,
-            'blueprint_text' => 'Abhayagiriya, the Abhayagiri Vihara in Anuradhapura, was founded during the reign of King Valagamba and grew into one of the most important monastic centres of early Sri Lanka. The central feature is the Abhayagiri Dagaba, a massive brick stupa with a rounded dome and tall conical pinnacle, reaching about 75 metres (246 ft) in height. The complex is renowned for its carved guard stones, moonstones, monastic courtyards, and the Kuttam Pokuna (Twin Ponds), which show the exceptional artistic and hydraulic skill of the ancient builders. As a major centre of learning and devotion, Abhayagiriya became a place of scholarship, ritual, and cross-cultural exchange, making it one of the defining sacred landscapes of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Thuparamaya is Sri Lanka\'s first Buddhist stupa, designed in the Dhanyakara, or heap-of-paddy, form to enshrine the Buddha\'s sacred right collarbone relic. Its rounded white dome stands on a raised circular terrace and is enclosed by a graceful vatadage, with slender carved granite pillars arranged around the relic shrine. Stone steps, guardstones, paved courts, and the surrounding monastic remains create a carefully ordered processional layout for worship. The compact design brings together relic veneration, a protective circular enclosure, and finely worked stone architecture, making Thuparamaya one of Anuradhapura\'s most important early sacred monuments.',
+            'blueprint_image' => '/images/thuparamaya_gallery_1.jpg',
             'history_audio' => '/audio/thuparamaya_history.mp3',
             'gallery' => [
                 '/images/thuparamaya_gallery_1.jpg',
@@ -638,8 +662,8 @@ The Jetavanaramaya was far more than a mere stupa; it was a massive monastic uni
 During modern archaeological excavations conducted within the Jetavana sector, an array of rare artifacts has been discovered, including precious gemstones sourced from diverse foreign lands, Roman and Chinese coins, Persian pottery, and the famous Jetavanaramaya Gold Plates—a series of pure gold sheets upon which Mahayana Buddhist discourses (such as the Prajnaparamita Sutra) were meticulously inscribed. These discoveries scientifically validate that the Jetavanaramaya was an internationally recognized religious and cultural metropolis that connected the trades and philosophies of the East and the West.
 EOD
 ,
-            'blueprint_text' => 'Abhayagiriya, known as the Abhayagiri Vihara in Anuradhapura, was founded during the reign of King Valagamba and flourished as one of the most important monastic complexes in early Sri Lanka. Its central landmark, the Abhayagiri Dagaba, is a massive brick stupa with a rounded dome and a tall conical pinnacle, rising to around 75 metres (246 ft). The site is renowned for its carved guard stones, moonstones, monastic courts, and the Kuttam Pokuna (Twin Ponds), which reveal exceptional ancient engineering and artistic refinement. As a great centre of learning and devotion, Abhayagiriya became a major religious, scholarly, and cultural hub, shaping the sacred landscape of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Jetavanaramaya is a vast brick stupa and monastic complex planned on an immense scale during the reign of King Mahasen. Its rounded Bubbulakara dome rises from broad terraces and a deep, carefully stabilized foundation, while layered brick courses, carved stone details, guardstones, and processional platforms express the precision of its construction. The surrounding Jetavana precinct included residential quarters, chapter houses, refectories, ponds, and other facilities for a large monastic community. The surviving brickwork and sculpted architectural elements preserve the engineering ambition of one of the ancient world\'s largest brick monuments and a major centre of learning in Anuradhapura.',
+            'blueprint_image' => '/images/jetavanarama_gallery_1.jpg',
             'gallery' => [
                 '/images/jetavanarama_gallery_1.jpg',
                 '/images/jetavanarama_gallery_2.jpg',
@@ -684,8 +708,8 @@ The construction of the monument was executed by the country's finest master cra
 The Unbroken Core: The immovable Victory Scepter was preserved as the sacred core—the exact center point of the dome (Garbha)—and encircled by millions of high-quality, kiln-baked red bricks to raise the massive structure toward the heavens.
 EOD
 ,
-            'blueprint_text' => 'Abhayagiriya, also known as the Abhayagiri Vihara, was founded in Anuradhapura during the reign of King Valagamba in the 2nd century BCE. It developed into one of ancient Sri Lanka\'s largest monastic complexes and its Abhayagiri Dagaba became the dominant monument of the precinct. The stupa is a large brick structure with a hemispherical dome, harmika, and spire, rising to approximately 75 metres (246 ft) in its present restored form. The wider complex includes richly carved moonstones and guard stones, monastic courtyards, image houses, bathing ponds, and the Kuttam Pokuna (Twin Ponds), whose carefully engineered water system demonstrates the technical skill of Anuradhapura\'s builders. Abhayagiriya also served as an important centre of Buddhist study, religious practice, and international exchange, making its surviving architecture essential to understanding the sacred and cultural history of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Mirisawetiya Stupa is a large brick relic monument traditionally attributed to King Dutugemunu, who built it around the royal scepter said to contain a sacred relic of the Buddha. Its hemispherical dome rises from a formal circular terrace, with the harmika and spire completing the stupa\'s characteristic profile. The surrounding precinct includes paved processional paths, stone steps, shrine structures, and restored brickwork beside Tissa Wewa. The carefully ordered layout connects the relic monument with an open sacred landscape, preserving the engineering, ritual design, and devotional traditions of ancient Anuradhapura.',
+            'blueprint_image' => '/images/mirisawetiya_gallery_1.jpg',
             'history_audio' => '/audio/mirisawetiya_history.mp3',
             'gallery' => [
                 '/images/mirisawetiya_gallery_1.jpg',
@@ -696,9 +720,9 @@ EOD
         ],
         'lankarama' => [
             'name' => 'Lankarama',
-                        'lat' => 8.3614,
+            'lat' => 8.3614,
             'lng' => 80.3886,
-'image' => '/images/lankaramaya_1779380541763.png',
+            'image' => '/images/lankarama/hero.jpg',
             'topic' => 'An ancient stupa built by King Vattagamani Abhaya, surrounded by beautiful monolithic stone pillars and ruins.',
             'history_narrative' => <<<'EOD'
 Chapter 1: The Retreat of the Great Black Sinhalese and the Weight of the Royal Chariot
@@ -737,9 +761,15 @@ Chapter 5: An Eternal Sacred Legacy
 Following its completion, King Walagamba and Queen Soma Devi dedicated the Lankarama Maha Vihara as a sacred offering to the Maha Sangha. Chronicles record that a separate convent was also designated here specifically for the community of Buddhist nuns (Bhikkhunis). Over the centuries, successive monarchs who ruled Lanka continuously renovated and preserved Lankarama. Although the stupa suffered damage during the dark eras when the Anuradhapura kingdom collapsed into wilderness, it was completely restored in the modern era, opening its gates to global pilgrims as the pristine white monument we see today.
 EOD
 ,
-            'blueprint_text' => 'Abhayagiriya, also known as the Abhayagiri Vihara, was founded in Anuradhapura during the reign of King Valagamba in the 2nd century BCE. It developed into one of ancient Sri Lanka\'s largest monastic complexes, with the Abhayagiri Dagaba as its principal monument. The stupa is a large brick structure with a hemispherical dome, harmika, and spire, rising to approximately 75 metres (246 ft) in its present restored form. The surrounding precinct contains richly carved moonstones and guard stones, monastic courtyards, image houses, bathing ponds, and the Kuttam Pokuna (Twin Ponds), whose carefully engineered water system demonstrates the technical skill of Anuradhapura\'s builders. Abhayagiriya was also an important centre of Buddhist study, religious practice, and international exchange, so its surviving architecture records both the engineering achievement and the cultural importance of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Lankarama is a compact sacred complex centred on a graceful Bubbulakara, or bubble-shaped, stupa enclosed by a circular relic house. The monument is surrounded by three concentric rows of slender monolithic granite pillars, creating a rhythmic colonnade that once supported the protective vatadage roof. Stone steps, the raised circular terrace, and the surviving pillars define a carefully ordered processional route around the relic shrine. Set within a quiet wooded precinct, Lankarama brings together the stupa, circular enclosure, and forest landscape in an architectural composition dedicated to Queen Soma Devi and the monastic community.',
+            'blueprint_image' => '/images/lankarama/hero.jpg',
             'history_audio' => '/audio/lankarama_history.mp3',
+            'gallery' => [
+                '/images/lankarama/hero.jpg',
+                '/images/lankarama/old_view.jpg',
+                '/images/lankarama/overview.jpg',
+                '/images/lankarama/hero.jpg',
+            ],
         ],
         'lovamahaprasada-1' => [
             'name' => 'Lovamahaprasada',
@@ -798,8 +828,8 @@ Before the golden age of the Anuradhapura Kingdom drew to a close, King Parakram
 King Parakramabahu realigned and re-erected all the old stone pillars that had collapsed over time, completely restoring the grand mansion. The 1,600 stone pillars we see today standing in the sacred grounds of the Anuradhapura Maha Vihara—positioned gracefully between the Jaya Sri Maha Bodhi and the Thuparama Stupa—are the monumental stone testimonies left behind by the final restoration of King Parakramabahu.
 EOD
 ,
-            'blueprint_text' => 'Abhayagiriya, also known as the Abhayagiri Vihara, was founded in Anuradhapura during the reign of King Valagamba in the 2nd century BCE. It developed into one of ancient Sri Lanka\'s largest monastic complexes, with the Abhayagiri Dagaba as its principal monument. The stupa is a large brick structure with a hemispherical dome, harmika, and spire, rising to approximately 75 metres (246 ft) in its present restored form. The surrounding precinct contains richly carved moonstones and guard stones, monastic courtyards, image houses, bathing ponds, and the Kuttam Pokuna (Twin Ponds), whose carefully engineered water system demonstrates the technical skill of Anuradhapura\'s builders. Abhayagiriya was also an important centre of Buddhist study, religious practice, and international exchange, so its surviving architecture records both the engineering achievement and the cultural importance of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Lovamahaprasada, the ancient Brazen Palace, was planned as a monumental nine-storey chapter house supported by a precisely ordered forest of 1,600 granite pillars. The surviving stone columns reveal the regular 40-by-40 structural grid that carried the palace above the ground, while the original upper levels combined timber, brick, and copper or bronze roofing. Inside, the vast complex contained monastic cells, a central refectory, and spaces for ecclesiastical gatherings, forming an architectural centre for the Maha Vihara. The remaining pillars, stone platforms, drains, and surrounding courtyards preserve the scale and disciplined geometry of one of ancient Anuradhapura\'s greatest religious buildings.',
+            'blueprint_image' => '/images/lovamahaprasada_gallery_1.jpg',
             'history_audio' => '/audio/lovamahaprasada_history.mp3',
             'gallery' => [
                 '/images/lovamahaprasada_gallery_1.jpg',
@@ -923,8 +953,8 @@ The Isurumuniya Vihara was later extensively renovated and expanded by King Kasy
 Although this monastery was eventually abandoned and swallowed by dense vegetation following the fall of the Anuradhapura Kingdom, its ruins were rediscovered and restored during the Kandyan Kingdom by King Kirti Sri Rajasinha. He commissioned the creation of the present image house and the serene reclining Buddha statue.
 EOD
 ,
-            'blueprint_text' => 'Abhayagiriya, also known as the Abhayagiri Vihara, was founded in Anuradhapura during the reign of King Valagamba in the 2nd century BCE. It developed into one of ancient Sri Lanka\'s largest monastic complexes, with the Abhayagiri Dagaba as its principal monument. The stupa is a large brick structure with a hemispherical dome, harmika, and spire, rising to approximately 75 metres (246 ft) in its present restored form. The surrounding precinct contains richly carved moonstones and guard stones, monastic courtyards, image houses, bathing ponds, and the Kuttam Pokuna (Twin Ponds), whose carefully engineered water system demonstrates the technical skill of Anuradhapura\'s builders. Abhayagiriya was also an important centre of Buddhist study, religious practice, and international exchange, so its surviving architecture records both the engineering achievement and the cultural importance of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Isurumuniya Rajamaha Viharaya is a rock temple complex shaped around natural granite outcrops, a tranquil pond, and the surrounding royal gardens. The shrine is approached by stone steps and terraces that lead to a cave temple, while carved rock panels preserve celebrated works such as the Isurumuniya Lovers, the bathing elephants, and the man with the horse head. A small stupa rises above the rock sanctuary, linking the living temple with the ancient landscape of Tisa Wewa and Ranmasu Uyana. This carefully layered arrangement of boulders, water, sculpture, and worship spaces makes Isurumuniya one of Anuradhapura\'s most distinctive examples of sacred architecture.',
+            'blueprint_image' => '/images/isurumuniya_circuit.png',
             'history_audio' => '/audio/isurumuniya_history.mp3',
             'gallery' => [
                 '/images/isurumuniya_gallery_1.jpg',
@@ -980,8 +1010,8 @@ Following the tragic collapse of the Anuradhapura Kingdom, when the entire capit
 Today, as one travels to the southern boundaries of the sacred city of Anuradhapura, situated a short distance from Isurumuniya and completely removed from the bustle of modern life, the three massive granite rock outcrops and their collection of caves rise proudly across several acres of tranquil terrain.
 EOD
 ,
-            'blueprint_text' => 'Abhayagiriya, also known as the Abhayagiri Vihara, was founded in Anuradhapura during the reign of King Valagamba in the 2nd century BCE. It developed into one of ancient Sri Lanka\'s largest monastic complexes, with the Abhayagiri Dagaba as its principal monument. The stupa is a large brick structure with a hemispherical dome, harmika, and spire, rising to approximately 75 metres (246 ft) in its present restored form. The surrounding precinct contains richly carved moonstones and guard stones, monastic courtyards, image houses, bathing ponds, and the Kuttam Pokuna (Twin Ponds), whose carefully engineered water system demonstrates the technical skill of Anuradhapura\'s builders. Abhayagiriya was also an important centre of Buddhist study, religious practice, and international exchange, so its surviving architecture records both the engineering achievement and the cultural importance of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Vessagiriya is a forest monastery arranged around three granite rock outcrops and a network of natural caves rather than a monumental brick stupa. Ancient drip-ledges cut along the cave brows diverted rainwater, while Brahmi inscriptions beneath them recorded the donors who dedicated the shelters to the monastic community. Rock-cut beds, stone paths, small stupas, and the remains of brick-built chapter houses show how the site combined austere meditation spaces with practical monastic planning. Set among trees and rugged boulders south of Anuradhapura, Vessagiriya preserves a quiet architectural relationship between the landscape, the caves, and the daily life of the monks who lived there.',
+            'blueprint_image' => '/images/vessagiriya_gallery_1.jpg',
             'history_audio' => '/audio/vessagiriya_history.mp3',
             'gallery' => [
                 '/images/vessagiriya_gallery_1.jpg',
@@ -997,8 +1027,8 @@ EOD
 'image' => '/images/srimaha_bodhi_malu_1779380597304.png',
             'topic' => 'A serene temple complex surrounding the sacred Bodhi tree, offering a profoundly peaceful environment for reflection.',
             'history_narrative' => 'The Sri Maha Bodhi Malu Vihara is a temple complex surrounding the sacred Mahamewna Gardens and the outer terraces of the Jaya Sri Maha Bodhi. It has been a site of continuous Buddhist worship, chanting, and meditation for over two millennia, serving as a sanctuary for pilgrims visiting the sacred tree.',
-            'blueprint_text' => 'Abhayagiriya, also known as the Abhayagiri Vihara, was founded in Anuradhapura during the reign of King Valagamba in the 2nd century BCE. It developed into one of ancient Sri Lanka\'s largest monastic complexes, with the Abhayagiri Dagaba as its principal monument. The stupa is a large brick structure with a hemispherical dome, harmika, and spire, rising to approximately 75 metres (246 ft) in its present restored form. The surrounding precinct contains richly carved moonstones and guard stones, monastic courtyards, image houses, bathing ponds, and the Kuttam Pokuna (Twin Ponds), whose carefully engineered water system demonstrates the technical skill of Anuradhapura\'s builders. Abhayagiriya was also an important centre of Buddhist study, religious practice, and international exchange, so its surviving architecture records both the engineering achievement and the cultural importance of ancient Anuradhapura.',
-            'blueprint_image' => '/images/abhayagiri_gallery_1.jpg',
+            'blueprint_text' => 'Sri Maha Bodhi Malu Vihara is arranged around the sacred Jaya Sri Maha Bodhi, with the ancient Bodhi tree protected by an ornate golden railing at the heart of the precinct. White-walled terraces, offering platforms, shrine spaces, Buddhist flags, and a nearby stupa create a layered devotional setting within the Mahamewna Gardens. Carefully defined paths guide pilgrims around the tree for worship while preserving the roots and historic enclosure. The composition of living landscape, ritual architecture, and open courtyards reflects the site\'s continuing role as one of Anuradhapura\'s most important centres of Buddhist pilgrimage.',
+            'blueprint_image' => '/images/jaya_sri_maha_bodhi.png',
             'history_audio' => '/audio/srimahabodhi_malu_history.mp3',
             'gallery' => [
                 '/images/srimahabodhi_malu_gallery_1.jpg',
@@ -1076,8 +1106,8 @@ Mihintale stands as the true birthplace of Sri Lankan religion, culture, literat
 Although Mihintale surrendered to nature and was swallowed by dense jungles when Anuradhapura collapsed under foreign invasions, its sacred ruins were systematically uncovered and restored in the modern era, elevated today as the most sacred 'Poson Sanctuary' for the inhabitants of Lanka.
 EOD
 ,
-            'blueprint_text' => 'Mirisawetiya Stupa is a large brick Buddhist monument in Anuradhapura traditionally attributed to King Dutugemunu, who is said to have built it around a royal sceptre containing a sacred relic. Its hemispherical dome rises from a formal circular terrace, with the harmika and spire completing the stupa\'s characteristic profile. The monument is set within a spacious sacred precinct near Tisa Wewa, where restored brickwork, stone steps, paving, and architectural remains express the scale of the ancient complex. The surrounding site is valued for its quiet setting and for the way its surviving structures preserve the engineering, ritual design, and devotional traditions of Anuradhapura.',
-            'blueprint_image' => '/images/mirisawetiya_1779380509748.png',
+            'blueprint_text' => 'Mihintale is a sacred mountain complex shaped by its dramatic granite landscape, monumental stairway, and network of ancient religious structures. The ascent of 1,840 stone steps connects lower monastic areas with the Ambasthale Dagoba, Maha Seya, Mihindu Guhava, and summit viewpoints. Rock-cut caves with drip-ledges, stone balustrades, reservoirs, refectory remains, and the Sinha Pokuna show how the site combined spiritual retreat, pilgrimage, and practical monastic planning. Together, these terraces and pathways preserve the architectural relationship between the mountain, its shrines, and the surrounding landscape where Buddhism was introduced to Sri Lanka.',
+            'blueprint_image' => '/images/mihintale_gallery_2.jpg',
             'history_audio' => '/audio/mihintale_history.mp3',
             'gallery' => [
                 '/images/mihintale_gallery_1.jpg',
@@ -1385,6 +1415,19 @@ EOD,
     
     if (isset($spotsData[$id])) {
         $spotInfo = $spotsData[$id];
+
+        // Prefer the canonical site data for known locations so stale URL parameters
+        // (for example an old image query from a previous page visit) cannot override
+        // the real content for that sacred site.
+        if ($request->query('name')) {
+            $spotInfo['name'] = $request->query('name');
+        }
+        if ($request->query('topic')) {
+            $spotInfo['topic'] = $request->query('topic');
+        }
+        if ($request->query('category')) {
+            $spotInfo['category'] = $request->query('category');
+        }
     } else {
         $spotInfo = [
             'name' => $request->query('name', $spotsData['jaya-sri']['name']),
