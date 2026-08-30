@@ -24,7 +24,8 @@ export default function Bookings({ bookings }) {
             
             <DataTable 
                 columns={columns} 
-                data={bookings} 
+                data={bookings.data} 
+                pagination={bookings}
                 emptyMessage="No bookings received yet." 
             />
         </SellerLayout>

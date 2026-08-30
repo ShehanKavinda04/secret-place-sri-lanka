@@ -19,8 +19,9 @@ export default function Earnings({ earnings }) {
             
             <DataTable 
                 columns={columns} 
-                data={earnings} 
-                emptyMessage="No earning records found." 
+                data={earnings.data} 
+                pagination={earnings}
+                emptyMessage="No earnings recorded." 
             />
         </SellerLayout>
     );

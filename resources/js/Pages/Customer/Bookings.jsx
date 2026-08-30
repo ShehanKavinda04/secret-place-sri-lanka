@@ -19,8 +19,9 @@ export default function Bookings({ bookings }) {
             
             <DataTable 
                 columns={columns} 
-                data={bookings} 
-                emptyMessage="You haven't booked any adventures yet. Time to explore!" 
+                data={bookings.data} 
+                pagination={bookings}
+                emptyMessage="You have no active bookings." 
             />
         </CustomerLayout>
     );

@@ -19,8 +19,9 @@ export default function Payments({ payments }) {
             
             <DataTable 
                 columns={columns} 
-                data={payments} 
-                emptyMessage="No transactions found." 
+                data={payments.data} 
+                pagination={payments}
+                emptyMessage="No payments recorded." 
             />
         </AdminLayout>
     );

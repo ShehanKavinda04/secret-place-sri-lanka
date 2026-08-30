@@ -19,8 +19,9 @@ export default function Orders({ orders }) {
             
             <DataTable 
                 columns={columns} 
-                data={orders} 
-                emptyMessage="No local crafts or items ordered yet." 
+                data={orders.data} 
+                pagination={orders}
+                emptyMessage="You have not placed any orders." 
             />
         </CustomerLayout>
     );

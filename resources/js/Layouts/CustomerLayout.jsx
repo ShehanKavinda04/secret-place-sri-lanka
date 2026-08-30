@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from './AuthenticatedLayout';
 import { Head, Link, usePage } from '@inertiajs/react';
 import NotificationBell from '@/Components/Dashboard/NotificationBell';
 
 export default function CustomerLayout({ header, children }) {
     const { url } = usePage();
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        if (window.Echo) {
+            window.Echo.channel('admin-notifications')
+                .listen('AdminNotificationEvent', (e) => {
+                    setNotifications(prev => [{
+                        id: Date.now(),
+                        title: e.title,
+                        message: e.message,
+                        time: 'Just now'
+                    }, ...prev]);
+                    setUnreadCount(prev => prev + 1);
+                });
+        }
+        return () => {
+            if (window.Echo) window.Echo.leaveChannel('admin-notifications');
+        }
+    }, []);
 
     const tabs = [
         { name: 'Overview', href: route('dashboard') },
@@ -43,7 +63,11 @@ export default function CustomerLayout({ header, children }) {
                 </div>
             </div>
             <div className="ml-4 flex items-center md:ml-6">
-                <NotificationBell unreadCount={2} />
+                <NotificationBell 
+                    unreadCount={unreadCount} 
+                    notifications={notifications} 
+                    onOpen={() => setUnreadCount(0)} 
+                />
             </div>
         </div>
     );

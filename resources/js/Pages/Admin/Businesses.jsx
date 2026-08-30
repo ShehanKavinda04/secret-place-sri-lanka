@@ -23,7 +23,8 @@ export default function Businesses({ businesses }) {
             
             <DataTable 
                 columns={columns} 
-                data={businesses} 
+                data={businesses.data} 
+                pagination={businesses}
                 emptyMessage="No business listings." 
             />
         </AdminLayout>

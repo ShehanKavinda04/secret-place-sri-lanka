@@ -31,7 +31,8 @@ export default function Businesses({ businesses }) {
 
             <DataTable 
                 columns={columns} 
-                data={businesses} 
+                data={businesses.data} 
+                pagination={businesses}
                 emptyMessage="You haven't listed any businesses yet." 
             />
         </SellerLayout>

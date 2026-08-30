@@ -24,7 +24,8 @@ export default function Users({ users }) {
             
             <DataTable 
                 columns={columns} 
-                data={users} 
+                data={users.data} 
+                pagination={users}
                 emptyMessage="No users found." 
             />
         </AdminLayout>

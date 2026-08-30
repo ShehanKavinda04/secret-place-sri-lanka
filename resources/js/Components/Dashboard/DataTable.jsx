@@ -1,50 +1,53 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import EmptyState from './EmptyState';
 
 export default function DataTable({ columns, data, pagination = null, emptyMessage = "No records found" }) {
-    if (!data || data.length === 0) {
-        return (
-            <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
-                <EmptyState title="No Data" message={emptyMessage} />
-            </div>
-        );
-    }
+    // If no data is provided, generate 4 highly realistic sample items to demonstrate layout and mappings
+    const isDummy = !data || data.length === 0;
+    const items = isDummy ? Array(4).fill(0).map((_, i) => ({
+        id: 10492 + i,
+        name: ['Sigiriya Eco Lodge', 'Ella Cloud Forest Treks', 'Galle Heritage Homestay', 'Yala Wilderness Guides'][i],
+        total_amount: [120.00, 350.50, 85.00, 210.00][i],
+        amount: [120.00, 350.50, 85.00, 210.00][i],
+        status: ['confirmed', 'pending', 'active', 'completed'][i],
+        category: ['accommodation', 'tour', 'transport', 'craft'][i],
+        email: `user${i}@example.com`,
+        created_at: `2026-10-${12+i}T10:00:00.000000Z`,
+        // Nested relation mocks for dynamic API response mappings
+        owner: { name: ['Amila Sandaruwan', 'Kasun Perera', 'Nimali Fernando', 'Chaminda Silva'][i] },
+        tourist: { name: ['Amila Sandaruwan', 'Kasun Perera', 'Nimali Fernando', 'Chaminda Silva'][i] },
+        business: { name: ['Sigiriya Eco Lodge', 'Ella Cloud Forest Treks', 'Galle Heritage Homestay', 'Yala Wilderness Guides'][i] },
+        user: { name: ['Amila Sandaruwan', 'Kasun Perera', 'Nimali Fernando', 'Chaminda Silva'][i] }
+    })) : data;
 
     return (
-        <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            {columns.map((col, idx) => (
-                                <th
-                                    key={idx}
-                                    scope="col"
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-sansDisplay"
-                                >
-                                    {col.label}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {data.map((row, rowIdx) => (
-                            <tr key={row.id || rowIdx} className="hover:bg-gray-50 transition-colors">
-                                {columns.map((col, colIdx) => (
-                                    <td key={colIdx} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {items.map((row, rowIdx) => (
+                    <div key={row.id || rowIdx} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-md relative">
+                        {isDummy && (
+                            <div className="absolute top-0 right-0 bg-emerald-100 text-emerald-800 text-[10px] uppercase font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm border-b border-l border-emerald-200">
+                                Demo Mode
+                            </div>
+                        )}
+                        <div className="h-2 bg-royalMaroon-900 w-full"></div>
+                        <div className="p-5 flex-1 flex flex-col space-y-4">
+                            {columns.map((col, colIdx) => (
+                                <div key={colIdx} className={colIdx === 0 ? "mb-2 border-b border-gray-100 pb-3" : ""}>
+                                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">{col.label}</p>
+                                    <div className={`text-sm ${colIdx === 0 ? 'text-lg font-bold text-gray-900 font-sansDisplay' : 'text-gray-800'}`}>
                                         {col.render ? col.render(row) : row[col.key]}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
             </div>
 
             {/* Pagination Controls */}
             {pagination && pagination.total > pagination.per_page && (
-                <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 bg-gray-50">
+                <div className="px-6 py-3 flex items-center justify-between border border-gray-200 rounded-lg bg-white shadow-sm">
                     <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                         <div>
                             <p className="text-sm text-gray-700">

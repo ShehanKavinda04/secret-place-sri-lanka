@@ -19,8 +19,9 @@ export default function Bookings({ bookings }) {
             
             <DataTable 
                 columns={columns} 
-                data={bookings} 
-                emptyMessage="No bookings in the system." 
+                data={bookings.data} 
+                pagination={bookings}
+                emptyMessage="No bookings found." 
             />
         </AdminLayout>
     );
