@@ -1,10 +1,11 @@
 import React from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import StatCard from '@/Components/Dashboard/StatCard';
 import { Users, Store, Calendar, DollarSign } from 'lucide-react';
 import ChartCard from '@/Components/Dashboard/ChartCard';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import Modal from '@/Components/Modal';
 
 export default function Overview({ stats, pendingApprovals = [] }) {
     const growthData = [
@@ -81,6 +82,16 @@ function PendingApprovalsList({ initialApprovals }) {
         })) : initialApprovals;
     });
 
+    const [selectedApproval, setSelectedApproval] = React.useState(null);
+
+    const handleAction = (actionType) => {
+        if (!selectedApproval) return;
+        
+        // Simulating API resolution
+        setItems(prev => prev.filter(i => i.id !== selectedApproval.id));
+        setSelectedApproval(null);
+    };
+
     const handleReview = (id, name) => {
         // In a real app, this would route to a review page or fire an API call.
         // For demonstration, we simulate processing the application by updating component state.
@@ -94,34 +105,77 @@ function PendingApprovalsList({ initialApprovals }) {
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
-            {items.map(approval => (
-                <div key={approval.id} className="relative bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                    {approval.isDummy && (
-                        <div className="absolute top-0 right-0 bg-emerald-100 text-emerald-800 text-[9px] uppercase font-bold px-2 py-0.5 rounded-bl-lg z-10 border-b border-l border-emerald-200">
-                            Demo
+        <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+                {items.map(approval => (
+                    <div key={approval.id} className="relative bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                        {approval.isDummy && (
+                            <div className="absolute top-0 right-0 bg-emerald-100 text-emerald-800 text-[9px] uppercase font-bold px-2 py-0.5 rounded-bl-lg z-10 border-b border-l border-emerald-200">
+                                Demo
+                            </div>
+                        )}
+                        <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                                <p className="text-sm font-bold text-gray-900 truncate" title={approval.name}>{approval.name}</p>
+                            </div>
+                            <p className="text-xs text-gray-500 mb-2">By {approval.owner?.name || 'Unknown'}</p>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-800 uppercase tracking-wider">
+                                {approval.category || approval.type}
+                            </span>
                         </div>
-                    )}
-                    <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                            <p className="text-sm font-bold text-gray-900 truncate" title={approval.name}>{approval.name}</p>
+                        <div className="mt-4 pt-3 border-t border-gray-50">
+                            <button 
+                                onClick={() => setSelectedApproval(approval)}
+                                className="block text-center w-full py-1.5 bg-royalMaroon-50 text-royalMaroon-700 text-xs font-bold rounded-lg hover:bg-royalMaroon-100 transition-colors"
+                            >
+                                Review Application
+                            </button>
                         </div>
-                        <p className="text-xs text-gray-500 mb-2">By {approval.owner?.name || 'Unknown'}</p>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-800 uppercase tracking-wider">
-                            {approval.category || approval.type}
-                        </span>
                     </div>
-                    <div className="mt-4 pt-3 border-t border-gray-50">
-                        <button 
-                            onClick={() => handleReview(approval.id, approval.name)}
-                            className="w-full py-1.5 bg-royalMaroon-50 text-royalMaroon-700 text-xs font-bold rounded-lg hover:bg-royalMaroon-100 transition-colors"
-                        >
-                            Review Application
-                        </button>
+                ))}
+            </div>
+
+            <Modal show={selectedApproval !== null} onClose={() => setSelectedApproval(null)}>
+                {selectedApproval && (
+                    <div className="p-6">
+                        <h2 className="text-lg font-medium text-gray-900 font-sansDisplay mb-2">
+                            Review Application: {selectedApproval.name}
+                        </h2>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Review the details submitted by {selectedApproval.owner?.name}.
+                        </p>
+                        
+                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 space-y-3">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <span className="block text-xs font-medium text-gray-500">Category</span>
+                                    <span className="text-sm font-semibold text-gray-900 capitalize">{selectedApproval.category || selectedApproval.type}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-xs font-medium text-gray-500">Host Name</span>
+                                    <span className="text-sm font-semibold text-gray-900">{selectedApproval.owner?.name}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => handleAction('reject')}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                            >
+                                Reject
+                            </button>
+                            <button
+                                onClick={() => handleAction('approve')}
+                                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700"
+                            >
+                                Approve
+                            </button>
+                        </div>
                     </div>
-                </div>
-            ))}
-        </div>
+                )}
+            </Modal>
+        </>
     );
 }

@@ -722,9 +722,14 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
     };
 
     const [guests, setGuests] = useState(2);
-    const [checkIn, setCheckIn] = useState('2026-08-15');
-    const [checkOut, setCheckOut] = useState('2026-08-18');
-    const [nights, setNights] = useState(3);
+    const todayStr = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    
+    const [checkIn, setCheckIn] = useState(todayStr);
+    const [checkOut, setCheckOut] = useState(tomorrowStr);
+    const [nights, setNights] = useState(1);
     const [showCheckout, setShowCheckout] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
     const [selectedAddons, setSelectedAddons] = useState([]);
@@ -777,7 +782,11 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
     useEffect(() => {
         const start = new Date(checkIn);
         const end = new Date(checkOut);
-        if (start && end && end > start) {
+        if (start >= end) {
+            const newEnd = new Date(start);
+            newEnd.setDate(newEnd.getDate() + 1);
+            setCheckOut(newEnd.toISOString().split('T')[0]);
+        } else if (start && end) {
             const diffTime = Math.abs(end - start);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             setNights(diffDays);
@@ -863,7 +872,13 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
         } catch (error) {
             console.error('Reservation error:', error);
             setProcessing(false);
-            alert('Failed to process reservation. Please try again.');
+            if (error.response && error.response.status === 409) {
+                alert(error.response.data.message || 'This room is already booked for the selected dates. Please choose different dates.');
+            } else if (error.response && error.response.status === 422) {
+                alert('Validation error: ' + (error.response.data.message || 'Please check your details.'));
+            } else {
+                alert('Failed to process reservation. Please try again.');
+            }
         }
     };
 

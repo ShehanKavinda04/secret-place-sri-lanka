@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import DataTable from '@/Components/Dashboard/DataTable';
 import StatusBadge from '@/Components/Dashboard/StatusBadge';
 
@@ -12,7 +12,7 @@ export default function Businesses({ businesses }) {
         { label: 'Status', render: (row) => <StatusBadge status={row.status} /> },
         { label: 'Actions', render: (row) => (
             <div className="flex gap-3">
-                <button className="text-royalMaroon-700 hover:text-royalMaroon-900 font-medium text-sm">Review</button>
+                <Link href="/admin/businesses" className="text-royalMaroon-700 hover:text-royalMaroon-900 font-medium text-sm">Review</Link>
             </div>
         )},
     ];
