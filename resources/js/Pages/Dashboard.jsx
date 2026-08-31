@@ -6,7 +6,7 @@ import { Calendar, ShoppingBag, Heart, Clock } from 'lucide-react';
 import ChartCard from '@/Components/Dashboard/ChartCard';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
-export default function Dashboard({ stats }) {
+export default function Dashboard({ stats = { upcoming_bookings: 0, completed_bookings: 0, wishlist_items: 0, active_orders: 0 } }) {
     const activityData = [
         { name: 'Jan', bookings: 0 },
         { name: 'Feb', bookings: 1 },

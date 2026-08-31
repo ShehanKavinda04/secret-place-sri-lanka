@@ -1,181 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, Link } from '@inertiajs/react';
-import StatCard from '@/Components/Dashboard/StatCard';
-import { Users, Store, Calendar, DollarSign } from 'lucide-react';
-import ChartCard from '@/Components/Dashboard/ChartCard';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import Modal from '@/Components/Modal';
+import { Head } from '@inertiajs/react';
+import { LayoutDashboard, Store, Map, CreditCard, ShoppingBag, ShieldCheck } from 'lucide-react';
+
+import ExecutiveKPIs from './Components/ExecutiveKPIs';
+import MerchantOnboardingHub from './Components/MerchantOnboardingHub';
+import CatalogModeration from './Components/CatalogModeration';
+import FinancialEngine from './Components/FinancialEngine';
+import OperationsMonitor from './Components/OperationsMonitor';
+import SecurityCompliance from './Components/SecurityCompliance';
 
 export default function Overview({ stats, pendingApprovals = [] }) {
-    const growthData = [
-        { name: 'Jan', users: 400, bookings: 240 },
-        { name: 'Feb', users: 300, bookings: 139 },
-        { name: 'Mar', users: 200, bookings: 980 },
-        { name: 'Apr', users: 278, bookings: 390 },
-        { name: 'May', users: 189, bookings: 480 },
-        { name: 'Jun', users: 239, bookings: 380 },
+    const [activeTab, setActiveTab] = useState('kpi');
+
+    const tabs = [
+        { id: 'kpi', name: 'Executive KPIs', icon: LayoutDashboard },
+        { id: 'onboarding', name: 'Onboarding Hub', icon: Store },
+        { id: 'catalog', name: 'Catalog & Maps', icon: Map },
+        { id: 'finance', name: 'Financial Engine', icon: CreditCard },
+        { id: 'operations', name: 'Operations Monitor', icon: ShoppingBag },
+        { id: 'security', name: 'Security & Broadcast', icon: ShieldCheck },
     ];
 
     return (
-        <AdminLayout header="Platform Overview">
-            <Head title="Admin Dashboard" />
+        <AdminLayout header="Super Admin Control Center">
+            <Head title="Super Admin Dashboard" />
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-                <StatCard 
-                    title="Total Users" 
-                    value={stats.total_users} 
-                    icon={Users} 
-                />
-                <StatCard 
-                    title="Active Businesses" 
-                    value={stats.active_businesses} 
-                    icon={Store} 
-                />
-                <StatCard 
-                    title="Total Bookings" 
-                    value={stats.total_bookings} 
-                    icon={Calendar} 
-                />
-                <StatCard 
-                    title="Platform Revenue" 
-                    value={`$${stats.total_revenue}`} 
-                    icon={DollarSign} 
-                />
+            <div className="mb-8 overflow-x-auto border-b border-gray-200">
+                <nav className="flex space-x-8 min-w-max px-2" aria-label="Tabs">
+                    {tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        const isActive = activeTab === tab.id;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`
+                                    group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                                    ${isActive 
+                                        ? 'border-indigo-500 text-indigo-600' 
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }
+                                `}
+                            >
+                                <Icon className={`
+                                    -ml-0.5 mr-2 h-5 w-5 
+                                    ${isActive ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500'}
+                                `} />
+                                <span>{tab.name}</span>
+                            </button>
+                        );
+                    })}
+                </nav>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <ChartCard title="Platform Growth" subtitle="Users vs Bookings (Last 6 Months)">
-                    <LineChart data={growthData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                        <Tooltip 
-                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        />
-                        <Line type="monotone" dataKey="users" stroke="#8A1024" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                        <Line type="monotone" dataKey="bookings" stroke="#D4AF37" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                    </LineChart>
-                </ChartCard>
-
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col">
-                    <h3 className="text-lg font-medium text-gray-900 font-sansDisplay mb-4">Pending Approvals</h3>
-                    
-                    <PendingApprovalsList initialApprovals={pendingApprovals} />
-                </div>
+            <div className="min-h-[600px]">
+                {activeTab === 'kpi' && <ExecutiveKPIs />}
+                {activeTab === 'onboarding' && <MerchantOnboardingHub />}
+                {activeTab === 'catalog' && <CatalogModeration />}
+                {activeTab === 'finance' && <FinancialEngine />}
+                {activeTab === 'operations' && <OperationsMonitor />}
+                {activeTab === 'security' && <SecurityCompliance />}
             </div>
         </AdminLayout>
     );
 }
 
-// Extracted into a local component to manage state and event bindings
-function PendingApprovalsList({ initialApprovals }) {
-    const isDummy = !initialApprovals || initialApprovals.length === 0;
-    
-    const [items, setItems] = React.useState(() => {
-        return isDummy ? Array(4).fill(0).map((_, i) => ({
-            id: `sample-${i}`,
-            name: ['Ella Eco Lodge', 'Kandy Spice Tours', 'Galle Fort Stays', 'Yala Safari Jeeps'][i],
-            owner: { name: ['Amila Sandaruwan', 'Kasun Perera', 'Nimali Fernando', 'Chaminda Silva'][i] },
-            category: ['accommodation', 'tour', 'accommodation', 'transport'][i],
-            isDummy: true
-        })) : initialApprovals;
-    });
-
-    const [selectedApproval, setSelectedApproval] = React.useState(null);
-
-    const handleAction = (actionType) => {
-        if (!selectedApproval) return;
-        
-        // Simulating API resolution
-        setItems(prev => prev.filter(i => i.id !== selectedApproval.id));
-        setSelectedApproval(null);
-    };
-
-    const handleReview = (id, name) => {
-        // In a real app, this would route to a review page or fire an API call.
-        // For demonstration, we simulate processing the application by updating component state.
-        if (confirm(`Begin review process for ${name}?`)) {
-            setItems(prevItems => prevItems.filter(item => item.id !== id));
-        }
-    };
-
-    if (items.length === 0) {
-        return <p className="text-sm text-gray-500">No pending business or host approvals.</p>;
-    }
-
-    return (
-        <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
-                {items.map(approval => (
-                    <div key={approval.id} className="relative bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                        {approval.isDummy && (
-                            <div className="absolute top-0 right-0 bg-emerald-100 text-emerald-800 text-[9px] uppercase font-bold px-2 py-0.5 rounded-bl-lg z-10 border-b border-l border-emerald-200">
-                                Demo
-                            </div>
-                        )}
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                                <p className="text-sm font-bold text-gray-900 truncate" title={approval.name}>{approval.name}</p>
-                            </div>
-                            <p className="text-xs text-gray-500 mb-2">By {approval.owner?.name || 'Unknown'}</p>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-800 uppercase tracking-wider">
-                                {approval.category || approval.type}
-                            </span>
-                        </div>
-                        <div className="mt-4 pt-3 border-t border-gray-50">
-                            <button 
-                                onClick={() => setSelectedApproval(approval)}
-                                className="block text-center w-full py-1.5 bg-royalMaroon-50 text-royalMaroon-700 text-xs font-bold rounded-lg hover:bg-royalMaroon-100 transition-colors"
-                            >
-                                Review Application
-                            </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            <Modal show={selectedApproval !== null} onClose={() => setSelectedApproval(null)}>
-                {selectedApproval && (
-                    <div className="p-6">
-                        <h2 className="text-lg font-medium text-gray-900 font-sansDisplay mb-2">
-                            Review Application: {selectedApproval.name}
-                        </h2>
-                        <p className="text-sm text-gray-600 mb-4">
-                            Review the details submitted by {selectedApproval.owner?.name}.
-                        </p>
-                        
-                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 space-y-3">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <span className="block text-xs font-medium text-gray-500">Category</span>
-                                    <span className="text-sm font-semibold text-gray-900 capitalize">{selectedApproval.category || selectedApproval.type}</span>
-                                </div>
-                                <div>
-                                    <span className="block text-xs font-medium text-gray-500">Host Name</span>
-                                    <span className="text-sm font-semibold text-gray-900">{selectedApproval.owner?.name}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => handleAction('reject')}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                            >
-                                Reject
-                            </button>
-                            <button
-                                onClick={() => handleAction('approve')}
-                                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700"
-                            >
-                                Approve
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </Modal>
-        </>
-    );
-}
