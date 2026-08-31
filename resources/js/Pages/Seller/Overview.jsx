@@ -1,70 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SellerLayout from '@/Layouts/SellerLayout';
 import { Head } from '@inertiajs/react';
-import StatCard from '@/Components/Dashboard/StatCard';
-import { DollarSign, Store, Users, Star } from 'lucide-react';
-import ChartCard from '@/Components/Dashboard/ChartCard';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import HospitalityKPIs from './Components/HospitalityKPIs';
+import ListingManager from './Components/ListingManager';
+import ReservationEngine from './Components/ReservationEngine';
+import FinancialLedger from './Components/FinancialLedger';
+import ReviewSentiment from './Components/ReviewSentiment';
+import { LayoutDashboard, Home, Calendar, DollarSign, MessageSquare } from 'lucide-react';
 
 export default function Overview({ stats }) {
-    const revenueData = [
-        { name: 'Jan', revenue: 4000 },
-        { name: 'Feb', revenue: 3000 },
-        { name: 'Mar', revenue: 2000 },
-        { name: 'Apr', revenue: 2780 },
-        { name: 'May', revenue: 1890 },
-        { name: 'Jun', revenue: 2390 },
+    const [activeTab, setActiveTab] = useState('overview');
+
+    const tabs = [
+        { id: 'overview', name: 'Dashboard', icon: LayoutDashboard },
+        { id: 'listings', name: 'Listings', icon: Home },
+        { id: 'reservations', name: 'Reservations', icon: Calendar },
+        { id: 'financials', name: 'Financials', icon: DollarSign },
+        { id: 'reviews', name: 'Reviews', icon: MessageSquare },
     ];
 
     return (
-        <SellerLayout header="Dashboard">
-            <Head title="Seller Dashboard" />
+        <SellerLayout header="Host Portal">
+            <Head title="Host Dashboard - Secret Place Sri Lanka" />
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-                <StatCard 
-                    title="Total Revenue" 
-                    value={`$${stats.total_earnings}`} 
-                    icon={DollarSign} 
-                    trend={12.5}
-                    trendLabel="vs last month"
-                />
-                <StatCard 
-                    title="Active Businesses" 
-                    value={stats.active_businesses} 
-                    icon={Store} 
-                />
-                <StatCard 
-                    title="Pending Bookings" 
-                    value={stats.pending_bookings} 
-                    icon={Users} 
-                />
-                <StatCard 
-                    title="Average Rating" 
-                    value={stats.rating.toFixed(1)} 
-                    icon={Star} 
-                />
+            <div className="bg-white px-2 py-2 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap gap-2 mb-6">
+                {tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ease-in-out
+                            ${activeTab === tab.id 
+                                ? 'bg-[#1B4D3E] text-white shadow-md shadow-[#1B4D3E]/20' 
+                                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                            }
+                        `}
+                    >
+                        <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-white' : 'text-gray-400'}`} />
+                        {tab.name}
+                    </button>
+                ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <ChartCard title="Revenue Overview" subtitle="Earnings over the last 6 months">
-                    <BarChart data={revenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                        <Tooltip 
-                            cursor={{ fill: '#f3f4f6' }}
-                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        />
-                        <Bar dataKey="revenue" fill="#D4AF37" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                </ChartCard>
-
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-medium text-gray-900 font-sansDisplay mb-4">Recent Bookings</h3>
-                    <div className="space-y-4">
-                        <p className="text-sm text-gray-500">No recent bookings found.</p>
-                    </div>
-                </div>
+            <div className="mt-4">
+                {activeTab === 'overview' && <HospitalityKPIs stats={stats} />}
+                {activeTab === 'listings' && <ListingManager />}
+                {activeTab === 'reservations' && <ReservationEngine />}
+                {activeTab === 'financials' && <FinancialLedger />}
+                {activeTab === 'reviews' && <ReviewSentiment />}
             </div>
         </SellerLayout>
     );
