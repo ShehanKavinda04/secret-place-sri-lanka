@@ -100,7 +100,7 @@ export default function ExecutiveKPIs({ initialData }) {
                         <p className="text-sm text-gray-500">Combined revenue from physical products and accommodation bookings.</p>
                     </div>
                     <select 
-                        className="text-sm border-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        className="text-sm bg-white text-slate-900 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm px-3 py-2"
                         value={timeFilter}
                         onChange={(e) => setTimeFilter(e.target.value)}
                     >

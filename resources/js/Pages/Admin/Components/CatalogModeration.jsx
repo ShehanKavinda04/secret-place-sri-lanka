@@ -123,7 +123,7 @@ export default function CatalogModeration({ initialData = [] }) {
                             placeholder="Search flagged items..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500" 
+                            className="w-full pl-9 pr-4 py-2 border border-gray-300 bg-white text-slate-900 placeholder-slate-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm" 
                         />
                     </div>
                     

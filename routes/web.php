@@ -19,13 +19,34 @@ Route::post('/api/wishlists/toggle', [WishlistController::class, 'toggle']);
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users');
+    Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
     Route::get('/businesses', [\App\Http\Controllers\Admin\BusinessApprovalController::class, 'index'])->name('businesses');
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings');
     Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
     
-    Route::post('/admin/security/broadcast', function() {
-        // Mock global platform broadcast
-        return response()->json(['success' => true]);
+    Route::post('/admin/security/broadcast', function(\Illuminate\Http\Request $request) {
+        $validated = $request->validate([
+            'subject' => 'required|string',
+            'message' => 'required|string',
+            'channels' => 'required|array',
+        ]);
+
+        $channels = [];
+        if (!empty($validated['channels']['email'])) $channels[] = 'email';
+        if (!empty($validated['channels']['sms'])) $channels[] = 'sms';
+        if (!empty($validated['channels']['push'])) $channels[] = 'push';
+
+        $broadcast = \App\Models\Broadcast::create([
+            'subject' => $validated['subject'],
+            'message' => $validated['message'],
+            'channels' => $channels,
+            'status' => 'pending',
+            'target_count' => 0,
+        ]);
+
+        \App\Jobs\ProcessBroadcastDispatch::dispatch($broadcast->id);
+
+        return response()->json(['success' => true, 'broadcast_id' => $broadcast->id]);
     });
     
     Route::post('/admin/security/scan', function() {
