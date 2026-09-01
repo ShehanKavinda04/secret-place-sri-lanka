@@ -55,6 +55,20 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         return response()->json(['success' => true]);
     });
     
+    Route::post('/finance/rates', function (\Illuminate\Http\Request $request) {
+        $rates = $request->input('rates');
+        if (isset($rates['host'])) \Illuminate\Support\Facades\Cache::put('commission_rate_host', $rates['host']);
+        if (isset($rates['merchant'])) \Illuminate\Support\Facades\Cache::put('commission_rate_merchant', $rates['merchant']);
+        event(new \App\Events\FinanceUpdated(\App\Http\Controllers\Admin\DashboardController::getFinanceData()));
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/finance/payout/{id}/execute', function ($id) {
+        // Mock execution
+        event(new \App\Events\FinanceUpdated(\App\Http\Controllers\Admin\DashboardController::getFinanceData()));
+        return response()->json(['success' => true]);
+    });
+
     Route::post('/kpi/simulate', function () {
         event(new \App\Events\DashboardKpiUpdated(\App\Http\Controllers\Admin\DashboardController::getKpiData()));
         return response()->json(['success' => true]);

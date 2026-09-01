@@ -106,11 +106,17 @@ class DashboardController extends Controller
         $currentMonth = Carbon::now()->startOfMonth();
         
         $ordersMTD = Order::where('created_at', '>=', $currentMonth)->sum('total_amount');
-        $paymentsMTD = Payment::where('status', 'completed')->where('created_at', '>=', $currentMonth)->sum('amount');
+        $paymentsMTD = Payment::where('status', 'success')->where('created_at', '>=', $currentMonth)->sum('amount');
         
+        $hostRate = \Illuminate\Support\Facades\Cache::get('commission_rate_host', 12);
+        $merchantRate = \Illuminate\Support\Facades\Cache::get('commission_rate_merchant', 8);
+
         $grossSales = $ordersMTD + $paymentsMTD;
         $paymentGatewayFees = $grossSales * 0.025;
-        $netPlatformProfit = $grossSales * 0.10;
+        
+        // Calculate Platform Profit using distinct commission rates
+        $netPlatformProfit = ($ordersMTD * ($merchantRate / 100)) + ($paymentsMTD * ($hostRate / 100));
+        
         $vendorNetEarnings = $grossSales - $paymentGatewayFees - $netPlatformProfit;
         
         $payouts = [
@@ -122,11 +128,13 @@ class DashboardController extends Controller
 
         return [
             'rates' => [
-                'host' => 12,
-                'merchant' => 8
+                'host' => $hostRate,
+                'merchant' => $merchantRate
             ],
             'ledger' => [
                 'grossSales' => $grossSales,
+                'ordersMTD' => $ordersMTD,
+                'paymentsMTD' => $paymentsMTD,
                 'paymentFees' => $paymentGatewayFees,
                 'netProfit' => $netPlatformProfit,
                 'vendorEarnings' => $vendorNetEarnings
