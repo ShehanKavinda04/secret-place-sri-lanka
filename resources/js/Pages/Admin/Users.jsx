@@ -36,6 +36,22 @@ export default function Users({ users, stats, filters }) {
         return () => clearTimeout(timer);
     }, [searchQuery, roleFilter]);
 
+    // Real-time synchronization
+    useEffect(() => {
+        if (window.Echo) {
+            window.Echo.channel('admin-dashboard')
+                .listen('UsersUpdated', (e) => {
+                    console.log('Real-time UsersUpdated event received', e);
+                    router.reload({ only: ['users', 'stats'], preserveScroll: true, preserveState: true });
+                });
+        }
+        return () => {
+            if (window.Echo) {
+                window.Echo.leaveChannel('admin-dashboard');
+            }
+        };
+    }, []);
+
     const openEditModal = (user) => {
         setEditingUser(user);
         setData('role', user.role);

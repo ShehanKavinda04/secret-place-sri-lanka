@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
+use App\Events\UsersUpdated;
 
 class UserController extends Controller
 {
@@ -51,6 +52,8 @@ class UserController extends Controller
 
         $user->role = $validated['role'];
         $user->save();
+
+        broadcast(new UsersUpdated("User role updated successfully."))->toOthers();
 
         return redirect()->back();
     }

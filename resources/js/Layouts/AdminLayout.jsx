@@ -37,7 +37,7 @@ export default function AdminLayout({ header, children }) {
         { name: 'Merchant Hub', href: route('admin.businesses'), icon: Store },
         { name: 'Operations', href: route('admin.bookings'), icon: CalendarCheck },
         { name: 'Finance Engine', href: route('admin.payments'), icon: CreditCard },
-        { name: 'Security Logs', href: '#', icon: ShieldAlert },
+        { name: 'Security Logs', href: route('admin.security-logs'), icon: ShieldAlert },
     ];
 
     return (

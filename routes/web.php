@@ -23,6 +23,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/businesses', [\App\Http\Controllers\Admin\BusinessApprovalController::class, 'index'])->name('businesses');
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings');
     Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
+    Route::get('/security-logs', [\App\Http\Controllers\Admin\SecurityLogController::class, 'index'])->name('security-logs');
     
     Route::post('/admin/security/broadcast', function(\Illuminate\Http\Request $request) {
         $validated = $request->validate([
