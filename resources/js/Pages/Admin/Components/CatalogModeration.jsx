@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -21,14 +21,26 @@ const redIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
-export default function CatalogModeration() {
-    const locations = [
+export default function CatalogModeration({ initialData = [] }) {
+    const [locations, setLocations] = useState(initialData.length > 0 ? initialData : [
         { id: 1, name: 'Eco Cabin - Ella', lat: 6.8667, lng: 81.0466, status: 'verified', type: 'Host' },
         { id: 2, name: 'Kandy Craft Shop', lat: 7.2906, lng: 80.6337, status: 'flagged', type: 'Merchant', issue: 'Inappropriate images reported' },
         { id: 3, name: 'Galle Fort Villa', lat: 6.0328, lng: 80.2168, status: 'verified', type: 'Host' },
         { id: 4, name: 'Sigiriya Safari Tours', lat: 7.9570, lng: 80.7603, status: 'pending', type: 'Host' },
         { id: 5, name: 'Colombo Gem Exporters', lat: 6.9271, lng: 79.8612, status: 'flagged', type: 'Merchant', issue: 'Pricing anomaly detected' },
-    ];
+    ]);
+
+    useEffect(() => {
+        if (window.Echo) {
+            const channel = window.Echo.channel('admin-dashboard');
+            channel.listen('CatalogUpdated', (e) => {
+                if (e.catalogData) {
+                    setLocations(e.catalogData);
+                }
+            });
+            // We don't strictly leave the channel since other components share it, or we manage it carefully.
+        }
+    }, []);
 
     const [activeTab, setActiveTab] = useState('map');
 

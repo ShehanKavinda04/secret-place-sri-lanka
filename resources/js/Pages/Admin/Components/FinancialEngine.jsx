@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DollarSign, Percent, ArrowRightLeft, CheckCircle2, DownloadCloud, Landmark } from 'lucide-react';
 
-export default function FinancialEngine() {
-    const [payouts] = useState([
+export default function FinancialEngine({ initialData = null }) {
+    const defaultPayouts = [
         { id: 'PO-9921', vendor: 'Natures Grace Eco Lodge', amount: 'LKR 245,000', method: 'Direct Bank (BOC)', status: 'processing', date: '2026-08-31' },
         { id: 'PO-9922', vendor: 'Ceylon Spice Co.', amount: 'LKR 84,500', method: 'LankaQR', status: 'completed', date: '2026-08-30' },
         { id: 'PO-9923', vendor: 'Kandy Brassworks', amount: 'LKR 12,000', method: 'PayHere Wallet', status: 'completed', date: '2026-08-30' },
         { id: 'PO-9924', vendor: 'Galle Heritage Villa', amount: 'LKR 450,000', method: 'Direct Bank (ComBank)', status: 'pending', date: '2026-08-31' },
-    ]);
+    ];
+
+    const [rates, setRates] = useState(initialData?.rates || { host: 12, merchant: 8 });
+    const [ledger, setLedger] = useState(initialData?.ledger || { grossSales: 0, paymentFees: 0, netProfit: 0, vendorEarnings: 0 });
+    const [payouts, setPayouts] = useState(initialData?.payouts || defaultPayouts);
+
+    useEffect(() => {
+        if (window.Echo) {
+            const channel = window.Echo.channel('admin-dashboard');
+            channel.listen('FinanceUpdated', (e) => {
+                if (e.financeData) {
+                    if (e.financeData.rates) setRates(e.financeData.rates);
+                    if (e.financeData.ledger) setLedger(e.financeData.ledger);
+                    if (e.financeData.payouts) setPayouts(e.financeData.payouts);
+                }
+            });
+        }
+    }, []);
+
+    const formatLKR = (val) => new Intl.NumberFormat('en-LK', { style: 'currency', currency: 'LKR' }).format(val);
 
     return (
         <div className="space-y-6 animate-fadeIn">
@@ -21,16 +40,16 @@ export default function FinancialEngine() {
                         <div>
                             <div className="flex justify-between mb-1">
                                 <label className="text-sm font-medium text-gray-700">Accommodation/Host Base Rate</label>
-                                <span className="text-sm font-bold text-indigo-600">12%</span>
+                                <span className="text-sm font-bold text-indigo-600">{rates.host}%</span>
                             </div>
-                            <input type="range" min="0" max="30" defaultValue="12" className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" />
+                            <input type="range" min="0" max="30" value={rates.host} readOnly className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" />
                         </div>
                         <div>
                             <div className="flex justify-between mb-1">
                                 <label className="text-sm font-medium text-gray-700">Physical Product/Merchant Base Rate</label>
-                                <span className="text-sm font-bold text-emerald-600">8%</span>
+                                <span className="text-sm font-bold text-emerald-600">{rates.merchant}%</span>
                             </div>
-                            <input type="range" min="0" max="30" defaultValue="8" className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-500" />
+                            <input type="range" min="0" max="30" value={rates.merchant} readOnly className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-500" />
                         </div>
                         <button className="w-full py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">
                             Apply Changes
@@ -46,19 +65,19 @@ export default function FinancialEngine() {
                     <div className="space-y-4">
                         <div className="flex justify-between items-center py-2 border-b border-slate-700">
                             <span className="text-slate-400">Gross Sales Volume</span>
-                            <span className="font-semibold text-white">LKR 42,500,000</span>
+                            <span className="font-semibold text-white">{formatLKR(ledger.grossSales)}</span>
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-slate-700">
                             <span className="text-slate-400">Payment Gateway Fees (2.5%)</span>
-                            <span className="font-semibold text-red-400">- LKR 1,062,500</span>
+                            <span className="font-semibold text-red-400">- {formatLKR(ledger.paymentFees)}</span>
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-slate-700">
                             <span className="text-slate-400">Vendor Net Earnings</span>
-                            <span className="font-semibold text-emerald-400">LKR 37,187,500</span>
+                            <span className="font-semibold text-emerald-400">{formatLKR(ledger.vendorEarnings)}</span>
                         </div>
                         <div className="flex justify-between items-center py-2 pt-4">
                             <span className="text-indigo-200 font-bold">Net Platform Profit</span>
-                            <span className="font-bold text-xl text-indigo-400">LKR 4,250,000</span>
+                            <span className="font-bold text-xl text-indigo-400">{formatLKR(ledger.netProfit)}</span>
                         </div>
                     </div>
                 </div>

@@ -22,6 +22,41 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/businesses', [\App\Http\Controllers\Admin\BusinessApprovalController::class, 'index'])->name('businesses');
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings');
     Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
+    
+    Route::post('/kpi/simulate', function () {
+        event(new \App\Events\DashboardKpiUpdated(\App\Http\Controllers\Admin\DashboardController::getKpiData()));
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/onboarding/simulate', function () {
+        event(new \App\Events\PendingApprovalsUpdated(\App\Http\Controllers\Admin\DashboardController::getPendingApprovals()));
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/catalog/simulate', function () {
+        event(new \App\Events\CatalogUpdated(\App\Http\Controllers\Admin\DashboardController::getCatalogData()));
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/finance/simulate', function () {
+        event(new \App\Events\FinanceUpdated(\App\Http\Controllers\Admin\DashboardController::getFinanceData()));
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/operations/simulate', function () {
+        event(new \App\Events\OperationsUpdated(\App\Http\Controllers\Admin\DashboardController::getOperationsData()));
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/security/simulate', function () {
+        event(new \App\Events\SecurityUpdated(\App\Http\Controllers\Admin\DashboardController::getSecurityData()));
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/security/broadcast', function (\Illuminate\Http\Request $request) {
+        // Just mock success for the demo broadcast action
+        return response()->json(['success' => true, 'message' => 'Broadcast queued successfully']);
+    });
 });
 
 // Seller Routes

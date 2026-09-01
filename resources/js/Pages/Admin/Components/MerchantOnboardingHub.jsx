@@ -1,17 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, XCircle, Search, FileText, MoreVertical, Filter, AlertCircle } from 'lucide-react';
 import Modal from '@/Components/Modal';
 
-export default function MerchantOnboardingHub() {
+export default function MerchantOnboardingHub({ initialData = [] }) {
     const [filter, setFilter] = useState('all');
     const [selectedApplication, setSelectedApplication] = useState(null);
-
-    const applications = [
+    const [applications, setApplications] = useState(initialData.length > 0 ? initialData : [
+        // Fallback for demo purposes if db is empty
         { id: 'APP-1002', name: 'Natures Grace Eco Lodge', type: 'Host', date: '2026-08-30', status: 'pending', docs: 'verified', risk: 'low' },
         { id: 'APP-1003', name: 'Kandy Brassworks', type: 'Merchant', date: '2026-08-30', status: 'pending', docs: 'pending', risk: 'medium' },
         { id: 'APP-1004', name: 'Galle Heritage Villa', type: 'Host', date: '2026-08-29', status: 'pending', docs: 'verified', risk: 'high' },
-        { id: 'APP-1005', name: 'Ceylon Spice Co.', type: 'Merchant', date: '2026-08-29', status: 'approved', docs: 'verified', risk: 'low' },
-    ];
+    ]);
+
+    useEffect(() => {
+        if (window.Echo) {
+            const channel = window.Echo.channel('admin-dashboard');
+            channel.listen('PendingApprovalsUpdated', (e) => {
+                if (e.pendingApprovals) {
+                    setApplications(e.pendingApprovals);
+                }
+            });
+
+            return () => {
+                // To avoid disconnecting other listeners on the same channel, we just don't strictly leave it 
+                // if it's shared, or we can leave it. Since ExecutiveKPIs also listens to it, leaving the channel 
+                // here might break the other component's real-time updates when unmounting this tab!
+                // Actually, since they mount/unmount based on tabs, it's better not to `leaveChannel` here, 
+                // or we use a separate channel, or we just remove the specific listener.
+                // window.Echo.channel('admin-dashboard').stopListening('PendingApprovalsUpdated');
+            };
+        }
+    }, []);
 
     const filtered = filter === 'all' ? applications.filter(a => a.status === 'pending') : applications.filter(a => a.status === 'pending' && a.type.toLowerCase() === filter);
 

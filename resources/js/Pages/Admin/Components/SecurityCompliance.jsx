@@ -1,13 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield, Fingerprint, Lock, Activity, Bell, FileWarning, Megaphone, Send } from 'lucide-react';
+import axios from 'axios';
 
-export default function SecurityCompliance() {
-    const logs = [
+export default function SecurityCompliance({ initialData = null }) {
+    const defaultLogs = [
         { id: 1, action: 'Multiple failed login attempts', entity: 'Admin User (amila@sps.lk)', time: '10 mins ago', severity: 'high' },
         { id: 2, action: 'Payout details modified', entity: 'Vendor (Galle Heritage Villa)', time: '1 hour ago', severity: 'medium' },
         { id: 3, action: 'Bulk listing upload (50+ items)', entity: 'Merchant (Ceylon Spice Co.)', time: '3 hours ago', severity: 'low' },
         { id: 4, action: 'New API Key Generated', entity: 'System Admin (super@sps.lk)', time: '5 hours ago', severity: 'medium' },
     ];
+
+    const [logs, setLogs] = useState(initialData?.logs || defaultLogs);
+    const [compliance, setCompliance] = useState(initialData?.compliance || {
+        pci: { status: 'COMPLIANT', scan: 'Today at 02:00 AM' },
+        privacy: { status: 'VERIFIED', scan: 'All user consent logs intact.' }
+    });
+    
+    const [broadcastSending, setBroadcastSending] = useState(false);
+    const [broadcastSuccess, setBroadcastSuccess] = useState(false);
+
+    useEffect(() => {
+        if (window.Echo) {
+            const channel = window.Echo.channel('admin-dashboard');
+            channel.listen('SecurityUpdated', (e) => {
+                if (e.securityData) {
+                    if (e.securityData.logs) setLogs(e.securityData.logs);
+                    if (e.securityData.compliance) setCompliance(e.securityData.compliance);
+                }
+            });
+        }
+    }, []);
+
+    const handleBroadcast = async () => {
+        setBroadcastSending(true);
+        setBroadcastSuccess(false);
+        try {
+            await axios.post('/admin/security/broadcast');
+            setBroadcastSuccess(true);
+            setTimeout(() => setBroadcastSuccess(false), 3000);
+        } catch (error) {
+            console.error('Broadcast failed', error);
+        } finally {
+            setBroadcastSending(false);
+        }
+    };
 
     return (
         <div className="space-y-6 animate-fadeIn">
@@ -55,17 +91,21 @@ export default function SecurityCompliance() {
                         <div>
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-sm text-slate-300">PCI-DSS Status</span>
-                                <span className="text-xs bg-emerald-900/50 text-emerald-400 px-2 py-1 rounded font-bold border border-emerald-800">COMPLIANT</span>
+                                <span className={`text-xs px-2 py-1 rounded font-bold border ${compliance.pci.status === 'COMPLIANT' ? 'bg-emerald-900/50 text-emerald-400 border-emerald-800' : 'bg-red-900/50 text-red-400 border-red-800'}`}>
+                                    {compliance.pci.status}
+                                </span>
                             </div>
-                            <p className="text-xs text-slate-500">Last scan: Today at 02:00 AM</p>
+                            <p className="text-xs text-slate-500">Last scan: {compliance.pci.scan}</p>
                         </div>
                         
                         <div>
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-sm text-slate-300">Data Privacy (SLDPPA)</span>
-                                <span className="text-xs bg-emerald-900/50 text-emerald-400 px-2 py-1 rounded font-bold border border-emerald-800">VERIFIED</span>
+                                <span className={`text-xs px-2 py-1 rounded font-bold border ${compliance.privacy.status === 'VERIFIED' ? 'bg-emerald-900/50 text-emerald-400 border-emerald-800' : 'bg-amber-900/50 text-amber-400 border-amber-800'}`}>
+                                    {compliance.privacy.status}
+                                </span>
                             </div>
-                            <p className="text-xs text-slate-500">All user consent logs intact.</p>
+                            <p className="text-xs text-slate-500">{compliance.privacy.scan}</p>
                         </div>
 
                         <div className="pt-4 border-t border-slate-800">
@@ -100,8 +140,14 @@ export default function SecurityCompliance() {
                         <label className="flex items-center text-sm text-indigo-900 font-medium">
                             <input type="checkbox" className="rounded text-indigo-600 mr-2" /> SMS Alert
                         </label>
-                        <button className="mt-auto flex items-center justify-center gap-2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm">
-                            <Send className="w-4 h-4" /> Send Now
+                        <button 
+                            onClick={handleBroadcast}
+                            disabled={broadcastSending}
+                            className={`mt-auto flex items-center justify-center gap-2 py-2 text-white rounded-lg text-sm font-bold transition-colors shadow-sm ${
+                                broadcastSuccess ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-indigo-600 hover:bg-indigo-700'
+                            } disabled:opacity-75`}
+                        >
+                            {broadcastSuccess ? 'Broadcast Sent!' : broadcastSending ? 'Sending...' : <><Send className="w-4 h-4" /> Send Now</>}
                         </button>
                     </div>
                 </div>

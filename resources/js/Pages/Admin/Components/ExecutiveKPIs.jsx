@@ -1,22 +1,59 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Store, Calendar, DollarSign, TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-export default function ExecutiveKPIs() {
-    const data = [
-        { name: 'Jan', gmv: 4000, revenue: 400, hosts: 24, merchants: 40 },
-        { name: 'Feb', gmv: 3000, revenue: 300, hosts: 28, merchants: 45 },
-        { name: 'Mar', gmv: 5000, revenue: 500, hosts: 35, merchants: 52 },
-        { name: 'Apr', gmv: 4500, revenue: 450, hosts: 42, merchants: 55 },
-        { name: 'May', gmv: 6000, revenue: 600, hosts: 50, merchants: 68 },
-        { name: 'Jun', gmv: 8500, revenue: 850, hosts: 65, merchants: 85 },
+export default function ExecutiveKPIs({ initialData }) {
+    const [kpiData, setKpiData] = useState(initialData || {
+        gmv: 0,
+        commission: 0,
+        activeMerchants: 0,
+        activeTourists: 0,
+        chartData: [],
+        healthScore: 98,
+        disputeRate: 0.8,
+        payoutTime: 12
+    });
+
+    useEffect(() => {
+        if (window.Echo) {
+            const channel = window.Echo.channel('admin-dashboard');
+            channel.listen('DashboardKpiUpdated', (e) => {
+                if (e.kpiData) {
+                    setKpiData(e.kpiData);
+                }
+            });
+
+            return () => {
+                window.Echo.leaveChannel('admin-dashboard');
+            };
+        }
+    }, []);
+
+    const data = kpiData.chartData && kpiData.chartData.length > 0 ? kpiData.chartData : [
+        { name: 'Jan', gmv: 0, merchants: 0, hosts: 0 },
+        { name: 'Feb', gmv: 0, merchants: 0, hosts: 0 },
+        { name: 'Mar', gmv: 0, merchants: 0, hosts: 0 },
+        { name: 'Apr', gmv: 0, merchants: 0, hosts: 0 },
+        { name: 'May', gmv: 0, merchants: 0, hosts: 0 },
+        { name: 'Jun', gmv: 0, merchants: 0, hosts: 0 },
     ];
 
+    const formatCurrency = (value) => {
+        if (!value) return 'LKR 0.00';
+        const num = Number(value);
+        if (num >= 1000000) {
+            return `LKR ${(num / 1000000).toFixed(2)}M`;
+        } else if (num >= 1000) {
+            return `LKR ${(num / 1000).toFixed(1)}k`;
+        }
+        return `LKR ${num.toFixed(2)}`;
+    };
+
     const kpis = [
-        { title: 'Gross Platform Volume (LKR)', value: 'LKR 42.5M', trend: '+14.5%', isUp: true, icon: DollarSign },
-        { title: 'Platform Commission (10%)', value: 'LKR 4.25M', trend: '+14.5%', isUp: true, icon: TrendingUp },
-        { title: 'Active Merchants & Hosts', value: '1,248', trend: '+5.2%', isUp: true, icon: Store },
-        { title: 'Active Monthly Tourists', value: '8,432', trend: '-1.2%', isUp: false, icon: Users },
+        { title: 'Gross Platform Volume (LKR)', value: formatCurrency(kpiData.gmv), trend: 'Real-time', isUp: true, icon: DollarSign },
+        { title: 'Platform Commission (10%)', value: formatCurrency(kpiData.commission), trend: 'Real-time', isUp: true, icon: TrendingUp },
+        { title: 'Active Merchants & Hosts', value: (kpiData.activeMerchants || 0).toLocaleString(), trend: 'Real-time', isUp: true, icon: Store },
+        { title: 'Active Monthly Tourists', value: (kpiData.activeTourists || 0).toLocaleString(), trend: 'Real-time', isUp: true, icon: Users },
     ];
 
     return (
@@ -103,7 +140,7 @@ export default function ExecutiveKPIs() {
                         <p className="text-slate-400 text-sm mb-6">Aggregate score based on dispute rates, refund velocity, and host responsiveness.</p>
                         
                         <div className="flex items-end gap-4 mb-8">
-                            <span className="text-6xl font-sansDisplay font-bold text-emerald-400">98</span>
+                            <span className="text-6xl font-sansDisplay font-bold text-emerald-400">{kpiData.healthScore || 98}</span>
                             <span className="text-xl text-slate-300 mb-2">/ 100</span>
                         </div>
 
@@ -111,19 +148,19 @@ export default function ExecutiveKPIs() {
                             <div>
                                 <div className="flex justify-between text-sm mb-1">
                                     <span className="text-slate-300">Dispute Rate (Target &lt; 2%)</span>
-                                    <span className="text-emerald-400 font-medium">0.8%</span>
+                                    <span className="text-emerald-400 font-medium">{kpiData.disputeRate || 0.8}%</span>
                                 </div>
                                 <div className="w-full bg-slate-800 rounded-full h-1.5">
-                                    <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: '8%' }}></div>
+                                    <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: `${(kpiData.disputeRate || 0.8) * 10}%` }}></div>
                                 </div>
                             </div>
                             <div>
                                 <div className="flex justify-between text-sm mb-1">
                                     <span className="text-slate-300">Avg. Payout Time (Target &lt; 24h)</span>
-                                    <span className="text-indigo-400 font-medium">12h</span>
+                                    <span className="text-indigo-400 font-medium">{kpiData.payoutTime || 12}h</span>
                                 </div>
                                 <div className="w-full bg-slate-800 rounded-full h-1.5">
-                                    <div className="bg-indigo-400 h-1.5 rounded-full" style={{ width: '50%' }}></div>
+                                    <div className="bg-indigo-400 h-1.5 rounded-full" style={{ width: `${((kpiData.payoutTime || 12) / 24) * 100}%` }}></div>
                                 </div>
                             </div>
                         </div>

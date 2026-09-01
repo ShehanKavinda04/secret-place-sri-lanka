@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     createColumnHelper, 
     flexRender, 
@@ -9,15 +9,6 @@ import {
     getPaginationRowModel
 } from '@tanstack/react-table';
 import { Search, ChevronDown, ChevronUp, AlertCircle, Package, Home } from 'lucide-react';
-
-const mockData = [
-    { id: 'ORD-5091', type: 'product', vendor: 'Kandy Brassworks', customer: 'John Doe', amount: 15000, status: 'shipped', issue: null },
-    { id: 'RES-8821', type: 'accommodation', vendor: 'Natures Grace Lodge', customer: 'Jane Smith', amount: 45000, status: 'confirmed', issue: null },
-    { id: 'ORD-5092', type: 'product', vendor: 'Ceylon Spice Co.', customer: 'Alice Wong', amount: 8500, status: 'disputed', issue: 'Damaged in transit' },
-    { id: 'RES-8822', type: 'accommodation', vendor: 'Galle Heritage Villa', customer: 'Mark Johnson', amount: 120000, status: 'disputed', issue: 'Host cancelled last minute' },
-    { id: 'ORD-5093', type: 'product', vendor: 'Local Tea Estates', customer: 'Sarah Connor', amount: 2500, status: 'delivered', issue: null },
-    { id: 'RES-8823', type: 'accommodation', vendor: 'Ella Eco Cabin', customer: 'Tom Hardy', amount: 35000, status: 'completed', issue: null },
-];
 
 const columnHelper = createColumnHelper();
 
@@ -70,9 +61,29 @@ const columns = [
     }),
 ];
 
-export default function OperationsMonitor() {
-    const [data] = useState(() => [...mockData]);
+export default function OperationsMonitor({ initialData = [] }) {
+    const mockData = [
+        { id: 'ORD-5091', type: 'product', vendor: 'Kandy Brassworks', customer: 'John Doe', amount: 15000, status: 'shipped', issue: null },
+        { id: 'RES-8821', type: 'accommodation', vendor: 'Natures Grace Lodge', customer: 'Jane Smith', amount: 45000, status: 'confirmed', issue: null },
+        { id: 'ORD-5092', type: 'product', vendor: 'Ceylon Spice Co.', customer: 'Alice Wong', amount: 8500, status: 'disputed', issue: 'Damaged in transit' },
+        { id: 'RES-8822', type: 'accommodation', vendor: 'Galle Heritage Villa', customer: 'Mark Johnson', amount: 120000, status: 'disputed', issue: 'Host cancelled last minute' },
+        { id: 'ORD-5093', type: 'product', vendor: 'Local Tea Estates', customer: 'Sarah Connor', amount: 2500, status: 'delivered', issue: null },
+        { id: 'RES-8823', type: 'accommodation', vendor: 'Ella Eco Cabin', customer: 'Tom Hardy', amount: 35000, status: 'completed', issue: null },
+    ];
+
+    const [data, setData] = useState(initialData.length > 0 ? initialData : mockData);
     const [globalFilter, setGlobalFilter] = useState('');
+
+    useEffect(() => {
+        if (window.Echo) {
+            const channel = window.Echo.channel('admin-dashboard');
+            channel.listen('OperationsUpdated', (e) => {
+                if (e.operationsData) {
+                    setData(e.operationsData);
+                }
+            });
+        }
+    }, []);
 
     const table = useReactTable({
         data,

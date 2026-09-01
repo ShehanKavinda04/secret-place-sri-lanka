@@ -10,7 +10,7 @@ import FinancialEngine from './Components/FinancialEngine';
 import OperationsMonitor from './Components/OperationsMonitor';
 import SecurityCompliance from './Components/SecurityCompliance';
 
-export default function Overview({ stats, pendingApprovals = [] }) {
+export default function Overview({ stats, pendingApprovals = [], kpiData, catalogData = [], financeData, operationsData = [], securityData }) {
     const [activeTab, setActiveTab] = useState('kpi');
 
     const tabs = [
@@ -55,12 +55,12 @@ export default function Overview({ stats, pendingApprovals = [] }) {
             </div>
 
             <div className="min-h-[600px]">
-                {activeTab === 'kpi' && <ExecutiveKPIs />}
-                {activeTab === 'onboarding' && <MerchantOnboardingHub />}
-                {activeTab === 'catalog' && <CatalogModeration />}
-                {activeTab === 'finance' && <FinancialEngine />}
-                {activeTab === 'operations' && <OperationsMonitor />}
-                {activeTab === 'security' && <SecurityCompliance />}
+                {activeTab === 'kpi' && <ExecutiveKPIs initialData={kpiData} />}
+                {activeTab === 'onboarding' && <MerchantOnboardingHub initialData={pendingApprovals} />}
+                {activeTab === 'catalog' && <CatalogModeration initialData={catalogData} />}
+                {activeTab === 'finance' && <FinancialEngine initialData={financeData} />}
+                {activeTab === 'operations' && <OperationsMonitor initialData={operationsData} />}
+                {activeTab === 'security' && <SecurityCompliance initialData={securityData} />}
             </div>
         </AdminLayout>
     );
