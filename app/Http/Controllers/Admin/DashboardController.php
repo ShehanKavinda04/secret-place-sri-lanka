@@ -145,16 +145,44 @@ class DashboardController extends Controller
 
     public static function getOperationsData()
     {
-        // For demonstration, map real database orders and bookings, or mock if missing relation
-        // Here we provide a mock array that accurately represents the table structure expected by the frontend.
-        return [
-            [ 'id' => 'ORD-5091', 'type' => 'product', 'vendor' => 'Kandy Brassworks', 'customer' => 'John Doe', 'amount' => 15000, 'status' => 'shipped', 'issue' => null ],
-            [ 'id' => 'RES-8821', 'type' => 'accommodation', 'vendor' => 'Natures Grace Lodge', 'customer' => 'Jane Smith', 'amount' => 45000, 'status' => 'confirmed', 'issue' => null ],
-            [ 'id' => 'ORD-5092', 'type' => 'product', 'vendor' => 'Ceylon Spice Co.', 'customer' => 'Alice Wong', 'amount' => 8500, 'status' => 'disputed', 'issue' => 'Damaged in transit' ],
-            [ 'id' => 'RES-8822', 'type' => 'accommodation', 'vendor' => 'Galle Heritage Villa', 'customer' => 'Mark Johnson', 'amount' => 120000, 'status' => 'disputed', 'issue' => 'Host cancelled last minute' ],
-            [ 'id' => 'ORD-5093', 'type' => 'product', 'vendor' => 'Local Tea Estates', 'customer' => 'Sarah Connor', 'amount' => 2500, 'status' => 'delivered', 'issue' => null ],
-            [ 'id' => 'RES-8823', 'type' => 'accommodation', 'vendor' => 'Ella Eco Cabin', 'customer' => 'Tom Hardy', 'amount' => 35000, 'status' => 'completed', 'issue' => null ],
-        ];
+        $operations = [];
+        
+        $bookings = \App\Models\Booking::with(['business', 'tourist'])->latest()->take(50)->get();
+        foreach($bookings as $booking) {
+            $issue = null;
+            if ($booking->status === 'cancelled') $issue = 'Host cancelled last minute';
+            
+            $operations[] = [
+                'id' => 'RES-' . $booking->id,
+                'type' => 'accommodation',
+                'vendor' => $booking->business ? $booking->business->name : 'Unknown Host',
+                'customer' => $booking->tourist ? $booking->tourist->name : 'Guest',
+                'amount' => $booking->total_amount,
+                'status' => $booking->status, // pending, confirmed, completed, cancelled
+                'issue' => $issue
+            ];
+        }
+        
+        $orders = \App\Models\Order::latest()->take(50)->get();
+        foreach($orders as $order) {
+            $status = $order->payment_status === 'success' ? 'shipped' : 'pending';
+            $operations[] = [
+                'id' => 'ORD-' . $order->id,
+                'type' => 'product',
+                'vendor' => 'Local Merchant', // Orders are generic in current schema
+                'customer' => $order->user_id ? 'User ' . $order->user_id : 'Guest',
+                'amount' => $order->total_amount,
+                'status' => $status,
+                'issue' => null
+            ];
+        }
+        
+        // Sort by ID descending for a realistic timeline
+        usort($operations, function($a, $b) {
+            return strcmp($b['id'], $a['id']);
+        });
+
+        return $operations;
     }
 
     public static function getSecurityData()

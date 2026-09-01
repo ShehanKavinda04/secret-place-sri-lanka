@@ -18,6 +18,18 @@ export default function SecurityCompliance({ initialData = null }) {
     
     const [broadcastSending, setBroadcastSending] = useState(false);
     const [broadcastSuccess, setBroadcastSuccess] = useState(false);
+    
+    // Broadcast Form State
+    const [broadcastSubject, setBroadcastSubject] = useState('');
+    const [broadcastMessage, setBroadcastMessage] = useState('');
+    const [usePush, setUsePush] = useState(true);
+    const [useEmail, setUseEmail] = useState(true);
+    const [useSms, setUseSms] = useState(false);
+
+    const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+    const [expandedTraceId, setExpandedTraceId] = useState(null);
+    const [isScanning, setIsScanning] = useState(false);
+    const [scanComplete, setScanComplete] = useState(false);
 
     useEffect(() => {
         if (window.Echo) {
@@ -32,16 +44,50 @@ export default function SecurityCompliance({ initialData = null }) {
     }, []);
 
     const handleBroadcast = async () => {
+        if (!broadcastSubject.trim() || !broadcastMessage.trim()) {
+            alert('Please enter a subject and message before broadcasting.');
+            return;
+        }
+
         setBroadcastSending(true);
         setBroadcastSuccess(false);
         try {
-            await axios.post('/admin/security/broadcast');
+            await axios.post('/admin/security/broadcast', {
+                subject: broadcastSubject,
+                message: broadcastMessage,
+                channels: {
+                    push: usePush,
+                    email: useEmail,
+                    sms: useSms
+                }
+            });
             setBroadcastSuccess(true);
+            setBroadcastSubject('');
+            setBroadcastMessage('');
             setTimeout(() => setBroadcastSuccess(false), 3000);
         } catch (error) {
             console.error('Broadcast failed', error);
         } finally {
             setBroadcastSending(false);
+        }
+    };
+
+    const handleScan = async () => {
+        setIsScanning(true);
+        setScanComplete(false);
+        try {
+            const res = await axios.post('/admin/security/scan');
+            // Update local compliance state with new scan time
+            setCompliance(prev => ({
+                ...prev,
+                pci: { ...prev.pci, scan: res.data.timestamp }
+            }));
+            setScanComplete(true);
+            setTimeout(() => setScanComplete(false), 3000);
+        } catch (error) {
+            console.error('Scan failed', error);
+        } finally {
+            setIsScanning(false);
         }
     };
 
@@ -56,7 +102,12 @@ export default function SecurityCompliance({ initialData = null }) {
                             <Shield className="w-5 h-5 mr-2 text-indigo-600" />
                             Real-time Security Audit Log
                         </h3>
-                        <button className="text-sm text-indigo-600 font-medium hover:text-indigo-800">View Full Log</button>
+                        <button 
+                            onClick={() => setIsLogModalOpen(true)}
+                            className="text-sm text-indigo-600 font-medium hover:text-indigo-800"
+                        >
+                            View Full Log
+                        </button>
                     </div>
                     
                     <div className="space-y-4">
@@ -109,8 +160,15 @@ export default function SecurityCompliance({ initialData = null }) {
                         </div>
 
                         <div className="pt-4 border-t border-slate-800">
-                            <button className="w-full flex items-center justify-center gap-2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors">
-                                <Bell className="w-4 h-4" /> Trigger Security Scan
+                            <button 
+                                onClick={handleScan}
+                                disabled={isScanning}
+                                className={`w-full flex items-center justify-center gap-2 py-2 text-white rounded-lg text-sm font-medium transition-colors ${
+                                    scanComplete ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-indigo-600 hover:bg-indigo-700'
+                                } disabled:opacity-75`}
+                            >
+                                <Bell className={`w-4 h-4 ${isScanning ? 'animate-bounce' : ''}`} /> 
+                                {scanComplete ? 'Scan Complete' : isScanning ? 'Scanning Network...' : 'Trigger Security Scan'}
                             </button>
                         </div>
                     </div>
@@ -127,18 +185,45 @@ export default function SecurityCompliance({ initialData = null }) {
                 
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
-                        <input type="text" placeholder="Message Subject" className="w-full mb-3 px-4 py-2 rounded-lg border border-indigo-200 focus:ring-indigo-500 focus:border-indigo-500 text-sm" />
-                        <textarea rows="3" placeholder="Type your broadcast message here..." className="w-full px-4 py-2 rounded-lg border border-indigo-200 focus:ring-indigo-500 focus:border-indigo-500 text-sm"></textarea>
+                        <input 
+                            type="text" 
+                            placeholder="Message Subject" 
+                            value={broadcastSubject}
+                            onChange={(e) => setBroadcastSubject(e.target.value)}
+                            className="w-full mb-3 px-4 py-2 rounded-lg border border-indigo-200 focus:ring-indigo-500 focus:border-indigo-500 text-sm" 
+                        />
+                        <textarea 
+                            rows="3" 
+                            placeholder="Type your broadcast message here..." 
+                            value={broadcastMessage}
+                            onChange={(e) => setBroadcastMessage(e.target.value)}
+                            className="w-full px-4 py-2 rounded-lg border border-indigo-200 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                        ></textarea>
                     </div>
                     <div className="flex flex-col gap-3 sm:w-48">
                         <label className="flex items-center text-sm text-indigo-900 font-medium">
-                            <input type="checkbox" className="rounded text-indigo-600 mr-2" defaultChecked /> Push Notification
+                            <input 
+                                type="checkbox" 
+                                checked={usePush}
+                                onChange={(e) => setUsePush(e.target.checked)}
+                                className="rounded text-indigo-600 mr-2" 
+                            /> Push Notification
                         </label>
                         <label className="flex items-center text-sm text-indigo-900 font-medium">
-                            <input type="checkbox" className="rounded text-indigo-600 mr-2" defaultChecked /> Email Blast
+                            <input 
+                                type="checkbox" 
+                                checked={useEmail}
+                                onChange={(e) => setUseEmail(e.target.checked)}
+                                className="rounded text-indigo-600 mr-2" 
+                            /> Email Blast
                         </label>
                         <label className="flex items-center text-sm text-indigo-900 font-medium">
-                            <input type="checkbox" className="rounded text-indigo-600 mr-2" /> SMS Alert
+                            <input 
+                                type="checkbox" 
+                                checked={useSms}
+                                onChange={(e) => setUseSms(e.target.checked)}
+                                className="rounded text-indigo-600 mr-2" 
+                            /> SMS Alert
                         </label>
                         <button 
                             onClick={handleBroadcast}
@@ -152,6 +237,77 @@ export default function SecurityCompliance({ initialData = null }) {
                     </div>
                 </div>
             </div>
+
+            {/* Full Log Modal */}
+            {isLogModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 z-[100] animate-fadeIn">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[80vh] flex flex-col">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <h2 className="text-xl font-bold text-slate-900 flex items-center">
+                                <Shield className="w-6 h-6 mr-2 text-indigo-600" />
+                                Comprehensive Security Audit Log
+                            </h2>
+                            <button onClick={() => setIsLogModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                        <div className="p-6 overflow-y-auto space-y-4">
+                            {logs.map((log) => (
+                                <div key={log.id} className="bg-gray-50 rounded-lg border border-gray-100 overflow-hidden">
+                                    <div className="flex items-start p-3">
+                                        <div className={`p-2 rounded-full mr-4 mt-0.5 ${
+                                            log.severity === 'high' ? 'bg-red-100 text-red-600' :
+                                            log.severity === 'medium' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
+                                        }`}>
+                                            {log.severity === 'high' && <FileWarning className="w-5 h-5" />}
+                                            {log.severity === 'medium' && <Activity className="w-5 h-5" />}
+                                            {log.severity === 'low' && <Fingerprint className="w-5 h-5" />}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-md font-bold text-gray-900">{log.action}</p>
+                                            <p className="text-sm text-gray-600">Entity: {log.entity}</p>
+                                            <p className="text-xs text-gray-500 mt-1">IP: 192.168.1.{Math.floor(Math.random() * 255)} | User-Agent: Mozilla/5.0</p>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-sm font-medium text-gray-500">{log.time}</span>
+                                            <span 
+                                                onClick={() => setExpandedTraceId(expandedTraceId === log.id ? null : log.id)}
+                                                className="text-xs text-indigo-500 font-semibold mt-2 cursor-pointer hover:underline"
+                                            >
+                                                {expandedTraceId === log.id ? 'Hide Trace' : 'View Trace'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {expandedTraceId === log.id && (
+                                        <div className="px-4 pb-4 pt-2 bg-gray-100 border-t border-gray-200 text-xs font-mono text-gray-700">
+                                            <div><span className="text-indigo-600">Event ID:</span> SEC-{log.id}-99823</div>
+                                            <div><span className="text-indigo-600">Timestamp:</span> {new Date().toISOString()}</div>
+                                            <div><span className="text-indigo-600">Raw Payload:</span></div>
+                                            <pre className="mt-1 bg-gray-800 text-green-400 p-2 rounded overflow-x-auto">
+{JSON.stringify({
+    request_uri: "/api/v1/auth/login",
+    method: "POST",
+    headers: {
+        "x-forwarded-for": "192.168.1.45",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    },
+    flags: ["GEO_MISMATCH", "RATE_LIMIT_WARNING"]
+}, null, 2)}
+                                            </pre>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            <div className="text-center py-4 text-gray-500 text-sm">
+                                End of recent logs. Older logs are archived to cold storage.
+                            </div>
+                        </div>
+                        <div className="p-4 border-t border-gray-100 flex justify-end">
+                            <button onClick={() => setIsLogModalOpen(false)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">Close</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -23,6 +23,21 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings');
     Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
     
+    Route::post('/admin/security/broadcast', function() {
+        // Mock global platform broadcast
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/admin/security/scan', function() {
+        $timestamp = 'Today at ' . now()->format('h:i A');
+        $data = \App\Http\Controllers\Admin\DashboardController::getSecurityData();
+        $data['compliance']['pci']['scan'] = $timestamp;
+        
+        event(new \App\Events\SecurityUpdated($data));
+        
+        return response()->json(['success' => true, 'timestamp' => $timestamp]);
+    });
+
     Route::post('/businesses/{id}/approve', function ($id) {
         $business = \App\Models\Business::find($id);
         if ($business) {

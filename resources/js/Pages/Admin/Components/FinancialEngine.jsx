@@ -46,18 +46,6 @@ export default function FinancialEngine({ initialData = null }) {
         }
     };
 
-    // Calculate dynamic preview based on current slider state
-    const ordersMTD = ledger.ordersMTD || 0;
-    const paymentsMTD = ledger.paymentsMTD || 0;
-    
-    const derivedNetProfit = ordersMTD || paymentsMTD 
-        ? (ordersMTD * (rates.merchant / 100)) + (paymentsMTD * (rates.host / 100))
-        : ledger.netProfit;
-        
-    const derivedVendorEarnings = ordersMTD || paymentsMTD
-        ? ledger.grossSales - ledger.paymentFees - derivedNetProfit
-        : ledger.vendorEarnings;
-
     const handleExecutePayout = async (id) => {
         try {
             // Optimistic update
@@ -194,11 +182,11 @@ This is a system-generated receipt.
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-slate-700">
                             <span className="text-slate-400">Vendor Net Earnings</span>
-                            <span className="font-semibold text-emerald-400">{formatLKR(derivedVendorEarnings)}</span>
+                            <span className="font-semibold text-emerald-400">{formatLKR(ledger.vendorEarnings)}</span>
                         </div>
                         <div className="flex justify-between items-center py-2 pt-4">
                             <span className="text-indigo-200 font-bold">Net Platform Profit</span>
-                            <span className="font-bold text-xl text-indigo-400">{formatLKR(derivedNetProfit)}</span>
+                            <span className="font-bold text-xl text-indigo-400">{formatLKR(ledger.netProfit)}</span>
                         </div>
                     </div>
                 </div>
