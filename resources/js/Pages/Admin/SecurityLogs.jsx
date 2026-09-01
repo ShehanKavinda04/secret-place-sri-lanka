@@ -46,11 +46,27 @@ export default function SecurityLogs({ logs, stats, filters }) {
         let interval;
         if (autoRefresh) {
             interval = setInterval(() => {
-                router.reload({ only: ['logs', 'stats'] });
+                router.reload({ only: ['logs', 'stats'], preserveScroll: true, preserveState: true });
             }, 10000); // 10s
         }
         return () => clearInterval(interval);
     }, [autoRefresh]);
+
+    // Real-time synchronization
+    useEffect(() => {
+        if (window.Echo) {
+            window.Echo.channel('admin-dashboard')
+                .listen('SecurityUpdated', (e) => {
+                    console.log('Real-time SecurityUpdated event received', e);
+                    router.reload({ only: ['logs', 'stats'], preserveScroll: true, preserveState: true });
+                });
+        }
+        return () => {
+            if (window.Echo) {
+                window.Echo.leaveChannel('admin-dashboard');
+            }
+        };
+    }, []);
 
     const getSeverityBadge = (severity) => {
         const styles = {
@@ -324,7 +340,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                                         key={idx}
                                                         onClick={() => link.url && router.get(link.url, { search: searchQuery, severity: severityFilter, timeframe: timeframeFilter, type: typeFilter }, { preserveState: true, preserveScroll: true })}
                                                         disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-1.5 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'}`}
+                                                        className={`relative inline-flex items-center px-2 py-1.5 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
                                                     >
                                                         <ChevronLeft className="h-4 w-4" />
                                                     </button>
@@ -336,7 +352,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                                         key={idx}
                                                         onClick={() => link.url && router.get(link.url, { search: searchQuery, severity: severityFilter, timeframe: timeframeFilter, type: typeFilter }, { preserveState: true, preserveScroll: true })}
                                                         disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-1.5 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'}`}
+                                                        className={`relative inline-flex items-center px-2 py-1.5 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
                                                     >
                                                         <ChevronRight className="h-4 w-4" />
                                                     </button>

@@ -41,6 +41,22 @@ export default function Payments({ payments, stats, filters }) {
         return () => clearTimeout(timer);
     }, [searchQuery, statusFilter, gatewayFilter, dateFilter]);
 
+    // Real-time synchronization
+    useEffect(() => {
+        if (window.Echo) {
+            window.Echo.channel('admin-dashboard')
+                .listen('FinanceUpdated', (e) => {
+                    console.log('Real-time FinanceUpdated event received', e);
+                    router.reload({ only: ['payments', 'stats'], preserveScroll: true, preserveState: true });
+                });
+        }
+        return () => {
+            if (window.Echo) {
+                window.Echo.leaveChannel('admin-dashboard');
+            }
+        };
+    }, []);
+
     const getStatusBadge = (status) => {
         const styles = {
             success: 'bg-green-100 text-green-800',
@@ -330,7 +346,7 @@ export default function Payments({ payments, stats, filters }) {
                                                         key={idx}
                                                         onClick={() => link.url && router.get(link.url, { search: searchQuery, gateway: gatewayFilter, status: statusFilter, date: dateFilter }, { preserveState: true, preserveScroll: true })}
                                                         disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'}`}
+                                                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
                                                     >
                                                         <span className="sr-only">Previous</span>
                                                         <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -343,7 +359,7 @@ export default function Payments({ payments, stats, filters }) {
                                                         key={idx}
                                                         onClick={() => link.url && router.get(link.url, { search: searchQuery, gateway: gatewayFilter, status: statusFilter, date: dateFilter }, { preserveState: true, preserveScroll: true })}
                                                         disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'}`}
+                                                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
                                                     >
                                                         <span className="sr-only">Next</span>
                                                         <ChevronRight className="h-5 w-5" aria-hidden="true" />

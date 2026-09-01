@@ -35,6 +35,22 @@ export default function Businesses({ businesses, stats, filters }) {
         return () => clearTimeout(timer);
     }, [searchQuery, statusFilter, categoryFilter]);
 
+    // Real-time synchronization
+    useEffect(() => {
+        if (window.Echo) {
+            window.Echo.channel('admin-dashboard')
+                .listen('PendingApprovalsUpdated', (e) => {
+                    console.log('Real-time PendingApprovalsUpdated event received', e);
+                    router.reload({ only: ['businesses', 'stats'], preserveScroll: true, preserveState: true });
+                });
+        }
+        return () => {
+            if (window.Echo) {
+                window.Echo.leaveChannel('admin-dashboard');
+            }
+        };
+    }, []);
+
     const getStatusBadge = (status) => {
         const styles = {
             approved: 'bg-green-100 text-green-800',
@@ -300,7 +316,7 @@ export default function Businesses({ businesses, stats, filters }) {
                                                         key={idx}
                                                         onClick={() => link.url && router.get(link.url, { search: searchQuery, status: statusFilter, category: categoryFilter }, { preserveState: true, preserveScroll: true })}
                                                         disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'}`}
+                                                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
                                                     >
                                                         <span className="sr-only">Previous</span>
                                                         <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -313,7 +329,7 @@ export default function Businesses({ businesses, stats, filters }) {
                                                         key={idx}
                                                         onClick={() => link.url && router.get(link.url, { search: searchQuery, status: statusFilter, category: categoryFilter }, { preserveState: true, preserveScroll: true })}
                                                         disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'}`}
+                                                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
                                                     >
                                                         <span className="sr-only">Next</span>
                                                         <ChevronRight className="h-5 w-5" aria-hidden="true" />
