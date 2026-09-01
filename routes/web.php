@@ -23,6 +23,38 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings');
     Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
     
+    Route::post('/businesses/{id}/approve', function ($id) {
+        $business = \App\Models\Business::find($id);
+        if ($business) {
+            $business->update(['status' => 'approved']);
+        }
+        event(new \App\Events\PendingApprovalsUpdated(\App\Http\Controllers\Admin\DashboardController::getPendingApprovals()));
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/businesses/{id}/reject', function ($id) {
+        $business = \App\Models\Business::find($id);
+        if ($business) {
+            $business->update(['status' => 'rejected']);
+        }
+        event(new \App\Events\PendingApprovalsUpdated(\App\Http\Controllers\Admin\DashboardController::getPendingApprovals()));
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('/catalog/{id}/dismiss', function ($id) {
+        event(new \App\Events\CatalogUpdated(\App\Http\Controllers\Admin\DashboardController::getCatalogData()));
+        return response()->json(['success' => true]);
+    });
+
+    Route::post('/catalog/{id}/suspend', function ($id) {
+        $business = \App\Models\Business::find($id);
+        if ($business) {
+            $business->update(['status' => 'rejected']);
+        }
+        event(new \App\Events\CatalogUpdated(\App\Http\Controllers\Admin\DashboardController::getCatalogData()));
+        return response()->json(['success' => true]);
+    });
+    
     Route::post('/kpi/simulate', function () {
         event(new \App\Events\DashboardKpiUpdated(\App\Http\Controllers\Admin\DashboardController::getKpiData()));
         return response()->json(['success' => true]);

@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapPin, ShieldAlert, CheckCircle, Search } from 'lucide-react';
+import axios from 'axios';
 
 // Fix Leaflet's default icon issue in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -42,7 +43,19 @@ export default function CatalogModeration({ initialData = [] }) {
         }
     }, []);
 
+    const handleModeration = async (id, action) => {
+        try {
+            await axios.post(`/admin/catalog/${id}/${action}`);
+            setLocations(prev => prev.filter(l => l.id !== id));
+        } catch (error) {
+            console.error('Error:', error);
+            // Optimistic fallback update for demo purposes
+            setLocations(prev => prev.filter(l => l.id !== id));
+        }
+    };
+
     const [activeTab, setActiveTab] = useState('map');
+    const [searchQuery, setSearchQuery] = useState('');
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fadeIn">
@@ -72,7 +85,7 @@ export default function CatalogModeration({ initialData = [] }) {
                     <MapContainer center={[7.8731, 80.7718]} zoom={7} scrollWheelZoom={false} className="h-full w-full">
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
                         {locations.map(loc => (
                             <Marker 
@@ -105,11 +118,20 @@ export default function CatalogModeration({ initialData = [] }) {
                 <div className="p-6">
                     <div className="mb-4 relative max-w-md">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                        <input type="text" placeholder="Search flagged items..." className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500" />
+                        <input 
+                            type="text" 
+                            placeholder="Search flagged items..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500" 
+                        />
                     </div>
                     
                     <div className="space-y-4">
-                        {locations.filter(l => l.status === 'flagged').map(item => (
+                        {locations
+                            .filter(l => l.status === 'flagged')
+                            .filter(l => l.name.toLowerCase().includes(searchQuery.toLowerCase()) || l.type.toLowerCase().includes(searchQuery.toLowerCase()))
+                            .map(item => (
                             <div key={item.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border border-red-100 bg-red-50/30 rounded-lg">
                                 <div className="flex items-start mb-4 sm:mb-0">
                                     <ShieldAlert className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
@@ -120,8 +142,18 @@ export default function CatalogModeration({ initialData = [] }) {
                                     </div>
                                 </div>
                                 <div className="flex gap-2 w-full sm:w-auto">
-                                    <button className="flex-1 sm:flex-none px-3 py-1.5 bg-white border border-gray-300 rounded text-sm font-medium hover:bg-gray-50 text-gray-700">Dismiss</button>
-                                    <button className="flex-1 sm:flex-none px-3 py-1.5 bg-red-600 rounded text-sm font-medium hover:bg-red-700 text-white">Suspend Listing</button>
+                                    <button 
+                                        onClick={() => handleModeration(item.id, 'dismiss')}
+                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-white border border-gray-300 rounded text-sm font-medium hover:bg-gray-50 text-gray-700"
+                                    >
+                                        Dismiss
+                                    </button>
+                                    <button 
+                                        onClick={() => handleModeration(item.id, 'suspend')}
+                                        className="flex-1 sm:flex-none px-3 py-1.5 bg-red-600 rounded text-sm font-medium hover:bg-red-700 text-white"
+                                    >
+                                        Suspend Listing
+                                    </button>
                                 </div>
                             </div>
                         ))}

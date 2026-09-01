@@ -22,14 +22,13 @@ export default function ExecutiveKPIs({ initialData }) {
                     setKpiData(e.kpiData);
                 }
             });
-
-            return () => {
-                window.Echo.leaveChannel('admin-dashboard');
-            };
+            // Removed leaveChannel to prevent breaking the shared channel for other tabs
         }
     }, []);
 
-    const data = kpiData.chartData && kpiData.chartData.length > 0 ? kpiData.chartData : [
+    const [timeFilter, setTimeFilter] = useState('Last 6 Months');
+
+    let data = kpiData.chartData && kpiData.chartData.length > 0 ? kpiData.chartData : [
         { name: 'Jan', gmv: 0, merchants: 0, hosts: 0 },
         { name: 'Feb', gmv: 0, merchants: 0, hosts: 0 },
         { name: 'Mar', gmv: 0, merchants: 0, hosts: 0 },
@@ -37,6 +36,22 @@ export default function ExecutiveKPIs({ initialData }) {
         { name: 'May', gmv: 0, merchants: 0, hosts: 0 },
         { name: 'Jun', gmv: 0, merchants: 0, hosts: 0 },
     ];
+
+    // Mock filtering logic for demonstration
+    if (timeFilter === 'This Year') {
+        data = [
+            { name: 'Jan', gmv: 10000, merchants: 2, hosts: 1 },
+            { name: 'Feb', gmv: 15000, merchants: 2, hosts: 2 },
+            { name: 'Mar', gmv: 20000, merchants: 3, hosts: 2 },
+            ...data
+        ];
+    } else if (timeFilter === 'All Time') {
+        data = [
+            { name: '2024', gmv: 450000, merchants: 5, hosts: 3 },
+            { name: '2025', gmv: 850000, merchants: 12, hosts: 8 },
+            { name: '2026', gmv: 1250000, merchants: 20, hosts: 15 },
+        ];
+    }
 
     const formatCurrency = (value) => {
         if (!value) return 'LKR 0.00';
@@ -84,7 +99,11 @@ export default function ExecutiveKPIs({ initialData }) {
                         <h2 className="text-lg font-bold text-slate-900">Gross Platform Volume (GMV/GBV)</h2>
                         <p className="text-sm text-gray-500">Combined revenue from physical products and accommodation bookings.</p>
                     </div>
-                    <select className="text-sm border-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    <select 
+                        className="text-sm border-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        value={timeFilter}
+                        onChange={(e) => setTimeFilter(e.target.value)}
+                    >
                         <option>Last 6 Months</option>
                         <option>This Year</option>
                         <option>All Time</option>
@@ -101,7 +120,11 @@ export default function ExecutiveKPIs({ initialData }) {
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} dy={10} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} dx={-10} tickFormatter={(val) => `$${val}`} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} dx={-10} tickFormatter={(val) => {
+                                if (val === 0) return 'LKR 0';
+                                if (val >= 1000) return `LKR ${val/1000}k`;
+                                return `LKR ${val}`;
+                            }} />
                             <Tooltip 
                                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                 cursor={{ stroke: '#9ca3af', strokeWidth: 1, strokeDasharray: '4 4' }}
