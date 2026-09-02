@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
 use App\Events\UsersUpdated;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -27,7 +28,17 @@ class UserController extends Controller
             $query->where('role', $request->input('role'));
         }
 
-        $users = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
+        $sortField = $request->input('sort_field', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+        
+        $allowedSortFields = ['created_at', 'name', 'email'];
+        if (in_array($sortField, $allowedSortFields)) {
+            $query->orderBy($sortField, $sortDirection === 'asc' ? 'asc' : 'desc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $users = $query->paginate(15)->withQueryString();
 
         $stats = [
             'total' => User::count(),
@@ -40,7 +51,7 @@ class UserController extends Controller
         return Inertia::render('Admin/Users', [
             'users' => $users,
             'stats' => $stats,
-            'filters' => $request->only(['search', 'role'])
+            'filters' => $request->only(['search', 'role', 'sort_field', 'sort_direction'])
         ]);
     }
 
@@ -56,5 +67,57 @@ class UserController extends Controller
         broadcast(new UsersUpdated("User role updated successfully."))->toOthers();
 
         return redirect()->back();
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:admin,business_owner,tourist',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        // Manually assign role since it's not fillable
+        $user->role = $validated['role'];
+        $user->save();
+
+        broadcast(new UsersUpdated("New user added successfully."))->toOthers();
+
+        return redirect()->back()->with('success', 'User created successfully.');
+    }
+
+    public function suspend(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('error', 'You cannot suspend yourself.');
+        }
+
+        // Toggle suspension status
+        $user->status = $user->status === 'suspended' ? 'active' : 'suspended';
+        $user->save();
+
+        broadcast(new UsersUpdated("User status updated successfully."))->toOthers();
+
+        return redirect()->back()->with('success', 'User status updated successfully.');
+    }
+
+    public function destroy(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('error', 'You cannot delete yourself.');
+        }
+
+        $user->delete();
+
+        broadcast(new UsersUpdated("User deleted successfully."))->toOthers();
+
+        return redirect()->back()->with('success', 'User deleted successfully.');
     }
 }

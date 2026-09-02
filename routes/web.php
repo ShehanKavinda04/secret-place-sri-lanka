@@ -19,7 +19,10 @@ Route::post('/api/wishlists/toggle', [WishlistController::class, 'toggle']);
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users');
+    Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
+    Route::put('/users/{user}/suspend', [\App\Http\Controllers\Admin\UserController::class, 'suspend'])->name('users.suspend');
+    Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
     Route::get('/businesses', [\App\Http\Controllers\Admin\BusinessApprovalController::class, 'index'])->name('businesses');
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings');
     Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
@@ -66,7 +69,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
             $business->update(['status' => 'approved']);
         }
         event(new \App\Events\PendingApprovalsUpdated(\App\Http\Controllers\Admin\DashboardController::getPendingApprovals()));
-        return response()->json(['success' => true]);
+        return back();
     });
     
     Route::post('/businesses/{id}/reject', function ($id) {
@@ -75,7 +78,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
             $business->update(['status' => 'rejected']);
         }
         event(new \App\Events\PendingApprovalsUpdated(\App\Http\Controllers\Admin\DashboardController::getPendingApprovals()));
-        return response()->json(['success' => true]);
+        return back();
     });
     
     Route::post('/catalog/{id}/dismiss', function ($id) {

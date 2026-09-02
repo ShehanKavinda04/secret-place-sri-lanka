@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, router, Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { 
     Search, Filter, MoreVertical, Users as UsersIcon, 
     ShieldCheck, Store, Briefcase, Edit2, Trash2, 
-    ShieldBan, ChevronLeft, ChevronRight, Plus 
+    ShieldBan, ChevronLeft, ChevronRight, Plus, Check, X
 } from 'lucide-react';
 
 export default function Users({ users, stats, filters }) {
     const [editingUser, setEditingUser] = useState(null);
+    const [isAddingUser, setIsAddingUser] = useState(false);
+    const [isViewingPermissions, setIsViewingPermissions] = useState(false);
     const [searchQuery, setSearchQuery] = useState(filters?.search || '');
     const [roleFilter, setRoleFilter] = useState(filters?.role || 'all');
+    const [sortField, setSortField] = useState(filters?.sort_field || 'created_at');
+    const [sortDirection, setSortDirection] = useState(filters?.sort_direction || 'desc');
+    const [showFilters, setShowFilters] = useState(false);
     
     // Dropdown state for rows
     const [openDropdownId, setOpenDropdownId] = useState(null);
@@ -20,13 +25,50 @@ export default function Users({ users, stats, filters }) {
         role: ''
     });
 
-    // Handle search/filter changes with debounce
+    const createForm = useForm({
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        role: 'admin'
+    });
+
+    // Sync state with URL changes (e.g., back button)
+    useEffect(() => {
+        setSearchQuery(filters?.search || '');
+        setRoleFilter(filters?.role || 'all');
+        setSortField(filters?.sort_field || 'created_at');
+        setSortDirection(filters?.sort_direction || 'desc');
+    }, [filters]);
+
+    // Handle instant filter changes (role, sort)
+    useEffect(() => {
+        if (
+            roleFilter !== (filters?.role || 'all') ||
+            sortField !== (filters?.sort_field || 'created_at') ||
+            sortDirection !== (filters?.sort_direction || 'desc')
+        ) {
+            router.get(route('admin.users'), { 
+                search: searchQuery, 
+                role: roleFilter,
+                sort_field: sortField,
+                sort_direction: sortDirection
+            }, { 
+                preserveState: true, 
+                preserveScroll: true 
+            });
+        }
+    }, [roleFilter, sortField, sortDirection]);
+
+    // Handle search changes with debounce
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (searchQuery !== (filters?.search || '') || roleFilter !== (filters?.role || 'all')) {
+            if (searchQuery !== (filters?.search || '')) {
                 router.get(route('admin.users'), { 
                     search: searchQuery, 
-                    role: roleFilter 
+                    role: roleFilter,
+                    sort_field: sortField,
+                    sort_direction: sortDirection
                 }, { 
                     preserveState: true, 
                     preserveScroll: true 
@@ -34,7 +76,7 @@ export default function Users({ users, stats, filters }) {
             }
         }, 500);
         return () => clearTimeout(timer);
-    }, [searchQuery, roleFilter]);
+    }, [searchQuery]);
 
     // Real-time synchronization
     useEffect(() => {
@@ -68,6 +110,38 @@ export default function Users({ users, stats, filters }) {
         put(route('admin.users.update', editingUser.id), {
             onSuccess: () => closeEditModal(),
         });
+    };
+
+    const closeCreateModal = () => {
+        setIsAddingUser(false);
+        createForm.reset();
+        createForm.clearErrors();
+    };
+
+    const submitCreate = (e) => {
+        e.preventDefault();
+        createForm.post(route('admin.users.store'), {
+            onSuccess: () => closeCreateModal(),
+        });
+    };
+
+    const suspendUser = (user) => {
+        setOpenDropdownId(null);
+        router.put(route('admin.users.suspend', user.id), {}, {
+            preserveScroll: true,
+        });
+    };
+
+    const deleteUser = (user) => {
+        setOpenDropdownId(null);
+        // Small timeout to allow the dropdown to close visually before the blocking confirm dialog
+        setTimeout(() => {
+            if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
+                router.delete(route('admin.users.destroy', user.id), {
+                    preserveScroll: true,
+                });
+            }
+        }, 10);
     };
 
     const getRoleBadge = (role) => {
@@ -120,10 +194,16 @@ export default function Users({ users, stats, filters }) {
                         <p className="text-sm text-gray-500 mt-1">Manage user access, roles, and platform permissions.</p>
                     </div>
                     <div className="flex space-x-3">
-                        <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm">
+                        <button 
+                            onClick={() => setIsViewingPermissions(true)}
+                            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
+                        >
                             Manage Permissions
                         </button>
-                        <button className="px-4 py-2 bg-royalMaroon-900 text-white rounded-lg text-sm font-medium hover:bg-royalMaroon-950 transition-colors flex items-center shadow-sm">
+                        <button 
+                            onClick={() => setIsAddingUser(true)}
+                            className="px-4 py-2 bg-royalMaroon-900 text-white rounded-lg text-sm font-medium hover:bg-royalMaroon-950 transition-colors flex items-center shadow-sm"
+                        >
                             <Plus className="w-4 h-4 mr-2" />
                             Add New User
                         </button>
@@ -182,7 +262,7 @@ export default function Users({ users, stats, filters }) {
                             className="w-full pl-9 pr-4 py-2 bg-white text-slate-900 placeholder-slate-400 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow"
                         />
                     </div>
-                    <div className="flex w-full sm:w-auto space-x-3">
+                    <div className="flex w-full sm:w-auto space-x-3 relative">
                         <select 
                             value={roleFilter}
                             onChange={(e) => setRoleFilter(e.target.value)}
@@ -193,10 +273,48 @@ export default function Users({ users, stats, filters }) {
                             <option value="business_owner">Merchants</option>
                             <option value="tourist">Tourists</option>
                         </select>
-                        <button className="px-4 py-2 bg-gray-50 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 flex items-center whitespace-nowrap">
-                            <Filter className="w-4 h-4 mr-2" />
-                            Filters
-                        </button>
+                        <div className="relative">
+                            <button 
+                                onClick={() => setShowFilters(!showFilters)}
+                                className={`px-4 py-2 border rounded-lg text-sm font-medium flex items-center whitespace-nowrap transition-colors ${showFilters ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                            >
+                                <Filter className="w-4 h-4 mr-2" />
+                                Filters
+                            </button>
+
+                            {/* Filters Dropdown Modal */}
+                            {showFilters && (
+                                <>
+                                    <div 
+                                        className="fixed inset-0 z-40" 
+                                        onClick={() => setShowFilters(false)}
+                                    ></div>
+                                    <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-4">
+                                        <div className="mb-2">
+                                            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Sort By</h3>
+                                            <div className="space-y-3">
+                                                <label className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer" onClick={() => { setSortField('created_at'); setSortDirection('desc'); setShowFilters(false); }}>
+                                                    <input type="radio" name="sort" checked={sortField === 'created_at' && sortDirection === 'desc'} readOnly className="text-indigo-600 focus:ring-indigo-500 rounded-full" />
+                                                    <span>Newest First</span>
+                                                </label>
+                                                <label className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer" onClick={() => { setSortField('created_at'); setSortDirection('asc'); setShowFilters(false); }}>
+                                                    <input type="radio" name="sort" checked={sortField === 'created_at' && sortDirection === 'asc'} readOnly className="text-indigo-600 focus:ring-indigo-500 rounded-full" />
+                                                    <span>Oldest First</span>
+                                                </label>
+                                                <label className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer" onClick={() => { setSortField('name'); setSortDirection('asc'); setShowFilters(false); }}>
+                                                    <input type="radio" name="sort" checked={sortField === 'name' && sortDirection === 'asc'} readOnly className="text-indigo-600 focus:ring-indigo-500 rounded-full" />
+                                                    <span>Name (A-Z)</span>
+                                                </label>
+                                                <label className="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer" onClick={() => { setSortField('name'); setSortDirection('desc'); setShowFilters(false); }}>
+                                                    <input type="radio" name="sort" checked={sortField === 'name' && sortDirection === 'desc'} readOnly className="text-indigo-600 focus:ring-indigo-500 rounded-full" />
+                                                    <span>Name (Z-A)</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -249,7 +367,7 @@ export default function Users({ users, stats, filters }) {
                                             {getRoleBadge(user.role)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            {getStatusBadge('active')}
+                                            {getStatusBadge(user.status || 'active')}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
@@ -278,13 +396,23 @@ export default function Users({ users, stats, filters }) {
                                                             <Edit2 className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
                                                             Change Role
                                                         </button>
-                                                        <button className="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left">
+                                                        <Link 
+                                                            href={route('admin.users.suspend', user.id)}
+                                                            method="put"
+                                                            as="button"
+                                                            preserveScroll
+                                                            onClick={() => setOpenDropdownId(null)}
+                                                            className="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
+                                                        >
                                                             <ShieldBan className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
-                                                            Suspend User
-                                                        </button>
+                                                            {user.status === 'suspended' ? 'Activate User' : 'Suspend User'}
+                                                        </Link>
                                                     </div>
                                                     <div className="py-1">
-                                                        <button className="group flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left">
+                                                        <button 
+                                                            onClick={() => deleteUser(user)}
+                                                            className="group flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
+                                                        >
                                                             <Trash2 className="mr-3 h-4 w-4 text-red-400 group-hover:text-red-500" />
                                                             Delete User
                                                         </button>
@@ -415,6 +543,146 @@ export default function Users({ users, stats, filters }) {
                             </div>
                         </form>
                     )}
+                </div>
+            </Modal>
+
+            {/* Add User Modal */}
+            <Modal show={isAddingUser} onClose={closeCreateModal} maxWidth="md">
+                <div className="p-6">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">Add New User</h2>
+                    
+                    <form onSubmit={submitCreate}>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input
+                                type="text"
+                                value={createForm.data.name}
+                                onChange={e => createForm.setData('name', e.target.value)}
+                                className="w-full border-gray-300 bg-white text-slate-900 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3 outline-none"
+                                required
+                            />
+                            {createForm.errors.name && <div className="text-red-500 text-xs mt-1">{createForm.errors.name}</div>}
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input
+                                type="email"
+                                value={createForm.data.email}
+                                onChange={e => createForm.setData('email', e.target.value)}
+                                className="w-full border-gray-300 bg-white text-slate-900 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3 outline-none"
+                                required
+                            />
+                            {createForm.errors.email && <div className="text-red-500 text-xs mt-1">{createForm.errors.email}</div>}
+                        </div>
+                        
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                            <select
+                                value={createForm.data.role}
+                                onChange={(e) => createForm.setData('role', e.target.value)}
+                                className="w-full border-gray-300 bg-white text-slate-900 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3 outline-none"
+                            >
+                                <option value="admin">Super Admin</option>
+                                <option value="business_owner">Merchant</option>
+                                <option value="tourist">Tourist</option>
+                            </select>
+                            {createForm.errors.role && <div className="text-red-500 text-xs mt-1">{createForm.errors.role}</div>}
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input
+                                type="password"
+                                value={createForm.data.password}
+                                onChange={e => createForm.setData('password', e.target.value)}
+                                className="w-full border-gray-300 bg-white text-slate-900 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3 outline-none"
+                                required
+                            />
+                            {createForm.errors.password && <div className="text-red-500 text-xs mt-1">{createForm.errors.password}</div>}
+                        </div>
+
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                            <input
+                                type="password"
+                                value={createForm.data.password_confirmation}
+                                onChange={e => createForm.setData('password_confirmation', e.target.value)}
+                                className="w-full border-gray-300 bg-white text-slate-900 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3 outline-none"
+                                required
+                            />
+                        </div>
+                        
+                        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                            <button
+                                type="button"
+                                onClick={closeCreateModal}
+                                className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={createForm.processing}
+                                className="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-royalMaroon-900 hover:bg-royalMaroon-950 focus:outline-none disabled:opacity-50 transition-colors"
+                            >
+                                {createForm.processing ? 'Creating...' : 'Create User'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </Modal>
+
+            {/* Permissions Matrix Modal */}
+            <Modal show={isViewingPermissions} onClose={() => setIsViewingPermissions(false)} maxWidth="2xl">
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-lg font-medium text-gray-900">Role Permissions Matrix</h2>
+                        <button onClick={() => setIsViewingPermissions(false)} className="text-gray-400 hover:text-gray-500">
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    
+                    <div className="overflow-hidden border border-gray-200 rounded-lg">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capability</th>
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Merchant</th>
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Tourist</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {[
+                                    { name: 'Access Admin Dashboard', admin: true, merchant: false, tourist: false },
+                                    { name: 'Manage Users & Roles', admin: true, merchant: false, tourist: false },
+                                    { name: 'Approve Businesses', admin: true, merchant: false, tourist: false },
+                                    { name: 'Access Seller Dashboard', admin: true, merchant: true, tourist: false },
+                                    { name: 'Manage Own Listings', admin: true, merchant: true, tourist: false },
+                                    { name: 'View Own Earnings', admin: true, merchant: true, tourist: false },
+                                    { name: 'Make Bookings', admin: true, merchant: true, tourist: true },
+                                    { name: 'Leave Reviews', admin: true, merchant: true, tourist: true },
+                                ].map((perm, idx) => (
+                                    <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{perm.name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                                            {perm.admin ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <X className="w-5 h-5 text-gray-300 mx-auto" />}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                                            {perm.merchant ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <X className="w-5 h-5 text-gray-300 mx-auto" />}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                                            {perm.tourist ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <X className="w-5 h-5 text-gray-300 mx-auto" />}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="mt-4 text-xs text-gray-500">
+                        Note: Permissions are bound to roles. Granular permission overrides are not currently supported.
+                    </div>
                 </div>
             </Modal>
         </AdminLayout>

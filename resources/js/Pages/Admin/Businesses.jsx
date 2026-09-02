@@ -13,6 +13,21 @@ export default function Businesses({ businesses, stats, filters }) {
     const [statusFilter, setStatusFilter] = useState(filters?.status || 'all');
     const [categoryFilter, setCategoryFilter] = useState(filters?.category || 'all');
     const [selectedBusiness, setSelectedBusiness] = useState(null);
+    const [selectedRows, setSelectedRows] = useState([]);
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedRows(businesses.data.map(b => b.id));
+        } else {
+            setSelectedRows([]);
+        }
+    };
+
+    const handleSelectRow = (id) => {
+        setSelectedRows(prev => 
+            prev.includes(id) ? prev.filter(rowId => rowId !== id) : [...prev, id]
+        );
+    };
 
     // Handle search/filter changes with debounce
     useEffect(() => {
@@ -76,6 +91,40 @@ export default function Businesses({ businesses, stats, filters }) {
         });
     };
 
+    const handleExport = () => {
+        if (!businesses.data || businesses.data.length === 0) {
+            alert('No data to export based on current filters.');
+            return;
+        }
+        
+        const headers = ['ID', 'Registration ID', 'Business Name', 'Owner Name', 'Owner Email', 'Category', 'Status', 'Submitted Date'];
+        const csvRows = [headers.join(',')];
+        
+        businesses.data.forEach(b => {
+            const row = [
+                b.id,
+                b.registration_id || `REG-00${b.id}`,
+                `"${(b.name || '').replace(/"/g, '""')}"`,
+                `"${(b.owner?.name || '').replace(/"/g, '""')}"`,
+                `"${(b.owner?.email || '').replace(/"/g, '""')}"`,
+                b.category || 'N/A',
+                b.status,
+                new Date(b.created_at).toLocaleDateString('en-US')
+            ];
+            csvRows.push(row.join(','));
+        });
+        
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `business_approvals_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
     const tabs = [
         { id: 'all', label: 'All Requests' },
         { id: 'pending', label: 'Pending Review' },
@@ -96,7 +145,10 @@ export default function Businesses({ businesses, stats, filters }) {
                         <p className="text-sm text-gray-500 mt-1">Review, approve, and manage business applications across the platform.</p>
                     </div>
                     <div className="flex space-x-3">
-                        <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center shadow-sm transition-colors">
+                        <button 
+                            onClick={handleExport}
+                            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center shadow-sm transition-colors"
+                        >
                             <Download className="w-4 h-4 mr-2" />
                             Export Data
                         </button>
@@ -105,7 +157,10 @@ export default function Businesses({ businesses, stats, filters }) {
 
                 {/* Metrics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-4">
+                    <div 
+                        onClick={() => setStatusFilter('all')}
+                        className={`bg-white p-5 rounded-xl border shadow-sm flex items-center space-x-4 cursor-pointer transition-colors ${statusFilter === 'all' ? 'border-blue-400 ring-1 ring-blue-400' : 'border-gray-200 hover:border-blue-300'}`}
+                    >
                         <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
                             <Store className="w-6 h-6" />
                         </div>
@@ -114,7 +169,10 @@ export default function Businesses({ businesses, stats, filters }) {
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.total || 0}</h3>
                         </div>
                     </div>
-                    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-4 relative overflow-hidden">
+                    <div 
+                        onClick={() => setStatusFilter('pending')}
+                        className={`bg-white p-5 rounded-xl border shadow-sm flex items-center space-x-4 relative overflow-hidden cursor-pointer transition-colors ${statusFilter === 'pending' ? 'border-yellow-400 ring-1 ring-yellow-400' : 'border-gray-200 hover:border-yellow-300'}`}
+                    >
                         <div className="p-3 bg-yellow-50 rounded-lg text-yellow-600 z-10">
                             <AlertCircle className="w-6 h-6" />
                         </div>
@@ -126,7 +184,10 @@ export default function Businesses({ businesses, stats, filters }) {
                             <div className="absolute top-0 right-0 w-2 h-full bg-yellow-400"></div>
                         )}
                     </div>
-                    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-4">
+                    <div 
+                        onClick={() => setStatusFilter('approved')}
+                        className={`bg-white p-5 rounded-xl border shadow-sm flex items-center space-x-4 cursor-pointer transition-colors ${statusFilter === 'approved' ? 'border-emerald-400 ring-1 ring-emerald-400' : 'border-gray-200 hover:border-emerald-300'}`}
+                    >
                         <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600">
                             <CheckCircle2 className="w-6 h-6" />
                         </div>
@@ -135,7 +196,10 @@ export default function Businesses({ businesses, stats, filters }) {
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.approved || 0}</h3>
                         </div>
                     </div>
-                    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-4">
+                    <div 
+                        onClick={() => setStatusFilter('rejected')}
+                        className={`bg-white p-5 rounded-xl border shadow-sm flex items-center space-x-4 cursor-pointer transition-colors ${statusFilter === 'rejected' ? 'border-red-400 ring-1 ring-red-400' : 'border-gray-200 hover:border-red-300'}`}
+                    >
                         <div className="p-3 bg-red-50 rounded-lg text-red-600">
                             <XCircle className="w-6 h-6" />
                         </div>
@@ -200,7 +264,13 @@ export default function Businesses({ businesses, stats, filters }) {
                             <thead className="bg-gray-50">
                                 <tr>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
-                                        <input type="checkbox" className="rounded border-gray-300 text-royalMaroon-600 focus:ring-royalMaroon-500" />
+                                        <input 
+                                            type="checkbox" 
+                                            checked={businesses.data.length > 0 && selectedRows.length === businesses.data.length}
+                                            onChange={handleSelectAll}
+                                            disabled={businesses.data.length === 0}
+                                            className="rounded border-gray-300 text-royalMaroon-600 focus:ring-royalMaroon-500 disabled:opacity-50 disabled:cursor-not-allowed" 
+                                        />
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Business Details
@@ -226,7 +296,12 @@ export default function Businesses({ businesses, stats, filters }) {
                                 {businesses.data.length > 0 ? businesses.data.map((business) => (
                                     <tr key={business.id} className="hover:bg-gray-50 transition-colors group">
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <input type="checkbox" className="rounded border-gray-300 text-royalMaroon-600 focus:ring-royalMaroon-500" />
+                                            <input 
+                                                type="checkbox" 
+                                                checked={selectedRows.includes(business.id)}
+                                                onChange={() => handleSelectRow(business.id)}
+                                                className="rounded border-gray-300 text-royalMaroon-600 focus:ring-royalMaroon-500 cursor-pointer" 
+                                            />
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
@@ -308,48 +383,56 @@ export default function Businesses({ businesses, stats, filters }) {
                                     </p>
                                 </div>
                                 <div>
-                                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                        {businesses.links.map((link, idx) => {
-                                            if (link.label.includes('Previous')) {
+                                    {businesses.total > businesses.per_page && (
+                                        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                            {businesses.links.map((link, idx) => {
+                                                const isPrevious = link.label.includes('Previous');
+                                                const isNext = link.label.includes('Next');
+                                                const isActive = link.active;
+                                                
+                                                // Handle icon SVGs for Previous and Next
+                                                const getInnerHTML = () => {
+                                                    if (isPrevious) return '<span class="sr-only">Previous</span><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>';
+                                                    if (isNext) return '<span class="sr-only">Next</span><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>';
+                                                    return link.label;
+                                                };
+
+                                                const baseClasses = `relative inline-flex items-center px-4 py-2 border text-sm font-medium ${isPrevious ? 'rounded-l-md px-2' : isNext ? 'rounded-r-md px-2' : ''}`;
+                                                
+                                                if (isActive) {
+                                                    return (
+                                                        <span
+                                                            key={idx}
+                                                            className={`${baseClasses} z-10 bg-royalMaroon-50 border-royalMaroon-500 text-royalMaroon-600 cursor-default`}
+                                                            dangerouslySetInnerHTML={{ __html: getInnerHTML() }}
+                                                        />
+                                                    );
+                                                }
+
+                                                if (!link.url) {
+                                                    return (
+                                                        <span
+                                                            key={idx}
+                                                            className={`${baseClasses} border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed`}
+                                                            dangerouslySetInnerHTML={{ __html: getInnerHTML() }}
+                                                        />
+                                                    );
+                                                }
+
                                                 return (
-                                                    <button
+                                                    <Link
                                                         key={idx}
-                                                        onClick={() => link.url && router.get(link.url, { search: searchQuery, status: statusFilter, category: categoryFilter }, { preserveState: true, preserveScroll: true })}
-                                                        disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
-                                                    >
-                                                        <span className="sr-only">Previous</span>
-                                                        <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-                                                    </button>
+                                                        href={link.url}
+                                                        data={{ search: searchQuery, status: statusFilter, category: categoryFilter }}
+                                                        preserveState
+                                                        preserveScroll
+                                                        className={`${baseClasses} bg-white border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors`}
+                                                        dangerouslySetInnerHTML={{ __html: getInnerHTML() }}
+                                                    />
                                                 );
-                                            }
-                                            if (link.label.includes('Next')) {
-                                                return (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => link.url && router.get(link.url, { search: searchQuery, status: statusFilter, category: categoryFilter }, { preserveState: true, preserveScroll: true })}
-                                                        disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
-                                                    >
-                                                        <span className="sr-only">Next</span>
-                                                        <ChevronRight className="h-5 w-5" aria-hidden="true" />
-                                                    </button>
-                                                );
-                                            }
-                                            return (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => link.url && router.get(link.url, { search: searchQuery, status: statusFilter, category: categoryFilter }, { preserveState: true, preserveScroll: true })}
-                                                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                                        link.active 
-                                                            ? 'z-10 bg-royalMaroon-50 border-royalMaroon-500 text-royalMaroon-600' 
-                                                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                                                    }`}
-                                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                                />
-                                            );
-                                        })}
-                                    </nav>
+                                            })}
+                                        </nav>
+                                    )}
                                 </div>
                             </div>
                         </div>
