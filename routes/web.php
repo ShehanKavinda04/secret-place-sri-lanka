@@ -25,6 +25,27 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
     Route::get('/businesses', [\App\Http\Controllers\Admin\BusinessApprovalController::class, 'index'])->name('businesses');
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings');
+    
+    Route::post('/bookings/{id}/confirm', function ($id) {
+        $booking = \App\Models\Booking::find($id);
+        if ($booking) {
+            $booking->update(['status' => 'confirmed']);
+        }
+        event(new \App\Events\OperationsUpdated(\App\Http\Controllers\Admin\DashboardController::getOperationsData()));
+        return back();
+    });
+
+    Route::post('/bookings/{id}/cancel', function ($id) {
+        $booking = \App\Models\Booking::with('payment')->find($id);
+        if ($booking) {
+            $booking->update(['status' => 'cancelled']);
+            if ($booking->payment) {
+                $booking->payment->update(['status' => 'refunded']);
+            }
+        }
+        event(new \App\Events\OperationsUpdated(\App\Http\Controllers\Admin\DashboardController::getOperationsData()));
+        return back();
+    });
     Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
     Route::get('/security-logs', [\App\Http\Controllers\Admin\SecurityLogController::class, 'index'])->name('security-logs');
     
@@ -108,6 +129,18 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         event(new \App\Events\FinanceUpdated(\App\Http\Controllers\Admin\DashboardController::getFinanceData()));
         return response()->json(['success' => true]);
     });
+
+    Route::post('/finance/refund/{id}', function ($id) {
+        $payment = \App\Models\Payment::find($id);
+        if ($payment) {
+            $payment->update(['status' => 'refunded']);
+            if ($payment->booking) {
+                $payment->booking->update(['status' => 'cancelled']);
+            }
+        }
+        event(new \App\Events\FinanceUpdated(\App\Http\Controllers\Admin\DashboardController::getFinanceData()));
+        return back();
+    })->name('admin.finance.refund');
 
     Route::post('/kpi/simulate', function () {
         event(new \App\Events\DashboardKpiUpdated(\App\Http\Controllers\Admin\DashboardController::getKpiData()));

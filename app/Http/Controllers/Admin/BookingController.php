@@ -17,8 +17,13 @@ class BookingController extends Controller
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function($q) use ($search) {
-                // If searching for BKG-123, we extract just the number
+                // If searching for BKG-123 or #BKG-0002, we extract just the number
                 $searchId = preg_replace('/[^0-9]/', '', $search) ?: $search;
+                
+                // If it's numeric, cast to int to strip leading zeros so "0002" correctly matches ID 2
+                if (is_numeric($searchId)) {
+                    $searchId = (int)$searchId;
+                }
                 
                 $q->where('id', 'like', "%{$searchId}%")
                   ->orWhereHas('tourist', function($q2) use ($search) {

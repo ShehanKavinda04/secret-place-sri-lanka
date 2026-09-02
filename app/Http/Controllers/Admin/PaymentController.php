@@ -12,7 +12,7 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Payment::with(['booking.tourist', 'booking.business']);
+        $query = Payment::with(['booking.tourist', 'booking.business.owner']);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -41,11 +41,27 @@ class PaymentController extends Controller
             $query->where('status', $request->input('status'));
         }
 
+        if ($request->filled('tab') && $request->input('tab') !== 'all') {
+            $tab = $request->input('tab');
+            if ($tab === 'payouts') {
+                $query->where('status', 'success');
+            } elseif ($tab === 'refunds') {
+                $query->whereIn('status', ['refunded', 'disputed']);
+            } elseif ($tab === 'logs') {
+                // Just an example, show all or some specific condition
+            }
+        }
+
         if ($request->filled('date') && $request->input('date') !== 'all') {
             $date = $request->input('date');
             if ($date === 'this_month') {
                 $query->whereMonth('created_at', Carbon::now()->month)
                       ->whereYear('created_at', Carbon::now()->year);
+            } elseif ($date === 'last_month') {
+                $query->whereMonth('created_at', Carbon::now()->subMonth()->month)
+                      ->whereYear('created_at', Carbon::now()->subMonth()->year);
+            } elseif ($date === 'this_year') {
+                $query->whereYear('created_at', Carbon::now()->year);
             } elseif ($date === 'last_quarter') {
                 $query->where('created_at', '>=', Carbon::now()->subMonths(3));
             }
@@ -72,7 +88,7 @@ class PaymentController extends Controller
         return Inertia::render('Admin/Payments', [
             'payments' => $payments,
             'stats' => $stats,
-            'filters' => $request->only(['search', 'gateway', 'status', 'date'])
+            'filters' => $request->only(['search', 'gateway', 'status', 'date', 'tab'])
         ]);
     }
 }

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { 
     Search, Download, CalendarDays, CheckCircle, 
     Clock, XCircle, DollarSign, ChevronLeft, 
-    ChevronRight, CreditCard, MapPin, X, Users as UsersIcon
+    ChevronRight, CreditCard, MapPin, X, Users as UsersIcon, Store
 } from 'lucide-react';
 
 export default function Bookings({ bookings, stats, filters }) {
@@ -13,15 +13,38 @@ export default function Bookings({ bookings, stats, filters }) {
     const [statusFilter, setStatusFilter] = useState(filters?.status || 'all');
     const [dateFilter, setDateFilter] = useState(filters?.date || 'all');
     const [selectedBooking, setSelectedBooking] = useState(null);
+    const [selectedRows, setSelectedRows] = useState([]);
 
-    // Handle search/filter changes with debounce
+    const handleSelectAll = (e) => {
+        if (e.target.checked && bookings.data.length > 0) {
+            setSelectedRows(bookings.data.map(b => b.id));
+        } else {
+            setSelectedRows([]);
+        }
+    };
+
+    // Sync local state with Inertia props (crucial for browser Back/Forward navigation)
+    useEffect(() => {
+        setSearchQuery(filters?.search || '');
+        setStatusFilter(filters?.status || 'all');
+        setDateFilter(filters?.date || 'all');
+    }, [filters]);
+
+    // Reset selected rows when data changes (e.g., changing tabs or pagination)
+    useEffect(() => {
+        setSelectedRows([]);
+    }, [bookings?.data]);
+
+    const handleSelectRow = (id) => {
+        setSelectedRows(prev => 
+            prev.includes(id) ? prev.filter(rowId => rowId !== id) : [...prev, id]
+        );
+    };
+
+    // Debounce search query
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (
-                searchQuery !== (filters?.search || '') || 
-                statusFilter !== (filters?.status || 'all') ||
-                dateFilter !== (filters?.date || 'all')
-            ) {
+            if (searchQuery !== (filters?.search || '')) {
                 router.get(route('admin.bookings'), { 
                     search: searchQuery, 
                     status: statusFilter,
@@ -33,7 +56,24 @@ export default function Bookings({ bookings, stats, filters }) {
             }
         }, 500);
         return () => clearTimeout(timer);
-    }, [searchQuery, statusFilter, dateFilter]);
+    }, [searchQuery]);
+
+    // Immediate update for dropdowns and tabs
+    useEffect(() => {
+        if (
+            statusFilter !== (filters?.status || 'all') ||
+            dateFilter !== (filters?.date || 'all')
+        ) {
+            router.get(route('admin.bookings'), { 
+                search: searchQuery, 
+                status: statusFilter,
+                date: dateFilter
+            }, { 
+                preserveState: true, 
+                preserveScroll: true 
+            });
+        }
+    }, [statusFilter, dateFilter]);
 
     // Real-time synchronization
     useEffect(() => {
@@ -67,9 +107,49 @@ export default function Bookings({ bookings, stats, filters }) {
     };
 
     const handleQuickAction = (id, action) => {
-        // Implement action handler here (e.g., status updates)
-        // router.post(`/admin/bookings/${id}/${action}`, ...);
-        alert(`Action ${action} triggered for BKG-${id}`);
+        if (action === 'cancel' && !window.confirm('Are you sure you want to force cancel this booking and process a full refund?')) {
+            return;
+        }
+
+        router.post(`/admin/bookings/${id}/${action}`, {}, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => setSelectedBooking(null)
+        });
+    };
+
+    const handleExport = () => {
+        if (!bookings.data || bookings.data.length === 0) {
+            alert('No data to export based on current filters.');
+            return;
+        }
+        
+        const headers = ['Booking ID', 'Customer Name', 'Customer Email', 'Merchant Name', 'Merchant Category', 'Amount', 'Status', 'Date'];
+        const csvRows = [headers.join(',')];
+        
+        bookings.data.forEach(b => {
+            const row = [
+                b.id,
+                `"${(b.tourist?.name || '').replace(/"/g, '""')}"`,
+                `"${(b.tourist?.email || '').replace(/"/g, '""')}"`,
+                `"${(b.business?.name || '').replace(/"/g, '""')}"`,
+                b.business?.category || 'N/A',
+                b.total_amount,
+                b.status,
+                new Date(b.created_at).toLocaleDateString('en-US')
+            ];
+            csvRows.push(row.join(','));
+        });
+        
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `operations_log_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     };
 
     const tabs = [
@@ -100,7 +180,10 @@ export default function Bookings({ bookings, stats, filters }) {
                         <p className="text-sm text-gray-500 mt-1">Monitor, manage, and resolve all system bookings and operational activities in real time.</p>
                     </div>
                     <div className="flex space-x-3">
-                        <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center shadow-sm transition-colors">
+                        <button 
+                            onClick={handleExport}
+                            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center shadow-sm transition-colors"
+                        >
                             <Download className="w-4 h-4 mr-2" />
                             Export Operations Log
                         </button>
@@ -109,7 +192,10 @@ export default function Bookings({ bookings, stats, filters }) {
 
                 {/* KPI Metrics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-4">
+                    <div 
+                        onClick={() => setStatusFilter('all')}
+                        className={`bg-white p-5 rounded-xl border shadow-sm flex items-center space-x-4 cursor-pointer transition-colors ${statusFilter === 'all' ? 'border-blue-400 ring-1 ring-blue-400' : 'border-gray-200 hover:border-blue-300'}`}
+                    >
                         <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
                             <CalendarDays className="w-6 h-6" />
                         </div>
@@ -118,7 +204,10 @@ export default function Bookings({ bookings, stats, filters }) {
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.total || 0}</h3>
                         </div>
                     </div>
-                    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-4">
+                    <div 
+                        onClick={() => setStatusFilter('confirmed')}
+                        className={`bg-white p-5 rounded-xl border shadow-sm flex items-center space-x-4 cursor-pointer transition-colors ${statusFilter === 'confirmed' ? 'border-green-400 ring-1 ring-green-400' : 'border-gray-200 hover:border-green-300'}`}
+                    >
                         <div className="p-3 bg-green-50 rounded-lg text-green-600">
                             <CheckCircle className="w-6 h-6" />
                         </div>
@@ -127,7 +216,10 @@ export default function Bookings({ bookings, stats, filters }) {
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.confirmed || 0}</h3>
                         </div>
                     </div>
-                    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-4">
+                    <div 
+                        onClick={() => setStatusFilter('pending')}
+                        className={`bg-white p-5 rounded-xl border shadow-sm flex items-center space-x-4 cursor-pointer transition-colors ${statusFilter === 'pending' ? 'border-yellow-400 ring-1 ring-yellow-400' : 'border-gray-200 hover:border-yellow-300'}`}
+                    >
                         <div className="p-3 bg-yellow-50 rounded-lg text-yellow-600">
                             <Clock className="w-6 h-6" />
                         </div>
@@ -136,7 +228,10 @@ export default function Bookings({ bookings, stats, filters }) {
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.pending || 0}</h3>
                         </div>
                     </div>
-                    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-4">
+                    <div 
+                        onClick={() => setStatusFilter('cancelled')}
+                        className={`bg-white p-5 rounded-xl border shadow-sm flex items-center space-x-4 cursor-pointer transition-colors ${statusFilter === 'cancelled' ? 'border-red-400 ring-1 ring-red-400' : 'border-gray-200 hover:border-red-300'}`}
+                    >
                         <div className="p-3 bg-red-50 rounded-lg text-red-600">
                             <XCircle className="w-6 h-6" />
                         </div>
@@ -160,7 +255,7 @@ export default function Bookings({ bookings, stats, filters }) {
                 {/* Tabs & Filters Toolbar */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                     {/* Tabs */}
-                    <div className="border-b border-gray-200 overflow-x-auto">
+                    <div className="border-b border-gray-200 overflow-x-auto overflow-y-hidden">
                         <nav className="flex -mb-px px-4" aria-label="Tabs">
                             {tabs.map((tab) => (
                                 <button
@@ -210,7 +305,13 @@ export default function Bookings({ bookings, stats, filters }) {
                             <thead className="bg-gray-50">
                                 <tr>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
-                                        <input type="checkbox" className="rounded border-gray-300 text-royalMaroon-600 focus:ring-royalMaroon-500" />
+                                        <input 
+                                            type="checkbox" 
+                                            checked={bookings.data.length > 0 && selectedRows.length === bookings.data.length}
+                                            onChange={handleSelectAll}
+                                            disabled={!bookings.data || bookings.data.length === 0}
+                                            className="rounded border-gray-300 text-royalMaroon-600 focus:ring-royalMaroon-500 disabled:opacity-50 disabled:cursor-not-allowed" 
+                                        />
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Booking Ref
@@ -239,7 +340,12 @@ export default function Bookings({ bookings, stats, filters }) {
                                 {bookings.data.length > 0 ? bookings.data.map((booking) => (
                                     <tr key={booking.id} className="hover:bg-gray-50 transition-colors group">
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <input type="checkbox" className="rounded border-gray-300 text-royalMaroon-600 focus:ring-royalMaroon-500" />
+                                            <input 
+                                                type="checkbox" 
+                                                checked={selectedRows.includes(booking.id)}
+                                                onChange={() => handleSelectRow(booking.id)}
+                                                className="rounded border-gray-300 text-royalMaroon-600 focus:ring-royalMaroon-500 cursor-pointer" 
+                                            />
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center text-sm font-bold text-gray-900">
@@ -290,6 +396,21 @@ export default function Bookings({ bookings, stats, filters }) {
                                             <CalendarDays className="mx-auto h-12 w-12 text-gray-300 mb-3" />
                                             <p className="text-sm font-medium text-gray-900">No bookings found</p>
                                             <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters.</p>
+                                            {(searchQuery || statusFilter !== 'all' || dateFilter !== 'all') && (
+                                                <button 
+                                                    onClick={() => {
+                                                        setSearchQuery('');
+                                                        setStatusFilter('all');
+                                                        setDateFilter('all');
+                                                        router.get(route('admin.bookings'), { 
+                                                            search: '', status: 'all', date: 'all' 
+                                                        }, { preserveState: true, preserveScroll: true });
+                                                    }}
+                                                    className="mt-4 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
+                                                >
+                                                    Clear All Filters
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -309,46 +430,51 @@ export default function Bookings({ bookings, stats, filters }) {
                                 <div>
                                     <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                                         {bookings.links.map((link, idx) => {
-                                            if (link.label.includes('Previous')) {
+                                                const isPrevious = link.label.includes('Previous');
+                                                const isNext = link.label.includes('Next');
+                                                const isActive = link.active;
+                                                
+                                                const getInnerHTML = () => {
+                                                    if (isPrevious) return '<span class="sr-only">Previous</span><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>';
+                                                    if (isNext) return '<span class="sr-only">Next</span><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>';
+                                                    return link.label;
+                                                };
+
+                                                const baseClasses = `relative inline-flex items-center px-4 py-2 border text-sm font-medium ${isPrevious ? 'rounded-l-md px-2' : isNext ? 'rounded-r-md px-2' : ''}`;
+                                                
+                                                if (isActive) {
+                                                    return (
+                                                        <span
+                                                            key={idx}
+                                                            className={`${baseClasses} z-10 bg-royalMaroon-50 border-royalMaroon-500 text-royalMaroon-600 cursor-default`}
+                                                            dangerouslySetInnerHTML={{ __html: getInnerHTML() }}
+                                                        />
+                                                    );
+                                                }
+
+                                                if (!link.url) {
+                                                    return (
+                                                        <span
+                                                            key={idx}
+                                                            className={`${baseClasses} border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed`}
+                                                            dangerouslySetInnerHTML={{ __html: getInnerHTML() }}
+                                                        />
+                                                    );
+                                                }
+
                                                 return (
-                                                    <button
+                                                    <Link
                                                         key={idx}
-                                                        onClick={() => link.url && router.get(link.url, { search: searchQuery, status: statusFilter, date: dateFilter }, { preserveState: true, preserveScroll: true })}
-                                                        disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
-                                                    >
-                                                        <span className="sr-only">Previous</span>
-                                                        <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-                                                    </button>
+                                                        href={link.url}
+                                                        data={{ search: searchQuery, status: statusFilter, date: dateFilter }}
+                                                        preserveState
+                                                        preserveScroll
+                                                        className={`${baseClasses} bg-white border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors`}
+                                                        dangerouslySetInnerHTML={{ __html: getInnerHTML() }}
+                                                    />
                                                 );
-                                            }
-                                            if (link.label.includes('Next')) {
-                                                return (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => link.url && router.get(link.url, { search: searchQuery, status: statusFilter, date: dateFilter }, { preserveState: true, preserveScroll: true })}
-                                                        disabled={!link.url}
-                                                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${link.url ? 'text-gray-500 hover:bg-gray-50' : 'bg-gray-50 text-gray-400 cursor-not-allowed'}`}
-                                                    >
-                                                        <span className="sr-only">Next</span>
-                                                        <ChevronRight className="h-5 w-5" aria-hidden="true" />
-                                                    </button>
-                                                );
-                                            }
-                                            return (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => link.url && router.get(link.url, { search: searchQuery, status: statusFilter, date: dateFilter }, { preserveState: true, preserveScroll: true })}
-                                                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                                        link.active 
-                                                            ? 'z-10 bg-royalMaroon-50 border-royalMaroon-500 text-royalMaroon-600' 
-                                                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                                                    }`}
-                                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                                />
-                                            );
-                                        })}
-                                    </nav>
+                                            })}
+                                        </nav>
                                 </div>
                             </div>
                         </div>
