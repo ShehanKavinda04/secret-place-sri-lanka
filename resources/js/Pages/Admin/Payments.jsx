@@ -43,7 +43,7 @@ export default function Payments({ payments, stats, filters }) {
         );
     };
 
-    const handleExport = () => {
+    const handleExport = async () => {
         if (!payments?.data || payments.data.length === 0) {
             alert('No financial records available to export based on current filters.');
             return;
@@ -57,7 +57,23 @@ export default function Payments({ payments, stats, filters }) {
             tab: activeTab
         }).toString();
         
-        window.open(route('admin.payments.export-pdf') + '?' + params, '_blank');
+        try {
+            const url = route('admin.payments.export-pdf') + '?' + params;
+            const response = await axios.get(url, { responseType: 'blob' });
+            
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', `financial_report_${new Date().toISOString().split('T')[0]}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error("Export failed:", error);
+            alert("Failed to export PDF report. Please try again.");
+        }
     };
 
     const handleProcessPayouts = () => {
