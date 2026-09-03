@@ -202,6 +202,45 @@ class SecurityLogController extends Controller
             $query = $query->where('severity', $request->input('severity'));
         }
 
+        // Filter by Type
+        if ($request->filled('type') && $request->input('type') !== 'all') {
+            $type = $request->input('type');
+            $query = $query->filter(function ($log) use ($type) {
+                if ($type === 'auth') {
+                    return in_array($log['event'], ['FAILED_LOGIN_ATTEMPT', 'ADMIN_LOGIN_SUCCESS']);
+                }
+                if ($type === 'user') {
+                    return in_array($log['event'], ['USER_ROLE_UPDATED', 'BUSINESS_SUSPENDED', 'PAYMENT_REFUNDED']);
+                }
+                if ($type === 'system') {
+                    return in_array($log['event'], ['SYSTEM_BACKUP_INITIATED', 'API_RATE_LIMIT_EXCEEDED', 'FIREWALL_RULE_TRIGGERED']);
+                }
+                if ($type === 'critical') {
+                    return $log['severity'] === 'critical';
+                }
+                return true;
+            });
+        }
+
+        // Filter by Timeframe
+        if ($request->filled('timeframe') && !in_array($request->input('timeframe'), ['all', 'live', 'custom'])) {
+            $timeframe = $request->input('timeframe');
+            $now = \Carbon\Carbon::now();
+            $query = $query->filter(function ($log) use ($timeframe, $now) {
+                $logTime = \Carbon\Carbon::parse($log['timestamp']);
+                if ($timeframe === '1h') {
+                    return $logTime->greaterThanOrEqualTo($now->copy()->subHour());
+                }
+                if ($timeframe === '24h') {
+                    return $logTime->greaterThanOrEqualTo($now->copy()->subHours(24));
+                }
+                if ($timeframe === '7d') {
+                    return $logTime->greaterThanOrEqualTo($now->copy()->subDays(7));
+                }
+                return true;
+            });
+        }
+
         // Simulating pagination for array
         $page = $request->input('page', 1);
         $perPage = 15;

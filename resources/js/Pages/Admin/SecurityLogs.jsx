@@ -68,6 +68,41 @@ export default function SecurityLogs({ logs, stats, filters }) {
         };
     }, []);
 
+    const handleExportCSV = () => {
+        if (!logs?.data || logs.data.length === 0) {
+            alert("No logs available to export.");
+            return;
+        }
+        const headers = ["Timestamp", "Actor", "Email", "Event", "Severity", "IP Address", "Location"];
+        const rows = logs.data.map(log => [
+            log.timestamp,
+            log.user?.name || 'N/A',
+            log.user?.email || 'N/A',
+            log.event,
+            log.severity,
+            log.ip_address,
+            `"${log.location || ''}"`
+        ]);
+        
+        const csvContent = "data:text/csv;charset=utf-8," 
+            + headers.join(",") + "\n" 
+            + rows.map(e => e.join(",")).join("\n");
+            
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `security_audit_logs_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handlePurgeLogs = () => {
+        if (confirm("Are you sure you want to purge all logs older than 30 days? This action cannot be undone.")) {
+            alert("Logs older than 30 days have been purged successfully. (Simulated)");
+        }
+    };
+
     const getSeverityBadge = (severity) => {
         const styles = {
             info: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -105,11 +140,17 @@ export default function SecurityLogs({ logs, stats, filters }) {
                         <p className="text-sm text-gray-500 mt-1 ml-10">Monitor system events, authentication attempts, permission changes, and suspicious activities in real-time.</p>
                     </div>
                     <div className="flex space-x-3">
-                        <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center shadow-sm transition-colors">
+                        <button 
+                            onClick={handleExportCSV}
+                            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center shadow-sm transition-all hover:shadow cursor-pointer active:scale-95"
+                        >
                             <Download className="w-4 h-4 mr-2" />
                             Export CSV
                         </button>
-                        <button className="px-4 py-2 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 flex items-center shadow-sm transition-colors">
+                        <button 
+                            onClick={handlePurgeLogs}
+                            className="px-4 py-2 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 flex items-center shadow-sm transition-all hover:shadow cursor-pointer active:scale-95"
+                        >
                             <Trash2 className="w-4 h-4 mr-2" />
                             Purge Old Logs
                         </button>
@@ -118,19 +159,27 @@ export default function SecurityLogs({ logs, stats, filters }) {
 
                 {/* KPI Metrics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <div 
+                        onClick={() => { setTypeFilter('all'); setSeverityFilter('all'); }}
+                        className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:border-blue-300 transition-all group"
+                        title="Click to view all events"
+                    >
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-300">
                             <Activity className="w-16 h-16 text-blue-600" />
                         </div>
-                        <p className="text-sm font-medium text-gray-500 mb-1">Total Security Events</p>
+                        <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-blue-600 transition-colors">Total Security Events</p>
                         <h3 className="text-3xl font-bold text-gray-900">{stats?.totalEvents?.toLocaleString()}</h3>
                         <p className="text-xs text-gray-400 mt-2">Last 24 Hours</p>
                     </div>
-                    <div className="bg-red-50 p-6 rounded-xl border border-red-200 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <div 
+                        onClick={() => { setTypeFilter('auth'); setSeverityFilter('error'); }}
+                        className="bg-red-50 p-6 rounded-xl border border-red-200 shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:bg-red-100 hover:border-red-400 transition-all group"
+                        title="Click to view failed logins"
+                    >
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-300">
                             <AlertTriangle className="w-16 h-16 text-red-600" />
                         </div>
-                        <p className="text-sm font-medium text-red-800 mb-1">Failed Login Attempts</p>
+                        <p className="text-sm font-medium text-red-800 mb-1 group-hover:text-red-900 transition-colors">Failed Login Attempts</p>
                         <div className="flex items-center">
                             <h3 className="text-3xl font-bold text-red-600">{stats?.failedLogins?.toLocaleString()}</h3>
                             <span className="ml-2 flex h-3 w-3 relative">
@@ -140,19 +189,27 @@ export default function SecurityLogs({ logs, stats, filters }) {
                         </div>
                         <p className="text-xs text-red-700 mt-2 opacity-80">Requires monitoring</p>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <div 
+                        onClick={() => { setTypeFilter('auth'); setSeverityFilter('info'); }}
+                        className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:border-green-300 transition-all group"
+                        title="Click to view successful admin sessions"
+                    >
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-300">
                             <ShieldCheck className="w-16 h-16 text-green-600" />
                         </div>
-                        <p className="text-sm font-medium text-gray-500 mb-1">Active Admin Sessions</p>
+                        <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-green-600 transition-colors">Active Admin Sessions</p>
                         <h3 className="text-3xl font-bold text-gray-900">{stats?.activeAdmins}</h3>
                         <p className="text-xs text-green-600 mt-2 font-medium">Verified safe</p>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <div 
+                        onClick={() => { setSeverityFilter('critical'); }}
+                        className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:border-orange-300 transition-all group"
+                        title="Click to view critical flagged IPs"
+                    >
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-300">
                             <Globe className="w-16 h-16 text-orange-600" />
                         </div>
-                        <p className="text-sm font-medium text-gray-500 mb-1">Suspicious / Flagged IPs</p>
+                        <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-orange-600 transition-colors">Suspicious / Flagged IPs</p>
                         <h3 className="text-3xl font-bold text-gray-900">{stats?.flaggedIps}</h3>
                         <p className="text-xs text-orange-600 mt-2 font-medium">Automatically blocked</p>
                     </div>
