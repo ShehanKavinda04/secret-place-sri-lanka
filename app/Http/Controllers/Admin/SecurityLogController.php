@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class SecurityLogController extends Controller
 {
-    public function index(Request $request)
+    private function getFilteredLogs(Request $request)
     {
         // Mock dataset for Security Logs
         $mockLogs = collect([
@@ -185,7 +185,6 @@ class SecurityLogController extends Controller
             ]
         ]);
 
-        // Filtering logic based on request
         $query = clone $mockLogs;
 
         if ($request->filled('search')) {
@@ -202,46 +201,38 @@ class SecurityLogController extends Controller
             $query = $query->where('severity', $request->input('severity'));
         }
 
-        // Filter by Type
         if ($request->filled('type') && $request->input('type') !== 'all') {
             $type = $request->input('type');
             $query = $query->filter(function ($log) use ($type) {
-                if ($type === 'auth') {
-                    return in_array($log['event'], ['FAILED_LOGIN_ATTEMPT', 'ADMIN_LOGIN_SUCCESS']);
-                }
-                if ($type === 'user') {
-                    return in_array($log['event'], ['USER_ROLE_UPDATED', 'BUSINESS_SUSPENDED', 'PAYMENT_REFUNDED']);
-                }
-                if ($type === 'system') {
-                    return in_array($log['event'], ['SYSTEM_BACKUP_INITIATED', 'API_RATE_LIMIT_EXCEEDED', 'FIREWALL_RULE_TRIGGERED']);
-                }
-                if ($type === 'critical') {
-                    return $log['severity'] === 'critical';
-                }
+                if ($type === 'auth') return in_array($log['event'], ['FAILED_LOGIN_ATTEMPT', 'ADMIN_LOGIN_SUCCESS']);
+                if ($type === 'user') return in_array($log['event'], ['USER_ROLE_UPDATED', 'BUSINESS_SUSPENDED', 'PAYMENT_REFUNDED']);
+                if ($type === 'system') return in_array($log['event'], ['SYSTEM_BACKUP_INITIATED', 'API_RATE_LIMIT_EXCEEDED', 'FIREWALL_RULE_TRIGGERED']);
+                if ($type === 'critical') return $log['severity'] === 'critical';
                 return true;
             });
         }
 
-        // Filter by Timeframe
         if ($request->filled('timeframe') && !in_array($request->input('timeframe'), ['all', 'live', 'custom'])) {
             $timeframe = $request->input('timeframe');
-            $now = \Carbon\Carbon::now();
+            $now = Carbon::now();
             $query = $query->filter(function ($log) use ($timeframe, $now) {
-                $logTime = \Carbon\Carbon::parse($log['timestamp']);
-                if ($timeframe === '1h') {
-                    return $logTime->greaterThanOrEqualTo($now->copy()->subHour());
-                }
-                if ($timeframe === '24h') {
-                    return $logTime->greaterThanOrEqualTo($now->copy()->subHours(24));
-                }
-                if ($timeframe === '7d') {
-                    return $logTime->greaterThanOrEqualTo($now->copy()->subDays(7));
-                }
+                $logTime = Carbon::parse($log['timestamp']);
+                if ($timeframe === '1h') return $logTime->greaterThanOrEqualTo($now->copy()->subHour());
+                if ($timeframe === '24h') return $logTime->greaterThanOrEqualTo($now->copy()->subHours(24));
+                if ($timeframe === '7d') return $logTime->greaterThanOrEqualTo($now->copy()->subDays(7));
                 return true;
             });
         }
 
-        // Simulating pagination for array
+        return ['query' => $query, 'mockLogs' => $mockLogs];
+    }
+
+    public function index(Request $request)
+    {
+        $filtered = $this->getFilteredLogs($request);
+        $query = $filtered['query'];
+        $mockLogs = $filtered['mockLogs'];
+
         $page = $request->input('page', 1);
         $perPage = 15;
         $total = $query->count();
@@ -255,7 +246,7 @@ class SecurityLogController extends Controller
         );
 
         $stats = [
-            'totalEvents' => $mockLogs->count() * 124, // Simulated larger number
+            'totalEvents' => $mockLogs->count() * 124, 
             'failedLogins' => $mockLogs->where('event', 'FAILED_LOGIN_ATTEMPT')->count() * 42,
             'activeAdmins' => 3,
             'flaggedIps' => 12
@@ -265,6 +256,44 @@ class SecurityLogController extends Controller
             'logs' => $paginatedLogs,
             'stats' => $stats,
             'filters' => $request->only(['search', 'severity', 'timeframe', 'type'])
+        ]);
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $filtered = $this->getFilteredLogs($request);
+        $query = $filtered['query'];
+        
+
+        $logsArray = [];
+        foreach ($query as $log) {
+            $logsArray[] = [
+                'Timestamp' => $log['timestamp'] ?? '',
+                'Actor' => $log['user']['name'] ?? 'N/A',
+                'Email' => $log['user']['email'] ?? 'N/A',
+                'Event' => $log['event'] ?? '',
+                'Severity' => $log['severity'] ?? '',
+                'IP Address' => $log['ip_address'] ?? '',
+                'Location' => $log['location'] ?? ''
+            ];
+        }
+
+        return response()->json($logsArray);
+    }
+
+    public function purgeApi(Request $request)
+    {
+        // For demonstration/simulation purposes.
+        // E.g. Log::where('created_at', '<', now()->subDays(30))->delete();
+        
+        $purgedCount = rand(40, 100); // Simulate random count of deleted logs
+        
+        event(new \App\Events\SecurityUpdated(\App\Http\Controllers\Admin\DashboardController::getSecurityData()));
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully purged {$purgedCount} logs older than 30 days.",
+            'purged_count' => $purgedCount
         ]);
     }
 }

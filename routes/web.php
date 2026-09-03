@@ -47,7 +47,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         return back();
     });
     Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments');
+    Route::get('/payments/export-pdf', [\App\Http\Controllers\Admin\PaymentController::class, 'exportPdf'])->name('payments.export-pdf');
     Route::get('/security-logs', [\App\Http\Controllers\Admin\SecurityLogController::class, 'index'])->name('security-logs');
+    Route::get('/security-logs/export', [\App\Http\Controllers\Admin\SecurityLogController::class, 'exportCsv'])->name('security-logs.export');
+    Route::delete('/api/logs/purge', [\App\Http\Controllers\Admin\SecurityLogController::class, 'purgeApi'])->name('security-logs.purge.api');
     
     Route::post('/admin/security/broadcast', function(\Illuminate\Http\Request $request) {
         $validated = $request->validate([

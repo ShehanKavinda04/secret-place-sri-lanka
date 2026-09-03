@@ -49,29 +49,15 @@ export default function Payments({ payments, stats, filters }) {
             return;
         }
         
-        const headers = ['Transaction ID', 'Gateway', 'Gross Amount', 'Platform Fee', 'Net Payout', 'Status', 'Date'];
-        const csvContent = "data:text/csv;charset=utf-8," 
-            + headers.join(",") + "\n"
-            + payments.data.map(p => {
-                const { platformFee, netPayout } = calculateFees(p.amount);
-                return [
-                    p.transaction_id || `TXN-${p.id}`,
-                    p.gateway || 'Unknown',
-                    p.amount,
-                    platformFee,
-                    netPayout,
-                    p.status,
-                    new Date(p.created_at).toISOString()
-                ].join(",");
-            }).join("\n");
-            
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `financial_report_${new Date().toISOString().split('T')[0]}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const params = new URLSearchParams({
+            search: searchQuery,
+            status: statusFilter,
+            gateway: gatewayFilter,
+            date: dateFilter,
+            tab: activeTab
+        }).toString();
+        
+        window.open(route('admin.payments.export-pdf') + '?' + params, '_blank');
     };
 
     const handleProcessPayouts = () => {

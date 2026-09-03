@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["resources/js/*"],
+            "ziggy-js": ["./vendor/tightenco/ziggy"]
+        },
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "strict": false,
+        "jsx": "react-jsx",
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowJs": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true
+    },
+    "include": ["resources/js/**/*"],
+    "exclude": ["node_modules", "public"]
+}
