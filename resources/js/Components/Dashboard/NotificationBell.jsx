@@ -25,26 +25,29 @@ export default function NotificationBell({ unreadCount = 0, notifications = [], 
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-900">Notifications</p>
+                <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)}></div>
+                    <div className="absolute right-0 z-50 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="px-4 py-3 border-b border-gray-100">
+                            <p className="text-sm font-medium text-gray-900">Notifications</p>
+                        </div>
+                        {notifications.length === 0 ? (
+                            <div className="px-4 py-6 text-center text-sm text-gray-500">
+                                You have no new notifications.
+                            </div>
+                        ) : (
+                            <div className="max-h-64 overflow-y-auto relative z-50">
+                                {notifications.map((notif) => (
+                                    <div key={notif.id} className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
+                                        <p className="text-sm font-medium text-gray-900">{notif.title}</p>
+                                        <p className="text-sm text-gray-800">{notif.message}</p>
+                                        <p className="text-xs text-gray-400 mt-1">{notif.time}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                    {notifications.length === 0 ? (
-                        <div className="px-4 py-6 text-center text-sm text-gray-500">
-                            You have no new notifications.
-                        </div>
-                    ) : (
-                        <div className="max-h-64 overflow-y-auto">
-                            {notifications.map((notif) => (
-                                <div key={notif.id} className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
-                                    <p className="text-sm font-medium text-gray-900">{notif.title}</p>
-                                    <p className="text-sm text-gray-800">{notif.message}</p>
-                                    <p className="text-xs text-gray-400 mt-1">{notif.time}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                </>
             )}
         </div>
     );

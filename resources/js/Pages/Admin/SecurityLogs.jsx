@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import axios from 'axios';
-import AdminLayout from '@/Layouts/AdminLayout';
+import AdminLayout, { AppContext } from '@/Layouts/AdminLayout';
 import { Head, router } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { 
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 
 export default function SecurityLogs({ logs, stats, filters }) {
+    const { t } = useContext(AppContext) || { t: (k) => k };
     const [searchQuery, setSearchQuery] = useState(filters?.search || '');
     const [severityFilter, setSeverityFilter] = useState(filters?.severity || 'all');
     const [timeframeFilter, setTimeframeFilter] = useState(filters?.timeframe || '24h');
@@ -161,11 +162,11 @@ export default function SecurityLogs({ logs, stats, filters }) {
                 const filename = `security-logs-export-${new Date().toISOString().slice(0,10)}.csv`;
                 exportToCSV(response.data, filename);
             } else {
-                alert("No data available to export.");
+                alert(t("No data available to export."));
             }
         } catch (error) {
             console.error("Failed to download CSV export:", error);
-            alert("Failed to export logs. Please try again.");
+            alert(t("Failed to export logs. Please try again."));
         }
     };
 
@@ -181,7 +182,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
         try {
             const response = await axios.delete(route('admin.security-logs.purge.api'));
             if (response.data.success) {
-                setToast({ message: 'Old logs successfully purged', type: 'success' });
+                setToast({ message: t('Old logs successfully purged'), type: 'success' });
                 
                 // Update stats dynamically
                 setLocalStats(prev => ({
@@ -217,7 +218,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                 setTimeout(() => setToast(null), 5000);
             }
         } catch (error) {
-            setToast({ message: 'Failed to purge logs.', type: 'error' });
+            setToast({ message: t('Failed to purge logs.'), type: 'error' });
             setTimeout(() => setToast(null), 5000);
         } finally {
             setIsPurging(false);
@@ -239,11 +240,11 @@ export default function SecurityLogs({ logs, stats, filters }) {
     };
 
     const tabs = [
-        { id: 'all', label: 'All Events' },
-        { id: 'auth', label: 'Authentication Logs' },
-        { id: 'user', label: 'User Actions' },
-        { id: 'system', label: 'API & System' },
-        { id: 'critical', label: 'Critical Alerts' },
+        { id: 'all', label: t('All Events') },
+        { id: 'auth', label: t('Authentication Logs') },
+        { id: 'user', label: t('User Actions') },
+        { id: 'system', label: t('API & System') },
+        { id: 'critical', label: t('Critical Alerts') },
     ];
 
     const renderActivitySummary = (log) => {
@@ -251,7 +252,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
         if (!metadata || Object.keys(metadata).length === 0) {
             return (
                 <div className="text-sm text-slate-500 italic p-4 text-center bg-slate-800/30 rounded-lg border border-slate-700/50">
-                    No additional metadata provided for this event.
+                    {t('No additional metadata provided for this event.')}
                 </div>
             );
         }
@@ -265,10 +266,10 @@ export default function SecurityLogs({ logs, stats, filters }) {
                     </div>
                     
                     <div className="flex flex-col items-center justify-center py-5 bg-slate-900/50 rounded-lg border border-slate-700/50 shadow-inner">
-                        <span className="text-xs text-slate-500 uppercase tracking-wider mb-3 font-medium">Role Transition</span>
+                        <span className="text-xs text-slate-500 uppercase tracking-wider mb-3 font-medium">{t('Role Transition')}</span>
                         <div className="flex items-center space-x-4">
                             <span className="px-4 py-1.5 bg-slate-700 text-slate-300 rounded-full text-sm font-medium border border-slate-600 shadow-sm">
-                                {metadata.old_role || 'None'}
+                                {metadata.old_role || t('None')}
                             </span>
                             <ChevronRight className="w-5 h-5 text-slate-500" />
                             <span className="px-4 py-1.5 bg-blue-600/20 text-blue-400 rounded-full text-sm font-bold border border-blue-500/30 shadow-sm">
@@ -279,12 +280,12 @@ export default function SecurityLogs({ logs, stats, filters }) {
 
                     <div className="grid grid-cols-2 gap-4 pt-2">
                         <div className="bg-slate-900/50 p-3 rounded-lg text-center border border-slate-700/50">
-                            <span className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-medium">Target User ID</span>
+                            <span className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-medium">{t('Target User ID')}</span>
                             <span className="text-sm font-mono text-blue-400">#{metadata.target_user_id}</span>
                         </div>
                         <div className="bg-slate-900/50 p-3 rounded-lg text-center border border-slate-700/50">
-                            <span className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-medium">Approved By</span>
-                            <span className="text-sm font-medium text-slate-300">{metadata.approved_by || 'System'}</span>
+                            <span className="block text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-medium">{t('Approved By')}</span>
+                            <span className="text-sm font-medium text-slate-300">{metadata.approved_by || t('System')}</span>
                         </div>
                     </div>
                 </div>
@@ -295,7 +296,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
         return (
             <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-4">
                 <div className="mb-3 pb-2 border-b border-slate-700/50">
-                    <span className="text-sm font-bold text-white">Event Details</span>
+                    <span className="text-sm font-bold text-white">{t('Event Details')}</span>
                 </div>
                 <div className="grid grid-cols-1 gap-2">
                     {Object.entries(metadata).map(([key, value]) => (
@@ -323,9 +324,9 @@ export default function SecurityLogs({ logs, stats, filters }) {
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 font-sansDisplay flex items-center">
                             <ShieldAlert className="w-7 h-7 mr-3 text-royalMaroon-700" />
-                            Security Logs & Audit Trail
+                            {t('Security Logs & Audit Trail')}
                         </h1>
-                        <p className="text-sm text-gray-500 mt-1 ml-10">Monitor system events, authentication attempts, permission changes, and suspicious activities in real-time.</p>
+                        <p className="text-sm text-gray-500 mt-1 ml-10">{t('Monitor system events, authentication attempts, permission changes, and suspicious activities in real-time.')}</p>
                     </div>
                     <div className="flex space-x-3">
                         <button 
@@ -333,7 +334,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                             className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center shadow-sm transition-all hover:shadow cursor-pointer active:scale-95"
                         >
                             <Download className="w-4 h-4 mr-2" />
-                            Export as CSV
+                            {t('Export as CSV')}
                         </button>
                         <button 
                             onClick={handlePurgeLogs}
@@ -341,7 +342,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                             className={`px-4 py-2 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 flex items-center shadow-sm transition-all hover:shadow cursor-pointer active:scale-95 ${isPurging ? 'opacity-50 cursor-wait' : ''}`}
                         >
                             <Trash2 className={`w-4 h-4 mr-2 ${isPurging ? 'animate-pulse' : ''}`} />
-                            {isPurging ? 'Purging...' : 'Purge Old Logs'}
+                            {isPurging ? t('Purging...') : t('Purge Old Logs')}
                         </button>
                     </div>
                 </div>
@@ -351,24 +352,24 @@ export default function SecurityLogs({ logs, stats, filters }) {
                     <div 
                         onClick={() => { setTypeFilter('all'); setSeverityFilter('all'); }}
                         className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:border-blue-300 transition-all group"
-                        title="Click to view all events"
+                        title={t("Click to view all events")}
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-300">
                             <Activity className="w-16 h-16 text-blue-600" />
                         </div>
-                        <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-blue-600 transition-colors">Total Security Events</p>
+                        <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-blue-600 transition-colors">{t('Total Security Events')}</p>
                         <h3 className="text-3xl font-bold text-gray-900">{localStats?.totalEvents?.toLocaleString()}</h3>
-                        <p className="text-xs text-gray-400 mt-2">Last 24 Hours</p>
+                        <p className="text-xs text-gray-400 mt-2">{t('Last 24 Hours')}</p>
                     </div>
                     <div 
                         onClick={() => { setTypeFilter('auth'); setSeverityFilter('error'); }}
                         className="bg-red-50 p-6 rounded-xl border border-red-200 shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:bg-red-100 hover:border-red-400 transition-all group"
-                        title="Click to view failed logins"
+                        title={t("Click to view failed logins")}
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-300">
                             <AlertTriangle className="w-16 h-16 text-red-600" />
                         </div>
-                        <p className="text-sm font-medium text-red-800 mb-1 group-hover:text-red-900 transition-colors">Failed Login Attempts</p>
+                        <p className="text-sm font-medium text-red-800 mb-1 group-hover:text-red-900 transition-colors">{t('Failed Login Attempts')}</p>
                         <div className="flex items-center">
                             <h3 className="text-3xl font-bold text-red-600">{localStats?.failedLogins?.toLocaleString()}</h3>
                             <span className="ml-2 flex h-3 w-3 relative">
@@ -376,31 +377,31 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                             </span>
                         </div>
-                        <p className="text-xs text-red-700 mt-2 opacity-80">Requires monitoring</p>
+                        <p className="text-xs text-red-700 mt-2 opacity-80">{t('Requires monitoring')}</p>
                     </div>
                     <div 
                         onClick={() => { setTypeFilter('auth'); setSeverityFilter('info'); }}
                         className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:border-green-300 transition-all group"
-                        title="Click to view successful admin sessions"
+                        title={t("Click to view successful admin sessions")}
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-300">
                             <ShieldCheck className="w-16 h-16 text-green-600" />
                         </div>
-                        <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-green-600 transition-colors">Active Admin Sessions</p>
+                        <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-green-600 transition-colors">{t('Active Admin Sessions')}</p>
                         <h3 className="text-3xl font-bold text-gray-900">{localStats?.activeAdmins}</h3>
-                        <p className="text-xs text-green-600 mt-2 font-medium">Verified safe</p>
+                        <p className="text-xs text-green-600 mt-2 font-medium">{t('Verified safe')}</p>
                     </div>
                     <div 
                         onClick={() => { setSeverityFilter('critical'); }}
                         className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden cursor-pointer hover:shadow-md hover:border-orange-300 transition-all group"
-                        title="Click to view critical flagged IPs"
+                        title={t("Click to view critical flagged IPs")}
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-300">
                             <Globe className="w-16 h-16 text-orange-600" />
                         </div>
-                        <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-orange-600 transition-colors">Suspicious / Flagged IPs</p>
+                        <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-orange-600 transition-colors">{t('Suspicious / Flagged IPs')}</p>
                         <h3 className="text-3xl font-bold text-gray-900">{localStats?.flaggedIps}</h3>
-                        <p className="text-xs text-orange-600 mt-2 font-medium">Automatically blocked</p>
+                        <p className="text-xs text-orange-600 mt-2 font-medium">{t('Automatically blocked')}</p>
                     </div>
                 </div>
 
@@ -429,7 +430,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <input 
                                 type="text" 
-                                placeholder="Search by Email, IP Address, or Event Name..."
+                                placeholder={t("Search by Email, IP Address, or Event Name...")}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full pl-9 pr-4 py-2 bg-white text-slate-900 placeholder-slate-400 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-royalMaroon-500 outline-none shadow-sm"
@@ -441,11 +442,11 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                 onChange={(e) => setSeverityFilter(e.target.value)}
                                 className="w-full bg-white text-slate-900 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-royalMaroon-500 outline-none py-2 px-3 shadow-sm"
                             >
-                                <option value="all">All Severities</option>
-                                <option value="info">Info</option>
-                                <option value="warning">Warning</option>
-                                <option value="error">Error</option>
-                                <option value="critical">Critical</option>
+                                <option value="all">{t('All Severities')}</option>
+                                <option value="info">{t('Info')}</option>
+                                <option value="warning">{t('Warning')}</option>
+                                <option value="error">{t('Error')}</option>
+                                <option value="critical">{t('Critical')}</option>
                             </select>
                         </div>
                         <div className="md:col-span-4">
@@ -454,11 +455,11 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                 onChange={(e) => setTimeframeFilter(e.target.value)}
                                 className="w-full bg-white text-slate-900 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-royalMaroon-500 outline-none py-2 px-3 shadow-sm"
                             >
-                                <option value="live">Live Stream (Auto-updating)</option>
-                                <option value="1h">Last 1 Hour</option>
-                                <option value="24h">Last 24 Hours</option>
-                                <option value="7d">Last 7 Days</option>
-                                <option value="custom">Custom Date Range...</option>
+                                <option value="live">{t('Live Stream (Auto-updating)')}</option>
+                                <option value="1h">{t('Last 1 Hour')}</option>
+                                <option value="24h">{t('Last 24 Hours')}</option>
+                                <option value="7d">{t('Last 7 Days')}</option>
+                                <option value="custom">{t('Custom Date Range...')}</option>
                             </select>
                         </div>
                     </div>
@@ -469,22 +470,22 @@ export default function SecurityLogs({ logs, stats, filters }) {
                             <thead className="bg-gray-50 border-y border-gray-200">
                                 <tr>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-48">
-                                        Timestamp
+                                        {t('Timestamp')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        Actor
+                                        {t('Actor')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        Event / Action
+                                        {t('Event / Action')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        Severity
+                                        {t('Severity')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        IP Address & Loc
+                                        {t('IP Address & Loc')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        Payload
+                                        {t('Payload')}
                                     </th>
                                 </tr>
                             </thead>
@@ -537,7 +538,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                                 className="px-2.5 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded text-xs font-medium transition-colors shadow-sm inline-flex items-center"
                                             >
                                                 <Eye className="w-3.5 h-3.5 mr-1.5 text-gray-500" />
-                                                Inspect
+                                                {t('Inspect')}
                                             </button>
                                         </td>
                                     </tr>
@@ -545,8 +546,8 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                     <tr>
                                         <td colSpan="6" className="px-6 py-12 text-center">
                                             <ShieldCheck className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-                                            <p className="text-sm font-medium text-gray-900">No security events found</p>
-                                            <p className="text-sm text-gray-500 mt-1">Adjust your filters to see more results.</p>
+                                            <p className="text-sm font-medium text-gray-900">{t('No security events found')}</p>
+                                            <p className="text-sm text-gray-500 mt-1">{t('Adjust your filters to see more results.')}</p>
                                         </td>
                                     </tr>
                                 )}
@@ -562,10 +563,10 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                     onClick={handleManualRefresh}
                                     disabled={isRefreshing}
                                     className={`flex items-center font-medium transition-colors group ${isRefreshing ? 'text-royalMaroon-600 cursor-wait' : 'hover:text-royalMaroon-700 cursor-pointer'}`}
-                                    title="Refresh Data Now"
+                                    title={t("Refresh Data Now")}
                                 >
                                     <RefreshCw className={`w-4 h-4 mr-1.5 transition-colors ${isRefreshing ? 'animate-spin text-royalMaroon-600' : 'text-gray-400 group-hover:text-royalMaroon-600'}`} />
-                                    {isRefreshing ? 'Refreshing...' : 'Refresh Now'}
+                                    {isRefreshing ? t('Refreshing...') : t('Refresh Now')}
                                 </button>
                                 
                                 <div className="border-l border-gray-300 h-5" />
@@ -578,7 +579,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                         onChange={(e) => setAutoRefresh(e.target.checked)}
                                     />
                                     <span className="flex items-center font-medium group-hover:text-gray-900 transition-colors">
-                                        Auto-refresh (10s)
+                                        {t('Auto-refresh (10s)')}
                                     </span>
                                     {autoRefresh && (
                                         <span className="ml-2.5 flex h-2 w-2 relative">
@@ -591,7 +592,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-end">
                                 <div className="mr-4">
                                     <p className="text-sm text-gray-700">
-                                        Showing <span className="font-medium">{logs.from}</span> to <span className="font-medium">{logs.to}</span> of <span className="font-medium">{logs.total}</span> entries
+                                        {t('Showing')} <span className="font-medium">{logs.from}</span> {t('to')} <span className="font-medium">{logs.to}</span> {t('of')} <span className="font-medium">{logs.total}</span> {t('entries')}
                                     </p>
                                 </div>
                                 <div>
@@ -669,7 +670,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                             <div>
                                 <h2 className="text-lg font-bold text-white flex items-center">
                                     <Terminal className="w-5 h-5 mr-2 text-blue-400" />
-                                    Log Event Inspector
+                                    {t('Log Event Inspector')}
                                 </h2>
                                 <p className="text-slate-500 text-xs mt-1 font-mono">
                                     {selectedLog.id}
@@ -686,14 +687,14 @@ export default function SecurityLogs({ logs, stats, filters }) {
                             {/* Summary Grid */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700/50">
-                                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center"><Key className="w-3 h-3 mr-1"/> Event Context</p>
+                                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center"><Key className="w-3 h-3 mr-1"/> {t('Event Context')}</p>
                                     <p className="text-sm font-mono text-white font-bold">{selectedLog.event}</p>
                                     <div className="mt-2">
                                         {getSeverityBadge(selectedLog.severity)}
                                     </div>
                                 </div>
                                 <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700/50">
-                                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center"><User className="w-3 h-3 mr-1"/> Actor Identity</p>
+                                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 flex items-center"><User className="w-3 h-3 mr-1"/> {t('Actor Identity')}</p>
                                     <p className="text-sm text-white font-medium">{selectedLog.user.name}</p>
                                     <p className="text-xs font-mono text-slate-400 mt-0.5">{selectedLog.user.email}</p>
                                     <span className="inline-block mt-1 px-1.5 py-0.5 bg-slate-700 text-[10px] rounded text-slate-300">{selectedLog.user.role}</span>
@@ -707,14 +708,14 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                         <Globe className="w-6 h-6 text-blue-500 opacity-80" />
                                     </div>
                                     <div>
-                                        <h4 className="text-sm font-bold text-white mb-1">Network Origination</h4>
+                                        <h4 className="text-sm font-bold text-white mb-1">{t('Network Origination')}</h4>
                                         <div className="flex space-x-6">
                                             <div>
-                                                <p className="text-[10px] text-slate-500 uppercase">IP Address</p>
+                                                <p className="text-[10px] text-slate-500 uppercase">{t('IP Address')}</p>
                                                 <p className="text-sm font-mono text-blue-400">{selectedLog.ip_address}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-slate-500 uppercase">Geolocation</p>
+                                                <p className="text-[10px] text-slate-500 uppercase">{t('Geolocation')}</p>
                                                 <p className="text-sm text-slate-300">{selectedLog.location}</p>
                                             </div>
                                         </div>
@@ -727,7 +728,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                 <div className="flex items-center justify-between mb-3">
                                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">
                                         <Activity className="w-4 h-4 mr-1.5" />
-                                        Event Metadata
+                                        {t('Event Metadata')}
                                     </h4>
                                     <div className="flex bg-slate-800 rounded-lg p-1 border border-slate-700">
                                         <button 
@@ -738,7 +739,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
                                             }`}
                                         >
-                                            Activity Summary
+                                            {t('Activity Summary')}
                                         </button>
                                         <button 
                                             onClick={() => setPayloadView('json')}
@@ -748,7 +749,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
                                             }`}
                                         >
-                                            Raw JSON
+                                            {t('Raw JSON')}
                                         </button>
                                     </div>
                                 </div>
@@ -779,7 +780,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                             
                             {/* Device Info */}
                             <div>
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Device Signature</h4>
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{t('Device Signature')}</h4>
                                 <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700 text-xs font-mono text-slate-400 break-all">
                                     {selectedLog.user_agent}
                                 </div>
@@ -794,7 +795,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                     onClick={() => alert(`IP ${selectedLog.ip_address} has been blocked.`)}
                                     className="px-4 py-2 bg-red-600/20 text-red-400 border border-red-500/30 rounded text-sm font-medium hover:bg-red-600/30 transition-colors"
                                 >
-                                    Block IP Address
+                                    {t('Block IP Address')}
                                 </button>
                             ) : <div></div>}
                             
@@ -802,7 +803,7 @@ export default function SecurityLogs({ logs, stats, filters }) {
                                 onClick={() => setSelectedLog(null)}
                                 className="px-5 py-2 bg-slate-800 text-white rounded text-sm font-medium hover:bg-slate-700 transition-colors"
                             >
-                                Close Inspector
+                                {t('Close Inspector')}
                             </button>
                         </div>
                     </div>
@@ -833,22 +834,22 @@ export default function SecurityLogs({ logs, stats, filters }) {
                     <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
                         <Trash2 className="w-6 h-6 text-red-600" />
                     </div>
-                    <h2 className="text-lg font-bold text-gray-900 text-center mb-2">Purge Old Logs?</h2>
+                    <h2 className="text-lg font-bold text-gray-900 text-center mb-2">{t('Purge Old Logs?')}</h2>
                     <p className="text-sm text-gray-500 text-center mb-6">
-                        Are you sure you want to purge logs older than <strong>30 days</strong>? This action cannot be undone and will permanently remove old records from the database to optimize performance.
+                        {t('Are you sure you want to purge logs older than')} <strong>{t('30 days')}</strong>? {t('This action cannot be undone and will permanently remove old records from the database to optimize performance.')}
                     </p>
                     <div className="flex justify-center space-x-3">
                         <button
                             onClick={() => setShowPurgeModal(false)}
                             className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
                         >
-                            Cancel
+                            {t('Cancel')}
                         </button>
                         <button
                             onClick={executePurge}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors shadow-sm"
                         >
-                            Confirm Purge
+                            {t('Confirm Purge')}
                         </button>
                     </div>
                 </div>

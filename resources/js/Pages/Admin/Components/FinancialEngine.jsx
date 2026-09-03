@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { DollarSign, Percent, ArrowRightLeft, CheckCircle2, DownloadCloud, Landmark } from 'lucide-react';
 import axios from 'axios';
+import { AppContext } from '@/Layouts/AdminLayout';
 
 export default function FinancialEngine({ initialData = null }) {
+    const { t } = useContext(AppContext) || { t: (k) => k };
     const defaultPayouts = [
         { id: 'PO-9921', vendor: 'Natures Grace Eco Lodge', amount: 'LKR 245,000', method: 'Direct Bank (BOC)', status: 'processing', date: '2026-08-31' },
         { id: 'PO-9922', vendor: 'Ceylon Spice Co.', amount: 'LKR 84,500', method: 'LankaQR', status: 'completed', date: '2026-08-30' },
@@ -116,12 +118,12 @@ This is a system-generated receipt.
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center">
-                        <Percent className="w-5 h-5 mr-2 text-indigo-500" /> Global Commission Rates
+                        <Percent className="w-5 h-5 mr-2 text-indigo-500" /> {t('Global Commission Rates')}
                     </h3>
                     <div className="space-y-5">
                         <div>
                             <div className="flex justify-between mb-1">
-                                <label className="text-sm font-medium text-gray-700">Accommodation/Host Base Rate</label>
+                                <label className="text-sm font-medium text-gray-700">{t('Accommodation/Host Base Rate')}</label>
                                 <span className="text-sm font-bold text-indigo-600">{rates.host}%</span>
                             </div>
                             <input 
@@ -135,7 +137,7 @@ This is a system-generated receipt.
                         </div>
                         <div>
                             <div className="flex justify-between mb-1">
-                                <label className="text-sm font-medium text-gray-700">Physical Product/Merchant Base Rate</label>
+                                <label className="text-sm font-medium text-gray-700">{t('Physical Product/Merchant Base Rate')}</label>
                                 <span className="text-sm font-bold text-emerald-600">{rates.merchant}%</span>
                             </div>
                             <input 
@@ -161,7 +163,7 @@ This is a system-generated receipt.
                             ) : applySuccess ? (
                                 <CheckCircle2 className="w-4 h-4 mr-2" />
                             ) : null}
-                            {isApplying ? 'Applying...' : applySuccess ? 'Rates Updated' : 'Apply Changes'}
+                            {isApplying ? t('Applying...') : applySuccess ? t('Rates Updated') : t('Apply Changes')}
                         </button>
                     </div>
                 </div>
@@ -169,23 +171,23 @@ This is a system-generated receipt.
                 {/* Ledger Summary */}
                 <div className="bg-slate-900 rounded-xl shadow-sm border border-slate-800 p-6 text-white">
                     <h3 className="text-lg font-bold text-white mb-4 flex items-center">
-                        <Landmark className="w-5 h-5 mr-2 text-indigo-400" /> Platform Ledger (MTD)
+                        <Landmark className="w-5 h-5 mr-2 text-indigo-400" /> {t('Platform Ledger (MTD)')}
                     </h3>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center py-2 border-b border-slate-700">
-                            <span className="text-slate-400">Gross Sales Volume</span>
+                            <span className="text-slate-400">{t('Gross Sales Volume')}</span>
                             <span className="font-semibold text-white">{formatLKR(ledger.grossSales)}</span>
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-slate-700">
-                            <span className="text-slate-400">Payment Gateway Fees (2.5%)</span>
+                            <span className="text-slate-400">{t('Payment Gateway Fees (2.5%)')}</span>
                             <span className="font-semibold text-red-400">- {formatLKR(ledger.paymentFees)}</span>
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-slate-700">
-                            <span className="text-slate-400">Vendor Net Earnings</span>
+                            <span className="text-slate-400">{t('Vendor Net Earnings')}</span>
                             <span className="font-semibold text-emerald-400">{formatLKR(ledger.vendorEarnings)}</span>
                         </div>
                         <div className="flex justify-between items-center py-2 pt-4">
-                            <span className="text-indigo-200 font-bold">Net Platform Profit</span>
+                            <span className="text-indigo-200 font-bold">{t('Net Platform Profit')}</span>
                             <span className="font-bold text-xl text-indigo-400">{formatLKR(ledger.netProfit)}</span>
                         </div>
                     </div>
@@ -196,26 +198,26 @@ This is a system-generated receipt.
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                     <div>
-                        <h3 className="text-lg font-bold text-slate-900">Automated Payout Queue</h3>
-                        <p className="text-sm text-gray-500">Scheduled batch payouts via LankaQR, PayHere, and Bank Transfers.</p>
+                        <h3 className="text-lg font-bold text-slate-900">{t('Automated Payout Queue')}</h3>
+                        <p className="text-sm text-gray-500">{t('Scheduled batch payouts via LankaQR, PayHere, and Bank Transfers.')}</p>
                     </div>
                     <button 
                         onClick={handleExportBatch}
                         className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors"
                     >
-                        <DownloadCloud className="w-4 h-4" /> Export Batch
+                        <DownloadCloud className="w-4 h-4" /> {t('Export Batch')}
                     </button>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-slate-50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ref ID</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Ref ID')}</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Vendor')}</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Method')}</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Amount')}</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Status')}</th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Action')}</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -241,7 +243,7 @@ This is a system-generated receipt.
                                                 onClick={() => handleExecutePayout(po.id)}
                                                 className="text-indigo-600 hover:text-indigo-900"
                                             >
-                                                Execute
+                                                {t('Execute')}
                                             </button>
                                         )}
                                         {po.status === 'completed' && (
@@ -249,11 +251,11 @@ This is a system-generated receipt.
                                                 onClick={() => handleDownloadReceipt(po)}
                                                 className="text-gray-400 hover:text-gray-600"
                                             >
-                                                Receipt
+                                                {t('Receipt')}
                                             </button>
                                         )}
                                         {po.status === 'processing' && (
-                                            <span className="text-gray-400">Processing...</span>
+                                            <span className="text-gray-400">{t('Processing...')}</span>
                                         )}
                                     </td>
                                 </tr>

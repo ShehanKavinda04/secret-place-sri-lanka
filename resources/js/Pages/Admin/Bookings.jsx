@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import AdminLayout from '@/Layouts/AdminLayout';
+import React, { useState, useEffect, useContext } from 'react';
+import AdminLayout, { AppContext } from '@/Layouts/AdminLayout';
 import { Head, router, Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { 
@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 
 export default function Bookings({ bookings, stats, filters }) {
+    const { t } = useContext(AppContext) || { t: (k) => k };
     const [searchQuery, setSearchQuery] = useState(filters?.search || '');
     const [statusFilter, setStatusFilter] = useState(filters?.status || 'all');
     const [dateFilter, setDateFilter] = useState(filters?.date || 'all');
@@ -153,12 +154,12 @@ export default function Bookings({ bookings, stats, filters }) {
     };
 
     const tabs = [
-        { id: 'all', label: 'All Bookings' },
-        { id: 'confirmed', label: 'Confirmed' },
-        { id: 'pending', label: 'Pending' },
-        { id: 'completed', label: 'Completed' },
-        { id: 'cancelled', label: 'Cancelled' },
-        { id: 'disputed', label: 'Disputed' },
+        { id: 'all', label: t('All Bookings') },
+        { id: 'confirmed', label: t('Confirmed') },
+        { id: 'pending', label: t('Pending') },
+        { id: 'completed', label: t('Completed') },
+        { id: 'cancelled', label: t('Cancelled') },
+        { id: 'disputed', label: t('Disputed') },
     ];
 
     const formatCurrency = (amount) => {
@@ -176,8 +177,8 @@ export default function Bookings({ bookings, stats, filters }) {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 font-sansDisplay">Operations & Booking Management</h1>
-                        <p className="text-sm text-gray-500 mt-1">Monitor, manage, and resolve all system bookings and operational activities in real time.</p>
+                        <h1 className="text-2xl font-bold text-gray-900 font-sansDisplay">{t('Operations & Booking Management')}</h1>
+                        <p className="text-sm text-gray-500 mt-1">{t('Monitor, manage, and resolve all system bookings and operational activities in real time.')}</p>
                     </div>
                     <div className="flex space-x-3">
                         <button 
@@ -185,7 +186,7 @@ export default function Bookings({ bookings, stats, filters }) {
                             className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center shadow-sm transition-colors"
                         >
                             <Download className="w-4 h-4 mr-2" />
-                            Export Operations Log
+                            {t('Export Operations Log')}
                         </button>
                     </div>
                 </div>
@@ -200,7 +201,7 @@ export default function Bookings({ bookings, stats, filters }) {
                             <CalendarDays className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Bookings</p>
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Total Bookings')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.total || 0}</h3>
                         </div>
                     </div>
@@ -212,7 +213,7 @@ export default function Bookings({ bookings, stats, filters }) {
                             <CheckCircle className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Confirmed</p>
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Confirmed')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.confirmed || 0}</h3>
                         </div>
                     </div>
@@ -224,7 +225,7 @@ export default function Bookings({ bookings, stats, filters }) {
                             <Clock className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Pending</p>
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Pending')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.pending || 0}</h3>
                         </div>
                     </div>
@@ -236,7 +237,7 @@ export default function Bookings({ bookings, stats, filters }) {
                             <XCircle className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Cancelled</p>
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Cancelled')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.cancelled || 0}</h3>
                         </div>
                     </div>
@@ -245,7 +246,7 @@ export default function Bookings({ bookings, stats, filters }) {
                             <DollarSign className="w-6 h-6" />
                         </div>
                         <div className="z-10">
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Volume</p>
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('Total Volume')}</p>
                             <h3 className="text-xl font-bold text-gray-900">{formatCurrency(stats?.volume)}</h3>
                         </div>
                         <div className="absolute top-0 right-0 w-2 h-full bg-royalMaroon-700"></div>
@@ -279,7 +280,7 @@ export default function Bookings({ bookings, stats, filters }) {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <input 
                                 type="text" 
-                                placeholder="Search Booking ID, Customer, or Business..."
+                                placeholder={t("Search Booking ID, Customer, or Business...")}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full pl-9 pr-4 py-2 bg-white text-slate-900 placeholder-slate-400 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-royalMaroon-500 focus:border-royalMaroon-500 outline-none shadow-sm"
@@ -291,10 +292,10 @@ export default function Bookings({ bookings, stats, filters }) {
                                 onChange={(e) => setDateFilter(e.target.value)}
                                 className="w-full sm:w-48 bg-white text-slate-900 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-royalMaroon-500 outline-none py-2 px-3 shadow-sm"
                             >
-                                <option value="all">All Time</option>
-                                <option value="today">Today</option>
-                                <option value="last7">Last 7 Days</option>
-                                <option value="last30">Last 30 Days</option>
+                                <option value="all">{t('All Time')}</option>
+                                <option value="today">{t('Today')}</option>
+                                <option value="last7">{t('Last 7 Days')}</option>
+                                <option value="last30">{t('Last 30 Days')}</option>
                             </select>
                         </div>
                     </div>
@@ -314,25 +315,25 @@ export default function Bookings({ bookings, stats, filters }) {
                                         />
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Booking Ref
+                                        {t('Booking Ref')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Customer
+                                        {t('Customer')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Merchant / Business
+                                        {t('Merchant / Business')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Amount
+                                        {t('Amount')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Date & Time
+                                        {t('Date & Time')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status
+                                        {t('Status')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
+                                        {t('Actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -354,14 +355,14 @@ export default function Bookings({ bookings, stats, filters }) {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-semibold text-gray-900">{booking.tourist?.name || 'Guest User'}</div>
-                                            <div className="text-xs text-gray-500">{booking.tourist?.email || 'No email provided'}</div>
+                                            <div className="text-sm font-semibold text-gray-900">{booking.tourist?.name || t('Guest User')}</div>
+                                            <div className="text-xs text-gray-500">{booking.tourist?.email || t('No email provided')}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-gray-900">{booking.business?.name || 'Unknown Business'}</div>
+                                            <div className="text-sm font-medium text-gray-900">{booking.business?.name || t('Unknown Business')}</div>
                                             <div className="text-xs text-gray-500 mt-0.5">
                                                 <span className="inline-flex items-center px-2 py-0.5 rounded bg-gray-100 text-gray-600 capitalize">
-                                                    {booking.business?.category || 'Service'}
+                                                    {booking.business?.category || t('Service')}
                                                 </span>
                                             </div>
                                         </td>
@@ -386,7 +387,7 @@ export default function Bookings({ bookings, stats, filters }) {
                                                 onClick={() => setSelectedBooking(booking)}
                                                 className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-md text-xs font-medium transition-colors shadow-sm"
                                             >
-                                                View Details
+                                                {t('View Details')}
                                             </button>
                                         </td>
                                     </tr>
@@ -394,8 +395,8 @@ export default function Bookings({ bookings, stats, filters }) {
                                     <tr>
                                         <td colSpan="8" className="px-6 py-12 text-center">
                                             <CalendarDays className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-                                            <p className="text-sm font-medium text-gray-900">No bookings found</p>
-                                            <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters.</p>
+                                            <p className="text-sm font-medium text-gray-900">{t('No bookings found')}</p>
+                                            <p className="text-sm text-gray-500 mt-1">{t('Try adjusting your search or filters.')}</p>
                                             {(searchQuery || statusFilter !== 'all' || dateFilter !== 'all') && (
                                                 <button 
                                                     onClick={() => {
@@ -408,7 +409,7 @@ export default function Bookings({ bookings, stats, filters }) {
                                                     }}
                                                     className="mt-4 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
                                                 >
-                                                    Clear All Filters
+                                                    {t('Clear All Filters')}
                                                 </button>
                                             )}
                                         </td>
@@ -490,7 +491,7 @@ export default function Bookings({ bookings, stats, filters }) {
                         <div className="bg-slate-900 px-6 py-5 flex justify-between items-center shrink-0">
                             <div>
                                 <h2 className="text-xl font-bold text-white font-sansDisplay flex items-center">
-                                    Booking Reference: #BKG-{selectedBooking.id.toString().padStart(4, '0')}
+                                    {t('Booking Ref')}: #BKG-{selectedBooking.id.toString().padStart(4, '0')}
                                 </h2>
                                 <p className="text-slate-400 text-sm mt-1">
                                     Placed on {new Date(selectedBooking.created_at).toLocaleString()}
@@ -505,11 +506,11 @@ export default function Bookings({ bookings, stats, filters }) {
                         <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50">
                             <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-500">Current Status</p>
+                                    <p className="text-sm font-medium text-gray-500">{t('Current Status')}</p>
                                     <div className="mt-1">{getStatusBadge(selectedBooking.status)}</div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm font-medium text-gray-500">Total Amount</p>
+                                    <p className="text-sm font-medium text-gray-500">{t('Total Amount')}</p>
                                     <p className="text-2xl font-bold text-gray-900">{formatCurrency(selectedBooking.total_amount)}</p>
                                 </div>
                             </div>
@@ -518,16 +519,16 @@ export default function Bookings({ bookings, stats, filters }) {
                                 {/* Customer Info */}
                                 <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center">
-                                        <UsersIcon className="w-4 h-4 mr-2" /> Customer Details
+                                        <UsersIcon className="w-4 h-4 mr-2" /> {t('Customer Details')}
                                     </h4>
                                     <dl className="space-y-3">
                                         <div>
-                                            <dt className="text-xs font-medium text-gray-500">Full Name</dt>
-                                            <dd className="text-sm font-semibold text-gray-900 mt-0.5">{selectedBooking.tourist?.name || 'Guest User'}</dd>
+                                            <dt className="text-xs font-medium text-gray-500">{t('Full Name')}</dt>
+                                            <dd className="text-sm font-semibold text-gray-900 mt-0.5">{selectedBooking.tourist?.name || t('Guest User')}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-xs font-medium text-gray-500">Contact Email</dt>
-                                            <dd className="text-sm text-gray-900 mt-0.5">{selectedBooking.tourist?.email || 'N/A'}</dd>
+                                            <dt className="text-xs font-medium text-gray-500">{t('Contact Email')}</dt>
+                                            <dd className="text-sm text-gray-900 mt-0.5">{selectedBooking.tourist?.email || t('No email provided')}</dd>
                                         </div>
                                     </dl>
                                 </div>
@@ -535,16 +536,16 @@ export default function Bookings({ bookings, stats, filters }) {
                                 {/* Merchant Info */}
                                 <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center">
-                                        <Store className="w-4 h-4 mr-2" /> Merchant Details
+                                        <Store className="w-4 h-4 mr-2" /> {t('Merchant Details')}
                                     </h4>
                                     <dl className="space-y-3">
                                         <div>
-                                            <dt className="text-xs font-medium text-gray-500">Business Name</dt>
-                                            <dd className="text-sm font-semibold text-gray-900 mt-0.5">{selectedBooking.business?.name || 'Unknown'}</dd>
+                                            <dt className="text-xs font-medium text-gray-500">{t('Business Name')}</dt>
+                                            <dd className="text-sm font-semibold text-gray-900 mt-0.5">{selectedBooking.business?.name || t('Unknown')}</dd>
                                         </div>
                                         <div>
-                                            <dt className="text-xs font-medium text-gray-500">Category</dt>
-                                            <dd className="text-sm text-gray-900 mt-0.5 capitalize">{selectedBooking.business?.category || 'Service'}</dd>
+                                            <dt className="text-xs font-medium text-gray-500">{t('Category')}</dt>
+                                            <dd className="text-sm text-gray-900 mt-0.5 capitalize">{selectedBooking.business?.category || t('Service')}</dd>
                                         </div>
                                     </dl>
                                 </div>
@@ -552,26 +553,26 @@ export default function Bookings({ bookings, stats, filters }) {
 
                             {/* Operational Timeline & Payment */}
                             <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm mb-6">
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Transaction & Operational Log</h4>
+                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">{t('Transaction & Operational Log')}</h4>
                                 
                                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
                                     <div className="flex items-center text-sm">
                                         <CreditCard className="w-4 h-4 text-gray-400 mr-3" />
-                                        <span className="font-medium text-gray-700">Payment Gateway ID</span>
+                                        <span className="font-medium text-gray-700">{t('Payment Gateway ID')}</span>
                                     </div>
                                     <span className="text-sm font-mono text-gray-600">TXN-9{selectedBooking.id}84{selectedBooking.total_amount % 100}A</span>
                                 </div>
                                 <div className="flex items-center justify-between py-3 border-b border-gray-100">
                                     <div className="flex items-center text-sm">
                                         <Clock className="w-4 h-4 text-gray-400 mr-3" />
-                                        <span className="font-medium text-gray-700">Booking Created</span>
+                                        <span className="font-medium text-gray-700">{t('Booking Created')}</span>
                                     </div>
                                     <span className="text-sm text-gray-600">{new Date(selectedBooking.created_at).toLocaleString()}</span>
                                 </div>
                                 <div className="flex items-center justify-between py-3">
                                     <div className="flex items-center text-sm">
                                         <CheckCircle className="w-4 h-4 text-gray-400 mr-3" />
-                                        <span className="font-medium text-gray-700">Status Last Updated</span>
+                                        <span className="font-medium text-gray-700">{t('Status Last Updated')}</span>
                                     </div>
                                     <span className="text-sm text-gray-600">{new Date(selectedBooking.updated_at).toLocaleString()}</span>
                                 </div>
@@ -586,7 +587,7 @@ export default function Bookings({ bookings, stats, filters }) {
                                         onClick={() => handleQuickAction(selectedBooking.id, 'cancel')}
                                         className="px-4 py-2 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors shadow-sm"
                                     >
-                                        Force Cancel & Refund
+                                        {t('Force Cancel & Refund')}
                                     </button>
                                 )}
                             </div>
@@ -595,14 +596,14 @@ export default function Bookings({ bookings, stats, filters }) {
                                     onClick={() => setSelectedBooking(null)}
                                     className="px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg text-sm font-medium transition-colors shadow-sm"
                                 >
-                                    Close Panel
+                                    {t('Close Panel')}
                                 </button>
                                 {selectedBooking.status === 'pending' && (
                                     <button
                                         onClick={() => handleQuickAction(selectedBooking.id, 'confirm')}
                                         className="px-4 py-2 bg-royalMaroon-900 text-white hover:bg-royalMaroon-950 rounded-lg text-sm font-medium transition-colors shadow-sm"
                                     >
-                                        Override to Confirmed
+                                        {t('Override to Confirmed')}
                                     </button>
                                 )}
                             </div>

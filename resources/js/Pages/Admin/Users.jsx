@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import AdminLayout from '@/Layouts/AdminLayout';
+import React, { useState, useEffect, useContext } from 'react';
+import AdminLayout, { AppContext } from '@/Layouts/AdminLayout';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { 
@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 
 export default function Users({ users, stats, filters }) {
+    const { t } = useContext(AppContext) || { t: (k) => k };
     const [editingUser, setEditingUser] = useState(null);
     const [isAddingUser, setIsAddingUser] = useState(false);
     const [isViewingPermissions, setIsViewingPermissions] = useState(false);
@@ -151,9 +152,9 @@ export default function Users({ users, stats, filters }) {
             tourist: 'bg-blue-100 text-blue-800',
         };
         const labels = {
-            admin: 'Admin',
-            business_owner: 'Merchant',
-            tourist: 'Tourist'
+            admin: t('Admin'),
+            business_owner: t('Merchant'),
+            tourist: t('Tourist')
         };
         return (
             <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[role] || 'bg-gray-100 text-gray-800'}`}>
@@ -168,9 +169,14 @@ export default function Users({ users, stats, filters }) {
             suspended: 'bg-red-100 text-red-800',
             pending: 'bg-yellow-100 text-yellow-800',
         };
+        const labels = {
+            active: t('Active'),
+            suspended: t('Suspended'),
+            pending: 'Pending',
+        };
         return (
             <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${styles[status] || styles.active}`}>
-                {status}
+                {labels[status] || status}
             </span>
         );
     };
@@ -190,22 +196,22 @@ export default function Users({ users, stats, filters }) {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 font-sansDisplay">User & Role Management</h1>
-                        <p className="text-sm text-gray-500 mt-1">Manage user access, roles, and platform permissions.</p>
+                        <h1 className="text-2xl font-bold text-gray-900 font-sansDisplay">{t('User & Role Management')}</h1>
+                        <p className="text-sm text-gray-500 mt-1">{t('Manage user access, roles, and platform permissions.')}</p>
                     </div>
                     <div className="flex space-x-3">
                         <button 
                             onClick={() => setIsViewingPermissions(true)}
                             className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
                         >
-                            Manage Permissions
+                            {t('Manage Permissions')}
                         </button>
                         <button 
                             onClick={() => setIsAddingUser(true)}
                             className="px-4 py-2 bg-royalMaroon-900 text-white rounded-lg text-sm font-medium hover:bg-royalMaroon-950 transition-colors flex items-center shadow-sm"
                         >
                             <Plus className="w-4 h-4 mr-2" />
-                            Add New User
+                            {t('Add New User')}
                         </button>
                     </div>
                 </div>
@@ -217,7 +223,7 @@ export default function Users({ users, stats, filters }) {
                             <UsersIcon className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Total Users</p>
+                            <p className="text-sm font-medium text-gray-500">{t('Total Users')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.total || 0}</h3>
                         </div>
                     </div>
@@ -226,7 +232,7 @@ export default function Users({ users, stats, filters }) {
                             <ShieldCheck className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Super Admins</p>
+                            <p className="text-sm font-medium text-gray-500">{t('Super Admins')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.admins || 0}</h3>
                         </div>
                     </div>
@@ -235,7 +241,7 @@ export default function Users({ users, stats, filters }) {
                             <Store className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Merchants</p>
+                            <p className="text-sm font-medium text-gray-500">{t('Merchants')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.merchants || 0}</h3>
                         </div>
                     </div>
@@ -244,7 +250,7 @@ export default function Users({ users, stats, filters }) {
                             <Briefcase className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Tourists</p>
+                            <p className="text-sm font-medium text-gray-500">{t('Tourists')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.tourists || 0}</h3>
                         </div>
                     </div>
@@ -256,7 +262,7 @@ export default function Users({ users, stats, filters }) {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input 
                             type="text" 
-                            placeholder="Search Name, Email, or ID..."
+                            placeholder={t("Search Name, Email, or ID...")}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-9 pr-4 py-2 bg-white text-slate-900 placeholder-slate-400 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow"
@@ -268,10 +274,10 @@ export default function Users({ users, stats, filters }) {
                             onChange={(e) => setRoleFilter(e.target.value)}
                             className="w-full sm:w-40 bg-white text-slate-900 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none py-2 px-3"
                         >
-                            <option value="all">All Roles</option>
-                            <option value="admin">Admins</option>
-                            <option value="business_owner">Merchants</option>
-                            <option value="tourist">Tourists</option>
+                            <option value="all">{t('All Roles')}</option>
+                            <option value="admin">{t('Super Admins')}</option>
+                            <option value="business_owner">{t('Merchants')}</option>
+                            <option value="tourist">{t('Tourists')}</option>
                         </select>
                         <div className="relative">
                             <button 
@@ -279,7 +285,7 @@ export default function Users({ users, stats, filters }) {
                                 className={`px-4 py-2 border rounded-lg text-sm font-medium flex items-center whitespace-nowrap transition-colors ${showFilters ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'}`}
                             >
                                 <Filter className="w-4 h-4 mr-2" />
-                                Filters
+                                {t('Filters')}
                             </button>
 
                             {/* Filters Dropdown Modal */}
@@ -328,19 +334,19 @@ export default function Users({ users, stats, filters }) {
                                         <input type="checkbox" className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        User
+                                        {t('USER')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Role
+                                        {t('ROLE')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status
+                                        {t('STATUS')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Joined Date
+                                        {t('JOINED DATE')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
+                                        {t('ACTIONS')}
                                     </th>
                                 </tr>
                             </thead>

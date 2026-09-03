@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Shield, Fingerprint, Lock, Activity, Bell, FileWarning, Megaphone, Send } from 'lucide-react';
 import axios from 'axios';
+import { AppContext } from '@/Layouts/AdminLayout';
 
 export default function SecurityCompliance({ initialData = null }) {
+    const { t } = useContext(AppContext) || { t: (k) => k };
     const defaultLogs = [
         { id: 1, action: 'Multiple failed login attempts', entity: 'Admin User (amila@sps.lk)', time: '10 mins ago', severity: 'high' },
         { id: 2, action: 'Payout details modified', entity: 'Vendor (Galle Heritage Villa)', time: '1 hour ago', severity: 'medium' },
@@ -45,7 +47,7 @@ export default function SecurityCompliance({ initialData = null }) {
 
     const handleBroadcast = async () => {
         if (!broadcastSubject.trim() || !broadcastMessage.trim()) {
-            alert('Please enter a subject and message before broadcasting.');
+            alert(t('Please enter a subject and message before broadcasting.'));
             return;
         }
 
@@ -100,13 +102,13 @@ export default function SecurityCompliance({ initialData = null }) {
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-lg font-bold text-slate-900 flex items-center">
                             <Shield className="w-5 h-5 mr-2 text-indigo-600" />
-                            Real-time Security Audit Log
+                            {t('Real-time Security Audit Log')}
                         </h3>
                         <button 
                             onClick={() => setIsLogModalOpen(true)}
                             className="text-sm text-indigo-600 font-medium hover:text-indigo-800"
                         >
-                            View Full Log
+                            {t('View Full Log')}
                         </button>
                     </div>
                     
@@ -122,10 +124,10 @@ export default function SecurityCompliance({ initialData = null }) {
                                     {log.severity === 'low' && <Fingerprint className="w-4 h-4" />}
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-sm font-semibold text-gray-900">{log.action}</p>
+                                    <p className="text-sm font-semibold text-gray-900">{t(log.action)}</p>
                                     <p className="text-xs text-gray-500">{log.entity}</p>
                                 </div>
-                                <span className="text-xs font-medium text-gray-400">{log.time}</span>
+                                <span className="text-xs font-medium text-gray-400">{t(log.time)}</span>
                             </div>
                         ))}
                     </div>
@@ -135,28 +137,28 @@ export default function SecurityCompliance({ initialData = null }) {
                 <div className="bg-slate-900 rounded-xl shadow-sm border border-slate-800 p-6 text-white">
                     <h3 className="text-lg font-bold text-white mb-6 flex items-center">
                         <Lock className="w-5 h-5 mr-2 text-indigo-400" />
-                        System Compliance
+                        {t('System Compliance')}
                     </h3>
                     
                     <div className="space-y-6">
                         <div>
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm text-slate-300">PCI-DSS Status</span>
+                                <span className="text-sm text-slate-300">{t('PCI-DSS Status')}</span>
                                 <span className={`text-xs px-2 py-1 rounded font-bold border ${compliance.pci.status === 'COMPLIANT' ? 'bg-emerald-900/50 text-emerald-400 border-emerald-800' : 'bg-red-900/50 text-red-400 border-red-800'}`}>
-                                    {compliance.pci.status}
+                                    {t(compliance.pci.status)}
                                 </span>
                             </div>
-                            <p className="text-xs text-slate-500">Last scan: {compliance.pci.scan}</p>
+                            <p className="text-xs text-slate-500">{t('Last scan:')} {t(compliance.pci.scan)}</p>
                         </div>
                         
                         <div>
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm text-slate-300">Data Privacy (SLDPPA)</span>
+                                <span className="text-sm text-slate-300">{t('Data Privacy (SLDPPA)')}</span>
                                 <span className={`text-xs px-2 py-1 rounded font-bold border ${compliance.privacy.status === 'VERIFIED' ? 'bg-emerald-900/50 text-emerald-400 border-emerald-800' : 'bg-amber-900/50 text-amber-400 border-amber-800'}`}>
-                                    {compliance.privacy.status}
+                                    {t(compliance.privacy.status)}
                                 </span>
                             </div>
-                            <p className="text-xs text-slate-500">{compliance.privacy.scan}</p>
+                            <p className="text-xs text-slate-500">{t(compliance.privacy.scan)}</p>
                         </div>
 
                         <div className="pt-4 border-t border-slate-800">
@@ -168,7 +170,7 @@ export default function SecurityCompliance({ initialData = null }) {
                                 } disabled:opacity-75`}
                             >
                                 <Bell className={`w-4 h-4 ${isScanning ? 'animate-bounce' : ''}`} /> 
-                                {scanComplete ? 'Scan Complete' : isScanning ? 'Scanning Network...' : 'Trigger Security Scan'}
+                                {scanComplete ? t('Scan Complete') : isScanning ? t('Scanning Network...') : t('Trigger Security Scan')}
                             </button>
                         </div>
                     </div>
@@ -179,22 +181,22 @@ export default function SecurityCompliance({ initialData = null }) {
             <div className="bg-indigo-50 rounded-xl border border-indigo-100 p-6">
                 <h3 className="text-lg font-bold text-indigo-900 mb-2 flex items-center">
                     <Megaphone className="w-5 h-5 mr-2 text-indigo-600" />
-                    Global Platform Broadcast
+                    {t('Global Platform Broadcast')}
                 </h3>
-                <p className="text-sm text-indigo-700 mb-6">Send important updates, promo codes, or system maintenance alerts to all active vendors and hosts.</p>
+                <p className="text-sm text-indigo-700 mb-6">{t('Send important updates, promo codes, or system maintenance alerts to all active vendors and hosts.')}</p>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
                         <input 
                             type="text" 
-                            placeholder="Message Subject" 
+                            placeholder={t("Message Subject")}
                             value={broadcastSubject}
                             onChange={(e) => setBroadcastSubject(e.target.value)}
                             className="w-full mb-3 px-4 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-lg border border-indigo-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition-shadow" 
                         />
                         <textarea 
                             rows="3" 
-                            placeholder="Type your broadcast message here..." 
+                            placeholder={t("Type your broadcast message here...")}
                             value={broadcastMessage}
                             onChange={(e) => setBroadcastMessage(e.target.value)}
                             className="w-full px-4 py-2 bg-white text-slate-900 placeholder-slate-400 rounded-lg border border-indigo-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition-shadow"
@@ -207,7 +209,7 @@ export default function SecurityCompliance({ initialData = null }) {
                                 checked={usePush}
                                 onChange={(e) => setUsePush(e.target.checked)}
                                 className="rounded text-indigo-600 mr-2" 
-                            /> Push Notification
+                            /> {t('Push Notification')}
                         </label>
                         <label className="flex items-center text-sm text-indigo-900 font-medium">
                             <input 
@@ -215,7 +217,7 @@ export default function SecurityCompliance({ initialData = null }) {
                                 checked={useEmail}
                                 onChange={(e) => setUseEmail(e.target.checked)}
                                 className="rounded text-indigo-600 mr-2" 
-                            /> Email Blast
+                            /> {t('Email Blast')}
                         </label>
                         <label className="flex items-center text-sm text-indigo-900 font-medium">
                             <input 
@@ -223,7 +225,7 @@ export default function SecurityCompliance({ initialData = null }) {
                                 checked={useSms}
                                 onChange={(e) => setUseSms(e.target.checked)}
                                 className="rounded text-indigo-600 mr-2" 
-                            /> SMS Alert
+                            /> {t('SMS Alert')}
                         </label>
                         <button 
                             onClick={handleBroadcast}
@@ -232,7 +234,7 @@ export default function SecurityCompliance({ initialData = null }) {
                                 broadcastSuccess ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-indigo-600 hover:bg-indigo-700'
                             } disabled:opacity-75`}
                         >
-                            {broadcastSuccess ? 'Broadcast Sent!' : broadcastSending ? 'Sending...' : <><Send className="w-4 h-4" /> Send Now</>}
+                            {broadcastSuccess ? t('Broadcast Sent!') : broadcastSending ? t('Sending...') : <><Send className="w-4 h-4" /> {t('Send Now')}</>}
                         </button>
                     </div>
                 </div>
@@ -245,7 +247,7 @@ export default function SecurityCompliance({ initialData = null }) {
                         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                             <h2 className="text-xl font-bold text-slate-900 flex items-center">
                                 <Shield className="w-6 h-6 mr-2 text-indigo-600" />
-                                Comprehensive Security Audit Log
+                                {t('Comprehensive Security Audit Log')}
                             </h2>
                             <button onClick={() => setIsLogModalOpen(false)} className="text-gray-400 hover:text-gray-600">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -264,17 +266,17 @@ export default function SecurityCompliance({ initialData = null }) {
                                             {log.severity === 'low' && <Fingerprint className="w-5 h-5" />}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="text-md font-bold text-gray-900">{log.action}</p>
-                                            <p className="text-sm text-gray-600">Entity: {log.entity}</p>
+                                            <p className="text-md font-bold text-gray-900">{t(log.action)}</p>
+                                            <p className="text-sm text-gray-600">{t('Entity:')} {log.entity}</p>
                                             <p className="text-xs text-gray-500 mt-1">IP: 192.168.1.{Math.floor(Math.random() * 255)} | User-Agent: Mozilla/5.0</p>
                                         </div>
                                         <div className="flex flex-col items-end">
-                                            <span className="text-sm font-medium text-gray-500">{log.time}</span>
+                                            <span className="text-sm font-medium text-gray-500">{t(log.time)}</span>
                                             <span 
                                                 onClick={() => setExpandedTraceId(expandedTraceId === log.id ? null : log.id)}
                                                 className="text-xs text-indigo-500 font-semibold mt-2 cursor-pointer hover:underline"
                                             >
-                                                {expandedTraceId === log.id ? 'Hide Trace' : 'View Trace'}
+                                                {expandedTraceId === log.id ? t('Hide Trace') : t('View Trace')}
                                             </span>
                                         </div>
                                     </div>
@@ -299,11 +301,11 @@ export default function SecurityCompliance({ initialData = null }) {
                                 </div>
                             ))}
                             <div className="text-center py-4 text-gray-500 text-sm">
-                                End of recent logs. Older logs are archived to cold storage.
+                                {t('End of recent logs. Older logs are archived to cold storage.')}
                             </div>
                         </div>
                         <div className="p-4 border-t border-gray-100 flex justify-end">
-                            <button onClick={() => setIsLogModalOpen(false)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">Close</button>
+                            <button onClick={() => setIsLogModalOpen(false)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">{t('Close')}</button>
                         </div>
                     </div>
                 </div>

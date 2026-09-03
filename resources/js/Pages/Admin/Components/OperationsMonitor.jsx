@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { 
     createColumnHelper, 
     flexRender, 
@@ -9,59 +9,61 @@ import {
     getPaginationRowModel
 } from '@tanstack/react-table';
 import { Search, ChevronDown, ChevronUp, AlertCircle, Package, Home } from 'lucide-react';
+import { AppContext } from '@/Layouts/AdminLayout';
 
 const columnHelper = createColumnHelper();
 
-const columns = [
-    columnHelper.accessor('id', {
-        header: 'Reference ID',
-        cell: info => <span className="font-bold text-indigo-600">{info.getValue()}</span>,
-    }),
-    columnHelper.accessor('type', {
-        header: 'Type',
-        cell: info => (
-            <div className="flex items-center text-gray-600 text-sm capitalize">
-                {info.getValue() === 'product' ? <Package className="w-4 h-4 mr-1 text-emerald-500" /> : <Home className="w-4 h-4 mr-1 text-amber-500" />}
-                {info.getValue()}
-            </div>
-        )
-    }),
-    columnHelper.accessor('vendor', {
-        header: 'Vendor/Host',
-        cell: info => <span className="font-medium text-slate-900">{info.getValue()}</span>,
-    }),
-    columnHelper.accessor('customer', {
-        header: 'Customer',
-    }),
-    columnHelper.accessor('amount', {
-        header: 'Amount (LKR)',
-        cell: info => <span className="font-semibold text-slate-900">{info.getValue().toLocaleString()}</span>,
-    }),
-    columnHelper.accessor('status', {
-        header: 'Status',
-        cell: info => {
-            const status = info.getValue();
-            let color = 'bg-gray-100 text-gray-800';
-            if (status === 'shipped' || status === 'confirmed') color = 'bg-indigo-100 text-indigo-800';
-            if (status === 'delivered' || status === 'completed') color = 'bg-emerald-100 text-emerald-800';
-            if (status === 'disputed') color = 'bg-red-100 text-red-800 font-bold';
-
-            return <span className={`inline-flex px-2 py-1 rounded text-xs capitalize ${color}`}>{status}</span>;
-        }
-    }),
-    columnHelper.accessor('issue', {
-        header: 'Disputes / Issues',
-        cell: info => info.getValue() ? (
-            <span className="flex items-center text-xs text-red-600 font-medium">
-                <AlertCircle className="w-3 h-3 mr-1" /> {info.getValue()}
-            </span>
-        ) : (
-            <span className="text-gray-400 text-xs">-</span>
-        )
-    }),
-];
-
 export default function OperationsMonitor({ initialData = [] }) {
+    const { t } = useContext(AppContext) || { t: (k) => k };
+
+    const columns = [
+        columnHelper.accessor('id', {
+            header: t('Reference ID'),
+            cell: info => <span className="font-bold text-indigo-600">{info.getValue()}</span>,
+        }),
+        columnHelper.accessor('type', {
+            header: t('Type'),
+            cell: info => (
+                <div className="flex items-center text-gray-600 text-sm capitalize">
+                    {info.getValue() === 'product' ? <Package className="w-4 h-4 mr-1 text-emerald-500" /> : <Home className="w-4 h-4 mr-1 text-amber-500" />}
+                    {info.getValue()}
+                </div>
+            )
+        }),
+        columnHelper.accessor('vendor', {
+            header: t('Vendor/Host'),
+            cell: info => <span className="font-medium text-slate-900">{info.getValue()}</span>,
+        }),
+        columnHelper.accessor('customer', {
+            header: t('Customer'),
+        }),
+        columnHelper.accessor('amount', {
+            header: t('Amount (LKR)'),
+            cell: info => <span className="font-semibold text-slate-900">{info.getValue().toLocaleString()}</span>,
+        }),
+        columnHelper.accessor('status', {
+            header: t('Status'),
+            cell: info => {
+                const status = info.getValue();
+                let color = 'bg-gray-100 text-gray-800';
+                if (status === 'shipped' || status === 'confirmed') color = 'bg-indigo-100 text-indigo-800';
+                if (status === 'delivered' || status === 'completed') color = 'bg-emerald-100 text-emerald-800';
+                if (status === 'disputed') color = 'bg-red-100 text-red-800 font-bold';
+
+                return <span className={`inline-flex px-2 py-1 rounded text-xs capitalize ${color}`}>{status}</span>;
+            }
+        }),
+        columnHelper.accessor('issue', {
+            header: t('Disputes / Issues'),
+            cell: info => info.getValue() ? (
+                <span className="flex items-center text-xs text-red-600 font-medium">
+                    <AlertCircle className="w-3 h-3 mr-1" /> {info.getValue()}
+                </span>
+            ) : (
+                <span className="text-gray-400 text-xs">-</span>
+            )
+        }),
+    ];
     const mockData = [
         { id: 'ORD-5091', type: 'product', vendor: 'Kandy Brassworks', customer: 'John Doe', amount: 15000, status: 'shipped', issue: null },
         { id: 'RES-8821', type: 'accommodation', vendor: 'Natures Grace Lodge', customer: 'Jane Smith', amount: 45000, status: 'confirmed', issue: null },
@@ -105,8 +107,8 @@ export default function OperationsMonitor({ initialData = [] }) {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 animate-fadeIn">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
                 <div>
-                    <h2 className="text-lg font-bold text-slate-900">Unified Operations & Disputes</h2>
-                    <p className="text-sm text-gray-500">Track nationwide physical product shipments and room reservations.</p>
+                    <h2 className="text-lg font-bold text-slate-900">{t('Unified Operations & Disputes')}</h2>
+                    <p className="text-sm text-gray-500">{t('Track nationwide physical product shipments and room reservations.')}</p>
                 </div>
                 <div className="mt-4 sm:mt-0 relative w-full sm:w-64">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -114,7 +116,7 @@ export default function OperationsMonitor({ initialData = [] }) {
                         value={globalFilter ?? ''}
                         onChange={e => setGlobalFilter(e.target.value)}
                         className="w-full pl-9 pr-4 py-2 border border-gray-300 bg-white text-slate-900 placeholder-slate-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm" 
-                        placeholder="Search IDs, vendors, or customers..."
+                        placeholder={t("Search IDs, vendors, or customers...")}
                     />
                 </div>
             </div>
@@ -159,7 +161,7 @@ export default function OperationsMonitor({ initialData = [] }) {
                 </table>
                 {table.getRowModel().rows.length === 0 && (
                     <div className="text-center py-10 text-gray-500">
-                        No operational records found.
+                        {t('No operational records found.')}
                     </div>
                 )}
             </div>
@@ -167,7 +169,7 @@ export default function OperationsMonitor({ initialData = [] }) {
             {/* Pagination Controls */}
             <div className="flex items-center justify-between mt-4">
                 <span className="text-sm text-gray-500">
-                    Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to {Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getPrePaginationRowModel().rows.length)} of {table.getPrePaginationRowModel().rows.length} entries
+                    {t('Showing')} {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} {t('to')} {Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getPrePaginationRowModel().rows.length)} {t('of')} {table.getPrePaginationRowModel().rows.length} {t('entries')}
                 </span>
                 <div className="flex gap-2">
                     <button
@@ -175,14 +177,14 @@ export default function OperationsMonitor({ initialData = [] }) {
                         onClick={() => table.previousPage()}
                         disabled={!table.getCanPreviousPage()}
                     >
-                        Previous
+                        {t('Previous')}
                     </button>
                     <button
                         className="px-3 py-1 border border-gray-300 rounded text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
                         onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage()}
                     >
-                        Next
+                        {t('Next')}
                     </button>
                 </div>
             </div>

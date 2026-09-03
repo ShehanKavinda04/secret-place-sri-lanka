@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapPin, ShieldAlert, CheckCircle, Search } from 'lucide-react';
 import axios from 'axios';
+import { AppContext } from '@/Layouts/AdminLayout';
 
 // Fix Leaflet's default icon issue in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -23,6 +24,7 @@ const redIcon = new L.Icon({
 });
 
 export default function CatalogModeration({ initialData = [] }) {
+    const { t } = useContext(AppContext) || { t: (k) => k };
     const [locations, setLocations] = useState(initialData.length > 0 ? initialData : [
         { id: 1, name: 'Eco Cabin - Ella', lat: 6.8667, lng: 81.0466, status: 'verified', type: 'Host' },
         { id: 2, name: 'Kandy Craft Shop', lat: 7.2906, lng: 80.6337, status: 'flagged', type: 'Merchant', issue: 'Inappropriate images reported' },
@@ -61,21 +63,21 @@ export default function CatalogModeration({ initialData = [] }) {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fadeIn">
             <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between">
                 <div>
-                    <h2 className="text-lg font-bold text-slate-900">Global Catalog & Map Moderation</h2>
-                    <p className="text-sm text-gray-500">Geospatial overview and content moderation queue.</p>
+                    <h2 className="text-lg font-bold text-slate-900">{t('Global Catalog & Map Moderation')}</h2>
+                    <p className="text-sm text-gray-500">{t('Geospatial overview and content moderation queue.')}</p>
                 </div>
                 <div className="mt-4 sm:mt-0 flex bg-slate-100 p-1 rounded-lg">
                     <button 
                         onClick={() => setActiveTab('map')}
                         className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeTab === 'map' ? 'bg-white shadow-sm text-slate-900' : 'text-gray-500 hover:text-gray-900'}`}
                     >
-                        Geo-Map View
+                        {t('Geo-Map View')}
                     </button>
                     <button 
                         onClick={() => setActiveTab('queue')}
                         className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeTab === 'queue' ? 'bg-white shadow-sm text-slate-900' : 'text-gray-500 hover:text-gray-900'}`}
                     >
-                        Moderation Queue
+                        {t('Moderation Queue')}
                     </button>
                 </div>
             </div>
@@ -99,11 +101,11 @@ export default function CatalogModeration({ initialData = [] }) {
                                         <p className="text-xs text-gray-500 mb-2">{loc.type}</p>
                                         {loc.status === 'flagged' ? (
                                             <div className="bg-red-50 text-red-700 p-2 rounded text-xs border border-red-100">
-                                                <strong>Flagged:</strong> {loc.issue}
+                                                <strong>{t('Flagged')}:</strong> {loc.issue}
                                             </div>
                                         ) : (
                                             <div className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-xs inline-block">
-                                                Verified Listing
+                                                {t('Verified Listing')}
                                             </div>
                                         )}
                                     </div>
@@ -120,7 +122,7 @@ export default function CatalogModeration({ initialData = [] }) {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input 
                             type="text" 
-                            placeholder="Search flagged items..." 
+                            placeholder={t("Search flagged items...")}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-9 pr-4 py-2 border border-gray-300 bg-white text-slate-900 placeholder-slate-400 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm" 
@@ -137,7 +139,7 @@ export default function CatalogModeration({ initialData = [] }) {
                                     <ShieldAlert className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
                                     <div>
                                         <h4 className="font-semibold text-gray-900">{item.name}</h4>
-                                        <p className="text-sm text-gray-600">Issue: {item.issue}</p>
+                                        <p className="text-sm text-gray-600">{t('Issue')}: {item.issue}</p>
                                         <span className="inline-block mt-1 text-xs text-gray-500 bg-white px-2 py-0.5 rounded border border-gray-200">{item.type}</span>
                                     </div>
                                 </div>
@@ -146,13 +148,13 @@ export default function CatalogModeration({ initialData = [] }) {
                                         onClick={() => handleModeration(item.id, 'dismiss')}
                                         className="flex-1 sm:flex-none px-3 py-1.5 bg-white border border-gray-300 rounded text-sm font-medium hover:bg-gray-50 text-gray-700"
                                     >
-                                        Dismiss
+                                        {t('Dismiss')}
                                     </button>
                                     <button 
                                         onClick={() => handleModeration(item.id, 'suspend')}
                                         className="flex-1 sm:flex-none px-3 py-1.5 bg-red-600 rounded text-sm font-medium hover:bg-red-700 text-white"
                                     >
-                                        Suspend Listing
+                                        {t('Suspend Listing')}
                                     </button>
                                 </div>
                             </div>

@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Users, Store, Calendar, DollarSign, TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AppContext } from '@/Layouts/AdminLayout';
 
 export default function ExecutiveKPIs({ initialData }) {
+    const { currency, t } = useContext(AppContext) || { currency: 'LKR', t: (k) => k };
+    
     const [kpiData, setKpiData] = useState(initialData || {
         gmv: 0,
         commission: 0,
@@ -54,21 +57,27 @@ export default function ExecutiveKPIs({ initialData }) {
     }
 
     const formatCurrency = (value) => {
-        if (!value) return 'LKR 0.00';
-        const num = Number(value);
+        if (!value) return `${currency} 0.00`;
+        let num = Number(value);
+        
+        // Mock currency conversion rates
+        if (currency === 'USD') num = num * 0.0031;
+        if (currency === 'EUR') num = num * 0.0028;
+        if (currency === 'GBP') num = num * 0.0024;
+
         if (num >= 1000000) {
-            return `LKR ${(num / 1000000).toFixed(2)}M`;
+            return `${currency} ${(num / 1000000).toFixed(2)}M`;
         } else if (num >= 1000) {
-            return `LKR ${(num / 1000).toFixed(1)}k`;
+            return `${currency} ${(num / 1000).toFixed(1)}k`;
         }
-        return `LKR ${num.toFixed(2)}`;
+        return `${currency} ${num.toFixed(2)}`;
     };
 
     const kpis = [
-        { title: 'Gross Platform Volume (LKR)', value: formatCurrency(kpiData.gmv), trend: 'Real-time', isUp: true, icon: DollarSign },
-        { title: 'Platform Commission (10%)', value: formatCurrency(kpiData.commission), trend: 'Real-time', isUp: true, icon: TrendingUp },
-        { title: 'Active Merchants & Hosts', value: (kpiData.activeMerchants || 0).toLocaleString(), trend: 'Real-time', isUp: true, icon: Store },
-        { title: 'Active Monthly Tourists', value: (kpiData.activeTourists || 0).toLocaleString(), trend: 'Real-time', isUp: true, icon: Users },
+        { title: t('Gross Platform Volume (LKR)').replace('LKR', currency), value: formatCurrency(kpiData.gmv), trend: 'Real-time', isUp: true, icon: DollarSign },
+        { title: t('Platform Commission (10%)'), value: formatCurrency(kpiData.commission), trend: 'Real-time', isUp: true, icon: TrendingUp },
+        { title: t('Active Merchants & Hosts'), value: (kpiData.activeMerchants || 0).toLocaleString(), trend: 'Real-time', isUp: true, icon: Store },
+        { title: t('Active Monthly Tourists'), value: (kpiData.activeTourists || 0).toLocaleString(), trend: 'Real-time', isUp: true, icon: Users },
     ];
 
     return (
@@ -96,17 +105,17 @@ export default function ExecutiveKPIs({ initialData }) {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h2 className="text-lg font-bold text-slate-900">Gross Platform Volume (GMV/GBV)</h2>
-                        <p className="text-sm text-gray-500">Combined revenue from physical products and accommodation bookings.</p>
+                        <h2 className="text-lg font-bold text-slate-900">{t('Gross Platform Volume (GMV/GBV)')}</h2>
+                        <p className="text-sm text-gray-500">{t('Combined revenue from physical products and accommodation bookings.')}</p>
                     </div>
                     <select 
                         className="text-sm bg-white text-slate-900 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm px-3 py-2"
                         value={timeFilter}
                         onChange={(e) => setTimeFilter(e.target.value)}
                     >
-                        <option>Last 6 Months</option>
-                        <option>This Year</option>
-                        <option>All Time</option>
+                        <option value="Last 6 Months">{t('Last 6 Months')}</option>
+                        <option value="This Year">{t('This Year')}</option>
+                        <option value="All Time">{t('All Time')}</option>
                     </select>
                 </div>
                 <div className="h-80 w-full">
@@ -140,7 +149,7 @@ export default function ExecutiveKPIs({ initialData }) {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <h3 className="text-md font-bold text-slate-900 mb-4 flex items-center">
                         <Store className="w-5 h-5 mr-2 text-indigo-500" />
-                        Merchant Acquisition Split
+                        {t('Merchant Acquisition Split')}
                     </h3>
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
@@ -159,8 +168,8 @@ export default function ExecutiveKPIs({ initialData }) {
                 <div className="bg-slate-900 rounded-xl shadow-sm border border-slate-800 p-6 text-white relative overflow-hidden">
                     <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500 rounded-full blur-3xl opacity-20"></div>
                     <div className="relative z-10">
-                        <h3 className="text-md font-bold text-white mb-2">Platform Health Score</h3>
-                        <p className="text-slate-400 text-sm mb-6">Aggregate score based on dispute rates, refund velocity, and host responsiveness.</p>
+                        <h3 className="text-md font-bold text-white mb-2">{t('Platform Health Score')}</h3>
+                        <p className="text-slate-400 text-sm mb-6">{t('Aggregate score based on dispute rates, refund velocity, and host responsiveness.')}</p>
                         
                         <div className="flex items-end gap-4 mb-8">
                             <span className="text-6xl font-sansDisplay font-bold text-emerald-400">{kpiData.healthScore || 98}</span>
@@ -170,7 +179,7 @@ export default function ExecutiveKPIs({ initialData }) {
                         <div className="space-y-4">
                             <div>
                                 <div className="flex justify-between text-sm mb-1">
-                                    <span className="text-slate-300">Dispute Rate (Target &lt; 2%)</span>
+                                    <span className="text-slate-300">{t('Dispute Rate (Target < 2%)')}</span>
                                     <span className="text-emerald-400 font-medium">{kpiData.disputeRate || 0.8}%</span>
                                 </div>
                                 <div className="w-full bg-slate-800 rounded-full h-1.5">
@@ -179,7 +188,7 @@ export default function ExecutiveKPIs({ initialData }) {
                             </div>
                             <div>
                                 <div className="flex justify-between text-sm mb-1">
-                                    <span className="text-slate-300">Avg. Payout Time (Target &lt; 24h)</span>
+                                    <span className="text-slate-300">{t('Avg. Payout Time (Target < 24h)')}</span>
                                     <span className="text-indigo-400 font-medium">{kpiData.payoutTime || 12}h</span>
                                 </div>
                                 <div className="w-full bg-slate-800 rounded-full h-1.5">

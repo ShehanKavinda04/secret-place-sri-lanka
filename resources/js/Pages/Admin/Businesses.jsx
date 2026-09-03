@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import AdminLayout from '@/Layouts/AdminLayout';
+import React, { useState, useEffect, useContext } from 'react';
+import AdminLayout, { AppContext } from '@/Layouts/AdminLayout';
 import { Head, router, Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { 
@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 
 export default function Businesses({ businesses, stats, filters }) {
+    const { t } = useContext(AppContext) || { t: (k) => k };
     const [searchQuery, setSearchQuery] = useState(filters?.search || '');
     const [statusFilter, setStatusFilter] = useState(filters?.status || 'all');
     const [categoryFilter, setCategoryFilter] = useState(filters?.category || 'all');
@@ -126,11 +127,11 @@ export default function Businesses({ businesses, stats, filters }) {
     };
 
     const tabs = [
-        { id: 'all', label: 'All Requests' },
-        { id: 'pending', label: 'Pending Review' },
-        { id: 'approved', label: 'Approved' },
-        { id: 'rejected', label: 'Rejected' },
-        { id: 'suspended', label: 'Suspended' },
+        { id: 'all', label: t('All Requests') },
+        { id: 'pending', label: t('Pending Review') },
+        { id: 'approved', label: t('Approved') },
+        { id: 'rejected', label: t('Rejected') },
+        { id: 'suspended', label: t('Suspended') },
     ];
 
     return (
@@ -141,8 +142,8 @@ export default function Businesses({ businesses, stats, filters }) {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 font-sansDisplay">Merchant Hub & Business Approvals</h1>
-                        <p className="text-sm text-gray-500 mt-1">Review, approve, and manage business applications across the platform.</p>
+                        <h1 className="text-2xl font-bold text-gray-900 font-sansDisplay">{t('Merchant Hub & Business Approvals')}</h1>
+                        <p className="text-sm text-gray-500 mt-1">{t('Review, approve, and manage business applications across the platform.')}</p>
                     </div>
                     <div className="flex space-x-3">
                         <button 
@@ -150,7 +151,7 @@ export default function Businesses({ businesses, stats, filters }) {
                             className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 flex items-center shadow-sm transition-colors"
                         >
                             <Download className="w-4 h-4 mr-2" />
-                            Export Data
+                            {t('Export Data')}
                         </button>
                     </div>
                 </div>
@@ -165,7 +166,7 @@ export default function Businesses({ businesses, stats, filters }) {
                             <Store className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Total Merchants</p>
+                            <p className="text-sm font-medium text-gray-500">{t('Total Merchants')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.total || 0}</h3>
                         </div>
                     </div>
@@ -177,7 +178,7 @@ export default function Businesses({ businesses, stats, filters }) {
                             <AlertCircle className="w-6 h-6" />
                         </div>
                         <div className="z-10">
-                            <p className="text-sm font-medium text-gray-500">Pending Approvals</p>
+                            <p className="text-sm font-medium text-gray-500">{t('Pending Approvals')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.pending || 0}</h3>
                         </div>
                         {stats?.pending > 0 && (
@@ -192,7 +193,7 @@ export default function Businesses({ businesses, stats, filters }) {
                             <CheckCircle2 className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Approved Businesses</p>
+                            <p className="text-sm font-medium text-gray-500">{t('Approved Businesses')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.approved || 0}</h3>
                         </div>
                     </div>
@@ -204,7 +205,7 @@ export default function Businesses({ businesses, stats, filters }) {
                             <XCircle className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Rejected Applications</p>
+                            <p className="text-sm font-medium text-gray-500">{t('Rejected Applications')}</p>
                             <h3 className="text-2xl font-bold text-gray-900">{stats?.rejected || 0}</h3>
                         </div>
                     </div>
@@ -237,7 +238,7 @@ export default function Businesses({ businesses, stats, filters }) {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <input 
                                 type="text" 
-                                placeholder="Search Business, Owner, or ID..."
+                                placeholder={t("Search Business, Owner, or ID...")}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full pl-9 pr-4 py-2 bg-white text-slate-900 placeholder-slate-400 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-royalMaroon-500 focus:border-royalMaroon-500 outline-none shadow-sm"
@@ -249,11 +250,11 @@ export default function Businesses({ businesses, stats, filters }) {
                                 onChange={(e) => setCategoryFilter(e.target.value)}
                                 className="w-full sm:w-48 bg-white text-slate-900 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-royalMaroon-500 outline-none py-2 px-3 shadow-sm"
                             >
-                                <option value="all">All Categories</option>
-                                <option value="accommodations">Accommodations</option>
-                                <option value="transport">Transport</option>
-                                <option value="crafts">Crafts</option>
-                                <option value="experiences">Experiences</option>
+                                <option value="all">{t('All Categories')}</option>
+                                <option value="accommodations">{t('Accommodations')}</option>
+                                <option value="transport">{t('Transport')}</option>
+                                <option value="crafts">{t('Crafts')}</option>
+                                <option value="experiences">{t('Experiences')}</option>
                             </select>
                         </div>
                     </div>
@@ -273,22 +274,22 @@ export default function Businesses({ businesses, stats, filters }) {
                                         />
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Business Details
+                                        {t('Business Details')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Owner
+                                        {t('Owner')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Category
+                                        {t('Category')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Submitted Date
+                                        {t('Submitted Date')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status
+                                        {t('Status')}
                                     </th>
                                     <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
+                                        {t('Actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -355,7 +356,7 @@ export default function Businesses({ businesses, stats, filters }) {
                                                     onClick={() => setSelectedBusiness(business)}
                                                     className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-md text-xs font-medium transition-colors shadow-sm ml-2"
                                                 >
-                                                    Review Details
+                                                    {t('Review Details')}
                                                 </button>
                                             </div>
                                         </td>
@@ -364,8 +365,8 @@ export default function Businesses({ businesses, stats, filters }) {
                                     <tr>
                                         <td colSpan="7" className="px-6 py-12 text-center">
                                             <FileText className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-                                            <p className="text-sm font-medium text-gray-900">No applications found</p>
-                                            <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters.</p>
+                                            <p className="text-sm font-medium text-gray-900">{t('No applications found')}</p>
+                                            <p className="text-sm text-gray-500 mt-1">{t('Try adjusting your search or filters.')}</p>
                                         </td>
                                     </tr>
                                 )}
@@ -445,7 +446,7 @@ export default function Businesses({ businesses, stats, filters }) {
                 {selectedBusiness && (
                     <div className="bg-white rounded-lg shadow-xl overflow-hidden">
                         <div className="bg-royalMaroon-900 px-6 py-4 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-white font-sansDisplay">Application Review</h2>
+                            <h2 className="text-xl font-bold text-white font-sansDisplay">{t('Application Review')}</h2>
                             <button onClick={() => setSelectedBusiness(null)} className="text-white/80 hover:text-white">
                                 <X className="w-6 h-6" />
                             </button>
@@ -460,7 +461,7 @@ export default function Businesses({ businesses, stats, filters }) {
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h3 className="text-xl font-bold text-gray-900">{selectedBusiness.name}</h3>
-                                            <p className="text-sm text-gray-500 mt-1">Submitted on {new Date(selectedBusiness.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                            <p className="text-sm text-gray-500 mt-1">{t('Submitted on')} {new Date(selectedBusiness.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                                         </div>
                                         {getStatusBadge(selectedBusiness.status)}
                                     </div>
@@ -471,28 +472,28 @@ export default function Businesses({ businesses, stats, filters }) {
                                 {/* Details Block */}
                                 <div className="space-y-6">
                                     <div>
-                                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Business Information</h4>
+                                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{t('Business Information')}</h4>
                                         <dl className="space-y-3">
                                             <div>
-                                                <dt className="text-sm font-medium text-gray-500">Registration ID</dt>
+                                                <dt className="text-sm font-medium text-gray-500">{t('Registration ID')}</dt>
                                                 <dd className="text-sm text-gray-900 font-mono mt-0.5">{selectedBusiness.registration_id || `REG-00${selectedBusiness.id}`}</dd>
                                             </div>
                                             <div>
-                                                <dt className="text-sm font-medium text-gray-500">Category</dt>
+                                                <dt className="text-sm font-medium text-gray-500">{t('Category')}</dt>
                                                 <dd className="text-sm text-gray-900 capitalize mt-0.5">{selectedBusiness.category || 'N/A'}</dd>
                                             </div>
                                         </dl>
                                     </div>
 
                                     <div>
-                                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Owner Information</h4>
+                                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{t('Owner Information')}</h4>
                                         <dl className="space-y-3">
                                             <div>
-                                                <dt className="text-sm font-medium text-gray-500">Full Name</dt>
+                                                <dt className="text-sm font-medium text-gray-500">{t('Full Name')}</dt>
                                                 <dd className="text-sm text-gray-900 mt-0.5">{selectedBusiness.owner?.name || 'Unknown'}</dd>
                                             </div>
                                             <div>
-                                                <dt className="text-sm font-medium text-gray-500">Contact Email</dt>
+                                                <dt className="text-sm font-medium text-gray-500">{t('Contact Email')}</dt>
                                                 <dd className="text-sm text-gray-900 mt-0.5">{selectedBusiness.owner?.email || 'N/A'}</dd>
                                             </div>
                                         </dl>
@@ -501,29 +502,29 @@ export default function Businesses({ businesses, stats, filters }) {
 
                                 {/* Documents Block (Mocked) */}
                                 <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Verification Documents</h4>
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">{t('Verification Documents')}</h4>
                                     
                                     <ul className="space-y-4">
                                         <li className="flex items-center justify-between">
                                             <div className="flex items-center text-sm">
                                                 <FileText className="w-4 h-4 text-gray-400 mr-2" />
-                                                <span className="font-medium text-gray-700">Business Registration (BR)</span>
+                                                <span className="font-medium text-gray-700">{t('Business Registration (BR)')}</span>
                                             </div>
-                                            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">Uploaded</span>
+                                            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">{t('Uploaded')}</span>
                                         </li>
                                         <li className="flex items-center justify-between">
                                             <div className="flex items-center text-sm">
                                                 <FileText className="w-4 h-4 text-gray-400 mr-2" />
-                                                <span className="font-medium text-gray-700">Identity Proof (NIC)</span>
+                                                <span className="font-medium text-gray-700">{t('Identity Proof (NIC)')}</span>
                                             </div>
-                                            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">Uploaded</span>
+                                            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">{t('Uploaded')}</span>
                                         </li>
                                         <li className="flex items-center justify-between">
                                             <div className="flex items-center text-sm">
                                                 <FileText className="w-4 h-4 text-gray-400 mr-2" />
-                                                <span className="font-medium text-gray-700">Bank Passbook Copy</span>
+                                                <span className="font-medium text-gray-700">{t('Bank Passbook Copy')}</span>
                                             </div>
-                                            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">Uploaded</span>
+                                            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">{t('Uploaded')}</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -538,14 +539,14 @@ export default function Businesses({ businesses, stats, filters }) {
                                         onClick={() => handleQuickAction(selectedBusiness.id, 'reject')}
                                         className="px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:text-red-600 rounded-lg text-sm font-medium transition-colors shadow-sm"
                                     >
-                                        Reject Application
+                                        {t('Reject Application')}
                                     </button>
                                     <button
                                         onClick={() => handleQuickAction(selectedBusiness.id, 'approve')}
                                         className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center"
                                     >
                                         <Check className="w-4 h-4 mr-2" />
-                                        Approve Business
+                                        {t('Approve Business')}
                                     </button>
                                 </>
                             )}
@@ -554,7 +555,7 @@ export default function Businesses({ businesses, stats, filters }) {
                                     onClick={() => setSelectedBusiness(null)}
                                     className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm"
                                 >
-                                    Close Panel
+                                    {t('Close Panel')}
                                 </button>
                             )}
                         </div>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import AdminLayout from '@/Layouts/AdminLayout';
+import React, { useState, useContext } from 'react';
+import AdminLayout, { AppContext } from '@/Layouts/AdminLayout';
 import { Head } from '@inertiajs/react';
 import { LayoutDashboard, Store, Map, CreditCard, ShoppingBag, ShieldCheck } from 'lucide-react';
 
@@ -11,15 +11,16 @@ import OperationsMonitor from './Components/OperationsMonitor';
 import SecurityCompliance from './Components/SecurityCompliance';
 
 export default function Overview({ stats, pendingApprovals = [], kpiData, catalogData = [], financeData, operationsData = [], securityData }) {
+    const { t } = useContext(AppContext) || { t: (k) => k };
     const [activeTab, setActiveTab] = useState('kpi');
 
     const tabs = [
-        { id: 'kpi', name: 'Executive KPIs', icon: LayoutDashboard },
-        { id: 'onboarding', name: 'Onboarding Hub', icon: Store },
-        { id: 'catalog', name: 'Catalog & Maps', icon: Map },
-        { id: 'finance', name: 'Financial Engine', icon: CreditCard },
-        { id: 'operations', name: 'Operations Monitor', icon: ShoppingBag },
-        { id: 'security', name: 'Security & Broadcast', icon: ShieldCheck },
+        { id: 'kpi', name: t('Executive KPIs'), icon: LayoutDashboard },
+        { id: 'onboarding', name: t('Onboarding Hub'), icon: Store },
+        { id: 'catalog', name: t('Catalog & Maps'), icon: Map },
+        { id: 'finance', name: t('Financial Engine'), icon: CreditCard },
+        { id: 'operations', name: t('Operations Monitor'), icon: ShoppingBag },
+        { id: 'security', name: t('Security & Broadcast'), icon: ShieldCheck },
     ];
 
     return (
