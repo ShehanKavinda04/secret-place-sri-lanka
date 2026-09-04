@@ -56,7 +56,7 @@ export default function ResetPassword() {
                         <label className="block text-sm font-bold text-slate-700 mb-2">New Password</label>
                         <input
                             type="password"
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-[#0f4c3a] focus:ring-0 transition-colors"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:border-[#0f4c3a] focus:ring-0 transition-colors"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
@@ -90,7 +90,7 @@ export default function ResetPassword() {
                         <label className="block text-sm font-bold text-slate-700 mb-2">Confirm Password</label>
                         <input
                             type="password"
-                            className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:bg-white focus:border-[#0f4c3a] focus:ring-0 transition-colors ${passwordConfirmation && password !== passwordConfirmation ? 'border-red-300' : 'border-slate-200'}`}
+                            className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 focus:bg-white focus:border-[#0f4c3a] focus:ring-0 transition-colors ${passwordConfirmation && password !== passwordConfirmation ? 'border-red-300' : 'border-slate-200'}`}
                             value={passwordConfirmation}
                             onChange={(e) => setPasswordConfirmation(e.target.value)}
                         />
