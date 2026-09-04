@@ -222,7 +222,7 @@ export default function AdminLayout({ header, children }) {
                                                 <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
                                                 <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                             </div>
-                                            <Link href={route('profile.edit')} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 mt-1">
+                                            <Link href={route('admin.profile')} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 mt-1">
                                                 {t('Platform Settings')}
                                             </Link>
                                             <Link href={route('logout')} method="post" as="button" className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">

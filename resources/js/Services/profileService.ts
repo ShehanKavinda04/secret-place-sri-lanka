@@ -47,7 +47,12 @@ let currentPayout = defaultPayout;
 
 if (typeof window !== 'undefined') {
     const storedProf = localStorage.getItem(PROFILE_KEY);
-    if (storedProf) currentProfile = JSON.parse(storedProf);
+    if (storedProf) {
+        currentProfile = JSON.parse(storedProf);
+        // Fix for previously broken blob URLs across reloads
+        if (currentProfile.banner_url?.startsWith('blob:')) currentProfile.banner_url = defaultProfile.banner_url;
+        if (currentProfile.logo_url?.startsWith('blob:')) currentProfile.logo_url = defaultProfile.logo_url;
+    }
     
     const storedPay = localStorage.getItem(PAYOUT_KEY);
     if (storedPay) currentPayout = JSON.parse(storedPay);
@@ -90,8 +95,13 @@ export const profileService = {
 
     async uploadMedia(file: File): Promise<string> {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        // Mock returning a local object URL for preview purposes
-        return URL.createObjectURL(file);
+        // Use FileReader to get base64 so it persists in localStorage across reloads
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = error => reject(error);
+        });
     },
 
     subscribeToProfile(callback: ProfileSubscriber): () => void {
