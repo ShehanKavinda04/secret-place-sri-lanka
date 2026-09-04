@@ -4,28 +4,19 @@ import { Head } from '@inertiajs/react';
 import { adminProfileService } from '@/Services/adminProfileService';
 import ProfileHeader from './Partials/ProfileHeader';
 import PersonalInfoForm from './Partials/PersonalInfoForm';
-import RolePermissionsCard from './Partials/RolePermissionsCard';
-import SecuritySessions from './Partials/SecuritySessions';
-import NotificationPreferences from './Partials/NotificationPreferences';
-import ActivityLog from './Partials/ActivityLog';
-import { Settings, Shield, Bell, Activity } from 'lucide-react';
+import SecurityAndPermissionsSettings from '@/Components/Security/SecurityAndPermissionsSettings';
+import { Settings, ShieldCheck } from 'lucide-react';
 
 export default function Edit({ mustVerifyEmail, status }) {
     const [profile, setProfile] = useState(null);
-    const [notifications, setNotifications] = useState(null);
-    const [sessions, setSessions] = useState([]);
-    const [activity, setActivity] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('general');
+    const [activeTab, setActiveTab] = useState('security');
 
     useEffect(() => {
         const load = async () => {
             try {
                 const data = await adminProfileService.fetchProfileData();
                 setProfile(data.profile);
-                setNotifications(data.notifications);
-                setSessions(data.sessions);
-                setActivity(data.activity);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -34,11 +25,8 @@ export default function Edit({ mustVerifyEmail, status }) {
         };
         load();
 
-        const unsubscribe = adminProfileService.subscribe((p, n, s, a) => {
+        const unsubscribe = adminProfileService.subscribe((p) => {
             setProfile(p);
-            setNotifications(n);
-            setSessions(s);
-            setActivity(a);
         });
 
         return () => unsubscribe();
@@ -56,10 +44,8 @@ export default function Edit({ mustVerifyEmail, status }) {
     }
 
     const tabs = [
-        { id: 'general', name: 'General & Role', icon: Settings },
-        { id: 'security', name: 'Security & Sessions', icon: Shield },
-        { id: 'notifications', name: 'Notifications', icon: Bell },
-        { id: 'audit', name: 'Activity Audit', icon: Activity },
+        { id: 'general', name: 'Personal Information', icon: Settings },
+        { id: 'security', name: 'Security & Permissions', icon: ShieldCheck },
     ];
 
     return (
@@ -79,12 +65,12 @@ export default function Edit({ mustVerifyEmail, status }) {
                                 className={`
                                     whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center
                                     ${activeTab === tab.id
-                                        ? 'border-indigo-500 text-indigo-600'
+                                        ? 'border-[#0F172A] text-[#0F172A]'
                                         : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                                     }
                                 `}
                             >
-                                <tab.icon className={`w-5 h-5 mr-2 ${activeTab === tab.id ? 'text-indigo-500' : 'text-slate-400'}`} />
+                                <tab.icon className={`w-5 h-5 mr-2 ${activeTab === tab.id ? 'text-[#0F172A]' : 'text-slate-400'}`} />
                                 {tab.name}
                             </button>
                         ))}
@@ -93,26 +79,11 @@ export default function Edit({ mustVerifyEmail, status }) {
 
                 <div className="mt-8">
                     {activeTab === 'general' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            <div className="lg:col-span-2">
-                                <PersonalInfoForm profile={profile} />
-                            </div>
-                            <div className="lg:col-span-1">
-                                <RolePermissionsCard profile={profile} />
-                            </div>
-                        </div>
+                        <PersonalInfoForm profile={profile} />
                     )}
                     
                     {activeTab === 'security' && (
-                        <SecuritySessions profile={profile} sessions={sessions} />
-                    )}
-
-                    {activeTab === 'notifications' && (
-                        <NotificationPreferences notifications={notifications} />
-                    )}
-
-                    {activeTab === 'audit' && (
-                        <ActivityLog activity={activity} />
+                        <SecurityAndPermissionsSettings userId={profile.id.toString()} />
                     )}
                 </div>
             </div>

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { customerProfileService } from '@/Services/customerProfileService';
-import ProfileHeader from './Partials/ProfileHeader';
-import PersonalDetailsForm from './Partials/PersonalDetailsForm';
+import CustomerPersonalInfoCard from '@/Components/Customer/CustomerPersonalInfoCard';
 import ActiveBookings from './Partials/ActiveBookings';
 import OrderHistory from './Partials/OrderHistory';
 import WishlistGrid from './Partials/WishlistGrid';
@@ -78,8 +77,6 @@ export default function Edit({ auth }) {
             <div className="py-8 bg-slate-50 min-h-screen">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     
-                    <ProfileHeader profile={profile} />
-
                     {/* Tab Navigation */}
                     <div className="mt-8 border-b border-slate-200 bg-white rounded-t-xl px-4 sm:px-6 overflow-x-auto hide-scrollbar">
                         <nav className="-mb-px flex space-x-8">
@@ -104,7 +101,7 @@ export default function Edit({ auth }) {
 
                     <div className="mt-6 bg-transparent">
                         {activeTab === 'personal' && (
-                            <PersonalDetailsForm profile={profile} />
+                            <CustomerPersonalInfoCard userId={auth.user.id.toString()} />
                         )}
                         
                         {activeTab === 'bookings' && (

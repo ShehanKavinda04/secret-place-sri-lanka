@@ -114,8 +114,16 @@ export default function Navbar({ auth = {} }) {
                         </button>
 
                         {auth && auth.user ? (
-                            <Link prefetch href={getRoute('dashboard', '/dashboard')} className="px-5 py-2.5 rounded-full bg-royalMaroon-900 border border-royalGold-500/50 text-xs font-bold uppercase tracking-wider text-royalGold-300 hover:bg-royalMaroon-950 transition-all">
-                                Dashboard
+                            <Link 
+                                prefetch 
+                                href={getRoute('dashboard', '/dashboard')} 
+                                className="w-[42px] h-[42px] rounded-full overflow-hidden border-2 border-royalGold-500/50 hover:border-royalGold-400 hover:shadow-[0_0_12px_rgba(212,175,55,0.4)] transition-all bg-[#D1D5DB] flex items-center justify-center shrink-0"
+                                title="My Account"
+                            >
+                                <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="50" cy="38" r="22" fill="#9CA3AF"/>
+                                    <path d="M15 100C15 75 30 65 50 65C70 65 85 75 85 100" fill="#9CA3AF"/>
+                                </svg>
                             </Link>
                         ) : (
                             <>

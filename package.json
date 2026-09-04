@@ -27,13 +27,16 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "@hookform/resolvers": "^5.9.1",
         "@tanstack/react-table": "^8.10.7",
         "framer-motion": "^12.40.0",
         "laravel-echo": "^2.4.0",
         "leaflet": "^1.9.4",
         "lucide-react": "^1.31.0",
         "pusher-js": "^8.6.0",
+        "react-hook-form": "^7.87.0",
         "react-leaflet": "^4.2.1",
-        "recharts": "^3.10.1"
+        "recharts": "^3.10.1",
+        "zod": "^4.5.4"
     }
 }

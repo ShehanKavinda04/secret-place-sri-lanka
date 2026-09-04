@@ -8,21 +8,21 @@ import {
 // ==========================================
 // Syntax Highlighting Engine (Regex based)
 // ==========================================
-const syntaxHighlight = (json: string | object, search: string = '') => {
+const syntaxHighlight = (json, search = '') => {
     if (typeof json !== 'string') {
          json = JSON.stringify(json, undefined, 2);
     }
     let highlightedJson = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     
-    const highlightMatch = (text: string) => {
+    const highlightMatch = (text) => {
         if (!search) return text;
         const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
         return text.replace(regex, '<mark class="bg-yellow-500/40 text-yellow-100 rounded-sm bg-transparent px-0">$1</mark>');
     };
 
-    return highlightedJson.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+    return highlightedJson.replace(/(\"(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*\"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
         let cls = 'text-[#ce9178]'; // string
-        if (/^"/.test(match)) {
+        if (/^\"/.test(match)) {
             if (/:$/.test(match)) {
                 cls = 'text-[#9cdcfe]'; // key
             }
@@ -40,13 +40,13 @@ const syntaxHighlight = (json: string | object, search: string = '') => {
 // ==========================================
 // Tree View Recursive Component
 // ==========================================
-const JsonTree = ({ data, search }: { data: any, search: string }) => {
-    const Node = ({ nodeKey, value, isLast }: { nodeKey: string | null, value: any, isLast: boolean }) => {
+const JsonTree = ({ data, search }) => {
+    const Node = ({ nodeKey, value, isLast }) => {
         const [isExpanded, setIsExpanded] = useState(true);
         const isObject = value !== null && typeof value === 'object';
         const isArray = Array.isArray(value);
         
-        const highlight = (text: string) => {
+        const highlight = (text) => {
             if (!search) return text;
             const str = String(text);
             const idx = str.toLowerCase().indexOf(search.toLowerCase());
@@ -120,21 +120,15 @@ const JsonTree = ({ data, search }: { data: any, search: string }) => {
 // ==========================================
 // Main Component
 // ==========================================
-interface WebhookPayloadModalProps {
-    show: boolean;
-    onClose: () => void;
-    payload: any;
-}
-
-export default function WebhookPayloadModal({ show, onClose, payload }: WebhookPayloadModalProps) {
-    const [payloadViewMode, setPayloadViewMode] = useState<'raw' | 'tree'>('raw');
+export default function WebhookPayloadModal({ show, onClose, payload }) {
+    const [payloadViewMode, setPayloadViewMode] = useState('raw');
     const [payloadSearch, setPayloadSearch] = useState('');
     const [copiedPayload, setCopiedPayload] = useState(false);
-    const [viewMode, setViewMode] = useState<'summary' | 'json'>('summary');
+    const [viewMode, setViewMode] = useState('summary');
 
     if (!payload) return null;
 
-    const getPayloadData = (payloadObj: any) => {
+    const getPayloadData = (payloadObj) => {
         if (!payloadObj) return null;
         return {
             event: payloadObj.status === 'success' ? 'charge.success' : (payloadObj.status === 'refunded' ? 'refund.created' : 'payment.failed'),
