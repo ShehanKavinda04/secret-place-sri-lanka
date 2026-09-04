@@ -187,6 +187,7 @@ Route::middleware(['auth', 'verified', 'role:business_owner'])->prefix('seller')
     Route::get('/businesses', [\App\Http\Controllers\Seller\BusinessController::class, 'index'])->name('businesses');
     Route::get('/bookings', [\App\Http\Controllers\Seller\BookingController::class, 'index'])->name('bookings');
     Route::get('/earnings', [\App\Http\Controllers\Seller\EarningController::class, 'index'])->name('earnings');
+    Route::get('/reviews', [\App\Http\Controllers\Seller\ReviewController::class, 'index'])->name('reviews');
 });
 
 // Customer Routes (Standard dashboard prefix is /dashboard)

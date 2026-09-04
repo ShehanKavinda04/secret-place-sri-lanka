@@ -29,7 +29,7 @@ export default function SellerLayout({ header, children }) {
         { name: 'Property Listings', href: route('seller.businesses'), icon: Home },
         { name: 'Reservations', href: route('seller.bookings'), icon: Calendar },
         { name: 'Financials', href: route('seller.earnings'), icon: DollarSign },
-        { name: 'Guest Reviews', href: '#', icon: MessageSquare },
+        { name: 'Guest Reviews', href: route('seller.reviews'), icon: MessageSquare },
     ];
 
     const currentRoute = route().current();

@@ -1,39 +1,90 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import SellerLayout from '@/Layouts/SellerLayout';
+import { Head, usePage } from '@inertiajs/react';
+import { profileService } from '@/Services/profileService';
+import BrandCustomizer from './Partials/BrandCustomizer';
+import BusinessInfoForm from './Partials/BusinessInfoForm';
+import LocationForm from './Partials/LocationForm';
+import PayoutSettingsForm from './Partials/PayoutSettingsForm';
+import PoliciesForm from './Partials/PoliciesForm';
+
+// Reusing original forms for the bottom
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
-import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 
 export default function Edit({ mustVerifyEmail, status }) {
-    return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Profile
-                </h2>
+    const user = usePage().props.auth.user;
+    
+    // Local state for mock real-time data
+    const [profile, setProfile] = useState(null);
+    const [payout, setPayout] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const data = await profileService.fetchProfile();
+                setProfile(data.profile);
+                setPayout(data.payout);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setIsLoading(false);
             }
-        >
-            <Head title="Profile" />
+        };
+        load();
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <UpdateProfileInformationForm
-                            mustVerifyEmail={mustVerifyEmail}
-                            status={status}
-                            className="max-w-xl"
-                        />
-                    </div>
+        const unsubscribe = profileService.subscribeToProfile((prof, pay) => {
+            setProfile(prof);
+            setPayout(pay);
+        });
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <UpdatePasswordForm className="max-w-xl" />
-                    </div>
+        return () => unsubscribe();
+    }, []);
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <DeleteUserForm className="max-w-xl" />
-                    </div>
+    if (isLoading || !profile || !payout) {
+        return (
+            <SellerLayout header="Host Profile & Settings">
+                <div className="p-8 animate-pulse">
+                    <div className="h-64 bg-slate-200 rounded-xl mb-8"></div>
+                    <div className="h-96 bg-slate-200 rounded-xl mb-8"></div>
+                    <div className="h-96 bg-slate-200 rounded-xl mb-8"></div>
+                </div>
+            </SellerLayout>
+        );
+    }
+
+    return (
+        <SellerLayout header="Host Profile & Settings">
+            <Head title="Profile & Settings - Secret Place Sri Lanka" />
+
+            <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                
+                {/* 1. Profile Header & Brand Customizer */}
+                <BrandCustomizer profile={profile} />
+
+                {/* 2. General Business Information */}
+                <BusinessInfoForm profile={profile} />
+
+                {/* 3. Location & Physical Address */}
+                <LocationForm profile={profile} />
+
+                {/* 4. Bank Account & LankaQR Payout Settings */}
+                <PayoutSettingsForm payout={payout} />
+
+                {/* 5. Business Policies & Preferences */}
+                <PoliciesForm profile={profile} />
+
+                {/* Standard Authentication Security (from Breeze) */}
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-8">
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">Security & Authentication</h3>
+                    <UpdatePasswordForm className="max-w-xl" />
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6 md:p-8 mb-8">
+                    <DeleteUserForm className="max-w-xl" />
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </SellerLayout>
     );
 }
