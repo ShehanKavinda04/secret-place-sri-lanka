@@ -51,7 +51,10 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
             <div className="min-h-screen bg-[#FAF9F6] text-[#2c1d11] font-sans selection:bg-royalGold-500 selection:text-royalMaroon-950">
                 <Navbar auth={auth} />
 
-                <Hero />
+                <Hero 
+                    features={features} 
+                    setSelectedFeature={setSelectedFeature} 
+                />
                 
                 <FeaturesSection 
                     features={features} 

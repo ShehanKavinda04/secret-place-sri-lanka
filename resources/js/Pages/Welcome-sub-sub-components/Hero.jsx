@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from '@inertiajs/react';
 
-export default function Hero() {
+export default function Hero({ features = [], setSelectedFeature = () => {} }) {
     return (
         <section 
             id="hero" 
@@ -55,19 +55,19 @@ export default function Hero() {
                             <span>AI Cultural Translator</span>
                         </Link>
                         
-                        <a 
-                            href="#discover"
+                        <button 
+                            onClick={() => setSelectedFeature(features.find(f => f.id === 'tracking'))}
                             className="px-6 py-3 rounded-full border-2 border-royalGold-500 text-royalGold-300 hover:bg-royalMaroon-700/50 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase"
                         >
                             Live Detailing
-                        </a>
+                        </button>
                         
-                        <a 
-                            href="#newsletter"
+                        <button 
+                            onClick={() => setSelectedFeature(features.find(f => f.id === 'booking'))}
                             className="px-6 py-3 rounded-full border border-royalGold-500/50 text-royalGold-400 hover:bg-royalMaroon-700/50 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase"
                         >
                             Live Booking
-                        </a>
+                        </button>
                     </motion.div>
                 </motion.div>
 
