@@ -196,6 +196,7 @@ Route::middleware(['auth', 'verified', 'role:tourist'])->prefix('dashboard')->na
     Route::get('/bookings', [\App\Http\Controllers\Customer\BookingController::class, 'index'])->name('bookings');
     Route::get('/orders', [\App\Http\Controllers\Customer\OrderController::class, 'index'])->name('orders');
     Route::get('/wishlist', [\App\Http\Controllers\Customer\WishlistController::class, 'index'])->name('wishlist');
+    Route::get('/profile', [\App\Http\Controllers\Customer\CustomerProfileController::class, 'edit'])->name('profile');
 });
 
 Route::get('/', function () {
