@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -22,17 +23,39 @@ Route::middleware('guest')->group(function () {
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
+    // ─── Custom Multi-Step Forgot Password System ────────────────────────────
+    Route::get('forgot-password', [ForgotPasswordController::class, 'showForm'])
         ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
 
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+    // AJAX: real-time identity existence check (Step 1)
+    Route::post('password/check-identity', [ForgotPasswordController::class, 'checkIdentity'])
+        ->name('password.check-identity')
+        ->middleware('throttle:account-recovery-lookup');
+
+    // Send OTP or magic link (Step 2)
+    Route::post('password/send-reset', [ForgotPasswordController::class, 'sendReset'])
+        ->name('password.send-reset')
+        ->middleware('throttle:account-recovery-send');
+
+    // Verify 6-digit OTP (Step 3)
+    Route::post('password/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])
+        ->name('password.verify-otp')
+        ->middleware('throttle:10,1');
+
+    // Magic-link landing page (GET from email link)
+    Route::get('reset-password', [ForgotPasswordController::class, 'showResetForm'])
         ->name('password.reset');
 
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create']);
+    Route::post('reset-password', [NewPasswordController::class, 'store']);
+
+    // Perform the actual reset (Step 4 submit)
+    Route::post('password/reset', [ForgotPasswordController::class, 'resetPassword'])
+        ->name('password.store')
+        ->middleware('throttle:5,1');
 });
 
 Route::middleware('auth')->group(function () {
