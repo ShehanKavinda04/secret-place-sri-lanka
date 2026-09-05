@@ -1,74 +1,59 @@
 import React from 'react';
-import { Head, Link } from '@inertiajs/react';
-import ApplicationLogo from '@/Components/ApplicationLogo';
+import { Head, usePage } from '@inertiajs/react';
+import Navbar from '@/Layouts/Navbar';
 
 export default function AuthLayout({ title, description, children }) {
+    const { auth } = usePage().props;
+
     return (
-        <div className="flex min-h-screen bg-[#F8FAFC] font-sans">
+        <div className="flex flex-col min-h-screen bg-[#FAF9F6] text-[#2c1d11] font-sans selection:bg-royalGold-500 selection:text-royalMaroon-950">
             <Head title={title} />
             
-            {/* Left Side - Branding & Imagery (Hidden on small screens) */}
-            <div className="hidden lg:flex lg:w-1/2 relative bg-[#1B4D3E] overflow-hidden flex-col justify-between">
-                {/* Background Pattern/Image Overlay */}
-                <div 
-                    className="absolute inset-0 z-0 opacity-20 mix-blend-overlay"
-                    style={{
-                        backgroundImage: `url('https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2039&auto=format&fit=crop')`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                    }}
-                />
-                
-                {/* Decorative gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1B4D3E] via-transparent to-[#1B4D3E]/80 z-0"></div>
+            {/* Shared Navbar */}
+            <Navbar auth={auth} />
 
-                {/* Content over image */}
-                <div className="relative z-10 p-12 flex-grow flex flex-col justify-between">
-                    <Link href="/" className="flex items-center gap-3 w-fit hover:opacity-90 transition-opacity">
-                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                            <ApplicationLogo className="w-8 h-8 text-[#1B4D3E]" />
-                        </div>
-                        <span className="text-white text-2xl font-bold tracking-tight">Secret Place <span className="text-[#D97706]">Sri Lanka</span></span>
-                    </Link>
+            <div className="flex flex-1">
+                {/* Left Side - 60% (Maroon Background) */}
+                <div className="hidden lg:flex lg:w-3/5 relative bg-royalMaroon-950 overflow-hidden flex-col justify-center items-center">
+                    {/* Decorative gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-[#3D0610] via-royalMaroon-900 to-[#5C0A1A] z-0"></div>
 
-                    <div className="max-w-md mt-20">
-                        <h2 className="text-4xl font-extrabold text-white leading-tight mb-6">
-                            Discover the unseen beauty of the pearl of the Indian Ocean.
+                    {/* Subtle circular decorative elements */}
+                    <div className="absolute inset-0 overflow-hidden opacity-10 pointer-events-none z-0">
+                        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full border border-royalGold-500"></div>
+                        <div className="absolute top-[5%] left-[5%] w-[300px] h-[300px] rounded-full border border-royalGold-400"></div>
+                        <div className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full border border-royalGold-600"></div>
+                    </div>
+
+                    {/* Content over background */}
+                    <div className="relative z-10 p-12 max-w-2xl text-center flex flex-col items-center">
+                        <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#F5E6C8] leading-tight mb-2 tracking-wide">
+                            Welcome to SecretPlaces<br />Sri Lanka
                         </h2>
-                        <p className="text-[#F8FAFC]/80 text-lg leading-relaxed">
-                            Join our ecosystem to book exclusive retreats, unique experiences, and authentic crafts directly from local hosts and MSMEs.
+                        <h3 className="font-display text-2xl md:text-3xl text-royalGold-400 mb-8 italic font-medium">
+                            Explore Sacred Anuradhapura
+                        </h3>
+                        
+                        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-royalGold-500 to-transparent rounded-full mb-8"></div>
+                        
+                        <p className="text-[#F5E6C8]/80 text-lg md:text-xl leading-relaxed max-w-lg font-light">
+                            Journey beyond the ordinary into a civilisation 2,500 years in the making. Discover hidden cultural and spiritual places with profound spiritual energy.
                         </p>
-
-                        <div className="mt-10 flex gap-4">
-                            <div className="w-12 h-1 bg-[#D97706] rounded-full"></div>
-                            <div className="w-12 h-1 bg-white/20 rounded-full"></div>
-                            <div className="w-12 h-1 bg-white/20 rounded-full"></div>
-                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Right Side - Auth Forms */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 md:p-20 relative">
-                
-                {/* Mobile Logo (Only visible on small screens) */}
-                <div className="absolute top-8 left-8 lg:hidden flex items-center gap-2">
-                    <Link href="/">
-                        <div className="w-10 h-10 bg-[#1B4D3E] rounded-lg flex items-center justify-center shadow-md">
-                            <ApplicationLogo className="w-6 h-6 text-white" />
+                {/* Right Side - 40% Auth Forms */}
+                <div className="w-full lg:w-2/5 flex items-center justify-center p-6 sm:p-12 relative bg-[#FAF9F6] z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.1)]">
+                    <div className="w-full max-w-md bg-white p-8 sm:p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 relative z-10">
+                        <div className="mb-8 text-center sm:text-left">
+                            <h1 className="font-display text-3xl font-extrabold text-royalMaroon-950 tracking-tight">{title}</h1>
+                            {description && (
+                                <p className="text-slate-500 mt-2 text-sm leading-relaxed">{description}</p>
+                            )}
                         </div>
-                    </Link>
-                </div>
 
-                <div className="w-full max-w-md bg-white p-8 sm:p-10 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-extrabold text-[#1B4D3E] tracking-tight">{title}</h1>
-                        {description && (
-                            <p className="text-slate-500 mt-2 text-sm leading-relaxed">{description}</p>
-                        )}
+                        {children}
                     </div>
-
-                    {children}
                 </div>
             </div>
         </div>

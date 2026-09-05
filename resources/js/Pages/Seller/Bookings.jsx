@@ -212,7 +212,7 @@ export default function Bookings() {
                             </div>
                             <input
                                 type="text"
-                                className="focus:ring-[#1B4D3E] focus:border-[#1B4D3E] block w-full pl-10 sm:text-sm border-slate-300 rounded-md"
+                                className="focus:ring-[#1B4D3E] focus:border-[#1B4D3E] block w-full pl-10 sm:text-sm border-slate-300 rounded-md text-slate-900 placeholder-slate-400 bg-white"
                                 placeholder="Search by name, ID, or phone..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -223,7 +223,7 @@ export default function Bookings() {
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                className="block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-[#1B4D3E] focus:border-[#1B4D3E] sm:text-sm rounded-md"
+                                className="block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-[#1B4D3E] focus:border-[#1B4D3E] sm:text-sm rounded-md text-slate-900 bg-white"
                             >
                                 <option value="all">All Statuses</option>
                                 <option value="pending">Pending</option>

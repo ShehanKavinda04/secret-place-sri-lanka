@@ -116,9 +116,9 @@ export default function Navbar({ auth = {} }) {
                         {auth && auth.user ? (
                             <Link 
                                 prefetch 
-                                href={getRoute('dashboard', '/dashboard')} 
+                                href="/profile"
                                 className="w-[42px] h-[42px] rounded-full overflow-hidden border-2 border-royalGold-500/50 hover:border-royalGold-400 hover:shadow-[0_0_12px_rgba(212,175,55,0.4)] transition-all bg-[#D1D5DB] flex items-center justify-center shrink-0"
-                                title="My Account"
+                                title="My Profile"
                             >
                                 <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="50" cy="38" r="22" fill="#9CA3AF"/>

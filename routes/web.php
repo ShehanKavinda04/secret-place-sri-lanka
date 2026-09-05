@@ -191,8 +191,8 @@ Route::middleware(['auth', 'verified', 'role:business_owner'])->prefix('seller')
     Route::get('/reviews', [\App\Http\Controllers\Seller\ReviewController::class, 'index'])->name('reviews');
 });
 
-// Customer Routes (Standard dashboard prefix is /dashboard)
-Route::middleware(['auth', 'verified'])->prefix('dashboard')->name('customer.')->group(function () {
+// Customer Routes (moved off /dashboard prefix)
+Route::middleware(['auth', 'verified'])->name('customer.')->group(function () {
     Route::get('/bookings', [\App\Http\Controllers\Customer\BookingController::class, 'index'])->name('bookings');
     Route::get('/orders', [\App\Http\Controllers\Customer\OrderController::class, 'index'])->name('orders');
     Route::get('/wishlist', [\App\Http\Controllers\Customer\WishlistController::class, 'index'])->name('wishlist');
@@ -484,10 +484,7 @@ Route::get('/checkout', function (Illuminate\Http\Request $request) {
 
 Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 
-Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
-    // TEMPORARY: Redirect everyone to the customer profile so you can see the changes
-    return redirect()->route('customer.profile');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::get('/places/{id}/history', function ($id) {
     $spotsData = [

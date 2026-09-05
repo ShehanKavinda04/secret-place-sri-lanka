@@ -21,7 +21,7 @@ export default function LoginForm({ status, canResetPassword }) {
     return (
         <form onSubmit={submit} className="space-y-5">
             {status && (
-                <div className="p-3 rounded-lg bg-[#1B4D3E]/10 text-[#1B4D3E] text-sm font-medium border border-[#1B4D3E]/20">
+                <div className="p-3 rounded-lg bg-royalGold-500/10 text-royalMaroon-900 text-sm font-medium border border-royalGold-500/20">
                     {status}
                 </div>
             )}
@@ -42,7 +42,7 @@ export default function LoginForm({ status, canResetPassword }) {
                         value={data.email}
                         autoComplete="username"
                         required
-                        className={`block w-full pl-11 pr-4 py-3 bg-slate-50 border ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-200 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]'} rounded-xl text-sm transition-colors`}
+                        className={`block w-full pl-11 pr-4 py-3 bg-slate-50 border ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-200 focus:border-royalGold-500 focus:ring-royalGold-500'} rounded-xl text-sm transition-colors`}
                         placeholder="you@example.com"
                         onChange={(e) => setData('email', e.target.value)}
                     />
@@ -59,7 +59,7 @@ export default function LoginForm({ status, canResetPassword }) {
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="text-sm font-bold text-[#D97706] hover:text-[#b56305] transition-colors"
+                            className="text-sm font-bold text-royalGold-500 hover:text-royalGold-600 transition-colors"
                         >
                             Forgot password?
                         </Link>
@@ -76,7 +76,7 @@ export default function LoginForm({ status, canResetPassword }) {
                         value={data.password}
                         autoComplete="current-password"
                         required
-                        className={`block w-full pl-11 pr-12 py-3 bg-slate-50 border ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-200 focus:border-[#1B4D3E] focus:ring-[#1B4D3E]'} rounded-xl text-sm transition-colors`}
+                        className={`block w-full pl-11 pr-12 py-3 bg-slate-50 border ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-200 focus:border-royalGold-500 focus:ring-royalGold-500'} rounded-xl text-sm transition-colors`}
                         placeholder="••••••••"
                         onChange={(e) => setData('password', e.target.value)}
                     />
@@ -99,7 +99,7 @@ export default function LoginForm({ status, canResetPassword }) {
                     className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition-colors focus:outline-none"
                 >
                     {data.remember ? (
-                        <CheckSquare className="w-5 h-5 text-[#1B4D3E]" />
+                        <CheckSquare className="w-5 h-5 text-royalGold-500" />
                     ) : (
                         <Square className="w-5 h-5 text-slate-400" />
                     )}
@@ -111,10 +111,10 @@ export default function LoginForm({ status, canResetPassword }) {
             <button
                 type="submit"
                 disabled={processing}
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-[#1B4D3E] hover:bg-[#13382d] text-white rounded-xl font-bold text-sm tracking-wide transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-[#1B4D3E]/20 mt-4"
+                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-royalMaroon-900 hover:bg-royalMaroon-950 text-royalGold-400 rounded-xl font-bold text-sm tracking-wide transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-md shadow-royalMaroon-900/20 mt-4"
             >
                 {processing ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-royalGold-400/30 border-t-royalGold-400 rounded-full animate-spin" />
                 ) : (
                     <>
                         Sign In Securely <LogIn className="w-4 h-4" />
@@ -159,7 +159,7 @@ export default function LoginForm({ status, canResetPassword }) {
             <div className="mt-8 text-center">
                 <p className="text-sm text-slate-500">
                     Don't have an account?{' '}
-                    <Link href={route('register')} className="font-bold text-[#1B4D3E] hover:text-[#13382d]">
+                    <Link href={route('register')} className="font-bold text-royalGold-500 hover:text-royalGold-600">
                         Sign up for free
                     </Link>
                 </p>

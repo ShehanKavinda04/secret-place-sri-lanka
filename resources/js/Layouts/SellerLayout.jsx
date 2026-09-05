@@ -25,14 +25,14 @@ export default function SellerLayout({ header, children }) {
     const [language, setLanguage] = useState('EN');
 
     const navigation = [
-        { name: 'Dashboard', href: route('seller.dashboard'), icon: LayoutDashboard },
-        { name: 'Property Listings', href: route('seller.businesses'), icon: Home },
-        { name: 'Reservations', href: route('seller.bookings'), icon: Calendar },
-        { name: 'Financials', href: route('seller.earnings'), icon: DollarSign },
-        { name: 'Guest Reviews', href: route('seller.reviews'), icon: MessageSquare },
+        { name: 'Dashboard', href: route('seller.dashboard'), routeName: 'seller.dashboard', icon: LayoutDashboard },
+        { name: 'Property Listings', href: route('seller.businesses'), routeName: 'seller.businesses', icon: Home },
+        { name: 'Reservations', href: route('seller.bookings'), routeName: 'seller.bookings', icon: Calendar },
+        { name: 'Financials', href: route('seller.earnings'), routeName: 'seller.earnings', icon: DollarSign },
+        { name: 'Guest Reviews', href: route('seller.reviews'), routeName: 'seller.reviews', icon: MessageSquare },
     ];
 
-    const currentRoute = route().current();
+
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans selection:bg-[#D97706]/30 selection:text-[#D97706] flex flex-col md:flex-row">
@@ -97,7 +97,7 @@ export default function SellerLayout({ header, children }) {
 
                     <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
                         {navigation.map((item) => {
-                            const isActive = currentRoute === item.href.split('/').pop() || (currentRoute === 'seller.dashboard' && item.name === 'Dashboard');
+                            const isActive = route().current(item.routeName);
                             return (
                                 <Link
                                     key={item.name}

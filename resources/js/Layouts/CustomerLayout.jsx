@@ -27,7 +27,7 @@ export default function CustomerLayout({ header, children }) {
     }, []);
 
     const tabs = [
-        { name: 'Overview', href: route('dashboard') },
+        { name: 'My Profile', href: '/profile' },
         { name: 'My Bookings', href: route('customer.bookings') },
         { name: 'My Orders', href: route('customer.orders') },
         { name: 'Wishlist', href: route('customer.wishlist') },
