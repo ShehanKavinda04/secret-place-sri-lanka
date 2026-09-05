@@ -137,7 +137,7 @@ const ReviewCard = ({ review, onReplySubmit }) => {
                                     </button>
                                 </div>
                                 <textarea
-                                    className="w-full border-slate-300 rounded-lg shadow-sm focus:border-[#1B4D3E] focus:ring-[#1B4D3E] text-sm"
+                                    className="w-full border-slate-300 rounded-lg shadow-sm focus:border-[#1B4D3E] focus:ring-[#1B4D3E] text-sm text-slate-900 bg-white placeholder-slate-400"
                                     rows="4"
                                     placeholder="Write your professional response here..."
                                     value={replyDraft}
@@ -324,7 +324,7 @@ export default function Reviews() {
                         </div>
                         <input
                             type="text"
-                            className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-500 focus:outline-none focus:placeholder-slate-400 focus:ring-1 focus:ring-[#1B4D3E] focus:border-[#1B4D3E] sm:text-sm"
+                            className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1B4D3E] focus:border-[#1B4D3E] sm:text-sm"
                             placeholder="Search reviews by guest name or keywords..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -333,7 +333,7 @@ export default function Reviews() {
                     
                     <div className="flex space-x-2">
                         <select 
-                            className="block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-[#1B4D3E] focus:border-[#1B4D3E] sm:text-sm rounded-lg"
+                            className="block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-[#1B4D3E] focus:border-[#1B4D3E] sm:text-sm rounded-lg text-slate-900 bg-white"
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value)}
                         >
@@ -342,7 +342,7 @@ export default function Reviews() {
                             <option value="replied">Replied</option>
                         </select>
                         <select 
-                            className="block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-[#1B4D3E] focus:border-[#1B4D3E] sm:text-sm rounded-lg"
+                            className="block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-[#1B4D3E] focus:border-[#1B4D3E] sm:text-sm rounded-lg text-slate-900 bg-white"
                             value={filterStar}
                             onChange={(e) => setFilterStar(e.target.value)}
                         >
