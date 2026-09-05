@@ -8,7 +8,7 @@ export default function Navbar({ auth = {} }) {
 
     const getRoute = (name, fallback) => {
         try {
-            return typeof route === 'function' ? route(name) : fallback;
+            return typeof route === 'function' ? String(route(name)) : fallback;
         } catch (e) {
             return fallback;
         }
@@ -127,8 +127,8 @@ export default function Navbar({ auth = {} }) {
                             </Link>
                         ) : (
                             <>
-                                <Link prefetch href={getRoute('login', '/login')} className="text-sm font-semibold text-royalGold-400 hover:text-royalGold-300">Log In</Link>
-                                <Link prefetch href={getRoute('register', '/register')} className="px-5 py-2.5 rounded-full bg-gradient-to-r from-royalGold-500 to-royalGold-300 text-xs font-bold uppercase tracking-wider text-royalMaroon-950 hover:brightness-110">
+                                <Link href={getRoute('login', '/login')} className="text-sm font-semibold text-royalGold-400 hover:text-royalGold-300">Log In</Link>
+                                <Link href={getRoute('register', '/register')} className="px-5 py-2.5 rounded-full bg-gradient-to-r from-royalGold-500 to-royalGold-300 text-xs font-bold uppercase tracking-wider text-royalMaroon-950 hover:brightness-110">
                                     Join Group
                                 </Link>
                             </>

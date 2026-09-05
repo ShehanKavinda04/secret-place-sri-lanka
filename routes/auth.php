@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\SocialLoginController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -22,6 +23,12 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+    // Social Login Routes
+    Route::get('auth/{provider}/redirect', [SocialLoginController::class, 'redirect'])
+        ->name('social.redirect');
+    Route::get('auth/{provider}/callback', [SocialLoginController::class, 'callback'])
+        ->name('social.callback');
 
     // ─── Custom Multi-Step Forgot Password System ────────────────────────────
     Route::get('forgot-password', [ForgotPasswordController::class, 'showForm'])

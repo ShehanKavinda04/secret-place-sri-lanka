@@ -133,8 +133,8 @@ export default function LoginForm({ status, canResetPassword }) {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-4">
-                <button
-                    type="button"
+                <a
+                    href={route('social.redirect', { provider: 'google' })}
                     className="flex w-full items-center justify-center gap-3 rounded-xl bg-white px-3 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors focus:outline-none"
                 >
                     <svg className="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24">
@@ -144,16 +144,16 @@ export default function LoginForm({ status, canResetPassword }) {
                         <path d="M12.0004 24.0001C15.2404 24.0001 17.9654 22.935 19.9454 21.095L16.0804 18.095C15.0054 18.82 13.6204 19.245 12.0004 19.245C8.8704 19.245 6.21537 17.135 5.26538 14.29L1.27539 17.385C3.25539 21.31 7.3104 24.0001 12.0004 24.0001Z" fill="#34A853" />
                     </svg>
                     Google
-                </button>
-                <button
-                    type="button"
+                </a>
+                <a
+                    href={route('social.redirect', { provider: 'apple' })}
                     className="flex w-full items-center justify-center gap-3 rounded-xl bg-white px-3 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors focus:outline-none"
                 >
                     <svg className="h-5 w-5 text-[#0F172A]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.43.987 3.96.948 1.637-.026 2.62-1.49 3.608-2.943 1.144-1.674 1.614-3.298 1.64-3.385-.035-.013-3.176-1.218-3.21-4.846-.027-3.048 2.493-4.524 2.613-4.598-1.428-2.083-3.633-2.366-4.417-2.428-1.896-.13-3.774 1.137-4.517 1.137zM14.28 4.296c.84-.997 1.408-2.38 1.254-3.755-1.181.046-2.614.77-3.486 1.79-.785.892-1.442 2.316-1.254 3.655 1.316.1 2.637-.68 3.485-1.69z"/>
                     </svg>
                     Apple
-                </button>
+                </a>
             </div>
 
             <div className="mt-8 text-center">
