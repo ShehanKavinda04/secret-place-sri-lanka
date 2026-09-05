@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
 
         RateLimiter::for('account-recovery-lookup', function (Request $request) {
-            return Limit::perMinutes(5, 10)->by($request->ip());
+            return Limit::perMinutes(5, 200)->by($request->ip());
         });
 
         RateLimiter::for('account-recovery-send', function (Request $request) {

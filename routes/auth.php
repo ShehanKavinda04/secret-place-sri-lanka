@@ -54,7 +54,7 @@ Route::middleware('guest')->group(function () {
 
     // Perform the actual reset (Step 4 submit)
     Route::post('password/reset', [ForgotPasswordController::class, 'resetPassword'])
-        ->name('password.store')
+        ->name('password.update-custom')
         ->middleware('throttle:5,1');
 });
 

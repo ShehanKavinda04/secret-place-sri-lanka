@@ -246,6 +246,8 @@ class ForgotPasswordController extends Controller
         ])->save();
 
         // Invalidate all active sessions across devices
+        // Must authenticate the user first to use logoutOtherDevices
+        Auth::login($user);
         Auth::logoutOtherDevices($request->password);
 
         // Clean up reset records

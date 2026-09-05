@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import axios from 'axios';
-import { Check } from 'lucide-react';
+import { Check, Eye, EyeOff } from 'lucide-react';
 
 export default function ResetPassword() {
     const { token, identity } = usePage().props;
@@ -10,6 +10,8 @@ export default function ResetPassword() {
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
 
     const handlePasswordReset = async (e) => {
         e.preventDefault();
@@ -28,7 +30,7 @@ export default function ResetPassword() {
                 password_confirmation: passwordConfirmation,
             });
             if (response.data.success) {
-                window.location.href = response.data.redirect;
+                router.visit(response.data.redirect);
             }
         } catch (error) {
             setPasswordError(error.response?.data?.message || 'Error resetting password.');
@@ -54,12 +56,21 @@ export default function ResetPassword() {
                 <form onSubmit={handlePasswordReset} className="space-y-5">
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">New Password</label>
-                        <input
-                            type="password"
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:border-[#0f4c3a] focus:ring-0 transition-colors"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                className="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:border-[#0f4c3a] focus:ring-0 transition-colors"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                            >
+                                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                        </div>
                     </div>
 
                     {password.length > 0 && (
@@ -88,12 +99,21 @@ export default function ResetPassword() {
 
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Confirm Password</label>
-                        <input
-                            type="password"
-                            className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 focus:bg-white focus:border-[#0f4c3a] focus:ring-0 transition-colors ${passwordConfirmation && password !== passwordConfirmation ? 'border-red-300' : 'border-slate-200'}`}
-                            value={passwordConfirmation}
-                            onChange={(e) => setPasswordConfirmation(e.target.value)}
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPasswordConfirmation ? "text" : "password"}
+                                className={`w-full pl-4 pr-12 py-3 bg-slate-50 border rounded-xl text-slate-900 focus:bg-white focus:border-[#0f4c3a] focus:ring-0 transition-colors ${passwordConfirmation && password !== passwordConfirmation ? 'border-red-300' : 'border-slate-200'}`}
+                                value={passwordConfirmation}
+                                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                            >
+                                {showPasswordConfirmation ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                        </div>
                     </div>
 
                     {passwordError && <p className="text-red-500 text-sm font-medium">{passwordError}</p>}
