@@ -5,7 +5,7 @@ import { customerProfileService } from "@/Services/customerProfileService";
 
 // ── Section 1 — split into two cards (like BrandCustomizer + BusinessInfoForm)
 import ProfileIdentityCard from "./Partials/ProfileHeader";
-import PersonalInfoForm from "./Partials/PersonalInfoForm";
+import CustomerSettingsTabs from "./Partials/CustomerSettingsTabs";
 
 // ── Sections 2–5
 import ActiveBookings from "./Partials/ActiveBookings";
@@ -13,16 +13,7 @@ import OrderHistory from "./Partials/OrderHistory";
 import WishlistGrid from "./Partials/WishlistGrid";
 import SecurityPreferences from "./Partials/SecurityPreferences";
 
-import {
-    UserCircle,
-    CalendarDays,
-    ShoppingBag,
-    Heart,
-    Shield,
-    CheckCircle2,
-    AlertCircle,
-    X,
-} from "lucide-react";
+import { CheckCircle2, AlertCircle, X } from "lucide-react";
 
 // ── Shared section-card wrapper ────────────────────────────────────────────
 function SectionCard({ icon: Icon, title, children }) {
@@ -139,27 +130,13 @@ export default function Edit({ auth }) {
                     onToast={fireToast}
                 />
 
-                <PersonalInfoForm
+                <CustomerSettingsTabs
                     profile={profile}
-                    userId={auth.user.id.toString()}
+                    notifications={notifications}
+                    onProfileChange={setProfile}
+                    onNotificationsChange={setNotifications}
                     onToast={fireToast}
                 />
-                <SectionCard icon={CalendarDays} title="My Bookings & Trips">
-                    <ActiveBookings bookings={bookings} headless />
-                </SectionCard>
-                <SectionCard icon={ShoppingBag} title="My Orders & Deliveries">
-                    <OrderHistory orders={orders} headless />
-                </SectionCard>
-                <SectionCard icon={Heart} title="Saved Secret Places">
-                    <WishlistGrid wishlist={wishlist} headless />
-                </SectionCard>
-                <SectionCard icon={Shield} title="Security & Notifications">
-                    <SecurityPreferences
-                        profile={profile}
-                        notifications={notifications}
-                        headless
-                    />
-                </SectionCard>
             </div>
 
             {/* Global toast */}

@@ -1,195 +1,371 @@
-import React, { useState } from 'react';
-import { DashboardLayout } from '../../Layouts/DashboardLayout';
-import { useAppState } from '../../Context/AppStateContext';
-import { 
-  Search, SlidersHorizontal, MapPin, 
-  Heart, Calendar, QrCode, Sparkles
-} from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { Head, Link } from "@inertiajs/react";
+import {
+    ArrowRight,
+    CalendarDays,
+    Compass,
+    Heart,
+    Map,
+    MapPin,
+    MessageCircle,
+    Package,
+    PhoneCall,
+    ShieldCheck,
+    Sparkles,
+    WalletCards,
+} from "lucide-react";
+import CustomerLayout from "@/Layouts/CustomerLayout";
+import { useRealtimeCustomerDashboard } from "@/Hooks/useRealtimeCustomerDashboard";
+import MetricCard from "./Partials/MetricCard";
+import DeliveryTracker from "./Partials/DeliveryTracker";
+import RecommendedPlaceCard from "./Partials/RecommendedPlaceCard";
+
+const recommendations = [
+    {
+        id: "ritigala",
+        title: "Ritigala Forest Monastery",
+        district: "Anuradhapura",
+        distance: "42 km away",
+        image: "https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=800&q=85",
+    },
+    {
+        id: "knuckles",
+        title: "Knuckles Cloud Forest Camp",
+        district: "Matale",
+        distance: "86 km away",
+        image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=85",
+    },
+    {
+        id: "riverston",
+        title: "Riverston Mist Trail",
+        district: "Matale",
+        distance: "74 km away",
+        image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=85",
+    },
+    {
+        id: "kudawella",
+        title: "Kudawella Secret Coast",
+        district: "Hambantota",
+        distance: "118 km away",
+        image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=85",
+    },
+];
+
+function Toast({ toast, onClose }) {
+    return toast ? (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#1B4D3E] text-white rounded-lg shadow-lg px-4 py-3 text-sm flex gap-3 items-center">
+            <span>{toast.message}</span>
+            <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close notification"
+            >
+                x
+            </button>
+        </div>
+    ) : null;
+}
+function Countdown({ date }) {
+    const [now, setNow] = useState(Date.now());
+    useEffect(() => {
+        const timer = setInterval(() => setNow(Date.now()), 60000);
+        return () => clearInterval(timer);
+    }, []);
+    const days = Math.max(
+        0,
+        Math.ceil((new Date(date).getTime() - now) / 86400000),
+    );
+    return (
+        <span>
+            {days} {days === 1 ? "day" : "days"}
+        </span>
+    );
+}
 
 export default function CustomerDashboard() {
-  const { convertPrice } = useAppState();
-  
-  const categories = [
-    'All', 'Waterfalls', 'Eco Lodges', 'Cultural Homestays', 'Ancient Ruins', 'Secret Beaches'
-  ];
+    const { state, isLoading } = useRealtimeCustomerDashboard();
+    const [toast, setToast] = useState(null);
+    const [saved, setSaved] = useState(() => new Set());
+    const profile = state?.profile;
+    const bookings = state?.bookings || [];
+    const orders = state?.orders || [];
+    const nextTrip = bookings.find(
+        (booking) =>
+            booking.status === "Upcoming" || booking.status === "Active",
+    );
+    const activeOrder = orders.find(
+        (order) => !["Delivered", "Cancelled"].includes(order.status),
+    );
+    const firstName = profile?.first_name || "traveler";
+    const greeting =
+        new Date().getHours() < 12
+            ? "Good morning"
+            : new Date().getHours() < 18
+              ? "Good afternoon"
+              : "Good evening";
+    const explored = bookings.filter(
+        (booking) => booking.status === "Completed",
+    ).length;
+    const tier =
+        (profile?.eco_points || 0) >= 1000
+            ? "Forest Guardian"
+            : "Green Explorer";
+    const spotlight = nextTrip || {
+        property_name: "Ella Eco Cabin Retreat",
+        property_image:
+            "https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=1000&q=85",
+        check_in: new Date(Date.now() + 86400000 * 5).toISOString(),
+        host_whatsapp: "+94771234567",
+    };
+    const order = activeOrder
+        ? {
+              ...activeOrder,
+              status:
+                  activeOrder.status === "Shipped"
+                      ? "Dispatched"
+                      : activeOrder.status,
+          }
+        : null;
+    const toggleSaved = (id) => {
+        setSaved((current) => {
+            const next = new Set(current);
+            next.has(id) ? next.delete(id) : next.add(id);
+            return next;
+        });
+        setToast({ message: "Saved places updated" });
+    };
 
-  const places = [
-    { 
-      id: 1, 
-      title: 'Bambarakanda Forest Lodge', 
-      location: 'Badulla/Ella', 
-      price: 15000, 
-      rating: 4.9, 
-      reviews: 128,
-      seclusion: 'High',
-      image: 'https://images.unsplash.com/photo-1544281679-052309dafbba?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-    },
-    { 
-      id: 2, 
-      title: 'Ritigala Ancient Retreat', 
-      location: 'Anuradhapura', 
-      price: 8000, 
-      rating: 4.8, 
-      reviews: 84,
-      seclusion: 'Very High',
-      image: 'https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-    },
-    { 
-      id: 3, 
-      title: 'Secret Cove Glamping', 
-      location: 'Galle', 
-      price: 25000, 
-      rating: 5.0, 
-      reviews: 42,
-      seclusion: 'Ultra Secret',
-      image: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-    },
-  ];
-
-  const trips = [
-    { id: 'SSL-2025-0891', title: 'Bambarakanda Weekend', date: 'Oct 12 - Oct 14', status: 'Upcoming' }
-  ];
-
-  return (
-    <DashboardLayout>
-      <div className="space-y-8">
-        
-        {/* Header & Search */}
-        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-          <div>
-            <h1 className="text-3xl font-sansDisplay font-bold text-white tracking-tight">Discover Hidden Ceylon</h1>
-            <p className="mt-1 text-sm text-gray-400">Find secluded waterfalls, cloud forests, and sacred ruins.</p>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <div className="relative rounded-full shadow-sm w-full md:w-64 lg:w-80">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-500" />
-              </div>
-              <input 
-                type="text" 
-                placeholder="Where to next?" 
-                className="focus:ring-emerald-accent focus:border-emerald-accent block w-full pl-10 sm:text-sm border-ceylon-700 bg-ceylon-800 rounded-full text-white placeholder-gray-400 py-3"
-              />
-            </div>
-            <button className="p-3 rounded-full bg-ceylon-800 border border-ceylon-700 text-gray-400 hover:text-white hover:bg-ceylon-700 transition">
-              <SlidersHorizontal className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Categories */}
-        <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
-          {categories.map((cat, idx) => (
-            <button 
-              key={cat}
-              className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
-                idx === 0 
-                  ? 'bg-emerald-accent text-ceylon-950 border-emerald-accent' 
-                  : 'bg-ceylon-800 text-gray-300 border-ceylon-700 hover:bg-ceylon-700'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          
-          {/* Main Content Area: Listings */}
-          <div className="xl:col-span-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {places.map((place) => (
-                <div key={place.id} className="bg-ceylon-800 rounded-3xl overflow-hidden border border-ceylon-700 hover:border-emerald-500/50 transition group cursor-pointer">
-                  <div className="relative h-48 w-full overflow-hidden">
-                    <img 
-                      src={place.image} 
-                      alt={place.title} 
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition duration-500"
-                    />
-                    <div className="absolute top-3 right-3">
-                      <button className="p-2 rounded-full bg-ceylon-950/50 backdrop-blur-sm text-gray-300 hover:text-rose-accent hover:bg-ceylon-950/80 transition">
-                        <Heart className="h-5 w-5" />
-                      </button>
+    if (isLoading || !state)
+        return (
+            <CustomerLayout header="Dashboard">
+                <div className="animate-pulse space-y-6">
+                    <div className="h-44 bg-slate-200 rounded-xl" />
+                    <div className="grid md:grid-cols-4 gap-4">
+                        {[1, 2, 3, 4].map((item) => (
+                            <div
+                                key={item}
+                                className="h-32 bg-slate-200 rounded-xl"
+                            />
+                        ))}
                     </div>
-                    <div className="absolute bottom-3 left-3">
-                      <span className="px-2 py-1 bg-ceylon-950/70 backdrop-blur-md rounded-lg text-xs font-medium text-amber-300 border border-amber-500/30">
-                        {place.seclusion} Seclusion
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-lg font-bold text-white leading-tight mb-1">{place.title}</h3>
-                        <p className="text-sm text-gray-400 flex items-center">
-                          <MapPin className="h-4 w-4 mr-1 text-emerald-accent" />
-                          {place.location}
-                        </p>
-                      </div>
-                      <div className="flex items-center space-x-1 text-sm font-medium text-white">
-                        <span className="text-yellow-400">★</span>
-                        <span>{place.rating}</span>
-                      </div>
-                    </div>
-                    <div className="mt-4 flex justify-between items-end border-t border-ceylon-700 pt-4">
-                      <div>
-                        <p className="text-xs text-gray-500 uppercase font-semibold tracking-wider">Starting at</p>
-                        <p className="text-lg font-bold text-emerald-400">{convertPrice(place.price)} <span className="text-sm font-normal text-gray-400">/ night</span></p>
-                      </div>
-                    </div>
-                  </div>
+                    <div className="h-72 bg-slate-200 rounded-xl" />
                 </div>
-              ))}
-            </div>
-          </div>
+            </CustomerLayout>
+        );
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            
-            {/* My Trips & QR */}
-            <div className="bg-ceylon-800 rounded-3xl shadow p-6 border border-ceylon-700">
-              <h2 className="text-lg font-medium text-white mb-4 flex items-center">
-                <Calendar className="w-5 h-5 mr-2 text-teal-highlight" />
-                My Trips
-              </h2>
-              <div className="space-y-4">
-                {trips.map(trip => (
-                  <div key={trip.id} className="p-4 bg-ceylon-900 rounded-2xl border border-ceylon-700 flex justify-between items-center group cursor-pointer hover:border-emerald-500/50">
-                    <div>
-                      <p className="text-sm font-bold text-white">{trip.title}</p>
-                      <p className="text-xs text-gray-400">{trip.date}</p>
+    return (
+        <CustomerLayout header="Dashboard">
+            <Head title="Customer Dashboard - Secret Place Sri Lanka" />
+            <div className="space-y-7">
+                <section className="rounded-xl bg-[#1B4D3E] text-white p-6 md:p-8 relative overflow-hidden">
+                    <div className="absolute -right-12 -top-16 opacity-10">
+                        <Sparkles className="w-64 h-64" />
                     </div>
-                    <div className="bg-ceylon-800 p-2 rounded-xl text-emerald-accent group-hover:bg-emerald-accent group-hover:text-ceylon-950 transition">
-                      <QrCode className="w-5 h-5" />
+                    <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                        <div>
+                            <p className="text-emerald-200 text-sm font-semibold">
+                                {greeting}, {firstName}
+                            </p>
+                            <h1 className="text-3xl md:text-4xl font-bold font-sansDisplay mt-1">
+                                Ayubowan, your next secret is waiting.
+                            </h1>
+                            <p className="text-emerald-100/75 mt-2 max-w-xl">
+                                Your Sri Lankan journey, stays, and sustainable
+                                discoveries in one calm view.
+                            </p>
+                        </div>
+                        <div className="bg-white/10 border border-white/15 rounded-lg px-5 py-4 min-w-[210px]">
+                            <p className="text-xs uppercase tracking-wider text-emerald-200">
+                                Next trip
+                            </p>
+                            <p className="text-xl font-bold mt-1">
+                                {nextTrip ? (
+                                    <Countdown date={nextTrip.check_in} />
+                                ) : (
+                                    "Plan your escape"
+                                )}
+                            </p>
+                            <p className="text-sm text-emerald-100/80">
+                                {nextTrip?.property_name ||
+                                    "Explore hidden places"}
+                            </p>
+                        </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                </section>
+                <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <MetricCard
+                        icon={CalendarDays}
+                        label="Upcoming Trips"
+                        value={
+                            bookings.filter(
+                                (item) =>
+                                    item.status === "Upcoming" ||
+                                    item.status === "Active",
+                            ).length
+                        }
+                        detail="Reservations ready to go"
+                        href={route("customer.bookings")}
+                    />
+                    <MetricCard
+                        icon={Package}
+                        label="In-Transit Orders"
+                        value={
+                            orders.filter(
+                                (item) =>
+                                    !["Delivered", "Cancelled"].includes(
+                                        item.status,
+                                    ),
+                            ).length
+                        }
+                        detail="Crafts making their way to you"
+                        accent="amber"
+                        href={route("customer.orders")}
+                    />
+                    <MetricCard
+                        icon={Compass}
+                        label="Secret Places Explored"
+                        value={explored}
+                        detail="Completed stays and visits"
+                    />
+                    <MetricCard
+                        icon={Sparkles}
+                        label="Eco-Travel Points"
+                        value={(profile.eco_points || 0).toLocaleString()}
+                        detail={tier}
+                        accent="amber"
+                    />
+                </section>
+                <section className="grid xl:grid-cols-5 gap-6">
+                    <div className="xl:col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="relative h-56 md:h-72">
+                            <img
+                                src={spotlight.property_image}
+                                alt={spotlight.property_name}
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
+                            <div className="absolute left-6 right-6 bottom-5 text-white">
+                                <p className="text-xs uppercase tracking-widest text-amber-300 font-bold">
+                                    Next adventure
+                                </p>
+                                <h2 className="text-2xl font-bold mt-1">
+                                    {spotlight.property_name}
+                                </h2>
+                                <p className="text-sm text-white/80 mt-1 flex items-center gap-1">
+                                    <MapPin className="w-4 h-4" /> Ella, Sri
+                                    Lanka · Check-in{" "}
+                                    {new Date(
+                                        spotlight.check_in,
+                                    ).toLocaleDateString()}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="p-5 flex flex-wrap gap-3">
+                            <a
+                                href="/bookings"
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1B4D3E] text-white text-sm font-bold"
+                            >
+                                <WalletCards className="w-4 h-4" /> View voucher
+                            </a>
+                            <a
+                                href={`https://wa.me/${(spotlight.host_whatsapp || "").replace(/[^0-9]/g, "")}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-200 text-emerald-800 text-sm font-bold"
+                            >
+                                <MessageCircle className="w-4 h-4" /> WhatsApp
+                                host
+                            </a>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setToast({
+                                        message: "Route opened in your map app",
+                                    })
+                                }
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-slate-700 text-sm font-bold"
+                            >
+                                <Map className="w-4 h-4" /> Open route
+                            </button>
+                        </div>
+                    </div>
+                    <aside className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-xs uppercase tracking-wider text-[#D97706] font-bold">
+                                    Eco identity
+                                </p>
+                                <h2 className="text-xl font-bold text-slate-900 mt-1">
+                                    {tier}
+                                </h2>
+                            </div>
+                            <ShieldCheck className="w-8 h-8 text-emerald-600" />
+                        </div>
+                        <div className="mt-6 h-2 rounded-full bg-slate-100">
+                            <div className="h-full w-3/4 rounded-full bg-emerald-500" />
+                        </div>
+                        <p className="text-sm text-slate-500 mt-3">
+                            {profile.eco_points || 0} points · 250 more to your
+                            next tier
+                        </p>
+                        <div className="mt-7 space-y-3 text-sm">
+                            <a
+                                href="/translator"
+                                className="flex items-center justify-between text-slate-700 hover:text-[#1B4D3E]"
+                            >
+                                AI Cultural Translator{" "}
+                                <ArrowRight className="w-4 h-4" />
+                            </a>
+                            <a
+                                href="/places"
+                                className="flex items-center justify-between text-slate-700 hover:text-[#1B4D3E]"
+                            >
+                                Secret Map <ArrowRight className="w-4 h-4" />
+                            </a>
+                            <a
+                                href="tel:1912"
+                                className="flex items-center justify-between text-red-700 font-semibold"
+                            >
+                                Emergency SOS · 1912{" "}
+                                <PhoneCall className="w-4 h-4" />
+                            </a>
+                        </div>
+                    </aside>
+                </section>
+                <DeliveryTracker
+                    order={order}
+                    onToast={(message) => setToast({ message })}
+                />
+                <section>
+                    <div className="flex items-end justify-between mb-4">
+                        <div>
+                            <p className="text-xs uppercase tracking-wider text-[#D97706] font-bold">
+                                Curated for you
+                            </p>
+                            <h2 className="text-xl font-bold text-slate-900 mt-1">
+                                Recommended Secret Places
+                            </h2>
+                        </div>
+                        <Link
+                            href="/places"
+                            className="text-sm font-bold text-[#1B4D3E] flex items-center gap-1"
+                        >
+                            View all <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+                    <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        {recommendations.map((place) => (
+                            <RecommendedPlaceCard
+                                key={place.id}
+                                place={place}
+                                saved={saved.has(place.id)}
+                                onToggle={toggleSaved}
+                            />
+                        ))}
+                    </div>
+                </section>
+                <Toast toast={toast} onClose={() => setToast(null)} />
             </div>
-
-            {/* AI Concierge Widget */}
-            <div className="bg-gradient-to-br from-emerald-900/40 to-teal-900/40 rounded-3xl p-6 border border-emerald-500/30 relative overflow-hidden">
-              <div className="absolute -top-10 -right-10 opacity-20">
-                <Sparkles className="w-40 h-40 text-emerald-300" />
-              </div>
-              <h2 className="text-lg font-bold text-white mb-2 relative z-10 flex items-center">
-                <Sparkles className="w-5 h-5 mr-2 text-emerald-400" />
-                Ceylon AI Concierge
-              </h2>
-              <p className="text-sm text-emerald-100/70 mb-4 relative z-10">
-                Ask about monsoon windows, leech protection, or sacred forest dress codes.
-              </p>
-              <button className="w-full relative z-10 flex justify-center items-center px-4 py-3 border border-transparent shadow-sm text-sm font-medium rounded-xl text-ceylon-950 bg-emerald-accent hover:bg-emerald-400 transition-colors">
-                Chat with Concierge
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-    </DashboardLayout>
-  );
+        </CustomerLayout>
+    );
 }

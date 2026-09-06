@@ -7,10 +7,7 @@ import {
     MapPin,
     Loader2,
 } from "lucide-react";
-import {
-    uploadAvatar,
-    updatePersonalInfo,
-} from "../../../../Hooks/useCustomerPersonalInfo";
+import { customerProfileService } from "@/Services/customerProfileService";
 
 const COUNTRIES = [
     { code: "LK", name: "Sri Lanka", flag: "🇱🇰" },
@@ -52,8 +49,8 @@ export default function ProfileIdentityCard({ profile, userId, onToast }) {
         try {
             if (file.size > 2 * 1024 * 1024)
                 throw new Error("File must be under 2 MB");
-            const url = await uploadAvatar(userId, file);
-            await updatePersonalInfo(userId, { avatar_url: url });
+            const url = await customerProfileService.uploadAvatar(file);
+            await customerProfileService.updateProfile({ avatar_url: url });
             onToast?.("Avatar updated!", "success");
         } catch (err) {
             onToast?.(err.message || "Upload failed", "error");

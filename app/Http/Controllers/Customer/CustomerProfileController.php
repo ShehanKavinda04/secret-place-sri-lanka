@@ -8,6 +8,11 @@ use Inertia\Inertia;
 
 class CustomerProfileController extends Controller
 {
+    public function dashboard(Request $request)
+    {
+        return Inertia::render('Customer/CustomerDashboard');
+    }
+
     /**
      * Display the customer's profile form.
      */
