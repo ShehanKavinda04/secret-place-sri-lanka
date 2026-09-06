@@ -22,12 +22,17 @@ export default function CustomerLayout({ header, children }) {
     const [profileOpen, setProfileOpen] = useState(false);
     const [currency, setCurrency] = useState("LKR");
     const [language, setLanguage] = useState("EN");
+    const [notifications, setNotifications] = useState([]);
+    const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
         let mounted = true;
         customerProfileService.fetchProfileData().then(({ profile }) => {
-            if (mounted) setCustomerProfile(profile);
+            if (mounted) {
+                setCustomerProfile(profile);
+                setCurrency(profile.preferred_currency === "GBP" ? "USD" : profile.preferred_currency || "LKR");
+            }
         });
         const unsubscribe = customerProfileService.subscribe((profile) => {
             if (mounted) setCustomerProfile(profile);
@@ -72,15 +77,45 @@ export default function CustomerLayout({ header, children }) {
     ];
 
     useEffect(() => {
+        const savedLanguage = window.localStorage.getItem("secret_places_language");
+        if (savedLanguage) setLanguage(savedLanguage);
+    }, []);
+
+    useEffect(() => {
+        document.documentElement.lang = language.toLowerCase();
+        window.localStorage.setItem("secret_places_language", language);
+        window.dispatchEvent(new CustomEvent("customerLanguageChanged", { detail: language }));
+    }, [language]);
+
+    useEffect(() => {
         if (!window.Echo) return undefined;
         window.Echo.channel("admin-notifications").listen(
             "AdminNotificationEvent",
-            () => {
+            (event) => {
+                setNotifications((previous) => [{
+                    id: Date.now(),
+                    title: event.title || "New account update",
+                    message: event.message || "Your Secret Place account has a new update.",
+                    time: "Just now",
+                }, ...previous]);
                 setUnreadCount((previous) => previous + 1);
             },
         );
         return () => window.Echo.leaveChannel("admin-notifications");
     }, []);
+
+    const handleCurrencyChange = async (nextCurrency) => {
+        const previous = currency;
+        setCurrency(nextCurrency);
+        window.localStorage.setItem("secret_places_currency", nextCurrency);
+        window.dispatchEvent(new CustomEvent("customerCurrencyChanged", { detail: nextCurrency }));
+        try {
+            await customerProfileService.updateProfile({ preferred_currency: nextCurrency });
+        } catch {
+            setCurrency(previous);
+            window.localStorage.setItem("secret_places_currency", previous);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans flex flex-col md:flex-row">
@@ -152,7 +187,7 @@ export default function CustomerLayout({ header, children }) {
                             {["LKR", "USD"].map((item) => (
                                 <button
                                     key={item}
-                                    onClick={() => setCurrency(item)}
+                                    onClick={() => handleCurrencyChange(item)}
                                     className={`px-3 py-1.5 text-xs font-bold rounded-md ${currency === item ? "bg-white shadow text-gray-900" : "text-gray-500"}`}
                                 >
                                     {item}
@@ -172,7 +207,10 @@ export default function CustomerLayout({ header, children }) {
                         </div>
                         <button
                             className="relative p-2 text-gray-400 hover:text-[#D97706]"
-                            onClick={() => setUnreadCount(0)}
+                            onClick={() => {
+                                setNotificationsOpen((previous) => !previous);
+                                setUnreadCount(0);
+                            }}
                             aria-label="Notifications"
                         >
                             <Bell className="w-6 h-6" />
@@ -180,6 +218,21 @@ export default function CustomerLayout({ header, children }) {
                                 <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
                             )}
                         </button>
+                        {notificationsOpen && (
+                            <div className="absolute right-20 top-16 z-50 w-80 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                                <div className="flex items-center justify-between px-2 pb-2 border-b border-slate-100">
+                                    <h2 className="text-sm font-bold text-slate-900">Notifications</h2>
+                                    <button type="button" onClick={() => setNotifications([])} className="text-xs font-semibold text-slate-500 hover:text-[#1B4D3E]">Clear all</button>
+                                </div>
+                                {notifications.length ? notifications.map((notification) => (
+                                    <div key={notification.id} className="px-2 py-3 border-b border-slate-50 last:border-0">
+                                        <p className="text-sm font-semibold text-slate-800">{notification.title}</p>
+                                        <p className="text-xs text-slate-500 mt-1">{notification.message}</p>
+                                        <p className="text-[11px] text-slate-400 mt-1">{notification.time}</p>
+                                    </div>
+                                )) : <p className="px-2 py-5 text-sm text-slate-500 text-center">You are all caught up.</p>}
+                            </div>
+                        )}
                         <div className="relative ml-2">
                             <button
                                 onClick={() =>

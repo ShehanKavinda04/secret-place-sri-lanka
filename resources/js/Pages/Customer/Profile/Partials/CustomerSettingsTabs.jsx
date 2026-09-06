@@ -355,11 +355,23 @@ export default function CustomerSettingsTabs({
                             >
                                 <select
                                     {...register("nationality")}
+                                    onChange={(event) => {
+                                        register("nationality").onChange(event);
+                                        const selected = countries.find(
+                                            ([code, name]) => name === event.target.value,
+                                        );
+                                        if (selected) {
+                                            setValue("country_code", selected[0], {
+                                                shouldDirty: true,
+                                                shouldValidate: true,
+                                            });
+                                        }
+                                    }}
                                     className={inputClass}
                                 >
-                                    {countries.map(([code, name, flag]) => (
+                                    {countries.map(([code, name]) => (
                                         <option key={code} value={name}>
-                                            {flag} {name}
+                                            {code} — {name}
                                         </option>
                                     ))}
                                 </select>
@@ -514,20 +526,21 @@ export default function CustomerSettingsTabs({
                                 <div className="relative">
                                     <LockKeyhole className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                                     <input
-                                        value={
-                                            profile.passport_last_four
-                                                ? `â€¢â€¢â€¢â€¢ ${profile.passport_last_four}`
-                                                : ""
-                                        }
+                                        type="password"
+                                        inputMode="numeric"
+                                        autoComplete="off"
+                                        aria-label="Passport or ID last four digits"
+                                        placeholder="Last 4 digits"
+                                        value={profile.passport_last_four || ""}
                                         onChange={(e) =>
                                             onProfileChange({
                                                 ...profile,
                                                 passport_last_four:
-                                                    e.target.value.slice(-4),
+                                                    e.target.value.replace(/\D/g, "").slice(0, 4),
                                             })
                                         }
                                         className={`${inputClass} pl-10`}
-                                        maxLength={9}
+                                        maxLength={4}
                                     />
                                 </div>
                             </Field>
