@@ -32,7 +32,7 @@ export default function RecommendedPlaceCard({ place, saved, onToggle }) {
                 </h3>
                 <p className="flex items-center gap-1 text-xs text-slate-500 mt-2">
                     <MapPin className="w-3.5 h-3.5 text-[#D97706]" />
-                    {place.district} · {place.distance}
+                    {place.location || place.district} · {place.distance}
                 </p>
                 <div className="flex items-center justify-between mt-4">
                     <span className="text-xs font-semibold text-emerald-700">

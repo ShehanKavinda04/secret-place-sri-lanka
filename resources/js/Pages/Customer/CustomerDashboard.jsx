@@ -22,32 +22,36 @@ import RecommendedPlaceCard from "./Partials/RecommendedPlaceCard";
 
 const recommendations = [
     {
-        id: "ritigala",
-        title: "Ritigala Forest Monastery",
+        id: "abhayagiriya",
+        title: "Abhayagiriya Sacred Retreat",
         district: "Anuradhapura",
-        distance: "42 km away",
-        image: "https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?w=800&q=85",
+        location: "Anuradhapura, North Central Province",
+        distance: "4 km from the Sacred City",
+        image: "/images/abhayagiri_1779380471030.png",
     },
     {
-        id: "knuckles",
-        title: "Knuckles Cloud Forest Camp",
-        district: "Matale",
-        distance: "86 km away",
-        image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=85",
+        id: "jaya-sri",
+        title: "Jaya Sri Maha Bodhi Garden Stay",
+        district: "Anuradhapura",
+        location: "Anuradhapura, North Central Province",
+        distance: "2 km from the Sacred City",
+        image: "/images/jaya_sri_maha_bodhi.png",
     },
     {
-        id: "riverston",
-        title: "Riverston Mist Trail",
-        district: "Matale",
-        distance: "74 km away",
-        image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=85",
+        id: "ruwanweli",
+        title: "Ruwanwelisaya Heritage Homestay",
+        district: "Anuradhapura",
+        location: "Anuradhapura, North Central Province",
+        distance: "3 km from the Sacred City",
+        image: "/images/ruwanweli_maha_seya.png",
     },
     {
-        id: "kudawella",
-        title: "Kudawella Secret Coast",
-        district: "Hambantota",
-        distance: "118 km away",
-        image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=85",
+        id: "jetavanaramaya",
+        title: "Jetavanaramaya Heritage Lodge",
+        district: "Anuradhapura",
+        location: "Anuradhapura, North Central Province",
+        distance: "5 km from the Sacred City",
+        image: "/images/jetavanarama_1779380489792.png",
     },
 ];
 
@@ -340,10 +344,10 @@ export default function CustomerDashboard() {
                     <div className="flex items-end justify-between mb-4">
                         <div>
                             <p className="text-xs uppercase tracking-wider text-[#D97706] font-bold">
-                                Curated for you
+                                Curated in Anuradhapura
                             </p>
                             <h2 className="text-xl font-bold text-slate-900 mt-1">
-                                Recommended Secret Places
+                                Recommended Secret Places in Anuradhapura
                             </h2>
                         </div>
                         <Link
