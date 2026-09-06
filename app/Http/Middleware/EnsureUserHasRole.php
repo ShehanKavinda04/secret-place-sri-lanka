@@ -15,8 +15,8 @@ class EnsureUserHasRole
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (! $request->user() || $request->user()->role !== $role) {
-            abort(403, 'Unauthorized action.');
+        if (! $request->user() || ! $request->user()->role || $request->user()->role->slug !== $role) {
+            return redirect()->back()->with('error', 'Permission Denied.');
         }
 
         return $next($request);

@@ -33,6 +33,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = $request->user();
+        
+        if ($user->isAdmin()) {
+            return redirect()->intended('/admin/dashboard');
+        } elseif ($user->isBusinessOwner()) {
+            return redirect()->intended('/seller/dashboard');
+        } elseif ($user->isTourist()) {
+            return redirect()->intended('/customer/dashboard');
+        }
+
         return redirect()->intended('/');
     }
 

@@ -22,7 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'role_id',
         'provider',
         'provider_id',
         'first_name',
@@ -51,19 +51,24 @@ class User extends Authenticatable
         ];
     }
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role && $this->role->slug === 'admin';
     }
 
     public function isBusinessOwner(): bool
     {
-        return $this->role === 'business_owner';
+        return $this->role && $this->role->slug === 'business_owner';
     }
 
     public function isTourist(): bool
     {
-        return $this->role === 'tourist';
+        return $this->role && $this->role->slug === 'tourist';
     }
 
     public function businesses()
