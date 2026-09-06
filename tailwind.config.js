@@ -42,6 +42,19 @@ export default {
                     600: '#bca02f',
                     700: '#9d8122',
                 },
+                royalHeritage: {
+                    canvas: '#4A0812',      // Deep Crimson Heritage — main background
+                    canvasDark: '#35060D',  // Darker Maroon — elevated surfaces, inputs
+                    card: '#5C1020',        // Rich Claret — card backgrounds
+                    cardHighlight: '#6E1527', // Lighter card for hover/active states
+                    goldAccent: '#D4AF37',  // Antique Gold
+                    goldAccentBright: '#F5C842', // Bright Imperial Gold — buttons, highlights
+                    borderGold: '#8B6914',  // Muted gold border
+                    borderSubtle: '#7A1A28', // Subtle maroon border
+                    textIvory: '#FFFFFF',   // Pure White — max contrast on dark bg (WCAG AA+)
+                    textWarmWhite: '#F0E6C8', // Warm Ivory — secondary text
+                    textMuted: '#C4A882',   // Muted gold-tan for captions
+                },
                 royalTeal: '#0a4d49',
                 // New Accommodations Theme Colors
                 'theme-green': '#1c3829',

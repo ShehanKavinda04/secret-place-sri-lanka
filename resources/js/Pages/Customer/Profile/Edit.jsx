@@ -1,13 +1,77 @@
-import React, { useState, useEffect } from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import { customerProfileService } from '@/Services/customerProfileService';
-import CustomerPersonalInfoCard from '@/Components/Customer/CustomerPersonalInfoCard';
-import ActiveBookings from './Partials/ActiveBookings';
-import OrderHistory from './Partials/OrderHistory';
-import WishlistGrid from './Partials/WishlistGrid';
-import SecurityPreferences from './Partials/SecurityPreferences';
-import { UserCircle, Calendar, ShoppingBag, Heart, Shield } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import CustomerLayout from "@/Layouts/CustomerLayout";
+import { Head } from "@inertiajs/react";
+import { customerProfileService } from "@/Services/customerProfileService";
+
+// ── Section 1 — split into two cards (like BrandCustomizer + BusinessInfoForm)
+import ProfileIdentityCard from "./Partials/ProfileHeader";
+import PersonalInfoForm from "./Partials/PersonalInfoForm";
+
+// ── Sections 2–5
+import ActiveBookings from "./Partials/ActiveBookings";
+import OrderHistory from "./Partials/OrderHistory";
+import WishlistGrid from "./Partials/WishlistGrid";
+import SecurityPreferences from "./Partials/SecurityPreferences";
+
+import {
+    UserCircle,
+    CalendarDays,
+    ShoppingBag,
+    Heart,
+    Shield,
+    CheckCircle2,
+    AlertCircle,
+    X,
+} from "lucide-react";
+
+// ── Shared section-card wrapper ────────────────────────────────────────────
+function SectionCard({ icon: Icon, title, children }) {
+    return (
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+            <div className="flex items-center gap-3 px-6 md:px-8 py-5 border-b border-slate-100">
+                {Icon && (
+                    <Icon className="w-5 h-5 flex-shrink-0 text-[#D97706]" />
+                )}
+                <h2 className="text-lg font-bold text-slate-900 font-sansDisplay">
+                    {title}
+                </h2>
+            </div>
+            <div className="px-6 md:px-8 py-8">{children}</div>
+        </div>
+    );
+}
+
+// ── Floating toast ─────────────────────────────────────────────────────────
+function Toast({ toast, onClose }) {
+    if (!toast) return null;
+    const ok = toast.type === "success";
+    return (
+        <div
+            className="fixed bottom-6 right-6 z-50 max-w-sm px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border backdrop-blur-sm"
+            style={{
+                background: ok ? "rgba(5,46,22,0.95)" : "rgba(69,10,10,0.95)",
+                borderColor: ok
+                    ? "rgba(52,211,153,0.5)"
+                    : "rgba(248,113,113,0.5)",
+            }}
+        >
+            {ok ? (
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+            ) : (
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+            )}
+            <span className="text-sm font-medium text-white">
+                {toast.message}
+            </span>
+            <button
+                onClick={onClose}
+                className="ml-auto p-1 rounded-lg hover:bg-white/10 transition-colors"
+            >
+                <X className="w-4 h-4 text-white/60" />
+            </button>
+        </div>
+    );
+}
 
 export default function Edit({ auth }) {
     const [profile, setProfile] = useState(null);
@@ -16,7 +80,11 @@ export default function Edit({ auth }) {
     const [orders, setOrders] = useState([]);
     const [wishlist, setWishlist] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('personal');
+    const [toast, setToast] = useState(null);
+    const fireToast = (message, type) => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 4000);
+    };
 
     useEffect(() => {
         const load = async () => {
@@ -35,93 +103,63 @@ export default function Edit({ auth }) {
         };
         load();
 
-        const unsubscribe = customerProfileService.subscribe((p, n, b, o, w) => {
+        const unsub = customerProfileService.subscribe((p, n, b, o, w) => {
             setProfile(p);
             setNotifications(n);
             setBookings(b);
             setOrders(o);
             setWishlist(w);
         });
-
-        return () => unsubscribe();
+        return () => unsub();
     }, []);
 
+    // ── Skeleton ─────────────────────────────────────────────────────────────
     if (isLoading || !profile) {
         return (
-            <AuthenticatedLayout user={auth.user}>
-                <div className="py-12">
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 animate-pulse space-y-6">
-                        <div className="h-48 bg-slate-200 rounded-2xl"></div>
-                        <div className="h-96 bg-slate-200 rounded-2xl"></div>
-                    </div>
+            <CustomerLayout header="My Profile">
+                <div className="animate-pulse space-y-6">
+                    <div className="h-64 rounded-xl bg-slate-200" />
+                    <div className="h-72 rounded-xl bg-slate-200" />
+                    <div className="h-48 rounded-xl bg-slate-200" />
                 </div>
-            </AuthenticatedLayout>
+            </CustomerLayout>
         );
     }
 
-    const tabs = [
-        { id: 'personal', name: 'Personal & Travel Details', icon: UserCircle },
-        { id: 'bookings', name: 'My Bookings & Trips', icon: Calendar },
-        { id: 'orders', name: 'My Orders & Deliveries', icon: ShoppingBag },
-        { id: 'wishlist', name: 'Saved Secret Places', icon: Heart },
-        { id: 'security', name: 'Security & Notifications', icon: Shield },
-    ];
-
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={<h2 className="font-semibold text-xl text-slate-800 leading-tight">My Account Center</h2>}
-        >
+        <CustomerLayout header="My Profile">
             <Head title="My Profile - Secret Place Sri Lanka" />
 
-            <div className="py-8 bg-slate-50 min-h-screen">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    
-                    {/* Tab Navigation */}
-                    <div className="mt-8 border-b border-slate-200 bg-white rounded-t-xl px-4 sm:px-6 overflow-x-auto hide-scrollbar">
-                        <nav className="-mb-px flex space-x-8">
-                            {tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`
-                                        whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm flex items-center transition-colors
-                                        ${activeTab === tab.id
-                                            ? 'border-forestGreen-600 text-forestGreen-700'
-                                            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                                        }
-                                    `}
-                                >
-                                    <tab.icon className={`w-5 h-5 mr-2 ${activeTab === tab.id ? 'text-forestGreen-600' : 'text-slate-400'}`} />
-                                    {tab.name}
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
+            {/* ── Page Canvas ─────────────────────────────────────────────── */}
+            <div className="font-sans">
+                {/* ── Card 1: Identity (BrandCustomizer equivalent) ────── */}
+                <ProfileIdentityCard
+                    profile={profile}
+                    userId={auth.user.id.toString()}
+                    onToast={fireToast}
+                />
 
-                    <div className="mt-6 bg-transparent">
-                        {activeTab === 'personal' && (
-                            <CustomerPersonalInfoCard userId={auth.user.id.toString()} />
-                        )}
-                        
-                        {activeTab === 'bookings' && (
-                            <ActiveBookings bookings={bookings} />
-                        )}
-
-                        {activeTab === 'orders' && (
-                            <OrderHistory orders={orders} />
-                        )}
-
-                        {activeTab === 'wishlist' && (
-                            <WishlistGrid wishlist={wishlist} />
-                        )}
-
-                        {activeTab === 'security' && (
-                            <SecurityPreferences profile={profile} notifications={notifications} />
-                        )}
-                    </div>
-                </div>
+                <PersonalInfoForm
+                    profile={profile}
+                    userId={auth.user.id.toString()}
+                    onToast={fireToast}
+                />
+                <SectionCard icon={CalendarDays} title="My Bookings & Trips">
+                    <ActiveBookings bookings={bookings} headless />
+                </SectionCard>
+                <SectionCard icon={ShoppingBag} title="My Orders & Deliveries">
+                    <OrderHistory orders={orders} headless />
+                </SectionCard>
+                <SectionCard icon={Heart} title="Saved Secret Places">
+                    <WishlistGrid wishlist={wishlist} headless />
+                </SectionCard>
+                <SectionCard icon={Shield} title="Security & Notifications">
+                    <SecurityPreferences profile={profile} notifications={notifications} headless />
+                </SectionCard>
             </div>
-        </AuthenticatedLayout>
+
+            {/* Global toast */}
+            <Toast toast={toast} onClose={() => setToast(null)} />
+        </CustomerLayout>
     );
 }
