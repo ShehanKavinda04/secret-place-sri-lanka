@@ -154,7 +154,11 @@ export default function Edit({ auth }) {
                     <WishlistGrid wishlist={wishlist} headless />
                 </SectionCard>
                 <SectionCard icon={Shield} title="Security & Notifications">
-                    <SecurityPreferences profile={profile} notifications={notifications} headless />
+                    <SecurityPreferences
+                        profile={profile}
+                        notifications={notifications}
+                        headless
+                    />
                 </SectionCard>
             </div>
 
