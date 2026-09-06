@@ -358,13 +358,18 @@ export default function CustomerSettingsTabs({
                                     onChange={(event) => {
                                         register("nationality").onChange(event);
                                         const selected = countries.find(
-                                            ([code, name]) => name === event.target.value,
+                                            ([code, name]) =>
+                                                name === event.target.value,
                                         );
                                         if (selected) {
-                                            setValue("country_code", selected[0], {
-                                                shouldDirty: true,
-                                                shouldValidate: true,
-                                            });
+                                            setValue(
+                                                "country_code",
+                                                selected[0],
+                                                {
+                                                    shouldDirty: true,
+                                                    shouldValidate: true,
+                                                },
+                                            );
                                         }
                                     }}
                                     className={inputClass}
@@ -536,7 +541,9 @@ export default function CustomerSettingsTabs({
                                             onProfileChange({
                                                 ...profile,
                                                 passport_last_four:
-                                                    e.target.value.replace(/\D/g, "").slice(0, 4),
+                                                    e.target.value
+                                                        .replace(/\D/g, "")
+                                                        .slice(0, 4),
                                             })
                                         }
                                         className={`${inputClass} pl-10`}

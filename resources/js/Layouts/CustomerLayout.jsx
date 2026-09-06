@@ -31,7 +31,11 @@ export default function CustomerLayout({ header, children }) {
         customerProfileService.fetchProfileData().then(({ profile }) => {
             if (mounted) {
                 setCustomerProfile(profile);
-                setCurrency(profile.preferred_currency === "GBP" ? "USD" : profile.preferred_currency || "LKR");
+                setCurrency(
+                    profile.preferred_currency === "GBP"
+                        ? "USD"
+                        : profile.preferred_currency || "LKR",
+                );
             }
         });
         const unsubscribe = customerProfileService.subscribe((profile) => {
@@ -77,14 +81,18 @@ export default function CustomerLayout({ header, children }) {
     ];
 
     useEffect(() => {
-        const savedLanguage = window.localStorage.getItem("secret_places_language");
+        const savedLanguage = window.localStorage.getItem(
+            "secret_places_language",
+        );
         if (savedLanguage) setLanguage(savedLanguage);
     }, []);
 
     useEffect(() => {
         document.documentElement.lang = language.toLowerCase();
         window.localStorage.setItem("secret_places_language", language);
-        window.dispatchEvent(new CustomEvent("customerLanguageChanged", { detail: language }));
+        window.dispatchEvent(
+            new CustomEvent("customerLanguageChanged", { detail: language }),
+        );
     }, [language]);
 
     useEffect(() => {
@@ -92,12 +100,17 @@ export default function CustomerLayout({ header, children }) {
         window.Echo.channel("admin-notifications").listen(
             "AdminNotificationEvent",
             (event) => {
-                setNotifications((previous) => [{
-                    id: Date.now(),
-                    title: event.title || "New account update",
-                    message: event.message || "Your Secret Place account has a new update.",
-                    time: "Just now",
-                }, ...previous]);
+                setNotifications((previous) => [
+                    {
+                        id: Date.now(),
+                        title: event.title || "New account update",
+                        message:
+                            event.message ||
+                            "Your Secret Place account has a new update.",
+                        time: "Just now",
+                    },
+                    ...previous,
+                ]);
                 setUnreadCount((previous) => previous + 1);
             },
         );
@@ -108,9 +121,15 @@ export default function CustomerLayout({ header, children }) {
         const previous = currency;
         setCurrency(nextCurrency);
         window.localStorage.setItem("secret_places_currency", nextCurrency);
-        window.dispatchEvent(new CustomEvent("customerCurrencyChanged", { detail: nextCurrency }));
+        window.dispatchEvent(
+            new CustomEvent("customerCurrencyChanged", {
+                detail: nextCurrency,
+            }),
+        );
         try {
-            await customerProfileService.updateProfile({ preferred_currency: nextCurrency });
+            await customerProfileService.updateProfile({
+                preferred_currency: nextCurrency,
+            });
         } catch {
             setCurrency(previous);
             window.localStorage.setItem("secret_places_currency", previous);
@@ -221,16 +240,39 @@ export default function CustomerLayout({ header, children }) {
                         {notificationsOpen && (
                             <div className="absolute right-20 top-16 z-50 w-80 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
                                 <div className="flex items-center justify-between px-2 pb-2 border-b border-slate-100">
-                                    <h2 className="text-sm font-bold text-slate-900">Notifications</h2>
-                                    <button type="button" onClick={() => setNotifications([])} className="text-xs font-semibold text-slate-500 hover:text-[#1B4D3E]">Clear all</button>
+                                    <h2 className="text-sm font-bold text-slate-900">
+                                        Notifications
+                                    </h2>
+                                    <button
+                                        type="button"
+                                        onClick={() => setNotifications([])}
+                                        className="text-xs font-semibold text-slate-500 hover:text-[#1B4D3E]"
+                                    >
+                                        Clear all
+                                    </button>
                                 </div>
-                                {notifications.length ? notifications.map((notification) => (
-                                    <div key={notification.id} className="px-2 py-3 border-b border-slate-50 last:border-0">
-                                        <p className="text-sm font-semibold text-slate-800">{notification.title}</p>
-                                        <p className="text-xs text-slate-500 mt-1">{notification.message}</p>
-                                        <p className="text-[11px] text-slate-400 mt-1">{notification.time}</p>
-                                    </div>
-                                )) : <p className="px-2 py-5 text-sm text-slate-500 text-center">You are all caught up.</p>}
+                                {notifications.length ? (
+                                    notifications.map((notification) => (
+                                        <div
+                                            key={notification.id}
+                                            className="px-2 py-3 border-b border-slate-50 last:border-0"
+                                        >
+                                            <p className="text-sm font-semibold text-slate-800">
+                                                {notification.title}
+                                            </p>
+                                            <p className="text-xs text-slate-500 mt-1">
+                                                {notification.message}
+                                            </p>
+                                            <p className="text-[11px] text-slate-400 mt-1">
+                                                {notification.time}
+                                            </p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="px-2 py-5 text-sm text-slate-500 text-center">
+                                        You are all caught up.
+                                    </p>
+                                )}
                             </div>
                         )}
                         <div className="relative ml-2">
