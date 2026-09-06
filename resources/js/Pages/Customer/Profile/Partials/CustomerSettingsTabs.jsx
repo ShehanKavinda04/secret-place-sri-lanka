@@ -44,6 +44,7 @@ const profileSchema = z.object({
     phone: z.string().min(8, "Enter a valid phone number"),
     whatsapp_number: z.string().min(8, "Enter a valid WhatsApp number"),
     nationality: z.string().min(2, "Choose a country"),
+    country_code: z.string().min(2, "Choose a country code"),
 });
 
 function Panel({ title, description, icon: Icon, children }) {
@@ -135,6 +136,8 @@ export default function CustomerSettingsTabs({
         register,
         handleSubmit,
         reset,
+        setValue,
+        getValues,
         formState: { errors, isDirty },
     } = useForm({
         resolver: zodResolver(profileSchema),
@@ -276,15 +279,57 @@ export default function CustomerSettingsTabs({
                             >
                                 <div className="flex gap-2">
                                     <select
-                                        className="w-24 rounded-lg border-slate-300 text-sm"
-                                        defaultValue={
-                                            profile.country_code || "DE"
-                                        }
+                                        {...register("country_code")}
+                                        aria-label="Phone country code"
+                                        className="w-24 h-10 rounded-lg border border-slate-300 bg-white px-2 text-sm font-medium text-slate-900 focus:border-[#1B4D3E] focus:ring-2 focus:ring-[#1B4D3E]/20 dark:bg-white dark:text-slate-900"
+                                        onChange={(event) => {
+                                            const field =
+                                                register("country_code");
+                                            field.onChange(event);
+                                            const selected = countries.find(
+                                                ([code]) =>
+                                                    code === event.target.value,
+                                            );
+                                            if (!selected) return;
+                                            const [, , , nextDial] = selected;
+                                            const currentPhone =
+                                                getValues("phone") || "";
+                                            const currentCountry =
+                                                countries.find(
+                                                    ([code]) =>
+                                                        code ===
+                                                        profile.country_code,
+                                                );
+                                            const currentDial =
+                                                currentCountry?.[3];
+                                            const localNumber =
+                                                currentDial &&
+                                                currentPhone.startsWith(
+                                                    currentDial,
+                                                )
+                                                    ? currentPhone
+                                                          .slice(
+                                                              currentDial.length,
+                                                          )
+                                                          .trim()
+                                                    : currentPhone.replace(
+                                                          /^\+\d+\s*/,
+                                                          "",
+                                                      );
+                                            setValue(
+                                                "phone",
+                                                `${nextDial} ${localNumber}`.trim(),
+                                                {
+                                                    shouldDirty: true,
+                                                    shouldValidate: true,
+                                                },
+                                            );
+                                        }}
                                     >
                                         {countries.map(
                                             ([code, name, flag, dial]) => (
                                                 <option key={code} value={code}>
-                                                    {flag} {dial}
+                                                    {code} {dial}
                                                 </option>
                                             ),
                                         )}

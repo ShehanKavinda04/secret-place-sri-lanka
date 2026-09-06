@@ -75,18 +75,17 @@ const defaultBookings: CustomerBooking[] = [
     {
         id: "bk-4910",
         customer_id: "cust-101",
-        property_name: "Sigiriya Heritage Villa",
-        property_image:
-            "https://images.unsplash.com/photo-1566228015668-4c45dbc4e2f5?w=500&q=80",
+        property_name: "Ruwanwelisaya Heritage Homestay",
+        property_image: "/images/ruwanweli_maha_seya.png",
         check_in: new Date(Date.now() - 86400000 * 30).toISOString(),
         check_out: new Date(Date.now() - 86400000 * 27).toISOString(),
         status: "Completed",
         host_whatsapp: "+94779876543",
         booking_reference: "SPS-BK-4910",
-        district: "Sigiriya, Central Province",
-        category: "Heritage Villa",
-        latitude: 7.957,
-        longitude: 80.7603,
+        district: "Anuradhapura, North Central Province",
+        category: "Heritage Homestay",
+        latitude: 8.3445,
+        longitude: 80.3885,
         host_name: "Maya Fernando",
         check_in_time: "13:00",
         check_out_time: "11:00",
@@ -104,21 +103,21 @@ const defaultOrders: CustomerOrder[] = [
     {
         id: "ord-8812",
         customer_id: "cust-101",
-        item_name: "Handwoven Dumbara Mat",
+        item_name: "Anuradhapura Heritage Tea & Spice Box",
         item_image:
             "https://images.unsplash.com/photo-1588611833008-8e62d41b6c7a?w=500&q=80",
         status: "Shipped",
         order_date: new Date(Date.now() - 86400000 * 3).toISOString(),
-        tracking_number: "DHL-SL-98213",
+        tracking_number: "ANU-SL-98213",
         total_amount: 9250.0,
         currency: "LKR",
-        seller_name: "Kandy Artisan Collective",
+        seller_name: "Anuradhapura Heritage Crafts",
         seller_phone: "+94812234567",
         seller_whatsapp: "+94771239876",
         items: [
             {
                 product_id: "tea-01",
-                title: "Uva Highland Ceylon Tea",
+                title: "Anuradhapura Heritage Ceylon Tea",
                 image_url:
                     "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?w=400&q=80",
                 variant: "500g Pack",
@@ -126,14 +125,12 @@ const defaultOrders: CustomerOrder[] = [
                 price: 4200,
             },
         ],
-        subtotal: 8400,
-        delivery_fee: 850,
         payment_method: "LankaQR",
         payment_status: "paid",
-        shipping_carrier: "DHL Express",
+        shipping_carrier: "Anuradhapura Express",
         tracking_url: "https://www.dhl.com/global-en/home/tracking.html",
         estimated_delivery: new Date(Date.now() + 86400000 * 3).toISOString(),
-        delivery_address: "24 Flower Road, Colombo 07, Sri Lanka",
+        delivery_address: "24 Sacred City Road, Anuradhapura, Sri Lanka",
         recipient_name: "Emma Schmidt",
         recipient_phone: "+49 151 2345 6789",
         invoice_number: "INV-SPS-8812",
@@ -165,11 +162,11 @@ const defaultWishlist: WishlistItem[] = [
         customer_id: "cust-101",
         item_type: "property",
         item_id: "prop-10",
-        title: "Mirissa Hidden Surf Camp",
-        image_url:
-            "https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=500&q=80",
-        price: "€65",
-        location: "Mirissa, Southern Province",
+        title: "Abhayagiriya Sacred Retreat",
+        image_url: "/images/abhayagiri_1779380471030.png",
+        price: "LKR 18,500",
+        location: "Anuradhapura, North Central Province",
+        district: "Anuradhapura",
         host_name: "Sahan Perera",
         rating: 4.9,
         eco_rating: 4.8,
@@ -182,13 +179,12 @@ const defaultWishlist: WishlistItem[] = [
         customer_id: "cust-101",
         item_type: "product",
         item_id: "prod-15",
-        title: "Ceylon Cinnamon Gift Set",
-        image_url:
-            "https://images.unsplash.com/photo-1608797178974-15b35a64ede9?w=500&q=80",
+        title: "Anuradhapura Cinnamon & Tea Gift Set",
+        image_url: "/images/spice_grinding.jpg",
         price: "LKR 3,200",
-        location: "Kandy Artisan Collective",
+        location: "Anuradhapura Heritage Crafts",
         discount_price: 2800,
-        seller_name: "Kandy Artisan Collective",
+        seller_name: "Anuradhapura Heritage Crafts",
         stock_label: "In stock",
         product_variant: "Hand-packed gift set",
         created_at: new Date().toISOString(),
@@ -221,6 +217,59 @@ if (typeof window !== "undefined") {
 
     const w = localStorage.getItem(WISHLIST_KEY);
     if (w) currentWishlist = JSON.parse(w);
+
+    currentBookings = currentBookings.map((booking, index) => ({
+        ...booking,
+        property_name:
+            index === 0
+                ? "Abhayagiriya Sacred Retreat"
+                : "Ruwanwelisaya Heritage Homestay",
+        property_image:
+            index === 0
+                ? "/images/abhayagiri_1779380471030.png"
+                : "/images/ruwanweli_maha_seya.png",
+        district: "Anuradhapura, North Central Province",
+        category: index === 0 ? "Heritage Eco-Lodge" : "Heritage Homestay",
+        latitude: index === 0 ? 8.35 : 8.3445,
+        longitude: index === 0 ? 80.383 : 80.3885,
+    }));
+
+    currentOrders = currentOrders.map((order) => ({
+        ...order,
+        tracking_number: "ANU-SL-98213",
+        seller_name: "Anuradhapura Heritage Crafts",
+        shipping_carrier: "Anuradhapura Express",
+        delivery_address: "24 Sacred City Road, Anuradhapura, Sri Lanka",
+    }));
+
+    currentWishlist = currentWishlist.map((item, index) =>
+        index === 0
+            ? {
+                  ...item,
+                  item_type: "property",
+                  item_id: "prop-abhayagiriya",
+                  title: "Abhayagiriya Sacred Retreat",
+                  image_url: "/images/abhayagiri_1779380471030.png",
+                  price: "LKR 18,500",
+                  location: "Anuradhapura, North Central Province",
+                  district: "Anuradhapura",
+                  host_name: "Sahan Perera",
+                  rating: 4.9,
+                  eco_rating: 4.8,
+              }
+            : {
+                  ...item,
+                  item_type: "product",
+                  item_id: "prod-anuradhapura-gift",
+                  title: "Anuradhapura Cinnamon & Tea Gift Set",
+                  image_url: "/images/spice_grinding.jpg",
+                  price: "LKR 3,200",
+                  location: "Anuradhapura Heritage Crafts",
+                  seller_name: "Anuradhapura Heritage Crafts",
+                  product_variant: "Hand-packed heritage gift set",
+                  discount_price: 2800,
+              },
+    );
 }
 
 const saveState = () => {

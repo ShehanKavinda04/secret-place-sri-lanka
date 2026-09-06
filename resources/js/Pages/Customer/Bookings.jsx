@@ -103,12 +103,13 @@ export default function Bookings() {
                         </p>
                     </div>
                     <div className="relative w-full lg:w-80">
-                        <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                         <input
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
                             placeholder="Search property or booking ID"
-                            className="w-full rounded-lg border-slate-300 pl-10 text-sm"
+                            aria-label="Search property or booking ID"
+                            className="w-full h-11 rounded-lg border border-slate-300 bg-white px-4 pl-10 text-sm leading-5 text-slate-900 placeholder:text-slate-400 caret-[#1B4D3E] shadow-sm outline-none transition-colors focus:border-[#1B4D3E] focus:ring-2 focus:ring-[#1B4D3E]/20 dark:bg-white dark:text-slate-900 dark:placeholder:text-slate-400"
                         />
                     </div>
                 </div>
@@ -147,7 +148,8 @@ export default function Bookings() {
                     <select
                         value={month}
                         onChange={(event) => setMonth(event.target.value)}
-                        className="rounded-lg border-slate-300 text-sm"
+                        aria-label="Filter bookings by month"
+                        className="h-10 min-w-32 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium leading-5 text-slate-900 shadow-sm outline-none transition-colors focus:border-[#1B4D3E] focus:ring-2 focus:ring-[#1B4D3E]/20 dark:bg-white dark:text-slate-900"
                     >
                         <option>All months</option>
                         {Array.from({ length: 12 }, (_, index) => (

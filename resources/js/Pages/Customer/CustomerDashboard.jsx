@@ -115,15 +115,17 @@ export default function CustomerDashboard() {
             ? "Forest Guardian"
             : "Green Explorer";
     const spotlight = nextTrip || {
-        property_name: "Ella Eco Cabin Retreat",
-        property_image:
-            "https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=1000&q=85",
+        property_name: "Abhayagiriya Sacred Retreat",
+        property_image: "/images/abhayagiri_1779380471030.png",
         check_in: new Date(Date.now() + 86400000 * 5).toISOString(),
         host_whatsapp: "+94771234567",
+        district: "Anuradhapura, North Central Province",
     };
     const order = activeOrder
         ? {
               ...activeOrder,
+              carrier_name:
+                  activeOrder.shipping_carrier || "Anuradhapura Express",
               status:
                   activeOrder.status === "Shipped"
                       ? "Dispatched"
@@ -174,8 +176,8 @@ export default function CustomerDashboard() {
                                 Ayubowan, your next secret is waiting.
                             </h1>
                             <p className="text-emerald-100/75 mt-2 max-w-xl">
-                                Your Sri Lankan journey, stays, and sustainable
-                                discoveries in one calm view.
+                                Your Anuradhapura journey, sacred stays, and
+                                sustainable discoveries in one calm view.
                             </p>
                         </div>
                         <div className="bg-white/10 border border-white/15 rounded-lg px-5 py-4 min-w-[210px]">
@@ -256,8 +258,10 @@ export default function CustomerDashboard() {
                                     {spotlight.property_name}
                                 </h2>
                                 <p className="text-sm text-white/80 mt-1 flex items-center gap-1">
-                                    <MapPin className="w-4 h-4" /> Ella, Sri
-                                    Lanka · Check-in{" "}
+                                    <MapPin className="w-4 h-4" />{" "}
+                                    {spotlight.district ||
+                                        "Anuradhapura, North Central Province"}
+                                    {" · Check-in "}
                                     {new Date(
                                         spotlight.check_in,
                                     ).toLocaleDateString()}

@@ -70,7 +70,7 @@ export default function Wishlist() {
                 <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
                     <div>
                         <p className="text-sm font-semibold text-[#D97706]">
-                            Your personal travel board
+                            Your Anuradhapura travel board
                         </p>
                         <h1 className="text-3xl font-bold text-slate-900 font-sansDisplay mt-1">
                             My Saved Collection{" "}
@@ -79,20 +79,21 @@ export default function Wishlist() {
                             </span>
                         </h1>
                         <p className="text-sm text-slate-500 mt-2">
-                            Keep hidden stays and meaningful Sri Lankan crafts
-                            close at hand.
+                            Keep sacred-city stays and Anuradhapura crafts close
+                            at hand.
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3">
                         <div className="relative">
-                            <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                             <input
                                 value={search}
                                 onChange={(event) =>
                                     setSearch(event.target.value)
                                 }
                                 placeholder="Search saved items"
-                                className="w-full sm:w-64 rounded-lg border-slate-300 pl-10 text-sm"
+                                aria-label="Search saved items"
+                                className="w-full sm:w-64 h-11 rounded-lg border border-slate-300 bg-white px-4 pl-10 text-sm leading-5 text-slate-900 placeholder:text-slate-400 caret-[#1B4D3E] shadow-sm outline-none transition-colors focus:border-[#1B4D3E] focus:ring-2 focus:ring-[#1B4D3E]/20 dark:bg-white dark:text-slate-900 dark:placeholder:text-slate-400"
                             />
                         </div>
                         <button
@@ -146,22 +147,22 @@ export default function Wishlist() {
                             Your wishlist is empty
                         </h2>
                         <p className="text-sm text-slate-500 mt-2">
-                            Save a quiet stay or a thoughtful craft and it will
-                            appear here.
+                            Save an Anuradhapura stay or a thoughtful local
+                            craft and it will appear here.
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-3 mt-5">
                             <a
                                 href="/places"
                                 className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-lg bg-[#1B4D3E] text-white text-sm font-bold"
                             >
-                                <Map className="w-4 h-4" /> Explore Secret
+                                <Map className="w-4 h-4" /> Explore Anuradhapura
                                 Destinations
                             </a>
                             <a
                                 href="/craft-items"
                                 className="px-5 py-2 rounded-lg border border-slate-200 text-slate-700 text-sm font-bold"
                             >
-                                Visit Craft Marketplace
+                                Visit Anuradhapura Craft Marketplace
                             </a>
                         </div>
                     </div>

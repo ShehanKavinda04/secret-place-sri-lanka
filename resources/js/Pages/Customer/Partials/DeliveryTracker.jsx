@@ -32,7 +32,7 @@ export default function DeliveryTracker({ order, onToast }) {
                         {order.item_name}
                     </h2>
                     <p className="text-sm text-slate-500 mt-1">
-                        {order.carrier_name || "DHL Express"} · ETA{" "}
+                        {order.carrier_name || "Anuradhapura Express"} · ETA{" "}
                         {order.eta || "3 days"}
                     </p>
                 </div>

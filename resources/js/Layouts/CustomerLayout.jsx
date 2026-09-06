@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
+import { customerProfileService } from "@/Services/customerProfileService";
 import {
     Bell,
     Calendar,
@@ -16,11 +17,26 @@ import {
 export default function CustomerLayout({ header, children }) {
     const { url } = usePage();
     const user = usePage().props.auth.user;
+    const [customerProfile, setCustomerProfile] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [currency, setCurrency] = useState("LKR");
     const [language, setLanguage] = useState("EN");
     const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        let mounted = true;
+        customerProfileService.fetchProfileData().then(({ profile }) => {
+            if (mounted) setCustomerProfile(profile);
+        });
+        const unsubscribe = customerProfileService.subscribe((profile) => {
+            if (mounted) setCustomerProfile(profile);
+        });
+        return () => {
+            mounted = false;
+            unsubscribe();
+        };
+    }, []);
 
     const navigation = [
         {
@@ -171,8 +187,16 @@ export default function CustomerLayout({ header, children }) {
                                 }
                                 className="flex items-center gap-2"
                             >
-                                <span className="h-10 w-10 rounded-full border-2 border-[#1B4D3E]/20 flex items-center justify-center text-[#1B4D3E] font-bold">
-                                    {user?.name?.charAt(0)}
+                                <span className="h-10 w-10 rounded-full border-2 border-[#1B4D3E]/20 overflow-hidden flex items-center justify-center text-[#1B4D3E] font-bold bg-white">
+                                    {customerProfile?.avatar_url ? (
+                                        <img
+                                            src={customerProfile.avatar_url}
+                                            alt={`${customerProfile.first_name || user?.name || "Customer"} avatar`}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        user?.name?.charAt(0)
+                                    )}
                                 </span>
                                 <div className="hidden lg:block text-left">
                                     <p className="text-sm font-bold text-gray-900">

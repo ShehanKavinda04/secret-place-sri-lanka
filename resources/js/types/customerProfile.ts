@@ -7,6 +7,7 @@ export interface CustomerProfile {
     phone: string;
     whatsapp_number: string;
     avatar_url: string;
+    banner_url?: string;
     nationality: string;
     country_code?: string;
     is_email_verified?: boolean;
@@ -106,6 +107,7 @@ export interface WishlistItem {
     image_url: string;
     price: string;
     location: string;
+    district?: string;
     created_at: string;
     host_name?: string;
     rating?: number;

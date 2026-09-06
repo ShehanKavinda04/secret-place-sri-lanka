@@ -19,7 +19,7 @@ export default function WishlistCard({
                 <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/90 text-xs font-bold text-slate-700">
                     {isProperty
                         ? item.district || item.location
-                        : "Handcrafted in Sri Lanka"}
+                        : "Anuradhapura artisan craft"}
                 </span>
                 <button
                     type="button"

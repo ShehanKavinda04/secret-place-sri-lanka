@@ -37,6 +37,7 @@ const COUNTRIES = [
 export default function ProfileIdentityCard({ profile, userId, onToast }) {
     const bannerInputRef = useRef(null);
     const avatarInputRef = useRef(null);
+    const [isUploadingBanner, setIsUploadingBanner] = useState(false);
     const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
     const country =
@@ -60,12 +61,37 @@ export default function ProfileIdentityCard({ profile, userId, onToast }) {
         }
     };
 
+    const handleBannerUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setIsUploadingBanner(true);
+        try {
+            if (file.size > 5 * 1024 * 1024)
+                throw new Error("Cover image must be under 5 MB");
+            const url = await customerProfileService.uploadAvatar(file);
+            await customerProfileService.updateProfile({ banner_url: url });
+            onToast?.("Cover image updated!", "success");
+        } catch (err) {
+            onToast?.(err.message || "Cover upload failed", "error");
+        } finally {
+            setIsUploadingBanner(false);
+            if (bannerInputRef.current) bannerInputRef.current.value = "";
+        }
+    };
+
     const initials = `${profile?.first_name?.charAt(0) ?? ""}${profile?.last_name?.charAt(0) ?? ""}`;
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
             {/* ── Banner Area (exactly like BrandCustomizer's h-48 md:h-64) ── */}
             <div className="relative h-48 md:h-64 group bg-slate-100">
+                {profile?.banner_url && (
+                    <img
+                        src={profile.banner_url}
+                        alt="Profile cover"
+                        className="absolute inset-0 w-full h-full object-cover"
+                    />
+                )}
                 {/* Decorative Celtic knot */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none select-none">
                     <div className="h-full w-full bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100" />
@@ -77,16 +103,25 @@ export default function ProfileIdentityCard({ profile, userId, onToast }) {
                     style={{ background: "rgba(15,23,42,0.2)" }}
                 >
                     <button
+                        type="button"
                         onClick={() => bannerInputRef.current?.click()}
+                        disabled={isUploadingBanner}
                         className="flex items-center px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition bg-white/90 text-slate-800 hover:bg-white"
                     >
-                        <ImageIcon className="w-4 h-4 mr-2" /> Change Cover
+                        {isUploadingBanner ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                            <ImageIcon className="w-4 h-4 mr-2" />
+                        )}
+                        {isUploadingBanner ? "Uploading..." : "Change Cover"}
                     </button>
                     <input
                         type="file"
                         ref={bannerInputRef}
                         className="hidden"
                         accept="image/*"
+                        onChange={handleBannerUpload}
+                        disabled={isUploadingBanner}
                     />
                 </div>
 
