@@ -185,9 +185,14 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 // Seller Routes
 Route::middleware(['auth', 'verified', 'role:business_owner'])->prefix('seller')->name('seller.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Seller\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/analytics', [\App\Http\Controllers\Seller\DashboardController::class, 'analytics'])->name('analytics');
     Route::get('/businesses', [\App\Http\Controllers\Seller\BusinessController::class, 'index'])->name('businesses');
     Route::get('/bookings', [\App\Http\Controllers\Seller\BookingController::class, 'index'])->name('bookings');
+    Route::get('/bookings/data', [\App\Http\Controllers\Seller\BookingController::class, 'apiIndex'])->name('bookings.data');
+    Route::patch('/bookings/{booking}/status', [\App\Http\Controllers\Seller\BookingController::class, 'updateStatus'])->name('bookings.status');
     Route::get('/earnings', [\App\Http\Controllers\Seller\EarningController::class, 'index'])->name('earnings');
+    Route::get('/earnings/summary', [\App\Http\Controllers\Seller\EarningController::class, 'summary'])->name('earnings.summary');
+    Route::post('/earnings/expenses', [\App\Http\Controllers\Seller\EarningController::class, 'storeExpense'])->name('earnings.expenses.store');
     Route::get('/reviews', [\App\Http\Controllers\Seller\ReviewController::class, 'index'])->name('reviews');
 });
 
