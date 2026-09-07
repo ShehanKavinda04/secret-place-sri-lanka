@@ -1,10 +1,33 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuickTranslatorModal from "@/Components/QuickTranslatorModal";
 
 export default function Navbar({ auth = {} }) {
     const [isTranslatorOpen, setIsTranslatorOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { url } = usePage();
+
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [url]);
+
+    const handleSectionClick = (event, sectionId) => {
+        setIsMobileMenuOpen(false);
+        if (window.location.pathname === "/") {
+            event.preventDefault();
+            window.dispatchEvent(
+                new CustomEvent("manual-loader", { detail: { duration: 600 } }),
+            );
+            setTimeout(
+                () =>
+                    document
+                        .getElementById(sectionId)
+                        ?.scrollIntoView({ behavior: "smooth" }),
+                100,
+            );
+        }
+    };
 
     const getRoute = (name, fallback) => {
         try {
@@ -128,62 +151,6 @@ export default function Navbar({ auth = {} }) {
                             Map
                         </motion.a>
 
-                        {/* Translator Navigation Link */}
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <Link
-                                prefetch
-                                href="/translator"
-                                className="flex items-center gap-1.5 text-royalGold-300 hover:text-white transition-colors"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={1.5}
-                                    stroke="currentColor"
-                                    className="w-4 h-4 text-royalGold-400"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m0 2.25c0 3.107 1.002 6.012 2.766 8.384m-4.502-1.921A11.96 11.96 0 0 1 3 5.621m15-1.996a48.474 48.474 0 0 0-6-.371"
-                                    />
-                                </svg>
-                                <span>AI Translator</span>
-                            </Link>
-                        </motion.div>
-
-                        {/* CwGBM AI Forecast Link */}
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <Link
-                                prefetch
-                                href="/forecast"
-                                className="flex items-center gap-1.5 text-royalGold-300 hover:text-white transition-colors"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={1.5}
-                                    stroke="currentColor"
-                                    className="w-4 h-4 text-royalGold-400"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"
-                                    />
-                                </svg>
-                                <span>AI Forecast</span>
-                            </Link>
-                        </motion.div>
-
                         <motion.div
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -199,6 +166,37 @@ export default function Navbar({ auth = {} }) {
                     </nav>
 
                     <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsMobileMenuOpen((open) => !open)}
+                            className="md:hidden p-2 rounded-lg text-royalGold-300 hover:bg-royalGold-500/10 transition-colors"
+                            aria-label="Toggle navigation menu"
+                            aria-expanded={isMobileMenuOpen}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="w-6 h-6"
+                            >
+                                {isMobileMenuOpen ? (
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M6 18 18 6M6 6l12 12"
+                                    />
+                                ) : (
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                                    />
+                                )}
+                            </svg>
+                        </button>
+
                         {/* Quick Translator Overlay Button */}
                         <button
                             onClick={() => setIsTranslatorOpen(true)}
@@ -262,6 +260,64 @@ export default function Navbar({ auth = {} }) {
                     </div>
                 </div>
             </motion.header>
+
+            {isMobileMenuOpen && (
+                <motion.nav
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="md:hidden bg-royalMaroon-800 border-b border-royalGold-600/20 px-4 py-3 space-y-1 text-sm font-semibold text-royalGold-300"
+                >
+                    <a
+                        href="/#hero"
+                        onClick={(event) => handleSectionClick(event, "hero")}
+                        className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
+                    >
+                        Home
+                    </a>
+                    <a
+                        href="/#categories"
+                        onClick={(event) =>
+                            handleSectionClick(event, "categories")
+                        }
+                        className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
+                    >
+                        Categories
+                    </a>
+                    <a
+                        href="/#smart-routing"
+                        onClick={(event) =>
+                            handleSectionClick(event, "smart-routing")
+                        }
+                        className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
+                    >
+                        Map
+                    </a>
+                    <Link
+                        href="/about-us"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
+                    >
+                        About Us
+                    </Link>
+                    {auth && auth.user ? (
+                        <Link
+                            href="/profile"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
+                        >
+                            Profile
+                        </Link>
+                    ) : (
+                        <Link
+                            href={getRoute("login", "/login")}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
+                        >
+                            Log In
+                        </Link>
+                    )}
+                </motion.nav>
+            )}
 
             <QuickTranslatorModal
                 isOpen={isTranslatorOpen}

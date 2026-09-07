@@ -12,6 +12,7 @@ import {
     Globe,
     ChevronDown,
     Building,
+    BarChart3,
     Menu,
     X,
     Settings,
@@ -121,6 +122,12 @@ export default function SellerLayout({ header, children }) {
             href: route("seller.reviews"),
             routeName: "seller.reviews",
             icon: MessageSquare,
+        },
+        {
+            name: "Demand Forecast",
+            href: route("forecast"),
+            routeName: "forecast",
+            icon: BarChart3,
         },
     ];
 
