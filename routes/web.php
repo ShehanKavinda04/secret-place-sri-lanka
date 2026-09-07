@@ -9,12 +9,14 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\SmartPricingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\PreferencesController;
 use App\Http\Controllers\NearbyLocationsController;
 
 Route::get('/api/orders', [OrderController::class, 'index']);
 Route::post('/api/orders', [OrderController::class, 'store']);
 Route::get('/api/wishlists', [WishlistController::class, 'index']);
 Route::post('/api/wishlists/toggle', [WishlistController::class, 'toggle']);
+Route::patch('/preferences', [PreferencesController::class, 'update'])->middleware('auth')->name('preferences.update');
 Route::get('/api/nearby-locations', [NearbyLocationsController::class, 'index'])->name('api.nearby-locations');
 
 // Admin Routes

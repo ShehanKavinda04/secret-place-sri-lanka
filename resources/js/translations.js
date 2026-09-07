@@ -1,5 +1,6 @@
 export const translations = {
-    'Sinhala': {
+    EN: {},
+    SI: {
         // Navigation & Layout
         'Dashboard': 'පුවරුව',
         'Users & Roles': 'පරිශීලකයන් සහ භූමිකා',
@@ -53,7 +54,7 @@ export const translations = {
         'Merchant': 'වෙළෙන්දා',
         'Tourist': 'සංචාරකයා',
     },
-    'Tamil': {
+    TA: {
         // Navigation & Layout
         'Dashboard': 'முகப்பு',
         'Users & Roles': 'பயனர்கள் மற்றும் பாத்திரங்கள்',

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
-import ApplicationLogo from "@/Components/ApplicationLogo";
+import PortalBrandHeader from "@/Components/PortalBrandHeader";
+import { useAppState } from "@/Context/AppStateContext";
 import { customerProfileService } from "@/Services/customerProfileService";
 import {
     Bell,
     Calendar,
     ChevronDown,
     Heart,
+    Home,
     LayoutDashboard,
     Menu,
     ShoppingBag,
@@ -17,11 +19,10 @@ import {
 export default function CustomerLayout({ header, children }) {
     const { url } = usePage();
     const user = usePage().props.auth.user;
+    const { currency, language, setCurrency, setLanguage } = useAppState();
     const [customerProfile, setCustomerProfile] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
-    const [currency, setCurrency] = useState("LKR");
-    const [language, setLanguage] = useState("EN");
     const [notifications, setNotifications] = useState([]);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -29,14 +30,7 @@ export default function CustomerLayout({ header, children }) {
     useEffect(() => {
         let mounted = true;
         customerProfileService.fetchProfileData().then(({ profile }) => {
-            if (mounted) {
-                setCustomerProfile(profile);
-                setCurrency(
-                    profile.preferred_currency === "GBP"
-                        ? "USD"
-                        : profile.preferred_currency || "LKR",
-                );
-            }
+            if (mounted) setCustomerProfile(profile);
         });
         const unsubscribe = customerProfileService.subscribe((profile) => {
             if (mounted) setCustomerProfile(profile);
@@ -46,6 +40,40 @@ export default function CustomerLayout({ header, children }) {
             unsubscribe();
         };
     }, []);
+
+    useEffect(() => {
+        if (!window.Echo) return undefined;
+        window.Echo.channel("admin-notifications").listen(
+            "AdminNotificationEvent",
+            (event) => {
+                setNotifications((previous) => [
+                    {
+                        id: Date.now(),
+                        title: event.title || "New account update",
+                        message:
+                            event.message ||
+                            "Your Secret Place account has a new update.",
+                        time: "Just now",
+                    },
+                    ...previous,
+                ]);
+                setUnreadCount((previous) => previous + 1);
+            },
+        );
+        return () => window.Echo.leaveChannel("admin-notifications");
+    }, []);
+
+    const handleCurrencyChange = async (nextCurrency) => {
+        const previous = currency;
+        await setCurrency(nextCurrency);
+        try {
+            await customerProfileService.updateProfile({
+                preferred_currency: nextCurrency,
+            });
+        } catch {
+            setCurrency(previous);
+        }
+    };
 
     const navigation = [
         {
@@ -80,62 +108,6 @@ export default function CustomerLayout({ header, children }) {
         },
     ];
 
-    useEffect(() => {
-        const savedLanguage = window.localStorage.getItem(
-            "secret_places_language",
-        );
-        if (savedLanguage) setLanguage(savedLanguage);
-    }, []);
-
-    useEffect(() => {
-        document.documentElement.lang = language.toLowerCase();
-        window.localStorage.setItem("secret_places_language", language);
-        window.dispatchEvent(
-            new CustomEvent("customerLanguageChanged", { detail: language }),
-        );
-    }, [language]);
-
-    useEffect(() => {
-        if (!window.Echo) return undefined;
-        window.Echo.channel("admin-notifications").listen(
-            "AdminNotificationEvent",
-            (event) => {
-                setNotifications((previous) => [
-                    {
-                        id: Date.now(),
-                        title: event.title || "New account update",
-                        message:
-                            event.message ||
-                            "Your Secret Place account has a new update.",
-                        time: "Just now",
-                    },
-                    ...previous,
-                ]);
-                setUnreadCount((previous) => previous + 1);
-            },
-        );
-        return () => window.Echo.leaveChannel("admin-notifications");
-    }, []);
-
-    const handleCurrencyChange = async (nextCurrency) => {
-        const previous = currency;
-        setCurrency(nextCurrency);
-        window.localStorage.setItem("secret_places_currency", nextCurrency);
-        window.dispatchEvent(
-            new CustomEvent("customerCurrencyChanged", {
-                detail: nextCurrency,
-            }),
-        );
-        try {
-            await customerProfileService.updateProfile({
-                preferred_currency: nextCurrency,
-            });
-        } catch {
-            setCurrency(previous);
-            window.localStorage.setItem("secret_places_currency", previous);
-        }
-    };
-
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans flex flex-col md:flex-row">
             {sidebarOpen && (
@@ -149,17 +121,7 @@ export default function CustomerLayout({ header, children }) {
             >
                 <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between h-20 px-6 bg-[#143d31]">
-                        <div className="flex items-center gap-3">
-                            <ApplicationLogo className="w-10 h-10 text-[#D97706]" />
-                            <div>
-                                <span className="block font-bold text-lg font-sansDisplay leading-tight">
-                                    Customer Portal
-                                </span>
-                                <span className="block text-xs text-emerald-200/70">
-                                    Secret Place Sri Lanka
-                                </span>
-                            </div>
-                        </div>
+                        <PortalBrandHeader roleLabel="Customer Portal" />
                         <button
                             className="md:hidden"
                             onClick={() => setSidebarOpen(false)}
@@ -177,7 +139,7 @@ export default function CustomerLayout({ header, children }) {
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive ? "bg-[#D97706] text-white font-medium shadow-md" : "text-emerald-100/80 hover:bg-[#143d31] hover:text-white"}`}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive ? "bg-royalGold-500 text-royalMaroon-950 font-medium shadow-md" : "text-emerald-100/80 hover:bg-[#143d31] hover:text-white"}`}
                                 >
                                     <item.icon className="w-5 h-5" />
                                     {item.name}
@@ -202,12 +164,22 @@ export default function CustomerLayout({ header, children }) {
                         </h1>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-4">
+                        <Link
+                            href="/"
+                            title="Back to SecretPlaces website"
+                            className="flex items-center gap-1.5 text-sm font-semibold text-royalMaroon-800 hover:text-royalGold-600 transition-colors"
+                        >
+                            <Home className="w-4 h-4" />
+                            <span className="hidden sm:inline">
+                                Back to Website
+                            </span>
+                        </Link>
                         <div className="hidden sm:flex bg-gray-100 rounded-lg p-1">
                             {["LKR", "USD"].map((item) => (
                                 <button
                                     key={item}
                                     onClick={() => handleCurrencyChange(item)}
-                                    className={`px-3 py-1.5 text-xs font-bold rounded-md ${currency === item ? "bg-white shadow text-gray-900" : "text-gray-500"}`}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-md ${currency === item ? "bg-royalGold-500 text-royalMaroon-950 shadow" : "text-gray-500"}`}
                                 >
                                     {item}
                                 </button>
@@ -218,14 +190,14 @@ export default function CustomerLayout({ header, children }) {
                                 <button
                                     key={item}
                                     onClick={() => setLanguage(item)}
-                                    className={`px-3 py-1.5 text-xs font-bold rounded-md ${language === item ? "bg-[#1B4D3E] text-white" : "text-gray-500"}`}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-md uppercase ${language === item ? "bg-royalGold-500 text-royalMaroon-950" : "text-gray-500"}`}
                                 >
                                     {item}
                                 </button>
                             ))}
                         </div>
                         <button
-                            className="relative p-2 text-gray-400 hover:text-[#D97706]"
+                            className="relative p-2 text-gray-400 hover:text-royalGold-600"
                             onClick={() => {
                                 setNotificationsOpen((previous) => !previous);
                                 setUnreadCount(0);
@@ -246,7 +218,7 @@ export default function CustomerLayout({ header, children }) {
                                     <button
                                         type="button"
                                         onClick={() => setNotifications([])}
-                                        className="text-xs font-semibold text-slate-500 hover:text-[#1B4D3E]"
+                                        className="text-xs font-semibold text-slate-500 hover:text-royalGold-700"
                                     >
                                         Clear all
                                     </button>
@@ -282,7 +254,7 @@ export default function CustomerLayout({ header, children }) {
                                 }
                                 className="flex items-center gap-2"
                             >
-                                <span className="h-10 w-10 rounded-full border-2 border-[#1B4D3E]/20 overflow-hidden flex items-center justify-center text-[#1B4D3E] font-bold bg-white">
+                                <span className="h-10 w-10 rounded-full border-2 border-royalGold-500/40 overflow-hidden flex items-center justify-center text-royalMaroon-800 font-bold bg-white">
                                     {customerProfile?.avatar_url ? (
                                         <img
                                             src={customerProfile.avatar_url}

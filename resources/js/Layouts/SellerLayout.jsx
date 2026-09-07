@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Head, Link, usePage } from "@inertiajs/react";
-import ApplicationLogo from "@/Components/ApplicationLogo";
+import PortalBrandHeader from "@/Components/PortalBrandHeader";
+import { useAppState } from "@/Context/AppStateContext";
 import { profileService } from "@/Services/profileService";
 import {
     LayoutDashboard,
@@ -24,8 +25,7 @@ export default function SellerLayout({ header, children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [propertyOpen, setPropertyOpen] = useState(false);
-    const [currency, setCurrency] = useState("LKR");
-    const [language, setLanguage] = useState("EN");
+    const { currency, language, setCurrency, setLanguage } = useAppState();
     const [notifications, setNotifications] = useState([]);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -37,26 +37,6 @@ export default function SellerLayout({ header, children }) {
 
         return unsubscribe;
     }, []);
-
-    useEffect(() => {
-        const savedCurrency = window.localStorage.getItem(
-            "secret_places_currency",
-        );
-        const savedLanguage = window.localStorage.getItem(
-            "secret_places_language",
-        );
-
-        if (savedCurrency) setCurrency(savedCurrency);
-        if (savedLanguage) setLanguage(savedLanguage);
-    }, []);
-
-    useEffect(() => {
-        document.documentElement.lang = language.toLowerCase();
-        window.localStorage.setItem("secret_places_language", language);
-        window.dispatchEvent(
-            new CustomEvent("customerLanguageChanged", { detail: language }),
-        );
-    }, [language]);
 
     useEffect(() => {
         if (!window.Echo) return undefined;
@@ -84,12 +64,6 @@ export default function SellerLayout({ header, children }) {
 
     const handleCurrencyChange = (nextCurrency) => {
         setCurrency(nextCurrency);
-        window.localStorage.setItem("secret_places_currency", nextCurrency);
-        window.dispatchEvent(
-            new CustomEvent("customerCurrencyChanged", {
-                detail: nextCurrency,
-            }),
-        );
     };
 
     const navigation = [
@@ -132,7 +106,7 @@ export default function SellerLayout({ header, children }) {
     ];
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] font-sans selection:bg-[#D97706]/30 selection:text-[#D97706] flex flex-col md:flex-row">
+        <div className="min-h-screen bg-[#F8FAFC] font-sans selection:bg-royalGold-500/30 selection:text-royalMaroon-950 flex flex-col md:flex-row">
             {/* Mobile Sidebar Overlay */}
             {sidebarOpen && (
                 <div
@@ -150,17 +124,7 @@ export default function SellerLayout({ header, children }) {
             >
                 <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between h-20 px-6 bg-[#143d31]">
-                        <div className="flex items-center gap-3">
-                            <ApplicationLogo className="w-10 h-10 text-[#D97706]" />
-                            <div>
-                                <span className="block font-bold text-lg font-sansDisplay leading-tight">
-                                    Host Portal
-                                </span>
-                                <span className="block text-xs text-emerald-200/70">
-                                    Secret Place Sri Lanka
-                                </span>
-                            </div>
-                        </div>
+                        <PortalBrandHeader roleLabel="Host Portal" />
                         <button
                             className="md:hidden text-emerald-200 hover:text-white"
                             onClick={() => setSidebarOpen(false)}
@@ -176,7 +140,7 @@ export default function SellerLayout({ header, children }) {
                                 className="w-full flex items-center justify-between bg-[#143d31] p-3 rounded-xl hover:bg-[#11352a] transition-colors"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-[#D97706]/20 rounded-lg text-[#D97706]">
+                                    <div className="p-2 bg-royalGold-500/20 rounded-lg text-royalGold-500">
                                         <Building className="w-5 h-5" />
                                     </div>
                                     <div className="text-left">
@@ -216,13 +180,13 @@ export default function SellerLayout({ header, children }) {
                                         flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
                                         ${
                                             isActive
-                                                ? "bg-[#D97706] text-white font-medium shadow-md shadow-[#D97706]/20"
+                                                ? "bg-royalGold-500 text-royalMaroon-950 font-medium shadow-md shadow-royalGold-500/20"
                                                 : "text-emerald-100/80 hover:bg-[#143d31] hover:text-white"
                                         }
                                     `}
                                 >
                                     <item.icon
-                                        className={`w-5 h-5 ${isActive ? "text-white" : "text-emerald-200/70"}`}
+                                        className={`w-5 h-5 ${isActive ? "text-royalMaroon-950" : "text-emerald-200/70"}`}
                                     />
                                     {item.name}
                                 </Link>
@@ -258,17 +222,27 @@ export default function SellerLayout({ header, children }) {
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-4">
+                        <Link
+                            href="/"
+                            title="Back to SecretPlaces website"
+                            className="flex items-center gap-1.5 text-sm font-semibold text-royalMaroon-800 hover:text-royalGold-600 transition-colors"
+                        >
+                            <Home className="w-4 h-4" />
+                            <span className="hidden sm:inline">
+                                Back to Website
+                            </span>
+                        </Link>
                         {/* Currency Toggle */}
                         <div className="hidden sm:flex bg-gray-100 rounded-lg p-1">
                             <button
                                 onClick={() => handleCurrencyChange("LKR")}
-                                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${currency === "LKR" ? "bg-white shadow text-gray-900" : "text-gray-500 hover:text-gray-700"}`}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${currency === "LKR" ? "bg-royalGold-500 text-royalMaroon-950 shadow" : "text-gray-500 hover:text-gray-700"}`}
                             >
                                 LKR
                             </button>
                             <button
                                 onClick={() => handleCurrencyChange("USD")}
-                                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${currency === "USD" ? "bg-white shadow text-gray-900" : "text-gray-500 hover:text-gray-700"}`}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${currency === "USD" ? "bg-royalGold-500 text-royalMaroon-950 shadow" : "text-gray-500 hover:text-gray-700"}`}
                             >
                                 USD
                             </button>
@@ -280,7 +254,7 @@ export default function SellerLayout({ header, children }) {
                                 <button
                                     key={lang}
                                     onClick={() => setLanguage(lang)}
-                                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${language === lang ? "bg-[#1B4D3E] shadow text-white" : "text-gray-500 hover:text-gray-700"}`}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${language === lang ? "bg-royalGold-500 text-royalMaroon-950 shadow" : "text-gray-500 hover:text-gray-700"}`}
                                 >
                                     {lang}
                                 </button>
@@ -290,7 +264,7 @@ export default function SellerLayout({ header, children }) {
                         {/* Notification Bell */}
                         <button
                             type="button"
-                            className="relative p-2 text-gray-400 hover:text-[#D97706] transition-colors rounded-full hover:bg-orange-50"
+                            className="relative p-2 text-gray-400 hover:text-royalGold-600 transition-colors rounded-full hover:bg-royalGold-500/10"
                             onClick={() => {
                                 setNotificationsOpen((previous) => !previous);
                                 setUnreadCount(0);
@@ -313,7 +287,7 @@ export default function SellerLayout({ header, children }) {
                                     <button
                                         type="button"
                                         onClick={() => setNotifications([])}
-                                        className="text-xs font-semibold text-slate-500 hover:text-[#1B4D3E]"
+                                        className="text-xs font-semibold text-slate-500 hover:text-royalGold-700"
                                     >
                                         Clear all
                                     </button>
@@ -350,7 +324,7 @@ export default function SellerLayout({ header, children }) {
                                 className="flex items-center gap-2 focus:outline-none"
                             >
                                 <img
-                                    className="h-10 w-10 rounded-full border-2 border-[#1B4D3E]/20 object-cover"
+                                    className="h-10 w-10 rounded-full border-2 border-royalGold-500/40 object-cover"
                                     src={
                                         sellerProfile?.logo_url ||
                                         `https://ui-avatars.com/api/?name=${user.name}&color=1B4D3E&background=F8FAFC&bold=true`
@@ -372,7 +346,7 @@ export default function SellerLayout({ header, children }) {
                                 <div className="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
                                     <Link
                                         href={route("profile.edit")}
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#1B4D3E]"
+                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-royalGold-500/10 hover:text-royalGold-700"
                                     >
                                         Account Settings
                                     </Link>

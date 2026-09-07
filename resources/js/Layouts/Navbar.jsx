@@ -2,11 +2,13 @@ import { Link, usePage } from "@inertiajs/react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import QuickTranslatorModal from "@/Components/QuickTranslatorModal";
+import { useAppState } from "@/Context/AppStateContext";
 
 export default function Navbar({ auth = {} }) {
     const [isTranslatorOpen, setIsTranslatorOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { url } = usePage();
+    const { language, currency, setLanguage, setCurrency } = useAppState();
 
     useEffect(() => {
         setIsMobileMenuOpen(false);
@@ -166,6 +168,30 @@ export default function Navbar({ auth = {} }) {
                     </nav>
 
                     <div className="flex items-center gap-3">
+                        <div className="hidden sm:flex items-center gap-1 rounded-full border border-royalGold-500/30 bg-royalMaroon-900/30 p-1 text-[10px] font-bold text-royalGold-300">
+                            {["LKR", "USD"].map((value) => (
+                                <button
+                                    key={value}
+                                    type="button"
+                                    onClick={() => setCurrency(value)}
+                                    className={`rounded-full px-2 py-1 transition-colors ${currency === value ? "bg-royalGold-500 text-royalMaroon-950" : "hover:bg-royalGold-500/20"}`}
+                                >
+                                    {value}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="hidden sm:flex items-center gap-1 rounded-full border border-royalGold-500/30 bg-royalMaroon-900/30 p-1 text-[10px] font-bold text-royalGold-300">
+                            {["EN", "SI", "TA"].map((value) => (
+                                <button
+                                    key={value}
+                                    type="button"
+                                    onClick={() => setLanguage(value)}
+                                    className={`rounded-full px-2 py-1 uppercase transition-colors ${language === value ? "bg-royalGold-500 text-royalMaroon-950" : "hover:bg-royalGold-500/20"}`}
+                                >
+                                    {value}
+                                </button>
+                            ))}
+                        </div>
                         <button
                             type="button"
                             onClick={() => setIsMobileMenuOpen((open) => !open)}

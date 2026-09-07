@@ -16,6 +16,21 @@ class SocialLoginController extends Controller
         if (empty(config("services.{$provider}.client_id")) || empty(config("services.{$provider}.client_secret"))) {
             return redirect('/login')->with('status', "The {$provider} login is not configured yet. Please set up OAuth credentials in the .env file.");
         }
+
+        // Keep the OAuth session on the same host as the configured callback.
+        // This prevents localhost/127.0.0.1 cookie mismatches during local login.
+        if (app()->environment('local')) {
+            $configuredRedirect = config("services.{$provider}.redirect");
+            $configuredHost = $configuredRedirect ? parse_url($configuredRedirect, PHP_URL_HOST) : null;
+
+            if ($configuredHost && request()->getHost() !== $configuredHost) {
+                $configuredRedirectPath = parse_url($configuredRedirect, PHP_URL_PATH);
+                $redirectPath = str_replace('/callback', '/redirect', $configuredRedirectPath);
+                $configuredOrigin = rtrim(str_replace($configuredRedirectPath, '', $configuredRedirect), '/');
+
+                return redirect()->to($configuredOrigin . $redirectPath);
+            }
+        }
         
         return Socialite::driver($provider)->redirect();
     }
