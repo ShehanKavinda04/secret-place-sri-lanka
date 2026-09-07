@@ -25,14 +25,14 @@ class MockDashboardSeeder extends Seeder
 
         // 2. Create some businesses with pending statuses to populate the Onboarding Hub
         $businesses = [
-            ['name' => 'Galle Fort Heritage Stays', 'category' => 'accommodations', 'status' => 'pending', 'price_per_person' => 15000],
-            ['name' => 'Kandy Brassworks Co.', 'category' => 'crafts', 'status' => 'pending', 'price_per_person' => 2000],
-            ['name' => 'Ella Train Transfers', 'category' => 'transport', 'status' => 'pending', 'price_per_person' => 5000],
-            ['name' => 'Sigiriya Eco Resort', 'category' => 'accommodations', 'status' => 'pending', 'price_per_person' => 12000],
-            ['name' => 'Ceylon Spice Exports', 'category' => 'crafts', 'status' => 'pending', 'price_per_person' => 3000],
+            ['name' => 'Galle Fort Heritage Stays', 'category' => 'accommodations', 'status' => 'pending', 'price_per_person' => 15000, 'latitude' => 6.0329, 'longitude' => 80.2168],
+            ['name' => 'Kandy Brassworks Co.', 'category' => 'crafts', 'status' => 'pending', 'price_per_person' => 2000, 'latitude' => 7.2906, 'longitude' => 80.6337],
+            ['name' => 'Ella Train Transfers', 'category' => 'transport', 'status' => 'pending', 'price_per_person' => 5000, 'latitude' => 6.8667, 'longitude' => 81.0466],
+            ['name' => 'Sigiriya Eco Resort', 'category' => 'accommodations', 'status' => 'pending', 'price_per_person' => 12000, 'latitude' => 7.9570, 'longitude' => 80.7603],
+            ['name' => 'Ceylon Spice Exports', 'category' => 'crafts', 'status' => 'pending', 'price_per_person' => 3000, 'latitude' => 7.8731, 'longitude' => 80.7718],
             // Some approved ones to make the KPI charts work
-            ['name' => 'Mirissa Surf Camp', 'category' => 'accommodations', 'status' => 'approved', 'price_per_person' => 8000],
-            ['name' => 'Colombo Gem Hub', 'category' => 'crafts', 'status' => 'approved', 'price_per_person' => 50000],
+            ['name' => 'Mirissa Surf Camp', 'category' => 'accommodations', 'status' => 'approved', 'price_per_person' => 8000, 'latitude' => 5.9483, 'longitude' => 80.4716],
+            ['name' => 'Colombo Gem Hub', 'category' => 'crafts', 'status' => 'approved', 'price_per_person' => 50000, 'latitude' => 6.9271, 'longitude' => 79.8612],
         ];
 
         foreach ($businesses as $bData) {
@@ -43,6 +43,8 @@ class MockDashboardSeeder extends Seeder
                 'category' => $bData['category'],
                 'status' => $bData['status'],
                 'price_per_person' => $bData['price_per_person'],
+                'latitude' => $bData['latitude'],
+                'longitude' => $bData['longitude'],
                 'created_at' => $created_at,
                 'updated_at' => $created_at
             ]);

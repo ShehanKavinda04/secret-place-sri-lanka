@@ -9,11 +9,13 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\SmartPricingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\NearbyLocationsController;
 
 Route::get('/api/orders', [OrderController::class, 'index']);
 Route::post('/api/orders', [OrderController::class, 'store']);
 Route::get('/api/wishlists', [WishlistController::class, 'index']);
 Route::post('/api/wishlists/toggle', [WishlistController::class, 'toggle']);
+Route::get('/api/nearby-locations', [NearbyLocationsController::class, 'index'])->name('api.nearby-locations');
 
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -227,6 +229,13 @@ Route::get('/places', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
+
+Route::get('/live-map', function () {
+    return Inertia::render('LiveMap', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('live-map');
 
 Route::get('/category/rituals', function () {
     return Inertia::render('Rituals', [
