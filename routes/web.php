@@ -361,15 +361,17 @@ Route::post('/api/experience-contact', function (Illuminate\Http\Request $reques
 });
 
 Route::post('/api/transport-booking', function (Illuminate\Http\Request $request) {
-    $request->validate([
-        'name' => 'required|string|max:255',
+    $validated = $request->validate([
+        'name' => 'required|string|min:2|max:255',
         'email' => 'required|email|max:255',
-        'phone' => 'nullable|string|max:20',
-        'vehicleName' => 'required|string',
-        'pickup' => 'nullable|string',
-        'date' => 'nullable|string',
+        'phone' => ['required', 'regex:/^(\+?[0-9\s\-()]{9,20})$/'],
+        'vehicleName' => 'required|string|max:255',
+        'pickup' => 'required|string|min:2|max:255',
+        'date' => 'required|date',
         'passengers' => 'nullable|string',
         'totalAmount' => 'nullable|string',
+        'paymentMethod' => 'nullable|string',
+        'amenities' => 'nullable|array',
     ]);
 
     $bookingDetails = $request->all();
@@ -377,12 +379,38 @@ Route::post('/api/transport-booking', function (Illuminate\Http\Request $request
     // Send to the default configured address because of Resend Sandbox domain verification
     $toAddress = config('mail.from.address'); 
     
-    \Illuminate\Support\Facades\Mail::to($toAddress)->send(
-        new \App\Mail\TransportBookingConfirmed($bookingDetails)
-    );
+    try {
+        if ($toAddress) {
+            \Illuminate\Support\Facades\Mail::to($toAddress)->send(
+                new \App\Mail\TransportBookingConfirmed($bookingDetails)
+            );
+        }
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\Log::warning('Transport booking mail failed: ' . $e->getMessage());
+    }
 
-    return response()->json(['success' => true]);
+    return response()->json(['success' => true, 'booking_reference' => 'TRP-' . rand(100000, 999999)]);
 });
+
+Route::post('/api/custom-route-booking', function (Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'startPoint' => 'required|string|min:2|max:255',
+        'stops' => 'required|array|min:1',
+        'stops.*' => 'required|string',
+        'vehicle' => 'required|string',
+        'date' => 'required|date',
+        'time' => 'required|string',
+        'pickupAddress' => 'required|string|min:5|max:500',
+        'fare' => 'nullable|numeric',
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Custom route pilgrimage confirmed.',
+        'reference' => 'ROUTE-' . strtoupper(substr(uniqid(), -6))
+    ]);
+});
+
 
 Route::get('/api/transport-booking/ticket.pdf', function () {
     $html = '
