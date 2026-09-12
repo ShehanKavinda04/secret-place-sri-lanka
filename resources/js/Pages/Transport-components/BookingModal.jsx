@@ -1,17 +1,35 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, CreditCard, Smartphone, Banknote, ShieldCheck, Download, ExternalLink, AlertCircle } from 'lucide-react';
+import { 
+    X, Check, CreditCard, Smartphone, Banknote, ShieldCheck, Download, 
+    ExternalLink, AlertCircle, QrCode, Copy, CheckCircle2, Lock, Building2,
+    Calendar, MapPin, User, Mail, Phone, Sparkles
+} from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import axios from 'axios';
+import { 
+    validateCardNumber, 
+    validateExpiryDate, 
+    validateCvv, 
+    validateCardHolder, 
+    getCardBrand 
+} from '@/Utils/cardValidation';
 
 const bookingSchema = z.object({
     pickup: z.string().trim().min(3, { message: 'Pickup location must be at least 3 characters.' }),
     date: z.string().min(1, { message: 'Please select a valid date.' }),
     name: z.string().trim().min(2, { message: 'Please enter a valid full name.' }),
     email: z.string().trim().email({ message: 'Please enter a valid email address (e.g. name@example.com).' }),
-    phone: z.string().trim().regex(/^(\+?[0-9\s\-()]{9,20})$/, { message: 'Please enter a valid contact phone number (9-15 digits).' }),
+    phone: z.string().trim().refine((val) => {
+        // Strip common whitespace/dashes
+        const cleaned = val.replace(/[\s\-()]/g, '');
+        // Match standard 10-digit format starting with 0 (e.g. 0771234567, 0712345678) or international +94 / 94
+        return /^(?:0\d{9}|(?:\+94|94)7\d{8}|07\d{8})$/.test(cleaned);
+    }, {
+        message: 'Please enter a valid 10-digit phone number (e.g. 077 123 4567 or +94 77 123 4567).'
+    }),
 });
 
 export default function BookingModal({ isOpen, onClose, vehicle }) {
@@ -19,7 +37,27 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [serverError, setServerError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [bookingReference, setBookingReference] = useState('TRP-' + Math.floor(100000 + Math.random() * 900000));
+    const [copiedAccount, setCopiedAccount] = useState(false);
     
+    // Card payment form state
+    const [cardDetails, setCardDetails] = useState({
+        cardNumber: '',
+        cardHolder: '',
+        expiry: '',
+        cvv: ''
+    });
+
+    const [cardErrors, setCardErrors] = useState({
+        cardNumber: '',
+        cardHolder: '',
+        expiry: '',
+        cvv: ''
+    });
+
+    // Bank transfer reference input state
+    const [bankReference, setBankReference] = useState('');
+
     // Amenities state
     const [amenities, setAmenities] = useState({
         elderly: false,
@@ -30,7 +68,6 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
 
     const {
         register,
-        handleSubmit,
         trigger,
         getValues,
         formState: { errors }
@@ -48,6 +85,24 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
 
     if (!isOpen) return null;
 
+    // Price calculation
+    const parseBasePrice = () => {
+        if (!vehicle?.price) return 14000;
+        const match = vehicle.price.match(/[\d,]+/);
+        if (match) {
+            const num = parseInt(match[0].replace(/,/g, ''), 10);
+            return isNaN(num) ? 14000 : num;
+        }
+        return 14000;
+    };
+
+    const baseFare = parseBasePrice();
+    const amenitiesCost = (amenities.elderly ? 1500 : 0) + 
+                          (amenities.cooking ? 2500 : 0) + 
+                          (amenities.guide ? 2000 : 0);
+    const totalFare = baseFare + amenitiesCost;
+    const advanceFare = Math.round(totalFare * 0.20);
+
     const handleContinueStep1 = async () => {
         const isValid = await trigger(['pickup', 'date', 'name', 'email', 'phone']);
         if (isValid) {
@@ -58,20 +113,63 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
     const nextStep = () => setStep(s => Math.min(s + 1, 4));
     const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        setCopiedAccount(true);
+        setTimeout(() => setCopiedAccount(false), 2500);
+    };
+
+    const detectedBrand = getCardBrand(cardDetails.cardNumber);
+
     const onSubmitBooking = async () => {
-        const formValues = getValues();
-        setIsSubmitting(true);
         setServerError(null);
 
+        // Card validation check
+        if (paymentMethod === 'card') {
+            const numValidation = validateCardNumber(cardDetails.cardNumber);
+            const dateValidation = validateExpiryDate(cardDetails.expiry);
+            const cvvValidation = validateCvv(cardDetails.cvv, numValidation.brand);
+            const holderValidation = validateCardHolder(cardDetails.cardHolder);
+
+            const newCardErrors = {
+                cardNumber: numValidation.isValid ? '' : numValidation.error,
+                expiry: dateValidation.isValid ? '' : dateValidation.error,
+                cvv: cvvValidation.isValid ? '' : cvvValidation.error,
+                cardHolder: holderValidation.isValid ? '' : holderValidation.error
+            };
+
+            setCardErrors(newCardErrors);
+
+            if (!numValidation.isValid || !dateValidation.isValid || !cvvValidation.isValid || !holderValidation.isValid) {
+                return;
+            }
+        }
+
+        const formValues = getValues();
+        setIsSubmitting(true);
+
         try {
-            await axios.post('/api/transport-booking', {
+            const res = await axios.post('/api/transport-booking', {
                 ...formValues,
                 vehicleName: vehicle?.name || 'Transport Service',
                 paymentMethod,
+                paymentDetails: paymentMethod === 'card' 
+                    ? { 
+                        cardHolder: cardDetails.cardHolder, 
+                        last4: cardDetails.cardNumber.replace(/\D/g, '').slice(-4),
+                        brand: detectedBrand || 'card'
+                    }
+                    : paymentMethod === 'bank' 
+                        ? { reference: bankReference } 
+                        : { method: 'LankaQR' },
                 amenities: Object.keys(amenities).filter(k => amenities[k]),
                 passengers: 'Group',
-                totalAmount: 'LKR 16,500'
+                totalAmount: `LKR ${totalFare.toLocaleString()}`,
+                advanceAmount: `LKR ${advanceFare.toLocaleString()}`
             });
+            if (res.data?.booking_reference) {
+                setBookingReference(res.data.booking_reference);
+            }
             setStep(4);
         } catch (error) {
             console.error('Booking error', error);
@@ -207,7 +305,7 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                                     <div>
                                                         <input 
                                                             type="tel" 
-                                                            placeholder="Phone Number (e.g. +94 77 123 4567) *" 
+                                                            placeholder="Phone Number (e.g. 077 123 4567) *" 
                                                             {...register('phone')} 
                                                             className={`w-full bg-slate-50 rounded-xl px-4 py-2.5 text-sm transition-colors ${errors.phone ? 'border-rose-400 bg-rose-50/30 focus:ring-rose-500' : 'border-slate-200 focus:ring-teal-500'}`} 
                                                         />
@@ -241,9 +339,9 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                     
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         {[
-                                            { id: 'elderly', title: 'Elderly/Disabled Assistant', desc: 'Dedicated help for wheelchair mobility.' },
-                                            { id: 'cooking', title: 'Cooking Equipment Trailer', desc: 'For groups planning to cook meals.' },
-                                            { id: 'guide', title: 'Experienced Pilgrimage Guide', desc: 'Local Vandana Nayaka to lead chants & history.' },
+                                            { id: 'elderly', title: 'Elderly/Disabled Assistant', desc: 'Dedicated help for wheelchair mobility (+LKR 1,500).' },
+                                            { id: 'cooking', title: 'Cooking Equipment Trailer', desc: 'For groups planning to cook meals (+LKR 2,500).' },
+                                            { id: 'guide', title: 'Experienced Pilgrimage Guide', desc: 'Local Vandana Nayaka to lead chants & history (+LKR 2,000).' },
                                             { id: 'firstAid', title: 'First Aid Kit Onboard', desc: 'Included free of charge in all vehicles.' }
                                         ].map(item => (
                                             <label key={item.id} className={`flex items-start gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${amenities[item.id] ? 'border-teal-500 bg-teal-50/50' : 'border-slate-100 hover:border-slate-200 bg-white'}`}>
@@ -273,42 +371,280 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                         </div>
                                     )}
 
+                                    {/* Fare Breakdown */}
                                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6">
                                         <div className="flex justify-between text-sm mb-2">
-                                            <span className="text-slate-600">Base Fare</span>
-                                            <span className="font-bold text-slate-800">LKR 14,000</span>
+                                            <span className="text-slate-600">Base Fare ({vehicle?.name || 'Vehicle'})</span>
+                                            <span className="font-bold text-slate-800">LKR {baseFare.toLocaleString()}</span>
                                         </div>
-                                        <div className="flex justify-between text-sm mb-2">
-                                            <span className="text-slate-600">Amenities & Add-ons</span>
-                                            <span className="font-bold text-slate-800">LKR 2,500</span>
-                                        </div>
+                                        {amenitiesCost > 0 && (
+                                            <div className="flex justify-between text-sm mb-2">
+                                                <span className="text-slate-600">Amenities & Add-ons</span>
+                                                <span className="font-bold text-slate-800">LKR {amenitiesCost.toLocaleString()}</span>
+                                            </div>
+                                        )}
                                         <div className="h-px bg-slate-200 my-2"></div>
                                         <div className="flex justify-between text-base">
-                                            <span className="font-bold text-slate-800">Total Amount</span>
-                                            <span className="font-bold text-teal-700">LKR 16,500</span>
+                                            <span className="font-bold text-slate-800">Total Fare</span>
+                                            <span className="font-bold text-teal-700">LKR {totalFare.toLocaleString()}</span>
                                         </div>
                                         <div className="mt-4 pt-4 border-t border-slate-200 flex justify-between text-sm">
-                                            <span className="font-bold text-amber-600">Required Advance (20%)</span>
-                                            <span className="font-bold text-amber-700">LKR 3,300</span>
+                                            <span className="font-bold text-amber-600">Required Advance Payment (20%)</span>
+                                            <span className="font-bold text-amber-700">LKR {advanceFare.toLocaleString()}</span>
                                         </div>
                                     </div>
 
-                                    <div className="grid sm:grid-cols-3 gap-4">
-                                        <label onClick={() => setPaymentMethod('card')} className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-teal-500 bg-teal-50 text-teal-800' : 'border-slate-100 hover:border-slate-200 text-slate-600'}`}>
-                                            <input type="radio" name="payment" className="sr-only" checked={paymentMethod === 'card'} onChange={() => {}} />
-                                            <CreditCard className="w-8 h-8 mb-2" />
-                                            <span className="font-bold text-sm">Card Payment</span>
+                                    {/* Selectable Payment Tabs */}
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-3">
+                                            Select Payment Gateway / Method
                                         </label>
-                                        <label onClick={() => setPaymentMethod('lankaqr')} className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'lankaqr' ? 'border-teal-500 bg-teal-50 text-teal-800' : 'border-slate-100 hover:border-slate-200 text-slate-600'}`}>
-                                            <input type="radio" name="payment" className="sr-only" checked={paymentMethod === 'lankaqr'} onChange={() => {}} />
-                                            <Smartphone className="w-8 h-8 mb-2" />
-                                            <span className="font-bold text-sm">LankaQR</span>
-                                        </label>
-                                        <label onClick={() => setPaymentMethod('bank')} className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'bank' ? 'border-teal-500 bg-teal-50 text-teal-800' : 'border-slate-100 hover:border-slate-200 text-slate-600'}`}>
-                                            <input type="radio" name="payment" className="sr-only" checked={paymentMethod === 'bank'} onChange={() => {}} />
-                                            <Banknote className="w-8 h-8 mb-2" />
-                                            <span className="font-bold text-sm">Bank Transfer</span>
-                                        </label>
+                                        <div className="grid sm:grid-cols-3 gap-3">
+                                            <button 
+                                                type="button"
+                                                onClick={() => setPaymentMethod('card')} 
+                                                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-teal-500 bg-teal-50/70 text-teal-800 shadow-sm ring-2 ring-teal-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
+                                            >
+                                                <CreditCard className="w-8 h-8 mb-2 text-teal-700" />
+                                                <span className="font-bold text-sm">Card Payment</span>
+                                                <span className="text-[10px] text-slate-400 mt-1">Visa / Master / LankaPay</span>
+                                            </button>
+
+                                            <button 
+                                                type="button"
+                                                onClick={() => setPaymentMethod('lankaqr')} 
+                                                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'lankaqr' ? 'border-teal-500 bg-teal-50/70 text-teal-800 shadow-sm ring-2 ring-teal-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
+                                            >
+                                                <Smartphone className="w-8 h-8 mb-2 text-teal-700" />
+                                                <span className="font-bold text-sm">LankaQR</span>
+                                                <span className="text-[10px] text-slate-400 mt-1">Scan & Pay via Mobile App</span>
+                                            </button>
+
+                                            <button 
+                                                type="button"
+                                                onClick={() => setPaymentMethod('bank')} 
+                                                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'bank' ? 'border-teal-500 bg-teal-50/70 text-teal-800 shadow-sm ring-2 ring-teal-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
+                                            >
+                                                <Banknote className="w-8 h-8 mb-2 text-teal-700" />
+                                                <span className="font-bold text-sm">Bank Transfer</span>
+                                                <span className="text-[10px] text-slate-400 mt-1">Direct Bank Deposit / Slip</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Method Specific Interactive Form View */}
+                                    <div className="mt-4">
+                                        {paymentMethod === 'card' && (
+                                            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
+                                                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                                                    <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
+                                                        <Lock className="w-4 h-4 text-emerald-600" />
+                                                        <span>Encrypted Card Checkout (PayHere)</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                                                        <span className={`px-2 py-0.5 rounded border transition-all ${detectedBrand === 'visa' ? 'bg-blue-600 text-white font-bold border-blue-600 shadow-sm' : 'bg-white border-slate-200 text-slate-600'}`}>
+                                                            VISA
+                                                        </span>
+                                                        <span className={`px-2 py-0.5 rounded border transition-all ${detectedBrand === 'mastercard' ? 'bg-amber-600 text-white font-bold border-amber-600 shadow-sm' : 'bg-white border-slate-200 text-slate-600'}`}>
+                                                            Mastercard
+                                                        </span>
+                                                        <span className={`px-2 py-0.5 rounded border transition-all ${detectedBrand === 'lankapay' ? 'bg-teal-700 text-white font-bold border-teal-700 shadow-sm' : 'bg-white border-slate-200 text-teal-700'}`}>
+                                                            LankaPay
+                                                        </span>
+                                                        <span className={`px-2 py-0.5 rounded border transition-all ${detectedBrand === 'amex' ? 'bg-indigo-600 text-white font-bold border-indigo-600 shadow-sm' : 'bg-white border-slate-200 text-slate-600'}`}>
+                                                            AMEX
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                                                        Cardholder Name <span className="text-rose-500">*</span>
+                                                    </label>
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Name on credit/debit card"
+                                                        value={cardDetails.cardHolder}
+                                                        onChange={(e) => {
+                                                            setCardDetails({ ...cardDetails, cardHolder: e.target.value });
+                                                            if (cardErrors.cardHolder) {
+                                                                setCardErrors(prev => ({ ...prev, cardHolder: '' }));
+                                                            }
+                                                        }}
+                                                        onBlur={() => {
+                                                            const res = validateCardHolder(cardDetails.cardHolder);
+                                                            setCardErrors(prev => ({ ...prev, cardHolder: res.isValid ? '' : res.error }));
+                                                        }}
+                                                        className={`w-full bg-white rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-colors ${cardErrors.cardHolder ? 'border border-rose-400 bg-rose-50/20 focus:ring-2 focus:ring-rose-400' : 'border border-slate-200 focus:ring-2 focus:ring-teal-500'}`}
+                                                    />
+                                                    {cardErrors.cardHolder && (
+                                                        <p className="mt-1 text-xs text-rose-500 flex items-center gap-1 font-medium">
+                                                            <AlertCircle className="w-3 h-3 flex-shrink-0" /> {cardErrors.cardHolder}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                                                        Card Number <span className="text-rose-500">*</span>
+                                                    </label>
+                                                    <div className="relative">
+                                                        <input 
+                                                            type="text" 
+                                                            maxLength={19}
+                                                            placeholder="4532 •••• •••• 8920"
+                                                            value={cardDetails.cardNumber}
+                                                            onChange={(e) => {
+                                                                const v = e.target.value.replace(/\D/g, '').slice(0, 16);
+                                                                const formatted = v.match(/.{1,4}/g)?.join(' ') || v;
+                                                                setCardDetails({ ...cardDetails, cardNumber: formatted });
+                                                                if (cardErrors.cardNumber) {
+                                                                    setCardErrors(prev => ({ ...prev, cardNumber: '' }));
+                                                                }
+                                                            }}
+                                                            onBlur={() => {
+                                                                const res = validateCardNumber(cardDetails.cardNumber);
+                                                                setCardErrors(prev => ({ ...prev, cardNumber: res.isValid ? '' : res.error }));
+                                                            }}
+                                                            className={`w-full bg-white rounded-xl px-4 py-2.5 text-sm font-mono tracking-wider focus:outline-none transition-colors ${cardErrors.cardNumber ? 'border border-rose-400 bg-rose-50/20 focus:ring-2 focus:ring-rose-400' : 'border border-slate-200 focus:ring-2 focus:ring-teal-500'}`}
+                                                        />
+                                                        <CreditCard className="w-5 h-5 text-slate-400 absolute right-3 top-2.5" />
+                                                    </div>
+                                                    {cardErrors.cardNumber && (
+                                                        <p className="mt-1 text-xs text-rose-500 flex items-center gap-1 font-medium">
+                                                            <AlertCircle className="w-3 h-3 flex-shrink-0" /> {cardErrors.cardNumber}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                                                            Expiry Date <span className="text-rose-500">*</span>
+                                                        </label>
+                                                        <input 
+                                                            type="text" 
+                                                            maxLength={5}
+                                                            placeholder="MM/YY"
+                                                            value={cardDetails.expiry}
+                                                            onChange={(e) => {
+                                                                let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                                                if (v.length >= 3) v = `${v.slice(0, 2)}/${v.slice(2)}`;
+                                                                setCardDetails({ ...cardDetails, expiry: v });
+                                                                if (cardErrors.expiry) {
+                                                                    setCardErrors(prev => ({ ...prev, expiry: '' }));
+                                                                }
+                                                            }}
+                                                            onBlur={() => {
+                                                                const res = validateExpiryDate(cardDetails.expiry);
+                                                                setCardErrors(prev => ({ ...prev, expiry: res.isValid ? '' : res.error }));
+                                                            }}
+                                                            className={`w-full bg-white rounded-xl px-4 py-2.5 text-sm font-mono text-center focus:outline-none transition-colors ${cardErrors.expiry ? 'border border-rose-400 bg-rose-50/20 focus:ring-2 focus:ring-rose-400' : 'border border-slate-200 focus:ring-2 focus:ring-teal-500'}`}
+                                                        />
+                                                        {cardErrors.expiry && (
+                                                            <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                                {cardErrors.expiry}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                                                            CVV / CVC <span className="text-rose-500">*</span>
+                                                        </label>
+                                                        <input 
+                                                            type="password" 
+                                                            maxLength={4}
+                                                            placeholder="•••"
+                                                            value={cardDetails.cvv}
+                                                            onChange={(e) => {
+                                                                setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) });
+                                                                if (cardErrors.cvv) {
+                                                                    setCardErrors(prev => ({ ...prev, cvv: '' }));
+                                                                }
+                                                            }}
+                                                            onBlur={() => {
+                                                                const res = validateCvv(cardDetails.cvv, detectedBrand);
+                                                                setCardErrors(prev => ({ ...prev, cvv: res.isValid ? '' : res.error }));
+                                                            }}
+                                                            className={`w-full bg-white rounded-xl px-4 py-2.5 text-sm font-mono text-center focus:outline-none transition-colors ${cardErrors.cvv ? 'border border-rose-400 bg-rose-50/20 focus:ring-2 focus:ring-rose-400' : 'border border-slate-200 focus:ring-2 focus:ring-teal-500'}`}
+                                                        />
+                                                        {cardErrors.cvv && (
+                                                            <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                                {cardErrors.cvv}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+
+                                        {paymentMethod === 'lankaqr' && (
+                                            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center">
+                                                <div className="inline-block p-4 bg-white rounded-2xl shadow-sm border border-slate-200 mb-3">
+                                                    {/* LankaQR SVG Code representation */}
+                                                    <div className="w-36 h-36 bg-teal-900 text-white rounded-xl flex flex-col items-center justify-center p-2 relative">
+                                                        <QrCode className="w-28 h-28 text-white" />
+                                                        <span className="text-[9px] font-bold tracking-wider text-teal-300 uppercase">LankaQR Verified</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="text-sm font-bold text-slate-800">Scan with any Sri Lankan Banking App</div>
+                                                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                                                    Open Flash, BOC SmartPay, FriMi, Sampath Vishwa, or HNB SOLO and scan to transfer the 20% advance (<strong>LKR {advanceFare.toLocaleString()}</strong>).
+                                                </p>
+
+                                                <div className="mt-4 pt-3 border-t border-slate-200 flex flex-wrap items-center justify-center gap-2">
+                                                    <span className="text-[11px] font-bold text-slate-600">Merchant Reference:</span>
+                                                    <span className="font-mono text-xs font-bold bg-white px-3 py-1 rounded-lg border border-slate-200 text-teal-800">
+                                                        LQR-TRP-2026-8942
+                                                    </span>
+                                                </div>
+                                            </motion.div>
+                                        )}
+
+                                        {paymentMethod === 'bank' && (
+                                            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
+                                                <div className="flex items-center gap-2 text-slate-800 font-bold text-sm border-b border-slate-200 pb-3">
+                                                    <Building2 className="w-4 h-4 text-teal-700" />
+                                                    <span>Official Bank Deposit Account</span>
+                                                </div>
+
+                                                <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                                                    <div className="bg-white p-3 rounded-xl border border-slate-200">
+                                                        <span className="text-slate-400 block font-semibold">Bank & Branch</span>
+                                                        <span className="font-bold text-slate-800 text-sm">Commercial Bank of Ceylon</span>
+                                                        <span className="text-slate-500 block">Anuradhapura City Branch</span>
+                                                    </div>
+                                                    <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+                                                        <div>
+                                                            <span className="text-slate-400 block font-semibold">Account Number</span>
+                                                            <span className="font-mono font-bold text-slate-800 text-sm">8009 2314 9910</span>
+                                                        </div>
+                                                        <button 
+                                                            type="button"
+                                                            onClick={() => copyToClipboard('800923149910')}
+                                                            className="flex items-center gap-1 text-xs text-teal-700 hover:text-teal-900 font-bold bg-teal-50 hover:bg-teal-100 px-2.5 py-1.5 rounded-lg border border-teal-200 transition-colors cursor-pointer"
+                                                        >
+                                                            {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                                                            {copiedAccount ? 'Copied' : 'Copy'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                                                        Bank Reference / Transaction ID (Optional)
+                                                    </label>
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="e.g. TXN-928174 or Deposit Slip No."
+                                                        value={bankReference}
+                                                        onChange={(e) => setBankReference(e.target.value)}
+                                                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                                                    />
+                                                </div>
+                                            </motion.div>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}
@@ -319,13 +655,22 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                         <ShieldCheck className="w-12 h-12" />
                                     </div>
                                     <h3 className="text-3xl font-bold text-slate-800">Booking Confirmed!</h3>
-                                    <p className="text-slate-500 max-w-sm mx-auto">Your transport has been successfully reserved. A confirmation SMS with live tracking details has been sent to your phone.</p>
+                                    <p className="text-slate-500 max-w-sm mx-auto">Your transport has been successfully reserved. A confirmation email and SMS with live tracking details have been dispatched.</p>
                                     
-                                    <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 max-w-sm mx-auto flex flex-col gap-3">
-                                        <div className="flex justify-between text-sm border-b border-slate-200 pb-3">
+                                    <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 max-w-sm mx-auto flex flex-col gap-3 text-left">
+                                        <div className="flex justify-between text-sm border-b border-slate-200 pb-2">
                                             <span className="text-slate-500">Booking ID</span>
-                                            <span className="font-mono font-bold text-slate-800">#TRP-847291</span>
+                                            <span className="font-mono font-bold text-slate-800">#{bookingReference}</span>
                                         </div>
+                                        <div className="flex justify-between text-sm border-b border-slate-200 pb-2">
+                                            <span className="text-slate-500">Payment Mode</span>
+                                            <span className="font-bold text-teal-800 uppercase">{paymentMethod}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm border-b border-slate-200 pb-2">
+                                            <span className="text-slate-500">Total Fare</span>
+                                            <span className="font-bold text-slate-800">LKR {totalFare.toLocaleString()}</span>
+                                        </div>
+
                                         <button 
                                             onClick={() => window.open('/api/transport-booking/ticket.pdf', '_blank')}
                                             className="flex items-center justify-center gap-2 text-teal-700 font-bold text-sm hover:text-teal-800 mt-2 cursor-pointer"
@@ -378,4 +723,5 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
         </AnimatePresence>
     );
 }
+
 

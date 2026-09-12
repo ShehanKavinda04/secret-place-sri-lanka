@@ -14,6 +14,7 @@ import {
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { validateCardNumber, validateExpiryDate, validateCvv, validateCardHolder } from '@/Utils/cardValidation';
 
 // Leaflet icon fix
 delete L.Icon.Default.prototype._getIconUrl;
@@ -826,10 +827,17 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
     const validatePayment = () => {
         const errors = {};
         if (paymentMethod === 'card') {
-            if (!paymentData.card_holder.trim()) errors.card_holder = 'Card holder name is required';
-            if (!paymentData.card_number.trim() || paymentData.card_number.replace(/\s/g, '').length < 16) errors.card_number = 'Valid 16-digit card number is required';
-            if (!paymentData.valid_date.trim()) errors.valid_date = 'Expiration date is required';
-            if (!paymentData.cvv.trim() || paymentData.cvv.length < 3) errors.cvv = '3 or 4 digit CVV is required';
+            const holderVal = validateCardHolder(paymentData.card_holder);
+            if (!holderVal.isValid) errors.card_holder = holderVal.error;
+
+            const cardVal = validateCardNumber(paymentData.card_number);
+            if (!cardVal.isValid) errors.card_number = cardVal.error;
+
+            const dateVal = validateExpiryDate(paymentData.valid_date);
+            if (!dateVal.isValid) errors.valid_date = dateVal.error;
+
+            const cvvVal = validateCvv(paymentData.cvv, cardVal.brand);
+            if (!cvvVal.isValid) errors.cvv = cvvVal.error;
         }
         setPaymentErrors(errors);
         return Object.keys(errors).length === 0;

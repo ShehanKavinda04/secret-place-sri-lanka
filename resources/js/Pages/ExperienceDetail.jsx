@@ -244,6 +244,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
     const [contactName, setContactName] = useState(auth?.user?.name || '');
     const [contactEmail, setContactEmail] = useState(auth?.user?.email || '');
     const [contactPhone, setContactPhone] = useState('');
+    const [contactPhoneError, setContactPhoneError] = useState('');
     const [contactMessage, setContactMessage] = useState('');
     const [contactStatus, setContactStatus] = useState('idle');
 
@@ -279,6 +280,15 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
     const handleContactSubmit = async (e) => {
         e.preventDefault();
+        if (contactPhone && contactPhone.trim()) {
+            const cleaned = contactPhone.trim().replace(/[\s\-()]/g, '');
+            const isValid = /^(?:0\d{9}|(?:\+94|94)7[0-9]{8}|07[0-9]{8})$/.test(cleaned);
+            if (!isValid) {
+                setContactPhoneError('Please enter a valid 10-digit Sri Lankan phone number (e.g. 077 123 4567 or +94 77 123 4567).');
+                return;
+            }
+        }
+        setContactPhoneError('');
         setContactStatus('sending');
         try {
             await window.axios.post('/api/experience-contact', {
@@ -891,10 +901,18 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         <input 
                                             type="tel" 
                                             value={contactPhone}
-                                            onChange={(e) => setContactPhone(e.target.value)}
+                                            onChange={(e) => {
+                                                setContactPhone(e.target.value);
+                                                if (contactPhoneError) setContactPhoneError('');
+                                            }}
                                             placeholder="+94 77 123 4567" 
-                                            className="w-full border border-slate-300 rounded-lg px-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500 transition-all" 
+                                            className={`w-full border rounded-lg px-4 py-2 text-slate-700 focus:outline-none transition-all ${contactPhoneError ? 'border-rose-400 bg-rose-50/20 focus:ring-2 focus:ring-rose-400' : 'border-slate-300 focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500'}`} 
                                         />
+                                        {contactPhoneError && (
+                                            <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                {contactPhoneError}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="mb-6">
                                         <label className="block text-sm font-semibold text-slate-700 mb-2">Your Message</label>

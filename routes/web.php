@@ -364,7 +364,7 @@ Route::post('/api/transport-booking', function (Illuminate\Http\Request $request
     $validated = $request->validate([
         'name' => 'required|string|min:2|max:255',
         'email' => 'required|email|max:255',
-        'phone' => ['required', 'regex:/^(\+?[0-9\s\-()]{9,20})$/'],
+        'phone' => ['required', 'regex:/^(?:0\d{9}|(?:\+94|94)7\d{8}|(?:\+?[0-9\s\-()]{9,20}))$/'],
         'vehicleName' => 'required|string|max:255',
         'pickup' => 'required|string|min:2|max:255',
         'date' => 'required|date',
@@ -373,6 +373,7 @@ Route::post('/api/transport-booking', function (Illuminate\Http\Request $request
         'paymentMethod' => 'nullable|string',
         'amenities' => 'nullable|array',
     ]);
+
 
     $bookingDetails = $request->all();
 
@@ -1709,11 +1710,41 @@ Route::get('/crafts/{category}', function ($category) {
 });
 
 Route::get('/crafts/item/{id}', function ($id) {
-    $item = \App\Models\CraftItem::with('reviews')->findOrFail($id);
+    $item = \App\Models\CraftItem::with('reviews')->find($id);
+    if (!$item) {
+        $json = @file_get_contents(database_path('seeders/crafts_data.json'));
+        $data = $json ? json_decode($json, true) : [];
+        $found = collect($data)->firstWhere('id', (int)$id);
+        if ($found) {
+            $item = \App\Models\CraftItem::updateOrCreate(
+                ['id' => $found['id']],
+                [
+                    'category_key' => $found['category_key'] ?? 'stone-carving',
+                    'title' => $found['title'],
+                    'subtitle' => $found['subtitle'] ?? '',
+                    'price' => $found['price'],
+                    'rating' => (float)($found['rating'] ?? 5.0),
+                    'reviews_count' => (int)($found['reviewsCount'] ?? 0),
+                    'description' => $found['description'] ?? 'An exquisite piece of Sri Lankan heritage.',
+                    'features' => $found['features'] ?? [],
+                    'image' => $found['image'],
+                    'sub_images' => $found['subImages'] ?? [$found['image']],
+                    'seller_name' => 'Master Artisans Guild',
+                    'seller_description' => 'Passionate artisans bringing generations of craft to your home.',
+                    'seller_avatar' => $found['image'],
+                ]
+            );
+        }
+    }
+
+    if (!$item) {
+        $item = \App\Models\CraftItem::first();
+    }
+
     return Inertia::render('CraftItem', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'item' => $item
+        'item' => $item ? $item->load('reviews') : null
     ]);
 });
 
@@ -1808,15 +1839,25 @@ Route::post('/api/experience-location/{experience_key}/simulate-update', functio
 });
 
 Route::post('/api/retreat-booking', function (\Illuminate\Http\Request $request) {
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email',
-        'phone' => 'required|string',
-        'language' => 'required|string',
-        'attendance' => 'required|integer|min:1',
+    $validated = $request->validate([
+        'name' => 'required|string|min:3|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => ['required', 'string', 'regex:/^(?:0\d{9}|(?:\+94|94)7[0-9]{8}|07[0-9]{8})$/'],
+        'language' => 'required|string|in:English,Sinhala',
+        'attendance' => 'required|integer|min:1|max:10',
         'agreement' => 'accepted',
         'date' => 'required|string',
         'slot' => 'required|string',
+    ], [
+        'name.required' => 'Full name is required.',
+        'name.min' => 'Full name must be at least 3 characters.',
+        'email.required' => 'Email address is required.',
+        'email.email' => 'Please enter a valid email address.',
+        'phone.required' => 'Phone number is required.',
+        'phone.regex' => 'Please enter a valid 10-digit Sri Lankan phone number.',
+        'attendance.min' => 'Group size must be at least 1.',
+        'attendance.max' => 'Maximum group size allowed is 10 persons.',
+        'agreement.accepted' => 'You must agree to the guidelines to proceed.',
     ]);
 
     // Mock backend logic to "save" the booking and generate a reference number

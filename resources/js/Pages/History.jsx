@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import Navbar from "@/Layouts/Navbar";
 import Footer from "@/Layouts/Footer";
@@ -164,14 +164,62 @@ export default function History({ auth, spot }) {
         setThewawaBookingOpen(true);
     };
 
+    const validateRetreatField = (fieldName, value) => {
+        const val = typeof value === 'string' ? value.trim() : value;
+        switch (fieldName) {
+            case 'name':
+                if (!val) return 'Full name is required.';
+                if (val.length < 3) return 'Full name must be at least 3 characters.';
+                return '';
+            case 'email':
+                if (!val) return 'Email address is required.';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return 'Please enter a valid email address (e.g. name@example.com).';
+                return '';
+            case 'phone':
+                if (!val) return 'Phone number is required.';
+                const cleanedPhone = val.replace(/[\s\-()]/g, '');
+                if (!/^(?:0\d{9}|(?:\+94|94)7[0-9]{8}|07[0-9]{8})$/.test(cleanedPhone)) {
+                    return 'Please enter a valid 10-digit Sri Lankan phone number (e.g. 077 123 4567 or +94 77 123 4567).';
+                }
+                return '';
+            case 'attendance':
+                const num = parseInt(value, 10);
+                if (isNaN(num) || num < 1) return 'Group size must be at least 1.';
+                if (num > 10) return 'Maximum group size allowed is 10 persons.';
+                return '';
+            case 'agreement':
+                if (!value) return 'You must agree to the guidelines to proceed.';
+                return '';
+            default:
+                return '';
+        }
+    };
+
+    const validateRetreatForm = () => {
+        const errors = {};
+        const nameErr = validateRetreatField('name', bookingForm.name);
+        if (nameErr) errors.name = nameErr;
+
+        const emailErr = validateRetreatField('email', bookingForm.email);
+        if (emailErr) errors.email = emailErr;
+
+        const phoneErr = validateRetreatField('phone', bookingForm.phone);
+        if (phoneErr) errors.phone = phoneErr;
+
+        const attendanceErr = validateRetreatField('attendance', bookingForm.attendance);
+        if (attendanceErr) errors.attendance = attendanceErr;
+
+        const agreementErr = validateRetreatField('agreement', bookingForm.agreement);
+        if (agreementErr) errors.agreement = agreementErr;
+
+        setBookingErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
-        setBookingErrors({});
-
-        if (!bookingForm.agreement) {
-            setBookingErrors({
-                agreement: "You must agree to the guidelines to proceed.",
-            });
+        
+        if (!validateRetreatForm()) {
             return;
         }
 
@@ -2759,14 +2807,21 @@ export default function History({ auth, spot }) {
                                     <TextInput
                                         id="name"
                                         type="text"
-                                        className="mt-1 block w-full"
+                                        className={`mt-1 block w-full ${bookingErrors.name ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : ''}`}
                                         value={bookingForm.name}
-                                        onChange={(e) =>
+                                        onChange={(e) => {
                                             setBookingForm({
                                                 ...bookingForm,
                                                 name: e.target.value,
-                                            })
-                                        }
+                                            });
+                                            if (bookingErrors.name) {
+                                                setBookingErrors(prev => ({ ...prev, name: '' }));
+                                            }
+                                        }}
+                                        onBlur={(e) => {
+                                            const err = validateRetreatField('name', e.target.value);
+                                            if (err) setBookingErrors(prev => ({ ...prev, name: err }));
+                                        }}
                                         required
                                         disabled={isSubmittingBooking}
                                     />
@@ -2784,14 +2839,21 @@ export default function History({ auth, spot }) {
                                         <TextInput
                                             id="email"
                                             type="email"
-                                            className="mt-1 block w-full"
+                                            className={`mt-1 block w-full ${bookingErrors.email ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : ''}`}
                                             value={bookingForm.email}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
                                                 setBookingForm({
                                                     ...bookingForm,
                                                     email: e.target.value,
-                                                })
-                                            }
+                                                });
+                                                if (bookingErrors.email) {
+                                                    setBookingErrors(prev => ({ ...prev, email: '' }));
+                                                }
+                                            }}
+                                            onBlur={(e) => {
+                                                const err = validateRetreatField('email', e.target.value);
+                                                if (err) setBookingErrors(prev => ({ ...prev, email: err }));
+                                            }}
                                             required
                                             disabled={isSubmittingBooking}
                                         />
@@ -2808,14 +2870,22 @@ export default function History({ auth, spot }) {
                                         <TextInput
                                             id="phone"
                                             type="tel"
-                                            className="mt-1 block w-full"
+                                            placeholder="077 123 4567"
+                                            className={`mt-1 block w-full ${bookingErrors.phone ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : ''}`}
                                             value={bookingForm.phone}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
                                                 setBookingForm({
                                                     ...bookingForm,
                                                     phone: e.target.value,
-                                                })
-                                            }
+                                                });
+                                                if (bookingErrors.phone) {
+                                                    setBookingErrors(prev => ({ ...prev, phone: '' }));
+                                                }
+                                            }}
+                                            onBlur={(e) => {
+                                                const err = validateRetreatField('phone', e.target.value);
+                                                if (err) setBookingErrors(prev => ({ ...prev, phone: err }));
+                                            }}
                                             required
                                             disabled={isSubmittingBooking}
                                         />

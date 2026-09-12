@@ -14,13 +14,13 @@ class CheckoutController extends Controller
         Log::info('Checkout process started', $request->all());
 
         $validated = $request->validate([
-            'email' => 'required|email',
-            'firstName' => 'required|string|max:255',
-            'lastName' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'postalCode' => 'required|string|max:50',
-            'phone' => 'required|string|max:50',
+            'email' => 'required|email|max:255',
+            'firstName' => 'required|string|min:2|max:255',
+            'lastName' => 'required|string|min:2|max:255',
+            'address' => 'required|string|min:3|max:255',
+            'city' => 'required|string|min:2|max:255',
+            'postalCode' => 'required|string|min:3|max:50',
+            'phone' => ['required', 'string', 'regex:/^(?:0\d{9}|(?:\+94|94)7[0-9]{8}|07[0-9]{8})$/'],
             'payment_method' => 'required|in:card,koko',
             'card_holder' => 'required_if:payment_method,card',
             'card_number' => 'required_if:payment_method,card',
@@ -29,6 +29,19 @@ class CheckoutController extends Controller
             'item_id' => 'required|integer',
             'quantity' => 'required|integer|min:1',
         ], [
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please provide a valid email address.',
+            'firstName.required' => 'First name is required.',
+            'firstName.min' => 'First name must be at least 2 characters.',
+            'lastName.required' => 'Last name is required.',
+            'lastName.min' => 'Last name must be at least 2 characters.',
+            'address.required' => 'Street address is required.',
+            'address.min' => 'Street address must be at least 3 characters.',
+            'city.required' => 'City is required.',
+            'city.min' => 'City must be at least 2 characters.',
+            'postalCode.required' => 'Postal code is required.',
+            'phone.required' => 'Phone number is required.',
+            'phone.regex' => 'Please enter a valid 10-digit Sri Lankan phone number.',
             'card_holder.required_if' => 'Card Holder is required.',
             'card_number.required_if' => 'Card Number is required.',
             'valid_date.required_if' => 'Valid Date is required.',
@@ -79,13 +92,14 @@ class CheckoutController extends Controller
             'total' => ($product['price'] * $validated['quantity']) + 500.00
         ];
 
-        // Queue Email (avoids frontend timeout if SMTP is slow)
+        // Send Order Confirmation Email
         try {
-            Mail::to($validated['email'])->queue(new OrderConfirmationMail($orderData));
+            Mail::to($validated['email'])->send(new OrderConfirmationMail($orderData));
+            Log::info('Order confirmation email dispatched successfully to: ' . $validated['email']);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Mail sending failed: ' . $e->getMessage());
+            Log::error('Mail sending failed: ' . $e->getMessage());
         }
 
-        return back()->with('success', 'Payment successful! Check your email for the payment code.');
+        return back()->with('success', 'Payment successful! Check your email for your payment receipt & confirmation code.');
     }
 }

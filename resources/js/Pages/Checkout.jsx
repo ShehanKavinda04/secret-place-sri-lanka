@@ -1,9 +1,10 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
-import { ShieldCheck, Truck, ArrowLeft, CreditCard, Lock, MoreHorizontal, Plus, Minus, Trash2, Calendar, CheckCircle } from 'lucide-react';
+import { ShieldCheck, Truck, ArrowLeft, CreditCard, Lock, MoreHorizontal, Plus, Minus, Trash2, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import PriceDisplay, { parsePriceToNumber } from '@/Utils/PriceFormatter';
+import { validateCardNumber, validateExpiryDate, validateCvv, validateCardHolder, getCardBrand } from '@/Utils/cardValidation';
 
 export default function Checkout({ auth, item, quantity, laravelVersion, phpVersion }) {
     const initialQty = parseInt(quantity) || 1;
@@ -27,6 +28,7 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
     const { flash } = usePage().props;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [cardErrors, setCardErrors] = useState({});
 
     useEffect(() => {
         if (flash?.success) {
@@ -62,17 +64,99 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
         quantity: initialQty
     });
 
+    const [formErrors, setFormErrors] = useState({});
+
     const subtotal = numericPrice * data.quantity;
     const shipping = data.quantity > 0 ? 500.00 : 0;
     const total = subtotal + shipping;
 
+    const validateField = (fieldName, value) => {
+        const val = typeof value === 'string' ? value.trim() : '';
+        switch (fieldName) {
+            case 'email':
+                if (!val) return 'Email address is required.';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return 'Please enter a valid email address (e.g. name@example.com).';
+                return '';
+            case 'firstName':
+                if (!val) return 'First name is required.';
+                if (val.length < 2) return 'First name must be at least 2 characters.';
+                return '';
+            case 'lastName':
+                if (!val) return 'Last name is required.';
+                if (val.length < 2) return 'Last name must be at least 2 characters.';
+                return '';
+            case 'address':
+                if (!val) return 'Street address is required.';
+                if (val.length < 3) return 'Street address must be at least 3 characters.';
+                return '';
+            case 'city':
+                if (!val) return 'City is required.';
+                if (val.length < 2) return 'City must be at least 2 characters.';
+                return '';
+            case 'postalCode':
+                if (!val) return 'Postal code is required.';
+                if (!/^[0-9A-Za-z\s-]{3,10}$/.test(val)) return 'Please enter a valid postal code.';
+                return '';
+            case 'phone':
+                if (!val) return 'Phone number is required.';
+                const cleanedPhone = val.replace(/[\s\-()]/g, '');
+                if (!/^(?:0\d{9}|(?:\+94|94)7[0-9]{8}|07[0-9]{8})$/.test(cleanedPhone)) {
+                    return 'Please enter a valid 10-digit Sri Lankan phone number (e.g. 077 123 4567 or +94 77 123 4567).';
+                }
+                return '';
+            default:
+                return '';
+        }
+    };
+
+    const validateForm = () => {
+        const fields = ['email', 'firstName', 'lastName', 'address', 'city', 'postalCode', 'phone'];
+        const newErrors = {};
+        let isValid = true;
+
+        fields.forEach(field => {
+            const error = validateField(field, data[field]);
+            if (error) {
+                newErrors[field] = error;
+                isValid = false;
+            }
+        });
+
+        setFormErrors(newErrors);
+        return isValid;
+    };
+
     const handleConfirm = (e) => {
         e.preventDefault();
+        const isValid = validateForm();
+        if (!isValid) {
+            return;
+        }
+        setFormErrors({});
         // Open the payment modal instead of directly submitting
         setIsModalOpen(true);
     };
 
     const handlePay = () => {
+        if (data.payment_method === 'card') {
+            const holderVal = validateCardHolder(data.card_holder);
+            const cardVal = validateCardNumber(data.card_number);
+            const dateVal = validateExpiryDate(data.valid_date);
+            const cvvVal = validateCvv(data.cvv, cardVal.brand);
+
+            const newErrors = {};
+            if (!holderVal.isValid) newErrors.card_holder = holderVal.error;
+            if (!cardVal.isValid) newErrors.card_number = cardVal.error;
+            if (!dateVal.isValid) newErrors.valid_date = dateVal.error;
+            if (!cvvVal.isValid) newErrors.cvv = cvvVal.error;
+
+            setCardErrors(newErrors);
+
+            if (Object.keys(newErrors).length > 0) {
+                return;
+            }
+        }
+
         post('/checkout/process', {
             preserveScroll: true,
             onSuccess: () => {
@@ -181,11 +265,23 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                             <input 
                                                 type="email" 
                                                 id="email" 
-                                                className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" 
+                                                className={`w-full rounded-lg shadow-sm transition-colors ${formErrors.email ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : 'border-slate-300 focus:border-royalMaroon-500 focus:ring-royalMaroon-500'}`} 
                                                 value={data.email}
-                                                onChange={e => setData('email', e.target.value)}
+                                                onChange={e => {
+                                                    setData('email', e.target.value);
+                                                    if (formErrors.email) setFormErrors(prev => ({ ...prev, email: '' }));
+                                                }}
+                                                onBlur={e => {
+                                                    const err = validateField('email', e.target.value);
+                                                    if (err) setFormErrors(prev => ({ ...prev, email: err }));
+                                                }}
                                                 required
                                             />
+                                            {formErrors.email && (
+                                                <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                    {formErrors.email}
+                                                </p>
+                                            )}
                                         </div>
                                     </section>
 
@@ -195,30 +291,145 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                             <div>
                                                 <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 mb-1">First name</label>
-                                                <input type="text" id="firstName" value={data.firstName} onChange={e => setData('firstName', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                                <input 
+                                                    type="text" 
+                                                    id="firstName" 
+                                                    value={data.firstName} 
+                                                    onChange={e => {
+                                                        setData('firstName', e.target.value);
+                                                        if (formErrors.firstName) setFormErrors(prev => ({ ...prev, firstName: '' }));
+                                                    }} 
+                                                    onBlur={e => {
+                                                        const err = validateField('firstName', e.target.value);
+                                                        if (err) setFormErrors(prev => ({ ...prev, firstName: err }));
+                                                    }}
+                                                    className={`w-full rounded-lg shadow-sm transition-colors ${formErrors.firstName ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : 'border-slate-300 focus:border-royalMaroon-500 focus:ring-royalMaroon-500'}`} 
+                                                    required 
+                                                />
+                                                {formErrors.firstName && (
+                                                    <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                        {formErrors.firstName}
+                                                    </p>
+                                                )}
                                             </div>
                                             <div>
                                                 <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-1">Last name</label>
-                                                <input type="text" id="lastName" value={data.lastName} onChange={e => setData('lastName', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                                <input 
+                                                    type="text" 
+                                                    id="lastName" 
+                                                    value={data.lastName} 
+                                                    onChange={e => {
+                                                        setData('lastName', e.target.value);
+                                                        if (formErrors.lastName) setFormErrors(prev => ({ ...prev, lastName: '' }));
+                                                    }} 
+                                                    onBlur={e => {
+                                                        const err = validateField('lastName', e.target.value);
+                                                        if (err) setFormErrors(prev => ({ ...prev, lastName: err }));
+                                                    }}
+                                                    className={`w-full rounded-lg shadow-sm transition-colors ${formErrors.lastName ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : 'border-slate-300 focus:border-royalMaroon-500 focus:ring-royalMaroon-500'}`} 
+                                                    required 
+                                                />
+                                                {formErrors.lastName && (
+                                                    <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                        {formErrors.lastName}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="mb-4">
                                             <label htmlFor="address" className="block text-sm font-medium text-slate-700 mb-1">Street address</label>
-                                            <input type="text" id="address" value={data.address} onChange={e => setData('address', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                            <input 
+                                                type="text" 
+                                                id="address" 
+                                                value={data.address} 
+                                                onChange={e => {
+                                                    setData('address', e.target.value);
+                                                    if (formErrors.address) setFormErrors(prev => ({ ...prev, address: '' }));
+                                                }} 
+                                                onBlur={e => {
+                                                    const err = validateField('address', e.target.value);
+                                                    if (err) setFormErrors(prev => ({ ...prev, address: err }));
+                                                }}
+                                                className={`w-full rounded-lg shadow-sm transition-colors ${formErrors.address ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : 'border-slate-300 focus:border-royalMaroon-500 focus:ring-royalMaroon-500'}`} 
+                                                required 
+                                            />
+                                            {formErrors.address && (
+                                                <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                    {formErrors.address}
+                                                </p>
+                                            )}
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                             <div>
                                                 <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-1">City</label>
-                                                <input type="text" id="city" value={data.city} onChange={e => setData('city', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                                <input 
+                                                    type="text" 
+                                                    id="city" 
+                                                    value={data.city} 
+                                                    onChange={e => {
+                                                        setData('city', e.target.value);
+                                                        if (formErrors.city) setFormErrors(prev => ({ ...prev, city: '' }));
+                                                    }} 
+                                                    onBlur={e => {
+                                                        const err = validateField('city', e.target.value);
+                                                        if (err) setFormErrors(prev => ({ ...prev, city: err }));
+                                                    }}
+                                                    className={`w-full rounded-lg shadow-sm transition-colors ${formErrors.city ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : 'border-slate-300 focus:border-royalMaroon-500 focus:ring-royalMaroon-500'}`} 
+                                                    required 
+                                                />
+                                                {formErrors.city && (
+                                                    <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                        {formErrors.city}
+                                                    </p>
+                                                )}
                                             </div>
                                             <div>
                                                 <label htmlFor="postalCode" className="block text-sm font-medium text-slate-700 mb-1">Postal code</label>
-                                                <input type="text" id="postalCode" value={data.postalCode} onChange={e => setData('postalCode', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                                <input 
+                                                    type="text" 
+                                                    id="postalCode" 
+                                                    value={data.postalCode} 
+                                                    onChange={e => {
+                                                        setData('postalCode', e.target.value);
+                                                        if (formErrors.postalCode) setFormErrors(prev => ({ ...prev, postalCode: '' }));
+                                                    }} 
+                                                    onBlur={e => {
+                                                        const err = validateField('postalCode', e.target.value);
+                                                        if (err) setFormErrors(prev => ({ ...prev, postalCode: err }));
+                                                    }}
+                                                    className={`w-full rounded-lg shadow-sm transition-colors ${formErrors.postalCode ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : 'border-slate-300 focus:border-royalMaroon-500 focus:ring-royalMaroon-500'}`} 
+                                                    required 
+                                                />
+                                                {formErrors.postalCode && (
+                                                    <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                        {formErrors.postalCode}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                         <div>
-                                            <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">Phone number</label>
-                                            <input type="tel" id="phone" value={data.phone} onChange={e => setData('phone', e.target.value)} className="w-full rounded-lg border-slate-300 shadow-sm focus:border-royalMaroon-500 focus:ring-royalMaroon-500" required />
+                                            <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">Phone number <span className="text-rose-500">*</span></label>
+                                            <input 
+                                                type="tel" 
+                                                id="phone" 
+                                                value={data.phone} 
+                                                placeholder="e.g. 077 123 4567 or +94 77 123 4567"
+                                                onChange={e => {
+                                                    setData('phone', e.target.value);
+                                                    if (formErrors.phone) setFormErrors(prev => ({ ...prev, phone: '' }));
+                                                }} 
+                                                onBlur={e => {
+                                                    const err = validateField('phone', e.target.value);
+                                                    if (err) setFormErrors(prev => ({ ...prev, phone: err }));
+                                                }}
+                                                className={`w-full rounded-lg shadow-sm transition-colors ${formErrors.phone ? 'border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500' : 'border-slate-300 focus:border-royalMaroon-500 focus:ring-royalMaroon-500'}`} 
+                                                required 
+                                            />
+                                            {formErrors.phone && (
+                                                <p className="mt-1 text-xs text-rose-500 font-medium">
+                                                    {formErrors.phone}
+                                                </p>
+                                            )}
                                         </div>
                                     </section>
 
@@ -226,7 +437,7 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                     <div className="pt-4 border-t border-slate-100">
                                         <button 
                                             type="submit" 
-                                            className="w-full bg-craft-brown hover:bg-craft-brown-dark text-white font-bold py-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                                            className="w-full bg-craft-brown hover:bg-craft-brown-dark text-white font-bold py-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                                             disabled={processing}
                                         >
                                             <Lock className="w-4 h-4" />
@@ -266,12 +477,59 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                             
                             <div className="p-3 sm:p-4 rounded-lg space-y-3" style={{backgroundColor: '#6F4E37'}}>
                                 {/* KOKO Option */}
-                                <div className="bg-white rounded-md p-4 flex items-center justify-between cursor-pointer shadow-sm" onClick={() => setData('payment_method', 'koko')}>
-                                    <div className="flex items-center gap-4">
-                                        <input type="radio" checked={data.payment_method === 'koko'} onChange={() => setData('payment_method', 'koko')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
-                                        <span className="font-medium text-slate-800 text-[15px]">KOKO</span>
+                                <div className={`bg-white rounded-md p-4 sm:p-5 flex flex-col cursor-pointer shadow-sm transition-all ${data.payment_method === 'koko' ? 'ring-2 ring-craft-brown border-transparent' : ''}`} onClick={() => setData('payment_method', 'koko')}>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <input type="radio" checked={data.payment_method === 'koko'} onChange={() => setData('payment_method', 'koko')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
+                                            <div>
+                                                <span className="font-semibold text-slate-800 text-[15px] block">KOKO - Buy Now, Pay Later</span>
+                                                <span className="text-xs text-slate-500">Split into 3 interest-free installments</span>
+                                            </div>
+                                        </div>
+                                        <div className="font-extrabold text-xl tracking-wider px-2 py-0.5 rounded bg-[#fdf5f0] text-[#FF4C00] border border-[#ff4c00]/30 shadow-xs">
+                                            KOKO
+                                        </div>
                                     </div>
-                                    <div className="font-bold text-lg tracking-wider" style={{WebkitTextStroke: "1px #6F4E37", color: "transparent"}}>KOKO</div>
+
+                                    {data.payment_method === 'koko' && (
+                                        <div className="mt-4 pt-4 border-t border-slate-100 text-left animate-in fade-in duration-200" onClick={e => e.stopPropagation()}>
+                                            <div className="bg-[#FFF9F5] border border-[#FFE4D6] rounded-xl p-4 mb-4">
+                                                <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#FFE4D6]">
+                                                    <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Installment Plan</span>
+                                                    <span className="text-xs font-bold text-[#FF4C00]">0% Interest</span>
+                                                </div>
+                                                <div className="grid grid-cols-3 gap-2 text-center">
+                                                    <div className="bg-white p-2.5 rounded-lg border border-[#FFD8C2] shadow-xs">
+                                                        <div className="text-[11px] font-semibold text-slate-500">Today</div>
+                                                        <div className="text-xs font-bold text-slate-900 mt-0.5"><PriceDisplay amount={total / 3} /></div>
+                                                    </div>
+                                                    <div className="bg-white p-2.5 rounded-lg border border-[#FFD8C2] shadow-xs">
+                                                        <div className="text-[11px] font-semibold text-slate-500">In 30 Days</div>
+                                                        <div className="text-xs font-bold text-slate-900 mt-0.5"><PriceDisplay amount={total / 3} /></div>
+                                                    </div>
+                                                    <div className="bg-white p-2.5 rounded-lg border border-[#FFD8C2] shadow-xs">
+                                                        <div className="text-[11px] font-semibold text-slate-500">In 60 Days</div>
+                                                        <div className="text-xs font-bold text-slate-900 mt-0.5"><PriceDisplay amount={total / 3} /></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3 mb-2">
+                                                <div className="flex items-start gap-2 text-xs text-slate-600">
+                                                    <div className="w-5 h-5 rounded-full bg-[#FF4C00]/10 text-[#FF4C00] font-bold flex items-center justify-center shrink-0 mt-0.5 text-[11px]">1</div>
+                                                    <p>Click <strong className="text-slate-800">Confirm & Proceed to Koko</strong> below to initiate the secure portal.</p>
+                                                </div>
+                                                <div className="flex items-start gap-2 text-xs text-slate-600">
+                                                    <div className="w-5 h-5 rounded-full bg-[#FF4C00]/10 text-[#FF4C00] font-bold flex items-center justify-center shrink-0 mt-0.5 text-[11px]">2</div>
+                                                    <p>You will authenticate with your registered phone number <strong className="text-slate-800">{data.phone || 'provided at checkout'}</strong> via OTP.</p>
+                                                </div>
+                                                <div className="flex items-start gap-2 text-xs text-slate-600">
+                                                    <div className="w-5 h-5 rounded-full bg-[#FF4C00]/10 text-[#FF4C00] font-bold flex items-center justify-center shrink-0 mt-0.5 text-[11px]">3</div>
+                                                    <p>Approve the first payment of <strong className="text-slate-900"><PriceDisplay amount={total / 3} /></strong> to complete your order instantly.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 
                                 {/* Credit/Debit Card Option */}
@@ -309,7 +567,17 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                             <div className="space-y-4">
                                                 <div>
                                                     <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Holder</label>
-                                                    <input type="text" value={data.card_holder} onChange={e => setData('card_holder', e.target.value)} className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 text-slate-900" style={{outlineColor: '#6F4E37'}} />
+                                                    <input 
+                                                        type="text" 
+                                                        value={data.card_holder} 
+                                                        onChange={e => {
+                                                            setData('card_holder', e.target.value);
+                                                            if (cardErrors.card_holder) setCardErrors(prev => ({ ...prev, card_holder: '' }));
+                                                        }} 
+                                                        className={`w-full rounded-md shadow-sm text-sm py-2 text-slate-900 ${cardErrors.card_holder ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300'}`} 
+                                                        style={{outlineColor: '#6F4E37'}} 
+                                                    />
+                                                    {cardErrors.card_holder && <div className="text-rose-500 text-xs mt-1 font-medium">{cardErrors.card_holder}</div>}
                                                     {errors.card_holder && <div className="text-red-500 text-xs mt-1">{errors.card_holder}</div>}
                                                 </div>
                                                 
@@ -326,13 +594,15 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                                                 let val = e.target.value.replace(/\D/g, '');
                                                                 val = val.replace(/(.{4})/g, '$1 ').trim();
                                                                 setData('card_number', val.substring(0, 19));
+                                                                if (cardErrors.card_number) setCardErrors(prev => ({ ...prev, card_number: '' }));
                                                             }} 
                                                             placeholder="0000 0000 0000 0000" 
-                                                            className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
+                                                            className={`w-full rounded-md shadow-sm text-sm py-2 font-mono text-slate-900 ${cardErrors.card_number ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300'}`} 
                                                             style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
                                                             maxLength="19"
                                                         />
                                                     </div>
+                                                    {cardErrors.card_number && <div className="text-rose-500 text-xs mt-1 font-medium">{cardErrors.card_number}</div>}
                                                     {errors.card_number && <div className="text-red-500 text-xs mt-1">{errors.card_number}</div>}
                                                 </div>
                                                 
@@ -351,19 +621,33 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                                                     val = val.substring(0, 2) + '/' + val.substring(2, 4);
                                                                 }
                                                                 setData('valid_date', val);
+                                                                if (cardErrors.valid_date) setCardErrors(prev => ({ ...prev, valid_date: '' }));
                                                             }} 
                                                             placeholder="MM/YY" 
-                                                            className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
+                                                            className={`w-full rounded-md shadow-sm text-sm py-2 font-mono text-slate-900 ${cardErrors.valid_date ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300'}`} 
                                                             style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
                                                             maxLength="5"
                                                         />
                                                     </div>
+                                                    {cardErrors.valid_date && <div className="text-rose-500 text-xs mt-1 font-medium">{cardErrors.valid_date}</div>}
                                                     {errors.valid_date && <div className="text-red-500 text-xs mt-1">{errors.valid_date}</div>}
                                                 </div>
                                                 
                                                 <div>
                                                     <label className="block text-[13px] font-medium text-slate-700 mb-1.5">CVV</label>
-                                                    <input type="text" value={data.cvv} onChange={e => setData('cvv', e.target.value)} placeholder="XXX" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" style={{outlineColor: '#6F4E37'}} />
+                                                    <input 
+                                                        type="password" 
+                                                        value={data.cvv} 
+                                                        onChange={e => {
+                                                            setData('cvv', e.target.value);
+                                                            if (cardErrors.cvv) setCardErrors(prev => ({ ...prev, cvv: '' }));
+                                                        }} 
+                                                        placeholder="XXX" 
+                                                        maxLength="4"
+                                                        className={`w-full rounded-md shadow-sm text-sm py-2 font-mono text-slate-900 ${cardErrors.cvv ? 'border-rose-400 bg-rose-50/20' : 'border-slate-300'}`} 
+                                                        style={{outlineColor: '#6F4E37'}} 
+                                                    />
+                                                    {cardErrors.cvv && <div className="text-rose-500 text-xs mt-1 font-medium">{cardErrors.cvv}</div>}
                                                     {errors.cvv && <div className="text-red-500 text-xs mt-1">{errors.cvv}</div>}
                                                 </div>
                                             </div>
@@ -374,10 +658,11 @@ export default function Checkout({ auth, item, quantity, laravelVersion, phpVers
                                             <button 
                                                 onClick={handlePay}
                                                 disabled={processing}
-                                                className="w-full text-white font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:opacity-90 disabled:opacity-70"
-                                                style={{backgroundColor: '#6F4E37'}}
+                                                className="w-full text-white font-medium py-3 rounded-lg shadow-sm transition-all text-sm hover:opacity-95 active:scale-[0.99] disabled:opacity-70 flex items-center justify-center gap-2"
+                                                style={{backgroundColor: data.payment_method === 'koko' ? '#FF4C00' : '#6F4E37'}}
                                             >
-                                                Confirm
+                                                <Lock className="w-4 h-4" />
+                                                {data.payment_method === 'koko' ? 'Confirm & Proceed to KOKO' : 'Confirm & Pay with Card'}
                                             </button>
                                         </div>
                                 </div>
