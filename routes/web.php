@@ -11,13 +11,19 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\PreferencesController;
 use App\Http\Controllers\NearbyLocationsController;
+use App\Http\Controllers\ExperienceBookingController;
+use App\Http\Controllers\OtpController;
 
 Route::get('/api/orders', [OrderController::class, 'index']);
 Route::post('/api/orders', [OrderController::class, 'store']);
+Route::post('/api/otp/send', [OtpController::class, 'send']);
+Route::post('/api/otp/verify', [OtpController::class, 'verify']);
 Route::get('/api/wishlists', [WishlistController::class, 'index']);
 Route::post('/api/wishlists/toggle', [WishlistController::class, 'toggle']);
 Route::patch('/preferences', [PreferencesController::class, 'update'])->middleware('auth')->name('preferences.update');
 Route::get('/api/nearby-locations', [NearbyLocationsController::class, 'index'])->name('api.nearby-locations');
+Route::get('/api/experience-availability/{id}', [ExperienceBookingController::class, 'getAvailability']);
+Route::post('/api/experience-bookings', [ExperienceBookingController::class, 'store']);
 
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {

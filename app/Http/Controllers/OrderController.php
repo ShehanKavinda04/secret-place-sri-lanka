@@ -50,7 +50,7 @@ class OrderController extends Controller
         $validated = $request->validate([
             'type' => 'required|in:accommodation,food',
             'details' => 'required|array',
-            'details.accommodationId' => 'required_if:type,accommodation|integer',
+            'details.accommodationId' => 'required_if:type,accommodation',
             'details.roomType' => 'required_if:type,accommodation|string',
             'details.checkIn' => 'required_if:type,accommodation|date',
             'details.checkOut' => 'required_if:type,accommodation|date|after:details.checkIn',

@@ -2,11 +2,22 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 import { 
     MapPin, Star, ShieldCheck, Clock, Users, Globe, Check, 
     Accessibility, Calendar as CalendarIcon, Minus, Plus, Heart, 
-    ChevronRight, ChevronDown, ChevronLeft, Map, Camera, X, MessageCircle, Mail
+    ChevronRight, ChevronDown, ChevronLeft, Map, Camera, X, MessageCircle, Mail,
+    CreditCard, Lock, QrCode, Building2, AlertCircle, CheckCircle2, Copy, Sparkles,
+    Smartphone, Download, RefreshCw, Printer, Shield, CheckCircle
 } from 'lucide-react';
+import { 
+    validateCardNumber, 
+    validateExpiryDate, 
+    validateCvv, 
+    validateCardHolder, 
+    getCardBrand 
+} from '@/Utils/cardValidation';
 
 export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion, initialLocation, initialPolicies = [], initialReviews = [] }) {
     const [locationData, setLocationData] = useState(initialLocation);
@@ -240,6 +251,50 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
     const [bookingState, setBookingState] = useState({ status: 'idle', error: '' });
     const [isWishlisted, setIsWishlisted] = useState(false);
 
+    // Payment Gateway & Real-time Availability State
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('card');
+    const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
+    const [paymentError, setPaymentError] = useState('');
+    const [confirmedReceipt, setConfirmedReceipt] = useState(null);
+    const [copiedBankInfo, setCopiedBankInfo] = useState(false);
+    const [liveBroadcastNotice, setLiveBroadcastNotice] = useState(null);
+    const [availabilityData, setAvailabilityData] = useState({
+        capacity: 10,
+        slots: {
+            '9:00 AM (Morning Session)': { capacity: 10, booked: 0, remaining: 10, is_available: true },
+            '2:00 PM (Afternoon Session)': { capacity: 10, booked: 0, remaining: 10, is_available: true },
+        }
+    });
+
+    const [customerInfo, setCustomerInfo] = useState({
+        name: auth?.user?.name || '',
+        email: auth?.user?.email || '',
+        phone: auth?.user?.phone || '',
+        specialRequests: ''
+    });
+
+    const [customerErrors, setCustomerErrors] = useState({
+        name: '',
+        email: '',
+        phone: ''
+    });
+
+    const [cardDetails, setCardDetails] = useState({
+        cardNumber: '',
+        cardHolder: auth?.user?.name || '',
+        expiry: '',
+        cvv: ''
+    });
+
+    const [cardErrors, setCardErrors] = useState({
+        cardNumber: '',
+        cardHolder: '',
+        expiry: '',
+        cvv: ''
+    });
+
+    // Contact Host Modal State
     const [showContactModal, setShowContactModal] = useState(false);
     const [contactName, setContactName] = useState(auth?.user?.name || '');
     const [contactEmail, setContactEmail] = useState(auth?.user?.email || '');
@@ -247,6 +302,50 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
     const [contactPhoneError, setContactPhoneError] = useState('');
     const [contactMessage, setContactMessage] = useState('');
     const [contactStatus, setContactStatus] = useState('idle');
+
+    // Real-time WebSocket channel subscription for dynamic availability & booking sync
+    useEffect(() => {
+        if (!experienceId) return;
+
+        const queryDate = date || new Date().toISOString().split('T')[0];
+        axios.get(`/api/experience-availability/${experienceId}?date=${queryDate}`)
+            .then(res => {
+                if (res.data) {
+                    setAvailabilityData(res.data);
+                }
+            })
+            .catch(err => console.log('Availability sync notice:', err));
+
+        const availabilityChannel = `experience-availability.${experienceId}`;
+        if (window.Echo) {
+            window.Echo.channel(availabilityChannel)
+                .listen('ExperienceAvailabilityUpdated', (e) => {
+                    if (e && e.experienceKey === experienceId) {
+                        setAvailabilityData(prev => {
+                            if (!prev || !prev.slots) return prev;
+                            const updatedSlots = { ...prev.slots };
+                            if (updatedSlots[e.timeSlot]) {
+                                updatedSlots[e.timeSlot] = {
+                                    ...updatedSlots[e.timeSlot],
+                                    remaining: e.remainingSlots,
+                                    booked: e.bookedSlots,
+                                    is_available: e.remainingSlots > 0
+                                };
+                            }
+                            return { ...prev, slots: updatedSlots };
+                        });
+                        setLiveBroadcastNotice(`⚡ Real-time update: ${e.remainingSlots} spots left for ${e.timeSlot}`);
+                        setTimeout(() => setLiveBroadcastNotice(null), 7000);
+                    }
+                });
+        }
+
+        return () => {
+            if (window.Echo) {
+                window.Echo.leaveChannel(availabilityChannel);
+            }
+        };
+    }, [experienceId, date]);
 
     const toggleAccordion = (index) => {
         setOpenAccordion(prev => prev === index ? null : index);
@@ -263,19 +362,127 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
     const totalCost = (guests.adults * experience.price) + (guests.children * (experience.price * 0.5));
     const totalCostLkr = (guests.adults * experience.priceLkr) + (guests.children * (experience.priceLkr * 0.5));
+    const currentSlotInfo = availabilityData?.slots?.[timeSlot] || { capacity: 10, booked: 0, remaining: 10, is_available: true };
 
     const handleBooking = () => {
         if (!date) {
             setBookingState({ status: 'error', error: 'Please select a date for your experience.' });
             return;
         }
+
+        const requestedGuests = guests.adults + guests.children;
+        if (currentSlotInfo.remaining < requestedGuests && currentSlotInfo.remaining > 0) {
+            setBookingState({ 
+                status: 'error', 
+                error: `Only ${currentSlotInfo.remaining} spots left for ${timeSlot}. Please adjust guest count.` 
+            });
+            return;
+        }
+
+        if (currentSlotInfo.remaining === 0) {
+            setBookingState({ 
+                status: 'error', 
+                error: `This time slot is fully booked for the selected date. Please choose another date or session.` 
+            });
+            return;
+        }
         
-        setBookingState({ status: 'processing', error: '' });
-        
-        // Simulate a network request
-        setTimeout(() => {
-            setBookingState({ status: 'confirmed', error: '' });
-        }, 1500);
+        setBookingState({ status: 'idle', error: '' });
+        setPaymentError('');
+        setConfirmedReceipt(null);
+        setShowPaymentModal(true);
+    };
+
+    const handleProcessPayment = async (e) => {
+        if (e) e.preventDefault();
+        setPaymentError('');
+
+        // 1. Customer validation
+        const cErrors = { name: '', email: '', phone: '' };
+        if (!customerInfo.name || customerInfo.name.trim().length < 2) {
+            cErrors.name = 'Please enter your full name (at least 2 characters).';
+        }
+        if (!customerInfo.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) {
+            cErrors.email = 'Please provide a valid email address.';
+        }
+        const cleanedPhone = customerInfo.phone ? customerInfo.phone.replace(/[\s\-()]/g, '') : '';
+        if (!cleanedPhone || !/^(?:0\d{9}|(?:\+94|94)7[0-9]{8}|07[0-9]{8}|\+?[0-9]{7,15})$/.test(cleanedPhone)) {
+            cErrors.phone = 'Please enter a valid phone number (e.g. 077 123 4567 or +94 77 123 4567).';
+        }
+        setCustomerErrors(cErrors);
+        if (cErrors.name || cErrors.email || cErrors.phone) {
+            return;
+        }
+
+        // 2. Card validation if card method selected
+        if (paymentMethod === 'card') {
+            const numValidation = validateCardNumber(cardDetails.cardNumber);
+            const dateValidation = validateExpiryDate(cardDetails.expiry);
+            const cvvValidation = validateCvv(cardDetails.cvv, numValidation.brand);
+            const holderValidation = validateCardHolder(cardDetails.cardHolder);
+
+            const newCardErrors = {
+                cardNumber: numValidation.isValid ? '' : numValidation.error,
+                expiry: dateValidation.isValid ? '' : dateValidation.error,
+                cvv: cvvValidation.isValid ? '' : cvvValidation.error,
+                cardHolder: holderValidation.isValid ? '' : holderValidation.error,
+            };
+
+            setCardErrors(newCardErrors);
+
+            if (!numValidation.isValid || !dateValidation.isValid || !cvvValidation.isValid || !holderValidation.isValid) {
+                return;
+            }
+        }
+
+        setIsSubmittingPayment(true);
+        try {
+            const detectedBrand = getCardBrand(cardDetails.cardNumber);
+            const response = await axios.post('/api/experience-bookings', {
+                experience_key: experienceId,
+                experience_title: experience.title,
+                booking_date: date,
+                time_slot: timeSlot,
+                adults: guests.adults,
+                children: guests.children,
+                total_amount: totalCost,
+                currency: 'USD',
+                customer_name: customerInfo.name,
+                customer_email: customerInfo.email,
+                customer_phone: customerInfo.phone,
+                special_requests: customerInfo.specialRequests,
+                payment_method: paymentMethod,
+                card_holder: paymentMethod === 'card' ? cardDetails.cardHolder : null,
+                card_number: paymentMethod === 'card' ? cardDetails.cardNumber : null,
+                expiry_date: paymentMethod === 'card' ? cardDetails.expiry : null,
+                cvv: paymentMethod === 'card' ? cardDetails.cvv : null,
+                card_brand: detectedBrand,
+            });
+
+            if (response.data?.success) {
+                setConfirmedReceipt(response.data.data.receipt);
+                setBookingState({ status: 'confirmed', error: '' });
+                // Refresh availability
+                axios.get(`/api/experience-availability/${experienceId}?date=${date}`)
+                    .then(avRes => {
+                        if (avRes.data) setAvailabilityData(avRes.data);
+                    });
+            } else {
+                setPaymentError(response.data?.message || 'Transaction failed. Please try again.');
+            }
+        } catch (err) {
+            console.error('Payment processing error:', err);
+            const msg = err.response?.data?.message || err.response?.data?.error || 'Unable to connect to database/payment gateway. Please check your details.';
+            setPaymentError(msg);
+        } finally {
+            setIsSubmittingPayment(false);
+        }
+    };
+
+    const copyBankDetails = (text) => {
+        navigator.clipboard.writeText(text);
+        setCopiedBankInfo(true);
+        setTimeout(() => setCopiedBankInfo(false), 2500);
     };
 
     const handleContactSubmit = async (e) => {
@@ -692,6 +899,15 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                         {/* Right Sidebar - 5. Sticky Booking & Dynamic Pricing Sidebar */}
                         <div className="lg:w-1/3">
                             <div className="sticky top-8 bg-white rounded-2xl shadow-xl border border-slate-200 p-6 z-10">
+                                
+                                {/* Live Real-Time Availability & WebSockets Sync Banner */}
+                                {liveBroadcastNotice && (
+                                    <div className="mb-4 p-3 bg-teal-50 border border-teal-200 rounded-xl flex items-center gap-2 text-teal-900 text-xs font-semibold animate-pulse">
+                                        <Sparkles className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                                        <span>{liveBroadcastNotice}</span>
+                                    </div>
+                                )}
+
                                 <div className="flex justify-between items-start mb-6">
                                     <div>
                                         <div className="flex items-baseline gap-1">
@@ -706,6 +922,21 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     >
                                         <Heart className={`w-6 h-6 ${isWishlisted ? 'fill-current' : ''}`} />
                                     </button>
+                                </div>
+
+                                {/* Dynamic Availability Badge */}
+                                <div className="mb-4 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+                                    <span className="text-slate-500 font-medium flex items-center gap-1.5">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
+                                        <span>Live Availability</span>
+                                    </span>
+                                    <span className="font-bold text-slate-800">
+                                        {currentSlotInfo.remaining > 0 ? (
+                                            <span className="text-emerald-700 font-bold">{currentSlotInfo.remaining} / {currentSlotInfo.capacity} spots left</span>
+                                        ) : (
+                                            <span className="text-rose-600 font-bold">Sold Out</span>
+                                        )}
+                                    </span>
                                 </div>
 
                                 <div className="border border-slate-300 rounded-xl overflow-hidden mb-6">
@@ -731,8 +962,12 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             value={timeSlot}
                                             onChange={(e) => setTimeSlot(e.target.value)}
                                         >
-                                            <option value="9:00 AM (Morning Session)">9:00 AM (Morning Session)</option>
-                                            <option value="2:00 PM (Afternoon Session)">2:00 PM (Afternoon Session)</option>
+                                            <option value="9:00 AM (Morning Session)">
+                                                9:00 AM (Morning Session) {availabilityData?.slots?.['9:00 AM (Morning Session)']?.remaining !== undefined ? `• ${availabilityData.slots['9:00 AM (Morning Session)'].remaining} spots` : ''}
+                                            </option>
+                                            <option value="2:00 PM (Afternoon Session)">
+                                                2:00 PM (Afternoon Session) {availabilityData?.slots?.['2:00 PM (Afternoon Session)']?.remaining !== undefined ? `• ${availabilityData.slots['2:00 PM (Afternoon Session)'].remaining} spots` : ''}
+                                            </option>
                                         </select>
                                     </div>
                                     <div className="p-4 bg-slate-50 flex flex-col gap-4">
@@ -778,7 +1013,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                 </div>
                                 
                                 {bookingState.status === 'error' && (
-                                    <div className="text-red-600 text-sm font-semibold mb-4 text-center">
+                                    <div className="text-red-600 text-sm font-semibold mb-4 text-center p-2.5 bg-red-50 rounded-xl border border-red-200">
                                         {bookingState.error}
                                     </div>
                                 )}
@@ -791,16 +1026,23 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             </div>
                                         </div>
                                         <h4 className="font-bold text-emerald-800 text-lg mb-1">Booking Confirmed!</h4>
-                                        <p className="text-sm text-emerald-600">See you on {new Date(date).toLocaleDateString()} at {timeSlot.split(' ')[0]}.</p>
+                                        <p className="text-sm text-emerald-600 mb-3">See you on {new Date(date).toLocaleDateString()} at {timeSlot.split(' ')[0]}.</p>
+                                        <button 
+                                            onClick={() => setShowPaymentModal(true)}
+                                            className="text-xs text-emerald-700 underline font-semibold hover:text-emerald-900"
+                                        >
+                                            View Official Payment Receipt
+                                        </button>
                                     </div>
                                 ) : (
                                     <>
                                         <button 
                                             onClick={handleBooking}
-                                            disabled={bookingState.status === 'processing'}
-                                            className="w-full flex justify-center items-center gap-2 bg-[#FF6B35] text-white font-bold text-lg py-4 rounded-xl hover:bg-[#e85a25] transition-colors shadow-lg shadow-[#FF6B35]/30 mb-3 disabled:opacity-70"
+                                            disabled={isSubmittingPayment || currentSlotInfo.remaining === 0}
+                                            className="w-full flex justify-center items-center gap-2 bg-[#FF6B35] text-white font-bold text-lg py-4 rounded-xl hover:bg-[#e85a25] transition-colors shadow-lg shadow-[#FF6B35]/30 mb-3 disabled:opacity-50 cursor-pointer"
                                         >
-                                            {bookingState.status === 'processing' ? 'Processing...' : 'Book Now'}
+                                            <CreditCard className="w-5 h-5" />
+                                            <span>Book Now</span>
                                         </button>
                                         <button 
                                             onClick={() => setIsWishlisted(!isWishlisted)}
@@ -809,7 +1051,10 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-[#FF6B35] text-[#FF6B35]' : 'text-slate-400'}`} />
                                             {isWishlisted ? 'Saved to Wishlist' : 'Add to Wishlist'}
                                         </button>
-                                        <p className="text-center text-xs text-slate-500 mt-4">You won't be charged yet.</p>
+                                        <p className="text-center text-xs text-slate-500 mt-4 flex items-center justify-center gap-1.5">
+                                            <Lock className="w-3.5 h-3.5 text-slate-400" />
+                                            <span>Encrypted 256-bit payment gateway</span>
+                                        </p>
                                     </>
                                 )}
                             </div>
@@ -846,6 +1091,489 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                 </main>
                 <Footer auth={auth} laravelVersion={laravelVersion} phpVersion={phpVersion} />
             </div>
+
+            {/* Complete Payment Gateway & Checkout Modal */}
+            {showPaymentModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col my-8 border border-slate-100 max-h-[92vh]">
+                        
+                        {/* Modal Header */}
+                        <div className="bg-royalMaroon-950 text-white p-6 flex justify-between items-center relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-royalGold-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-royalGold-500/20 text-royalGold-400 border border-royalGold-500/30 uppercase tracking-wider">
+                                        Encrypted Gateway
+                                    </span>
+                                    <span className="text-xs text-white/60 flex items-center gap-1">
+                                        <Lock className="w-3 h-3 text-emerald-400" /> SSL 256-Bit
+                                    </span>
+                                </div>
+                                <h3 className="font-display text-2xl font-bold text-white">
+                                    {confirmedReceipt ? 'Payment Receipt & Confirmation' : 'Complete Your Booking'}
+                                </h3>
+                                <p className="text-white/70 text-xs mt-0.5">
+                                    {experience.title} • {date ? new Date(date).toLocaleDateString() : ''}
+                                </p>
+                            </div>
+                            <button 
+                                onClick={() => setShowPaymentModal(false)} 
+                                className="relative z-10 bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors text-white cursor-pointer"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="p-6 overflow-y-auto flex-1 space-y-6">
+                            
+                            {/* Receipt / Success State View */}
+                            {confirmedReceipt ? (
+                                <div className="space-y-6">
+                                    <div className="text-center py-4 bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
+                                        <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                                            <CheckCircle className="w-10 h-10" />
+                                        </div>
+                                        <h4 className="text-2xl font-bold text-emerald-900 font-display mb-1">Payment Successful!</h4>
+                                        <p className="text-sm text-emerald-700">
+                                            Your transaction has been recorded in the database and your booking is confirmed.
+                                        </p>
+                                    </div>
+
+                                    {/* Official Receipt Card */}
+                                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4 font-sans">
+                                        <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+                                            <div>
+                                                <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">Booking Reference</span>
+                                                <div className="font-mono text-base font-bold text-royalMaroon-950">{confirmedReceipt.reference}</div>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">Transaction ID</span>
+                                                <div className="font-mono text-sm font-semibold text-slate-700">{confirmedReceipt.transaction_id}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                                <span className="text-xs text-slate-400 block">Experience</span>
+                                                <span className="font-bold text-slate-800">{confirmedReceipt.experience}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs text-slate-400 block">Host / Cooperative</span>
+                                                <span className="font-semibold text-slate-700">{confirmedReceipt.host}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs text-slate-400 block">Date & Time</span>
+                                                <span className="font-medium text-slate-800">{confirmedReceipt.date} • {confirmedReceipt.time_slot}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs text-slate-400 block">Guests</span>
+                                                <span className="font-medium text-slate-800">{confirmedReceipt.guests}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs text-slate-400 block">Payment Method</span>
+                                                <span className="font-medium text-slate-800">{confirmedReceipt.payment_method}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs text-slate-400 block">Total Paid</span>
+                                                <span className="font-bold text-emerald-700 text-base">${confirmedReceipt.total_amount} USD</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+                                            <span>Issued: {confirmedReceipt.paid_at}</span>
+                                            <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold rounded-full">
+                                                ✓ VERIFIED & SYNCED
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Action buttons */}
+                                    <div className="flex gap-3">
+                                        <button 
+                                            onClick={() => window.print()}
+                                            className="flex-1 flex items-center justify-center gap-2 bg-slate-100 text-slate-800 font-semibold py-3.5 rounded-xl hover:bg-slate-200 transition-colors cursor-pointer"
+                                        >
+                                            <Printer className="w-4 h-4" />
+                                            <span>Print Receipt</span>
+                                        </button>
+                                        <button 
+                                            onClick={() => setShowPaymentModal(false)}
+                                            className="flex-1 bg-royalMaroon-950 text-white font-bold py-3.5 rounded-xl hover:bg-royalMaroon-900 transition-colors cursor-pointer"
+                                        >
+                                            Done
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleProcessPayment} className="space-y-6">
+                                    
+                                    {/* Error Banner */}
+                                    {paymentError && (
+                                        <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-sm flex items-center gap-2">
+                                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                            <span>{paymentError}</span>
+                                        </div>
+                                    )}
+
+                                    {/* Booking Summary Box */}
+                                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                                        <div className="flex justify-between items-center text-sm mb-2">
+                                            <span className="text-slate-600 font-medium">Session & Attendees:</span>
+                                            <span className="font-bold text-slate-800">{guests.adults} Adults{guests.children > 0 ? `, ${guests.children} Children` : ''} • {timeSlot.split(' ')[0]}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-sm mb-2">
+                                            <span className="text-slate-600 font-medium">Scheduled Date:</span>
+                                            <span className="font-bold text-slate-800">{date ? new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : 'Not chosen'}</span>
+                                        </div>
+                                        <div className="h-px bg-slate-200 my-2.5" />
+                                        <div className="flex justify-between items-center">
+                                            <span className="font-bold text-slate-800">Total Payable Amount</span>
+                                            <div className="text-right">
+                                                <span className="text-xl font-bold text-royalMaroon-950">${totalCost} USD</span>
+                                                <span className="block text-xs text-slate-500 font-medium">≈ LKR {totalCostLkr.toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Guest Information */}
+                                    <div>
+                                        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">
+                                            1. Guest Details & Contact
+                                        </h4>
+                                        <div className="grid sm:grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={customerInfo.name}
+                                                    onChange={(e) => {
+                                                        setCustomerInfo({ ...customerInfo, name: e.target.value });
+                                                        if (customerErrors.name) setCustomerErrors({ ...customerErrors, name: '' });
+                                                    }}
+                                                    placeholder="John Doe"
+                                                    className={`w-full bg-white text-slate-900 font-medium placeholder:text-slate-400 rounded-xl px-3.5 py-2.5 text-sm transition-colors border ${customerErrors.name ? 'border-rose-400 bg-rose-50/30 ring-1 ring-rose-400' : 'border-slate-300 focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500'}`}
+                                                />
+                                                {customerErrors.name && (
+                                                    <p className="mt-1 text-xs text-rose-500">{customerErrors.name}</p>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address *</label>
+                                                <input 
+                                                    type="email" 
+                                                    value={customerInfo.email}
+                                                    onChange={(e) => {
+                                                        setCustomerInfo({ ...customerInfo, email: e.target.value });
+                                                        if (customerErrors.email) setCustomerErrors({ ...customerErrors, email: '' });
+                                                    }}
+                                                    placeholder="john@example.com"
+                                                    className={`w-full bg-white text-slate-900 font-medium placeholder:text-slate-400 rounded-xl px-3.5 py-2.5 text-sm transition-colors border ${customerErrors.email ? 'border-rose-400 bg-rose-50/30 ring-1 ring-rose-400' : 'border-slate-300 focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500'}`}
+                                                />
+                                                {customerErrors.email && (
+                                                    <p className="mt-1 text-xs text-rose-500">{customerErrors.email}</p>
+                                                )}
+                                            </div>
+                                            <div className="sm:col-span-2">
+                                                <label className="block text-xs font-semibold text-slate-700 mb-1">Mobile / WhatsApp Number *</label>
+                                                <input 
+                                                    type="tel" 
+                                                    value={customerInfo.phone}
+                                                    onChange={(e) => {
+                                                        setCustomerInfo({ ...customerInfo, phone: e.target.value });
+                                                        if (customerErrors.phone) setCustomerErrors({ ...customerErrors, phone: '' });
+                                                    }}
+                                                    placeholder="077 123 4567 or +94 77 123 4567"
+                                                    className={`w-full bg-white text-slate-900 font-medium placeholder:text-slate-400 rounded-xl px-3.5 py-2.5 text-sm transition-colors border ${customerErrors.phone ? 'border-rose-400 bg-rose-50/30 ring-1 ring-rose-400' : 'border-slate-300 focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500'}`}
+                                                />
+                                                {customerErrors.phone && (
+                                                    <p className="mt-1 text-xs text-rose-500">{customerErrors.phone}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Payment Method Selector */}
+                                    <div>
+                                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+                                            2. Choose Payment Method
+                                        </h4>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setPaymentMethod('card')}
+                                                className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all cursor-pointer ${paymentMethod === 'card' ? 'border-royalGold-500 bg-royalGold-500/10 text-royalMaroon-950 font-bold shadow-sm ring-2 ring-royalGold-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
+                                            >
+                                                <CreditCard className="w-6 h-6 mb-1.5 text-royalMaroon-950" />
+                                                <span className="text-xs font-bold">Credit/Debit Card</span>
+                                                <span className="text-[10px] text-slate-400 mt-0.5">Visa / Master / LankaPay</span>
+                                            </button>
+
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setPaymentMethod('lankaqr')}
+                                                className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all cursor-pointer ${paymentMethod === 'lankaqr' ? 'border-royalGold-500 bg-royalGold-500/10 text-royalMaroon-950 font-bold shadow-sm ring-2 ring-royalGold-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
+                                            >
+                                                <QrCode className="w-6 h-6 mb-1.5 text-royalMaroon-950" />
+                                                <span className="text-xs font-bold">LankaQR</span>
+                                                <span className="text-[10px] text-slate-400 mt-0.5">Instant Scan & Pay</span>
+                                            </button>
+
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setPaymentMethod('koko')}
+                                                className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all cursor-pointer ${paymentMethod === 'koko' ? 'border-royalGold-500 bg-royalGold-500/10 text-royalMaroon-950 font-bold shadow-sm ring-2 ring-royalGold-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
+                                            >
+                                                <Smartphone className="w-6 h-6 mb-1.5 text-royalMaroon-950" />
+                                                <span className="text-xs font-bold">Koko Pay in 3</span>
+                                                <span className="text-[10px] text-slate-400 mt-0.5">3x ${(totalCost / 3).toFixed(2)} (0%)</span>
+                                            </button>
+
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setPaymentMethod('bank')}
+                                                className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all cursor-pointer ${paymentMethod === 'bank' ? 'border-royalGold-500 bg-royalGold-500/10 text-royalMaroon-950 font-bold shadow-sm ring-2 ring-royalGold-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
+                                            >
+                                                <Building2 className="w-6 h-6 mb-1.5 text-royalMaroon-950" />
+                                                <span className="text-xs font-bold">Bank Transfer</span>
+                                                <span className="text-[10px] text-slate-400 mt-0.5">Direct Deposit</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* 3. Payment Method Specific Interactive Form */}
+                                    <div className="mt-4">
+                                        {paymentMethod === 'card' && (
+                                            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
+                                                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                                                    <div className="flex items-center gap-2 text-slate-700 font-bold text-xs">
+                                                        <Lock className="w-4 h-4 text-emerald-600" />
+                                                        <span>Encrypted Card Checkout (PayHere Direct)</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-500">
+                                                        <span className={`px-2 py-0.5 rounded border transition-all ${getCardBrand(cardDetails.cardNumber) === 'visa' ? 'bg-blue-600 text-white font-bold border-blue-600' : 'bg-white border-slate-200 text-slate-600'}`}>
+                                                            VISA
+                                                        </span>
+                                                        <span className={`px-2 py-0.5 rounded border transition-all ${getCardBrand(cardDetails.cardNumber) === 'mastercard' ? 'bg-amber-600 text-white font-bold border-amber-600' : 'bg-white border-slate-200 text-slate-600'}`}>
+                                                            Mastercard
+                                                        </span>
+                                                        <span className={`px-2 py-0.5 rounded border transition-all ${getCardBrand(cardDetails.cardNumber) === 'lankapay' ? 'bg-teal-700 text-white font-bold border-teal-700' : 'bg-white border-slate-200 text-teal-700'}`}>
+                                                            LankaPay
+                                                        </span>
+                                                        <span className={`px-2 py-0.5 rounded border transition-all ${getCardBrand(cardDetails.cardNumber) === 'amex' ? 'bg-indigo-600 text-white font-bold border-indigo-600' : 'bg-white border-slate-200 text-slate-600'}`}>
+                                                            AMEX
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                                                        Cardholder Name *
+                                                    </label>
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Name on card"
+                                                        value={cardDetails.cardHolder}
+                                                        onChange={(e) => {
+                                                            setCardDetails({ ...cardDetails, cardHolder: e.target.value });
+                                                            if (cardErrors.cardHolder) setCardErrors({ ...cardErrors, cardHolder: '' });
+                                                        }}
+                                                        onBlur={() => {
+                                                            const res = validateCardHolder(cardDetails.cardHolder);
+                                                            setCardErrors(prev => ({ ...prev, cardHolder: res.isValid ? '' : res.error }));
+                                                        }}
+                                                        className={`w-full bg-white text-slate-900 font-medium placeholder:text-slate-400 rounded-xl px-4 py-2.5 text-sm transition-colors border ${cardErrors.cardHolder ? 'border-rose-400 bg-rose-50/30 ring-1 ring-rose-400' : 'border-slate-300 focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500'}`}
+                                                    />
+                                                    {cardErrors.cardHolder && (
+                                                        <p className="mt-1 text-xs text-rose-500 flex items-center gap-1 font-medium">
+                                                            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {cardErrors.cardHolder}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                                                        Card Number *
+                                                    </label>
+                                                    <div className="relative">
+                                                        <input 
+                                                            type="text" 
+                                                            maxLength={19}
+                                                            placeholder="4532 •••• •••• 8920"
+                                                            value={cardDetails.cardNumber}
+                                                            onChange={(e) => {
+                                                                const v = e.target.value.replace(/\D/g, '').slice(0, 16);
+                                                                const formatted = v.match(/.{1,4}/g)?.join(' ') || v;
+                                                                setCardDetails({ ...cardDetails, cardNumber: formatted });
+                                                                if (cardErrors.cardNumber) setCardErrors({ ...cardErrors, cardNumber: '' });
+                                                            }}
+                                                            onBlur={() => {
+                                                                const res = validateCardNumber(cardDetails.cardNumber);
+                                                                setCardErrors(prev => ({ ...prev, cardNumber: res.isValid ? '' : res.error }));
+                                                            }}
+                                                            className={`w-full bg-white text-slate-900 font-semibold font-mono tracking-wider placeholder:text-slate-400 rounded-xl px-4 py-2.5 text-sm transition-colors border ${cardErrors.cardNumber ? 'border-rose-400 bg-rose-50/30 ring-1 ring-rose-400' : 'border-slate-300 focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500'}`}
+                                                        />
+                                                        <CreditCard className="w-5 h-5 text-slate-400 absolute right-3 top-2.5" />
+                                                    </div>
+                                                    {cardErrors.cardNumber && (
+                                                        <p className="mt-1 text-xs text-rose-500 flex items-center gap-1 font-medium">
+                                                            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {cardErrors.cardNumber}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                                                            Expiry Date *
+                                                        </label>
+                                                        <input 
+                                                            type="text" 
+                                                            maxLength={5}
+                                                            placeholder="MM/YY"
+                                                            value={cardDetails.expiry}
+                                                            onChange={(e) => {
+                                                                let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                                                if (v.length >= 3) v = `${v.slice(0, 2)}/${v.slice(2)}`;
+                                                                setCardDetails({ ...cardDetails, expiry: v });
+                                                                if (cardErrors.expiry) setCardErrors({ ...cardErrors, expiry: '' });
+                                                            }}
+                                                            onBlur={() => {
+                                                                const res = validateExpiryDate(cardDetails.expiry);
+                                                                setCardErrors(prev => ({ ...prev, expiry: res.isValid ? '' : res.error }));
+                                                            }}
+                                                            className={`w-full bg-white text-slate-900 font-semibold font-mono text-center placeholder:text-slate-400 rounded-xl px-4 py-2.5 text-sm transition-colors border ${cardErrors.expiry ? 'border-rose-400 bg-rose-50/30 ring-1 ring-rose-400' : 'border-slate-300 focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500'}`}
+                                                        />
+                                                        {cardErrors.expiry && (
+                                                            <p className="mt-1 text-xs text-rose-500 font-medium">{cardErrors.expiry}</p>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                                                            CVV / CVC *
+                                                        </label>
+                                                        <input 
+                                                            type="password" 
+                                                            maxLength={4}
+                                                            placeholder="•••"
+                                                            value={cardDetails.cvv}
+                                                            onChange={(e) => {
+                                                                setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) });
+                                                                if (cardErrors.cvv) setCardErrors({ ...cardErrors, cvv: '' });
+                                                            }}
+                                                            onBlur={() => {
+                                                                const res = validateCvv(cardDetails.cvv, getCardBrand(cardDetails.cardNumber));
+                                                                setCardErrors(prev => ({ ...prev, cvv: res.isValid ? '' : res.error }));
+                                                            }}
+                                                            className={`w-full bg-white text-slate-900 font-semibold font-mono text-center placeholder:text-slate-400 rounded-xl px-4 py-2.5 text-sm transition-colors border ${cardErrors.cvv ? 'border-rose-400 bg-rose-50/30 ring-1 ring-rose-400' : 'border-slate-300 focus:ring-2 focus:ring-royalGold-500/50 focus:border-royalGold-500'}`}
+                                                        />
+                                                        {cardErrors.cvv && (
+                                                            <p className="mt-1 text-xs text-rose-500 font-medium">{cardErrors.cvv}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {paymentMethod === 'lankaqr' && (
+                                            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center">
+                                                <div className="inline-block p-4 bg-white rounded-2xl shadow-sm border border-slate-200 mb-3">
+                                                    <div className="w-36 h-36 bg-royalMaroon-950 text-white rounded-xl flex flex-col items-center justify-center p-2 relative">
+                                                        <QrCode className="w-28 h-28 text-white" />
+                                                        <span className="text-[9px] font-bold tracking-wider text-royalGold-400 uppercase">LankaQR Verified</span>
+                                                    </div>
+                                                </div>
+                                                <div className="text-sm font-bold text-slate-800">Scan with any Sri Lankan Banking App</div>
+                                                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                                                    Open FriMi, Flash, BOC SmartPay, Sampath Vishwa, or HNB SOLO and scan to transfer <strong>${totalCost} USD (LKR {totalCostLkr.toLocaleString()})</strong>.
+                                                </p>
+                                                <div className="mt-3 pt-3 border-t border-slate-200 flex items-center justify-center gap-2">
+                                                    <span className="text-[11px] font-bold text-slate-600">Merchant Reference:</span>
+                                                    <span className="font-mono text-xs font-bold bg-white px-3 py-1 rounded-lg border border-slate-200 text-royalMaroon-950">
+                                                        LQR-EXP-2026-9841
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {paymentMethod === 'koko' && (
+                                            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center space-y-3">
+                                                <div className="w-12 h-12 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto">
+                                                    <Smartphone className="w-6 h-6" />
+                                                </div>
+                                                <h5 className="font-bold text-slate-800 text-base">Pay in 3 Interest-Free Installments</h5>
+                                                <p className="text-xs text-slate-600 max-w-sm mx-auto">
+                                                    Pay <strong>${(totalCost / 3).toFixed(2)} today</strong>, and 2 monthly payments of <strong>${(totalCost / 3).toFixed(2)}</strong> automatically deducted.
+                                                </p>
+                                                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-xs font-semibold">
+                                                    <Check className="w-3.5 h-3.5 text-amber-600" /> 0% Interest • Instant Approval
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {paymentMethod === 'bank' && (
+                                            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+                                                <div className="flex items-center gap-2 text-slate-800 font-bold text-xs border-b border-slate-200 pb-2.5">
+                                                    <Building2 className="w-4 h-4 text-royalGold-600" />
+                                                    <span>Official Bank Deposit Account</span>
+                                                </div>
+                                                <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                                                    <div className="bg-white p-3 rounded-xl border border-slate-200">
+                                                        <span className="text-slate-400 block font-semibold">Bank & Branch</span>
+                                                        <span className="font-bold text-slate-800 text-sm">Commercial Bank of Ceylon</span>
+                                                        <span className="text-slate-500 block">Anuradhapura City Branch</span>
+                                                    </div>
+                                                    <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+                                                        <div>
+                                                            <span className="text-slate-400 block font-semibold">Account Number</span>
+                                                            <span className="font-mono font-bold text-slate-800 text-sm">8009 2314 9910</span>
+                                                        </div>
+                                                        <button 
+                                                            type="button"
+                                                            onClick={() => copyBankDetails('800923149910')}
+                                                            className="p-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors cursor-pointer"
+                                                            title="Copy Account Number"
+                                                        >
+                                                            {copiedBankInfo ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="text-[11px] text-slate-500">
+                                                    * Please use your Name or Phone number as the transaction reference.
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Submit CTA */}
+                                    <div className="pt-4 border-t border-slate-200">
+                                        <button 
+                                            type="submit" 
+                                            disabled={isSubmittingPayment}
+                                            className="w-full flex justify-center items-center gap-2 bg-[#FF6B35] text-white font-bold text-base py-4 rounded-xl hover:bg-[#e85a25] transition-all shadow-lg shadow-[#FF6B35]/30 disabled:opacity-60 cursor-pointer"
+                                        >
+                                            {isSubmittingPayment ? (
+                                                <>
+                                                    <RefreshCw className="w-5 h-5 animate-spin" />
+                                                    <span>Processing Payment & Syncing DB...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Lock className="w-4 h-4" />
+                                                    <span>Pay & Confirm Reservation (${totalCost} USD)</span>
+                                                </>
+                                            )}
+                                        </button>
+                                        <p className="text-center text-xs text-slate-400 mt-2.5">
+                                            By proceeding, you agree to the verified cancellation & booking policy.
+                                        </p>
+                                    </div>
+                                </form>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Contact Host Modal */}
             {showContactModal && (
@@ -926,7 +1654,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         ></textarea>
                                     </div>
                                     <button 
-                                        type="submit"
+                                        type="submit" 
                                         disabled={contactStatus === 'sending'}
                                         className="w-full bg-royalMaroon-950 text-white font-semibold rounded-lg py-3 hover:bg-royalMaroon-900 transition-colors disabled:opacity-70"
                                     >

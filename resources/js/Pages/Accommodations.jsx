@@ -308,7 +308,21 @@ export default function Accommodations({ auth, reviews = [], policy, addons = []
                         <ListingView key="listing" onSelect={handleViewDetails} accommodations={accommodations} wishlistItems={wishlistItems} toggleWishlist={toggleWishlist} />
                     )}
                     {activeTab === 'detail' && selectedProperty && (
-                        <DetailView property={selectedProperty} onBack={() => setActiveTab('listing')} onMap={() => setActiveTab('map')} onFood={() => setActiveTab('food')} reviews={reviews} policy={policy} addons={addons} roomsProp={roomsProp} estateDetail={estateDetail} wishlistItems={wishlistItems} toggleWishlist={toggleWishlist} />
+                        <DetailView 
+                            property={selectedProperty} 
+                            onBack={() => setActiveTab('listing')} 
+                            onMap={() => setActiveTab('map')} 
+                            onFood={() => setActiveTab('food')} 
+                            reviews={reviews} 
+                            policy={policy} 
+                            addons={addons} 
+                            roomsProp={roomsProp} 
+                            estateDetail={estateDetail} 
+                            wishlistItems={wishlistItems} 
+                            toggleWishlist={toggleWishlist}
+                            fetchBookings={fetchBookings}
+                            onOpenBookings={() => { fetchBookings(); setShowBookings(true); }}
+                        />
                     )}
                     {activeTab === 'map' && (
                         <MapView key="map" property={selectedProperty} accommodations={accommodations} />
@@ -685,7 +699,7 @@ function ListingView({ onSelect, accommodations = [], wishlistItems = [], toggle
     );
 }
 
-function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, roomsProp, estateDetail, wishlistItems = [], toggleWishlist }) {
+function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, roomsProp, estateDetail, wishlistItems = [], toggleWishlist, fetchBookings, onOpenBookings }) {
     const currentRoomsList = (property?.rooms && property.rooms.length > 0) ? property.rooms : roomsProp;
     const currentAddonsList = (property?.addons && property.addons.length > 0) ? property.addons : addons;
     const currentPolicy = property?.policy || policy;
@@ -796,15 +810,34 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
         }
     }, [checkIn, checkOut]);
 
-    const [paymentMethod, setPaymentMethod] = useState('card');
+    const [paymentMethod, setPaymentMethod] = useState('koko');
     const [paymentData, setPaymentData] = useState({
         card_holder: '',
         card_number: '',
         valid_date: '',
-        cvv: ''
+        cvv: '',
+        koko_phone: '0768251139'
     });
     const [paymentErrors, setPaymentErrors] = useState({});
     const [processing, setProcessing] = useState(false);
+    const [sendingSms, setSendingSms] = useState(false);
+    const [smsSentMessage, setSmsSentMessage] = useState(null);
+    const [smsTimer, setSmsTimer] = useState(0);
+    const [kokoStep, setKokoStep] = useState('input'); // 'input' | 'otp'
+    const [kokoOtp, setKokoOtp] = useState(''); // Strict empty state: manual user input required
+    const [confirmedOrder, setConfirmedOrder] = useState(null);
+    const [apiError, setApiError] = useState(null);
+
+    // Resend countdown timer
+    useEffect(() => {
+        let interval = null;
+        if (smsTimer > 0) {
+            interval = setInterval(() => {
+                setSmsTimer(prev => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [smsTimer]);
 
     const addonsTotal = selectedAddons.reduce((sum, addonId) => {
         const addon = currentAddonsList.find(a => a.id === addonId);
@@ -822,11 +855,19 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
         if (paymentErrors[field]) {
             setPaymentErrors(prev => ({ ...prev, [field]: null }));
         }
+        if (apiError) setApiError(null);
     };
 
     const validatePayment = () => {
         const errors = {};
-        if (paymentMethod === 'card') {
+        if (paymentMethod === 'koko') {
+            const cleanPhone = (paymentData.koko_phone || '').replace(/\s+/g, '');
+            if (!cleanPhone) {
+                errors.koko_phone = "Please enter your registered Koko mobile number.";
+            } else if (!/^(\+94|0)?[0-9]{9,10}$/.test(cleanPhone)) {
+                errors.koko_phone = "Please enter a valid 10-digit mobile number (e.g. 0768251139).";
+            }
+        } else if (paymentMethod === 'card') {
             const holderVal = validateCardHolder(paymentData.card_holder);
             if (!holderVal.isValid) errors.card_holder = holderVal.error;
 
@@ -841,6 +882,121 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
         }
         setPaymentErrors(errors);
         return Object.keys(errors).length === 0;
+    };
+
+    // Dispatch real SMS OTP via Gateway API
+    const handleSendKokoOtp = async () => {
+        if (!validatePayment()) return;
+        setSendingSms(true);
+        setApiError(null);
+        try {
+            const res = await axios.post('/api/otp/send', {
+                phone: paymentData.koko_phone,
+                amount: grandTotal / 3,
+                purpose: 'koko_bnpl_authorization'
+            });
+            setSendingSms(false);
+            setKokoStep('otp');
+            setKokoOtp(''); // strictly empty for manual verification
+            setSmsSentMessage(res.data.message || `A 6-digit OTP code has been dispatched to ${paymentData.koko_phone} via SMS.`);
+            setSmsTimer(60);
+        } catch (error) {
+            setSendingSms(false);
+            if (error.response?.data?.message) {
+                setApiError(error.response.data.message);
+            } else {
+                setApiError('Failed to dispatch SMS OTP. Please check your mobile number and network connection.');
+            }
+        }
+    };
+
+    // Enforce manual OTP verification before booking order creation
+    const handleVerifyAndSubmitKokoBooking = async () => {
+        const cleanOtp = kokoOtp.trim();
+        if (!cleanOtp || cleanOtp.length !== 6) {
+            setApiError('Please manually enter the full 6-digit verification code received on your phone.');
+            return;
+        }
+
+        setProcessing(true);
+        setApiError(null);
+
+        try {
+            // 1. Verify OTP with SMS backend
+            const verifyRes = await axios.post('/api/otp/verify', {
+                phone: paymentData.koko_phone,
+                otp: cleanOtp
+            });
+
+            if (!verifyRes.data.success) {
+                setProcessing(false);
+                setApiError(verifyRes.data.message || 'The OTP entered is incorrect.');
+                return;
+            }
+
+            // 2. Execute order booking creation
+            await executeBookingSubmission();
+        } catch (error) {
+            setProcessing(false);
+            if (error.response?.data?.message) {
+                setApiError(error.response.data.message);
+            } else {
+                setApiError('The entered OTP is incorrect or has expired. Please request a new code.');
+            }
+        }
+    };
+
+    const executeBookingSubmission = async () => {
+        setProcessing(true);
+        setApiError(null);
+        try {
+            const response = await axios.post('/api/orders', {
+                type: 'accommodation',
+                details: {
+                    accommodationId: property.id,
+                    accommodation_id: property.id,
+                    propertyName: property.name,
+                    checkIn: checkIn,
+                    checkOut: checkOut,
+                    roomType: activeRoom.name,
+                    nights,
+                    guests,
+                    addons: selectedAddons.map(id => {
+                        const addon = currentAddonsList.find(a => a.id === id);
+                        return addon ? addon.title : '';
+                    }).filter(Boolean)
+                },
+                amount: grandTotal,
+                total_amount: grandTotal,
+                payment_method: paymentMethod,
+                payment_details: paymentMethod === 'card' 
+                    ? paymentData 
+                    : { 
+                        koko_phone: paymentData.koko_phone || '0768251139', 
+                        otp_verified: true, 
+                        plan: '3_installments',
+                        installment_amount: Math.round(grandTotal / 3),
+                        first_payment_paid: Math.round(grandTotal / 3)
+                      }
+            });
+
+            if (fetchBookings) fetchBookings();
+            setConfirmedOrder(response.data.order || {
+                id: Date.now(),
+                details: { propertyName: property.name, roomType: activeRoom.name, checkIn, checkOut, guests, nights },
+                total_amount: grandTotal,
+                payment_method: paymentMethod
+            });
+            setProcessing(false);
+        } catch (error) {
+            console.error('Booking error:', error);
+            setProcessing(false);
+            if (error.response?.data?.message) {
+                setApiError(error.response.data.message);
+            } else {
+                setApiError('Booking / payment authorization failed. Please try again.');
+            }
+        }
     };
 
     const handleReserve = async (e) => {
@@ -1331,101 +1487,387 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                             className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
                         >
                             <div className="bg-royalMaroon-800 p-6 text-white flex justify-between items-center border-b border-royalGold-400/30 shrink-0">
-                                <h3 className="text-xl font-serif font-bold text-royalGold-400">Complete Reservation</h3>
-                                <button onClick={() => setShowCheckout(false)} className="text-white/70 hover:text-white"><X size={24}/></button>
+                                <h3 className="text-xl font-serif font-bold text-royalGold-400 flex items-center gap-2">
+                                    {confirmedOrder ? (
+                                        <><CheckCircle2 className="text-green-400" size={22} /> Booking Confirmed</>
+                                    ) : kokoStep === 'otp' ? (
+                                        <><Sparkles className="text-amber-400" size={20} /> Koko Authorization</>
+                                    ) : (
+                                        <>Complete Reservation</>
+                                    )}
+                                </h3>
+                                <button 
+                                    onClick={() => {
+                                        setShowCheckout(false);
+                                        setKokoStep('input');
+                                        setConfirmedOrder(null);
+                                        setApiError(null);
+                                    }} 
+                                    className="text-white/70 hover:text-white"
+                                >
+                                    <X size={24}/>
+                                </button>
                             </div>
-                            <div className="p-8 overflow-y-auto">
-                                <div className="flex gap-4 mb-8 pb-8 border-b border-gray-100">
-                                    <img src={property.image} className="w-24 h-24 rounded-2xl object-cover" />
-                                    <div>
-                                        <h4 className="font-bold text-lg text-gray-900">{property.name}</h4>
-                                        <p className="text-xs text-gray-500 mb-1">{property.address || property.location}</p>
-                                        <p className="text-sm font-semibold text-royalMaroon-900">{activeRoom.name} • {nights} Nights • {guests} Guests</p>
-                                        <p className="font-bold text-royalTeal mt-2">Total: {formatPrice(grandTotal)}</p>
-                                    </div>
-                                </div>
-                                
-                                <h2 className="text-xl font-bold text-slate-900 mb-6 font-sans">Payment Method</h2>
-                                
-                                <div className="p-3 sm:p-4 rounded-lg space-y-3" style={{backgroundColor: '#6F4E37'}}>
-                                    {/* KOKO Option */}
-                                    <div className="bg-white rounded-md p-4 flex items-center justify-between cursor-pointer shadow-sm" onClick={() => setPaymentMethod('koko')}>
-                                        <div className="flex items-center gap-4">
-                                            <input type="radio" checked={paymentMethod === 'koko'} onChange={() => setPaymentMethod('koko')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
-                                            <span className="font-medium text-slate-800 text-[15px]">KOKO</span>
-                                        </div>
-                                        <div className="font-bold text-lg tracking-wider" style={{WebkitTextStroke: "1px #6F4E37", color: "transparent"}}>KOKO</div>
-                                    </div>
-                                    
-                                    {/* Credit/Debit Card Option */}
-                                    <div className={`bg-white rounded-md p-5 shadow-sm cursor-pointer ${paymentMethod === 'card' ? 'ring-2 ring-craft-brown border-transparent' : ''}`} onClick={() => setPaymentMethod('card')}>
-                                        <div className="flex items-center justify-between mb-5">
-                                            <div className="flex items-center gap-4">
-                                                <input type="radio" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="w-5 h-5 border-slate-300" style={{accentColor: '#6F4E37'}} />
-                                                <span className="font-medium text-slate-800 text-[15px]">Credit/ Debit Card</span>
+
+                            <div className="p-6 sm:p-8 overflow-y-auto">
+                                {confirmedOrder ? (
+                                    /* Booking Confirmed Receipt View */
+                                    <div className="space-y-6">
+                                        <div className="text-center py-4 bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
+                                            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                                                <CheckCircle2 size={36} />
                                             </div>
-                                            <CreditCard className="w-7 h-7" style={{color: '#3b82f6'}} strokeWidth={1.5} />
+                                            <h4 className="text-2xl font-serif font-bold text-slate-900">Reservation Confirmed!</h4>
+                                            <p className="text-xs text-slate-600 mt-1">
+                                                Order Reference ID: <span className="font-mono font-bold text-royalMaroon-800">#SL-ACC-{confirmedOrder.id}</span>
+                                            </p>
                                         </div>
-                                        
-                                        {paymentMethod === 'card' && (
-                                            <>
-                                                <div className="mb-6 pl-9">
-                                                    <p className="text-[13px] text-slate-500 mb-2">We accept</p>
-                                                    <div className="flex gap-2">
-                                                        {/* Visa Badge */}
-                                                        <div className="border border-slate-200 rounded px-2.5 py-1 font-bold italic text-[11px] flex items-center justify-center h-7" style={{color: '#1d4ed8'}}>VISA</div>
-                                                        {/* Mastercard Badge */}
-                                                        <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
-                                                            <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#ef4444'}}></div>
-                                                            <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#facc15', mixBlendMode: 'multiply'}}></div>
-                                                        </div>
-                                                        {/* Amex Badge */}
-                                                        <div className="border border-slate-200 rounded px-2.5 py-1 text-white font-bold text-[10px] flex items-center justify-center h-7 tracking-wider" style={{backgroundColor: '#2563eb'}}>AMEX</div>
-                                                        {/* Maestro Badge */}
-                                                        <div className="border border-slate-200 rounded px-2.5 py-1 flex items-center justify-center h-7">
-                                                            <div className="w-3.5 h-3.5 rounded-full opacity-90" style={{backgroundColor: '#3b82f6'}}></div>
-                                                            <div className="w-3.5 h-3.5 rounded-full opacity-90 -ml-1.5" style={{backgroundColor: '#ef4444', mixBlendMode: 'multiply'}}></div>
-                                                        </div>
+
+                                        {/* Koko Schedule Breakdown if paid via Koko */}
+                                        {paymentMethod === 'koko' && (
+                                            <div className="bg-amber-50/80 border border-amber-300/80 rounded-2xl p-5 text-left space-y-3">
+                                                <div className="flex justify-between items-center border-b border-amber-200 pb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-extrabold text-sm tracking-wider px-2 py-0.5 rounded bg-amber-600 text-white">KOKO</span>
+                                                        <span className="text-xs font-bold text-amber-950 uppercase tracking-wide">Pay in 3 Installments Plan</span>
+                                                    </div>
+                                                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">1st Paid Today</span>
+                                                </div>
+                                                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                                                    <div className="bg-white p-3 rounded-xl border border-emerald-300 shadow-2xs">
+                                                        <span className="text-emerald-700 block text-[10px] uppercase font-bold">1st Today (Paid)</span>
+                                                        <span className="font-bold text-slate-900 text-xs mt-1 block">{formatPrice(grandTotal / 3)}</span>
+                                                        <span className="text-[10px] text-emerald-600 font-bold mt-0.5 block">✓ Success</span>
+                                                    </div>
+                                                    <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-2xs">
+                                                        <span className="text-slate-500 block text-[10px] uppercase font-bold">2nd In 30 Days</span>
+                                                        <span className="font-bold text-slate-900 text-xs mt-1 block">{formatPrice(grandTotal / 3)}</span>
+                                                        <span className="text-[10px] text-slate-400 block mt-0.5">Scheduled</span>
+                                                    </div>
+                                                    <div className="bg-white p-3 rounded-xl border border-amber-200 shadow-2xs">
+                                                        <span className="text-slate-500 block text-[10px] uppercase font-bold">3rd In 60 Days</span>
+                                                        <span className="font-bold text-slate-900 text-xs mt-1 block">{formatPrice(grandTotal / 3)}</span>
+                                                        <span className="text-[10px] text-slate-400 block mt-0.5">Scheduled</span>
                                                     </div>
                                                 </div>
-                                                
-                                                <div className="space-y-4">
-                                                    <div>
-                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Holder</label>
-                                                        <input type="text" value={paymentData.card_holder} onChange={e => setPaymentData({...paymentData, card_holder: e.target.value})} className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 text-slate-900" style={{outlineColor: '#6F4E37'}} />
-                                                        {paymentErrors.card_holder && <div className="text-red-500 text-xs mt-1">{paymentErrors.card_holder}</div>}
+                                                <p className="text-[11px] text-amber-900/80 text-center">
+                                                    Account linked: <strong className="text-slate-900 font-mono">{paymentData.koko_phone || '0768251139'}</strong>. A receipt has been synced to your Koko app.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* Summary details */}
+                                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-2 text-sm text-slate-700">
+                                            <div className="flex justify-between border-b border-slate-200 pb-2">
+                                                <span className="text-slate-500">Property:</span>
+                                                <span className="font-bold text-slate-900">{property.name}</span>
+                                            </div>
+                                            <div className="flex justify-between border-b border-slate-200 pb-2">
+                                                <span className="text-slate-500">Room & Guests:</span>
+                                                <span className="font-semibold text-slate-900">{activeRoom.name} • {guests} Guests</span>
+                                            </div>
+                                            <div className="flex justify-between border-b border-slate-200 pb-2">
+                                                <span className="text-slate-500">Dates:</span>
+                                                <span className="font-semibold text-slate-900">{checkIn} to {checkOut} ({nights} {nights === 1 ? 'Night' : 'Nights'})</span>
+                                            </div>
+                                            <div className="flex justify-between pt-1 text-base">
+                                                <span className="font-bold text-slate-900">Total Price:</span>
+                                                <span className="font-bold text-royalTeal">{formatPrice(grandTotal)}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex gap-3 pt-2">
+                                            <button 
+                                                onClick={() => {
+                                                    setShowCheckout(false);
+                                                    setKokoStep('input');
+                                                    setConfirmedOrder(null);
+                                                }}
+                                                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition-colors text-sm"
+                                            >
+                                                Done
+                                            </button>
+                                            {onOpenBookings && (
+                                                <button 
+                                                    onClick={() => {
+                                                        setShowCheckout(false);
+                                                        setKokoStep('input');
+                                                        setConfirmedOrder(null);
+                                                        onOpenBookings();
+                                                    }}
+                                                    className="flex-1 py-3 bg-royalMaroon-800 hover:bg-royalMaroon-700 text-royalGold-400 font-bold rounded-xl transition-colors text-sm shadow-md"
+                                                >
+                                                    View All Bookings
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : kokoStep === 'otp' ? (
+                                    /* Koko OTP Verification Portal */
+                                    <div className="space-y-6">
+                                        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl p-5 flex items-center justify-between shadow-md">
+                                            <div>
+                                                <span className="text-xs uppercase font-bold tracking-widest text-amber-100 block">Koko SMS Gateway</span>
+                                                <h4 className="text-lg font-bold">SMS OTP Authorization</h4>
+                                            </div>
+                                            <div className="font-extrabold text-xl px-3 py-1 bg-white text-amber-600 rounded-lg shadow-sm">KOKO</div>
+                                        </div>
+
+                                        <div className="text-center space-y-2">
+                                            <p className="text-sm text-slate-700">
+                                                We've dispatched a 6-digit one-time authorization code via SMS to your registered mobile:
+                                            </p>
+                                            <div className="inline-block bg-slate-100 border border-slate-200 px-4 py-1.5 rounded-full font-mono font-bold text-slate-900 text-sm">
+                                                {paymentData.koko_phone || '0768251139'}
+                                            </div>
+                                            {smsSentMessage && (
+                                                <div className="mt-2 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs px-3.5 py-2 rounded-xl text-center font-medium">
+                                                    ✓ {smsSentMessage}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* OTP Input box - STRICT MANUAL INPUT */}
+                                        <div className="space-y-3">
+                                            <label className="block text-center text-xs font-bold uppercase tracking-wider text-slate-700">
+                                                Enter 6-Digit SMS Verification Code *
+                                            </label>
+                                            <div className="flex justify-center">
+                                                <input 
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    maxLength="6"
+                                                    value={kokoOtp}
+                                                    onChange={(e) => {
+                                                        setKokoOtp(e.target.value.replace(/\D/g, '').substring(0, 6));
+                                                        if (apiError) setApiError(null);
+                                                    }}
+                                                    placeholder="• • • • • •"
+                                                    autoFocus
+                                                    className="w-56 text-center text-2xl font-mono tracking-[0.4em] font-bold text-slate-900 bg-white border-2 border-amber-500 rounded-xl py-3 focus:outline-none focus:ring-4 focus:ring-amber-500/20 shadow-sm placeholder:text-slate-300"
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between text-xs px-2 pt-1">
+                                                <span className="text-slate-500">Check your SMS inbox</span>
+                                                {smsTimer > 0 ? (
+                                                    <span className="text-slate-400 font-medium">
+                                                        Resend code in <strong className="text-slate-600 font-mono">{smsTimer}s</strong>
+                                                    </span>
+                                                ) : (
+                                                    <button 
+                                                        type="button"
+                                                        onClick={handleSendKokoOtp}
+                                                        disabled={sendingSms}
+                                                        className="text-amber-600 hover:text-amber-700 font-bold underline cursor-pointer disabled:opacity-50"
+                                                    >
+                                                        {sendingSms ? 'Sending SMS...' : 'Resend SMS OTP'}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Installment Summary */}
+                                        <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-4 text-xs space-y-1.5 text-slate-700">
+                                            <div className="flex justify-between font-semibold">
+                                                <span>First Installment Due Today:</span>
+                                                <span className="font-bold text-slate-900">{formatPrice(grandTotal / 3)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-slate-500">
+                                                <span>Remaining (2 x {formatPrice(grandTotal / 3)}):</span>
+                                                <span>{formatPrice((grandTotal / 3) * 2)}</span>
+                                            </div>
+                                            <div className="flex justify-between font-bold text-slate-900 pt-1 border-t border-amber-200">
+                                                <span>Total Accommodation Price:</span>
+                                                <span className="text-royalTeal">{formatPrice(grandTotal)}</span>
+                                            </div>
+                                        </div>
+
+                                        {apiError && (
+                                            <div className="bg-red-50 border border-red-200 text-red-700 p-3.5 rounded-xl text-xs flex items-center gap-2">
+                                                <X size={16} className="shrink-0 text-red-500" />
+                                                <span>{apiError}</span>
+                                            </div>
+                                        )}
+
+                                        <div className="flex gap-3 pt-2">
+                                            <button 
+                                                onClick={() => { setKokoStep('input'); setApiError(null); }}
+                                                className="w-1/3 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm"
+                                            >
+                                                Back
+                                            </button>
+                                            <button 
+                                                onClick={handleVerifyAndSubmitKokoBooking}
+                                                disabled={processing || kokoOtp.trim().length !== 6}
+                                                className="w-2/3 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl shadow-lg transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                                            >
+                                                {processing ? (
+                                                    <span className="flex items-center gap-2">
+                                                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                                        Verifying & Authorizing...
+                                                    </span>
+                                                ) : (
+                                                    `Verify & Pay ${formatPrice(grandTotal / 3)}`
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Payment Method Selection View */
+                                    <div>
+                                        <div className="flex gap-4 mb-6 pb-6 border-b border-gray-100">
+                                            <img src={property.image} className="w-24 h-24 rounded-2xl object-cover shadow-sm shrink-0" />
+                                            <div>
+                                                <h4 className="font-bold text-lg text-gray-900">{property.name}</h4>
+                                                <p className="text-xs text-gray-500 mb-1">{property.address || property.location}</p>
+                                                <p className="text-sm font-semibold text-royalMaroon-900">{activeRoom.name} • {nights} {nights === 1 ? 'Night' : 'Nights'} • {guests} Guests</p>
+                                                <p className="font-bold text-royalTeal mt-1 text-base">Total: {formatPrice(grandTotal)}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <h2 className="text-lg font-bold text-slate-900 mb-4 font-sans">Select Payment Method</h2>
+                                        
+                                        <div className="space-y-3">
+                                            {/* KOKO Option */}
+                                            <div 
+                                                className={`rounded-2xl p-4 sm:p-5 cursor-pointer transition-all border-2 ${
+                                                    paymentMethod === 'koko' 
+                                                        ? 'border-amber-500 bg-amber-50/20 shadow-md ring-2 ring-amber-500/20' 
+                                                        : 'border-slate-200 bg-white hover:border-slate-300'
+                                                }`} 
+                                                onClick={() => setPaymentMethod('koko')}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3.5">
+                                                        <input 
+                                                            type="radio" 
+                                                            checked={paymentMethod === 'koko'} 
+                                                            onChange={() => setPaymentMethod('koko')} 
+                                                            className="w-5 h-5 accent-amber-600" 
+                                                        />
+                                                        <div>
+                                                            <span className="font-bold text-slate-900 text-[15px] block">KOKO: Pay in 3</span>
+                                                            <span className="text-xs text-slate-500">Buy Now, Pay Later • 0% Interest</span>
+                                                        </div>
                                                     </div>
-                                                    
-                                                    <div>
-                                                        <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Card Number</label>
-                                                        <div className="relative">
-                                                            <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
-                                                                <CreditCard className="h-4 w-4 text-slate-400" />
+                                                    <div className="font-extrabold text-sm tracking-wider px-2.5 py-1 rounded-md border border-amber-600/30 text-amber-700 bg-amber-50">
+                                                        KOKO
+                                                    </div>
+                                                </div>
+
+                                                {paymentMethod === 'koko' && (
+                                                    <div className="mt-4 pt-4 border-t border-amber-200/60 space-y-4">
+                                                        {/* Installment breakdown card */}
+                                                        <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-4 text-left">
+                                                            <div className="flex items-center justify-between mb-3">
+                                                                <span className="text-xs font-bold text-amber-900 uppercase tracking-wide">3 Easy Installments Plan</span>
+                                                                <span className="text-xs font-bold bg-amber-200 text-amber-950 px-2 py-0.5 rounded-full">0% Fee</span>
                                                             </div>
+                                                            <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                                                                <div className="bg-white p-2.5 rounded-lg border border-amber-200/80 shadow-2xs">
+                                                                    <span className="text-slate-400 block text-[10px] uppercase font-bold">1st Today</span>
+                                                                    <span className="font-bold text-slate-900 text-xs mt-0.5 block">{formatPrice(grandTotal / 3)}</span>
+                                                                </div>
+                                                                <div className="bg-white p-2.5 rounded-lg border border-amber-200/80 shadow-2xs">
+                                                                    <span className="text-slate-400 block text-[10px] uppercase font-bold">2nd in 30 Days</span>
+                                                                    <span className="font-bold text-slate-900 text-xs mt-0.5 block">{formatPrice(grandTotal / 3)}</span>
+                                                                </div>
+                                                                <div className="bg-white p-2.5 rounded-lg border border-amber-200/80 shadow-2xs">
+                                                                    <span className="text-slate-400 block text-[10px] uppercase font-bold">3rd in 60 Days</span>
+                                                                    <span className="font-bold text-slate-900 text-xs mt-0.5 block">{formatPrice(grandTotal / 3)}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Koko Mobile Number Input */}
+                                                        <div>
+                                                            <label className="block text-[13px] font-semibold text-slate-800 mb-1.5">
+                                                                Koko Registered Mobile Number *
+                                                            </label>
+                                                            <div className="relative">
+                                                                <input 
+                                                                    type="tel"
+                                                                    placeholder="0768251139 or 077 123 4567"
+                                                                    value={paymentData.koko_phone || ''}
+                                                                    onChange={(e) => handlePaymentChange('koko_phone', e.target.value)}
+                                                                    className="w-full bg-white border-2 border-slate-300 rounded-xl shadow-sm text-sm py-2.5 px-3.5 text-slate-900 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                                                />
+                                                            </div>
+                                                            {paymentErrors.koko_phone && (
+                                                                <p className="text-red-500 text-xs font-semibold mt-1">
+                                                                    {paymentErrors.koko_phone}
+                                                                </p>
+                                                            )}
+                                                            <p className="text-[11px] text-slate-500 mt-1.5">
+                                                                ⚡ A real-time 6-digit authorization OTP will be sent to your mobile phone via SMS upon confirmation.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Credit/Debit Card Option */}
+                                            <div 
+                                                className={`rounded-2xl p-4 sm:p-5 cursor-pointer transition-all border-2 ${
+                                                    paymentMethod === 'card' 
+                                                        ? 'border-royalMaroon-800 bg-slate-50/50 shadow-md ring-2 ring-royalMaroon-800/10' 
+                                                        : 'border-slate-200 bg-white hover:border-slate-300'
+                                                }`} 
+                                                onClick={() => setPaymentMethod('card')}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3.5">
+                                                        <input 
+                                                            type="radio" 
+                                                            checked={paymentMethod === 'card'} 
+                                                            onChange={() => setPaymentMethod('card')} 
+                                                            className="w-5 h-5 accent-royalMaroon-800" 
+                                                        />
+                                                        <span className="font-bold text-slate-900 text-[15px]">Credit/ Debit Card</span>
+                                                    </div>
+                                                    <CreditCard className="w-6 h-6 text-blue-600" strokeWidth={1.5} />
+                                                </div>
+                                                
+                                                {paymentMethod === 'card' && (
+                                                    <div className="mt-4 pt-4 border-t border-slate-200 space-y-4">
+                                                        <div className="flex gap-2 mb-3">
+                                                            <div className="border border-slate-200 rounded px-2.5 py-0.5 font-bold italic text-[11px] flex items-center justify-center text-blue-700 bg-white">VISA</div>
+                                                            <div className="border border-slate-200 rounded px-2.5 py-0.5 font-bold text-[11px] flex items-center justify-center text-red-600 bg-white">MASTERCARD</div>
+                                                            <div className="border border-slate-200 rounded px-2.5 py-0.5 font-bold text-[10px] text-white bg-blue-600 flex items-center justify-center">AMEX</div>
+                                                        </div>
+                                                        
+                                                        <div>
+                                                            <label className="block text-[13px] font-medium text-slate-700 mb-1">Card Holder</label>
+                                                            <input 
+                                                                type="text" 
+                                                                value={paymentData.card_holder} 
+                                                                onChange={e => handlePaymentChange('card_holder', e.target.value)} 
+                                                                placeholder="e.g. Shehan Kavinda"
+                                                                className="w-full bg-white border border-slate-300 rounded-xl shadow-sm text-sm py-2 px-3 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-royalMaroon-800" 
+                                                            />
+                                                            {paymentErrors.card_holder && <div className="text-red-500 text-xs mt-1">{paymentErrors.card_holder}</div>}
+                                                        </div>
+                                                        
+                                                        <div>
+                                                            <label className="block text-[13px] font-medium text-slate-700 mb-1">Card Number</label>
                                                             <input 
                                                                 type="text" 
                                                                 value={paymentData.card_number} 
                                                                 onChange={e => {
                                                                     let val = e.target.value.replace(/\D/g, '');
                                                                     val = val.replace(/(.{4})/g, '$1 ').trim();
-                                                                    setPaymentData({...paymentData, card_number: val.substring(0, 19)});
+                                                                    handlePaymentChange('card_number', val.substring(0, 19));
                                                                 }} 
                                                                 placeholder="0000 0000 0000 0000" 
-                                                                className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
-                                                                style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
+                                                                className="w-full bg-white border border-slate-300 rounded-xl shadow-sm text-sm py-2 px-3 font-mono text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-royalMaroon-800" 
                                                                 maxLength="19"
                                                             />
+                                                            {paymentErrors.card_number && <div className="text-red-500 text-xs mt-1">{paymentErrors.card_number}</div>}
                                                         </div>
-                                                        {paymentErrors.card_number && <div className="text-red-500 text-xs mt-1">{paymentErrors.card_number}</div>}
-                                                    </div>
-                                                    
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">Valid Date</label>
-                                                            <div className="relative">
-                                                                <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none">
-                                                                    <Calendar className="h-4 w-4 text-slate-400" />
-                                                                </div>
+                                                        
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label className="block text-[13px] font-medium text-slate-700 mb-1">Valid Date</label>
                                                                 <input 
                                                                     type="text" 
                                                                     value={paymentData.valid_date} 
@@ -1434,80 +1876,81 @@ function DetailView({ property, onBack, onMap, onFood, reviews, policy, addons, 
                                                                         if (val.length > 2) {
                                                                             val = val.substring(0, 2) + '/' + val.substring(2, 4);
                                                                         }
-                                                                        setPaymentData({...paymentData, valid_date: val});
+                                                                        handlePaymentChange('valid_date', val);
                                                                     }} 
                                                                     placeholder="MM/YY" 
-                                                                    className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" 
-                                                                    style={{outlineColor: '#6F4E37', paddingLeft: '1.5rem'}} 
+                                                                    className="w-full bg-white border border-slate-300 rounded-xl shadow-sm text-sm py-2 px-3 font-mono text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-royalMaroon-800" 
                                                                     maxLength="5"
                                                                 />
+                                                                {paymentErrors.valid_date && <div className="text-red-500 text-xs mt-1">{paymentErrors.valid_date}</div>}
                                                             </div>
-                                                            {paymentErrors.valid_date && <div className="text-red-500 text-xs mt-1">{paymentErrors.valid_date}</div>}
-                                                        </div>
-                                                        <div>
-                                                            <label className="block text-[13px] font-medium text-slate-700 mb-1.5">CVV</label>
-                                                            <input type="text" value={paymentData.cvv} onChange={e => setPaymentData({...paymentData, cvv: e.target.value})} placeholder="XXX" className="w-full border-slate-300 rounded-md shadow-sm text-sm py-2 font-mono text-slate-900" style={{outlineColor: '#6F4E37'}} />
-                                                            {paymentErrors.cvv && <div className="text-red-500 text-xs mt-1">{paymentErrors.cvv}</div>}
+                                                            <div>
+                                                                <label className="block text-[13px] font-medium text-slate-700 mb-1">CVV</label>
+                                                                <input 
+                                                                    type="text" 
+                                                                    value={paymentData.cvv} 
+                                                                    onChange={e => handlePaymentChange('cvv', e.target.value.replace(/\D/g, '').substring(0, 4))} 
+                                                                    placeholder="XXX" 
+                                                                    className="w-full bg-white border border-slate-300 rounded-xl shadow-sm text-sm py-2 px-3 font-mono text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-royalMaroon-800" 
+                                                                    maxLength="4"
+                                                                />
+                                                                {paymentErrors.cvv && <div className="text-red-500 text-xs mt-1">{paymentErrors.cvv}</div>}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </>
-                                        )}
-                                            
-                                        <div className="pt-4 mt-4">
-                                            <div className="flex gap-3">
-                                                <button 
-                                                    onClick={() => setShowCheckout(false)}
-                                                    className="w-full text-slate-700 font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:bg-slate-200 bg-slate-100 flex justify-center items-center"
-                                                >
-                                                    Cancel
-                                                </button>
-                                                <button 
-                                                    onClick={async () => {
-                                                        setProcessing(true);
-                                                        setPaymentErrors({});
-                                                        try {
-                                                            const response = await axios.post('/api/orders', {
-                                                                type: 'accommodation',
-                                                                details: {
-                                                                    accommodation_id: property.id,
-                                                                    propertyName: property.name,
-                                                                    checkIn: checkIn,
-                                                                    checkOut: checkOut,
-                                                                    roomType: activeRoom.name,
-                                                                    nights,
-                                                                    guests,
-                                                                    addons: selectedAddons.map(id => {
-                                                                        const addon = currentAddonsList.find(a => a.id === id);
-                                                                        return addon ? addon.title : '';
-                                                                    }).filter(Boolean)
-                                                                },
-                                                                total_amount: grandTotal,
-                                                                payment_method: paymentMethod,
-                                                                payment_details: paymentMethod === 'card' ? paymentData : null
-                                                            });
-                                                            setProcessing(false);
-                                                            setShowCheckout(false);
-                                                            alert("Booking Confirmed! Order ID: " + response.data.order.id);
-                                                        } catch (error) {
-                                                            setProcessing(false);
-                                                            if (error.response?.data?.message) {
-                                                                alert("Error: " + error.response.data.message);
-                                                            } else {
-                                                                alert("Payment processing failed.");
-                                                            }
-                                                        }
-                                                    }}
-                                                    disabled={processing}
-                                                    className="w-full text-white font-medium py-2.5 rounded shadow-sm transition-all text-sm hover:opacity-90 disabled:opacity-70 flex justify-center items-center gap-2"
-                                                    style={{backgroundColor: '#6F4E37'}}
-                                                >
-                                                    {processing ? 'Processing...' : 'Confirm'}
-                                                </button>
+                                                )}
                                             </div>
                                         </div>
+
+                                        {apiError && (
+                                            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 p-3.5 rounded-xl text-xs flex items-center gap-2">
+                                                <X size={16} className="shrink-0 text-red-500" />
+                                                <span>{apiError}</span>
+                                            </div>
+                                        )}
+                                                    
+                                        <div className="pt-6 mt-4 border-t border-slate-100 flex gap-3">
+                                            <button 
+                                                onClick={() => setShowCheckout(false)}
+                                                className="w-1/3 text-slate-700 font-semibold py-3 rounded-xl shadow-sm transition-all text-sm hover:bg-slate-200 bg-slate-100 flex justify-center items-center"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button 
+                                                onClick={async () => {
+                                                    if (!validatePayment()) return;
+                                                    if (paymentMethod === 'koko') {
+                                                        await handleSendKokoOtp();
+                                                    } else {
+                                                        await executeBookingSubmission();
+                                                    }
+                                                }}
+                                                disabled={processing || sendingSms}
+                                                className={`w-2/3 font-bold py-3 rounded-xl shadow-lg transition-all text-sm flex justify-center items-center gap-2 text-white ${
+                                                    paymentMethod === 'koko'
+                                                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600'
+                                                        : 'bg-royalMaroon-800 hover:bg-royalMaroon-700'
+                                                }`}
+                                            >
+                                                {sendingSms ? (
+                                                    <span className="flex items-center gap-2">
+                                                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                                        Dispatching SMS OTP...
+                                                    </span>
+                                                ) : processing ? (
+                                                    <span className="flex items-center gap-2">
+                                                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                                        Processing...
+                                                    </span>
+                                                ) : paymentMethod === 'koko' ? (
+                                                    `Confirm & Send SMS OTP (${formatPrice(grandTotal / 3)})`
+                                                ) : (
+                                                    `Confirm & Pay (${formatPrice(grandTotal)})`
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </motion.div>
                     </motion.div>
