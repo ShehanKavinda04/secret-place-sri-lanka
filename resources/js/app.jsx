@@ -7,6 +7,11 @@ import { createRoot } from "react-dom/client";
 import PageLoader from "./Components/PageLoader";
 
 import { AppStateProvider } from "./Context/AppStateContext";
+import { globalTranslator } from "./Utils/domTranslator";
+
+if (typeof window !== "undefined") {
+    globalTranslator.init();
+}
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 

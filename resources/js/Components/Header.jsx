@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import { useAppState } from "../Context/AppStateContext";
+import { useTranslation } from "../Hooks/useTranslation";
 import { Menu, Transition } from "@headlessui/react";
 import {
     ChevronDownIcon,
@@ -17,21 +18,22 @@ function classNames(...classes) {
 
 export const Header = () => {
     const { role, setRole, currency, setCurrency } = useAppState();
+    const { t } = useTranslation();
 
     const roles = [
         {
             id: "customer",
-            label: "Traveler",
+            label: t("Traveler"),
             icon: <Map className="w-4 h-4 mr-2" />,
         },
         {
             id: "seller",
-            label: "Local Host",
+            label: t("Local Host"),
             icon: <User className="w-4 h-4 mr-2" />,
         },
         {
             id: "admin",
-            label: "Trust & Safety Officer",
+            label: t("Trust & Safety Officer"),
             icon: <ShieldCheck className="w-4 h-4 mr-2" />,
         },
     ];
@@ -204,7 +206,7 @@ export const Header = () => {
                         {/* CTA */}
                         {role === "customer" && (
                             <button className="hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-ceylon-950 bg-emerald-accent hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-ceylon-950 focus:ring-emerald-accent transition-colors">
-                                List a Secret Spot
+                                {t("List a Secret Spot")}
                             </button>
                         )}
                     </div>

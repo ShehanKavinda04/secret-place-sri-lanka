@@ -3,8 +3,10 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import QuickTranslatorModal from "@/Components/QuickTranslatorModal";
 import { useAppState } from "@/Context/AppStateContext";
+import { useTranslation } from "@/Hooks/useTranslation";
 
 export default function Navbar({ auth = {} }) {
+    const { t } = useTranslation();
     const [isTranslatorOpen, setIsTranslatorOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { url } = usePage();
@@ -94,7 +96,7 @@ export default function Navbar({ auth = {} }) {
                             }}
                             className="hover:text-royalGold-300 transition-colors"
                         >
-                            Home
+                            {t("Home")}
                         </motion.a>
 
                         <motion.a
@@ -116,13 +118,13 @@ export default function Navbar({ auth = {} }) {
                                                 ?.scrollIntoView({
                                                     behavior: "smooth",
                                                 }),
-                                        100,
+                                            100,
                                     );
                                 }
                             }}
                             className="hover:text-royalGold-300 transition-colors"
                         >
-                            Categories
+                            {t("Categories")}
                         </motion.a>
 
                         <motion.a
@@ -144,13 +146,13 @@ export default function Navbar({ auth = {} }) {
                                                 ?.scrollIntoView({
                                                     behavior: "smooth",
                                                 }),
-                                        100,
+                                            100,
                                     );
                                 }
                             }}
                             className="hover:text-royalGold-300 transition-colors"
                         >
-                            Map
+                            {t("Map")}
                         </motion.a>
 
                         <motion.div
@@ -162,7 +164,7 @@ export default function Navbar({ auth = {} }) {
                                 href="/about-us"
                                 className="hover:text-royalGold-300 transition-colors"
                             >
-                                About Us
+                                {t("About Us")}
                             </Link>
                         </motion.div>
                     </nav>
@@ -227,7 +229,7 @@ export default function Navbar({ auth = {} }) {
                         <button
                             onClick={() => setIsTranslatorOpen(true)}
                             className="px-3.5 py-2 rounded-full bg-royalGold-500/10 hover:bg-royalGold-500/20 border border-royalGold-500/30 text-royalGold-300 transition-colors flex items-center gap-1.5 text-xs font-bold"
-                            title="Quick AI Translator"
+                            title={t("Quick AI Translator")}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -244,7 +246,7 @@ export default function Navbar({ auth = {} }) {
                                 />
                             </svg>
                             <span className="hidden sm:inline">
-                                Quick Translate
+                                {t("Quick Translate")}
                             </span>
                         </button>
 
@@ -253,7 +255,7 @@ export default function Navbar({ auth = {} }) {
                                 prefetch
                                 href="/profile"
                                 className="w-[42px] h-[42px] rounded-full overflow-hidden border-2 border-royalGold-500/50 hover:border-royalGold-400 hover:shadow-[0_0_12px_rgba(212,175,55,0.4)] transition-all bg-[#D1D5DB] flex items-center justify-center shrink-0"
-                                title="My Profile"
+                                title={t("Profile")}
                             >
                                 <svg
                                     className="w-full h-full"
@@ -279,7 +281,7 @@ export default function Navbar({ auth = {} }) {
                                     href={getRoute("login", "/login")}
                                     className="text-sm font-semibold text-royalGold-400 hover:text-royalGold-300"
                                 >
-                                    Log In
+                                    {t("Log In")}
                                 </Link>
                             </>
                         )}
@@ -298,7 +300,7 @@ export default function Navbar({ auth = {} }) {
                         onClick={(event) => handleSectionClick(event, "hero")}
                         className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
                     >
-                        Home
+                        {t("Home")}
                     </a>
                     <a
                         href="/#categories"
@@ -307,7 +309,7 @@ export default function Navbar({ auth = {} }) {
                         }
                         className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
                     >
-                        Categories
+                        {t("Categories")}
                     </a>
                     <a
                         href="/#smart-routing"
@@ -316,14 +318,14 @@ export default function Navbar({ auth = {} }) {
                         }
                         className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
                     >
-                        Map
+                        {t("Map")}
                     </a>
                     <Link
                         href="/about-us"
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
                     >
-                        About Us
+                        {t("About Us")}
                     </Link>
                     {auth && auth.user ? (
                         <Link
@@ -331,7 +333,7 @@ export default function Navbar({ auth = {} }) {
                             onClick={() => setIsMobileMenuOpen(false)}
                             className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
                         >
-                            Profile
+                            {t("Profile")}
                         </Link>
                     ) : (
                         <Link
@@ -339,7 +341,7 @@ export default function Navbar({ auth = {} }) {
                             onClick={() => setIsMobileMenuOpen(false)}
                             className="block px-3 py-2 rounded-lg hover:bg-royalGold-500/10"
                         >
-                            Log In
+                            {t("Log In")}
                         </Link>
                     )}
                 </motion.nav>

@@ -1,7 +1,10 @@
 import { Link, router } from "@inertiajs/react";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/Hooks/useTranslation";
 
 export default function SpotCard({ spot, onBook, onDetails }) {
+    const { t } = useTranslation();
+
     return (
         <motion.article
             initial={{ opacity: 0, y: 30 }}
@@ -29,7 +32,7 @@ export default function SpotCard({ spot, onBook, onDetails }) {
             <div className="relative aspect-[4/3] overflow-hidden bg-slate-950">
                 <img
                     src={spot.image}
-                    alt={spot.name}
+                    alt={t(spot.name)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
             </div>
@@ -37,7 +40,7 @@ export default function SpotCard({ spot, onBook, onDetails }) {
             <div className="p-6 flex flex-col flex-1 space-y-4 text-left">
                 <div className="flex items-center justify-between text-xs text-slate-500">
                     <div className="flex items-center gap-1">
-                        <span>{spot.location}</span>
+                        <span>{t(spot.location)}</span>
                     </div>
                     <div className="flex items-center gap-1">
                         <span className="font-bold text-slate-700">
@@ -49,19 +52,19 @@ export default function SpotCard({ spot, onBook, onDetails }) {
 
                 <div className="space-y-2">
                     <h3 className="font-display text-xl font-bold text-royalMaroon-950 group-hover:text-royalMaroon-800 transition-colors">
-                        {spot.name}
+                        {t(spot.name)}
                     </h3>
                     <p className="text-slate-650 text-sm font-light leading-relaxed">
-                        {spot.description}
+                        {t(spot.description)}
                     </p>
                 </div>
 
                 <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
                     <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                        Verified Spot
+                        {t("Verified Spot")}
                     </span>
                     <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-royalTeal group-hover:text-[#0c6b65] transition-colors">
-                        View Details
+                        {t("View Details")}
                         <span>→</span>
                     </span>
                 </div>

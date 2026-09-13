@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import { useTranslation } from "@/Hooks/useTranslation";
 
 export default function QuickTranslatorModal({ isOpen, onClose }) {
+    const { t } = useTranslation();
     const [inputText, setInputText] = useState("");
     const [translatedText, setTranslatedText] = useState("");
     const [sourceEngine, setSourceEngine] = useState("");
@@ -93,10 +95,10 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                             </div>
                             <div>
                                 <h3 className="font-display font-bold text-lg text-amber-300">
-                                    Quick AI Translator
+                                    {t("Quick AI Translator")}
                                 </h3>
                                 <p className="text-xs text-emerald-200/70">
-                                    Sinhala (sin_Sinh) → English (eng_Latn)
+                                    {t("Sinhala (sin_Sinh) → English (eng_Latn)")}
                                 </p>
                             </div>
                         </div>
@@ -113,7 +115,7 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                         {/* Sample Chips */}
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="text-xs font-semibold text-emerald-200/70">
-                                Quick phrases:
+                                {t("Quick phrases:")}
                             </span>
                             {samplePhrases.map((phrase, i) => (
                                 <button
@@ -132,7 +134,7 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                         {/* Input Area */}
                         <div>
                             <label className="block text-xs font-bold text-amber-300 mb-1.5 uppercase tracking-wider">
-                                Sinhala Input
+                                {t("Sinhala Input")}
                             </label>
                             <div className="relative">
                                 <textarea
@@ -140,7 +142,7 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                                     onChange={(e) =>
                                         setInputText(e.target.value)
                                     }
-                                    placeholder="මෙහි සිංහලෙන් ටයිප් කරන්න (e.g. ඔබට කෙසේද?)..."
+                                    placeholder={t("මෙහි සිංහලෙන් ටයිප් කරන්න (e.g. ඔබට කෙසේද?)...")}
                                     rows={3}
                                     className="w-full bg-[#051613] border border-emerald-500/30 rounded-xl px-4 py-3 text-sm text-[#FAF9F6] placeholder-emerald-200/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 resize-none"
                                 />
@@ -153,7 +155,7 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                                         }}
                                         className="absolute top-2.5 right-2.5 text-xs text-emerald-200 hover:text-white px-2 py-0.5 rounded bg-white/10 hover:bg-white/20"
                                     >
-                                        Clear
+                                        {t("Clear")}
                                     </button>
                                 )}
                             </div>
@@ -187,10 +189,10 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                         ></path>
                                     </svg>
-                                    <span>Translating with AI Model...</span>
+                                    <span>{t("Translating with AI Model...")}</span>
                                 </>
                             ) : (
-                                <span>Translate Text</span>
+                                <span>{t("Translate Text")}</span>
                             )}
                         </button>
 
@@ -224,7 +226,7 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                             >
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">
-                                        English Translation
+                                        {t("English Translation")}
                                     </span>
                                     <span
                                         className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${
@@ -234,8 +236,8 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                                         }`}
                                     >
                                         {sourceEngine === "glossary"
-                                            ? "Cultural Glossary"
-                                            : "Neural AI Model"}
+                                            ? t("Cultural Glossary")
+                                            : t("Neural AI Model")}
                                     </span>
                                 </div>
 
@@ -247,7 +249,7 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                                     <button
                                         onClick={handleSpeak}
                                         className="flex items-center gap-1 text-xs text-amber-300 hover:text-amber-200 transition-colors"
-                                        title="Listen to pronunciation"
+                                        title={t("Listen to pronunciation")}
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -263,7 +265,7 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                                                 d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.287a6 6 0 0 1 0 8.426M7.5 14.25 5.106 11.856A1.5 1.5 0 0 0 4.045 11.414H3a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h1.045a1.5 1.5 0 0 0 1.06-.442L7.5 12.75v1.5Z"
                                             />
                                         </svg>
-                                        <span>Listen</span>
+                                        <span>{t("Listen")}</span>
                                     </button>
                                     <button
                                         onClick={handleCopy}
@@ -284,7 +286,7 @@ export default function QuickTranslatorModal({ isOpen, onClose }) {
                                             />
                                         </svg>
                                         <span>
-                                            {copied ? "Copied!" : "Copy"}
+                                            {copied ? t("Copied!") : t("Copy")}
                                         </span>
                                     </button>
                                 </div>

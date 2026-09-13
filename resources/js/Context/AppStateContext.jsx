@@ -34,12 +34,26 @@ export const AppStateProvider = ({ children }) => {
             : "EN";
         setLanguageState(next);
         localStorage.setItem("secret_places_language", next);
+        if (typeof window !== "undefined") {
+            window.dispatchEvent(
+                new CustomEvent("app-language-changed", {
+                    detail: { language: next },
+                }),
+            );
+        }
     };
 
     useEffect(() => {
         localStorage.setItem("secret_places_currency", currency);
         document.documentElement.lang =
             { EN: "en", SI: "si", TA: "ta" }[language] || "en";
+        if (typeof window !== "undefined") {
+            window.dispatchEvent(
+                new CustomEvent("app-language-changed", {
+                    detail: { language },
+                }),
+            );
+        }
     }, [currency, language]);
 
     // Sync theme with document root

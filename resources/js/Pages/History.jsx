@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import Navbar from "@/Layouts/Navbar";
 import Footer from "@/Layouts/Footer";
@@ -10,9 +10,11 @@ import TextInput from "@/Components/TextInput";
 import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
 import Checkbox from "@/Components/Checkbox";
+import { useTranslation } from "@/Hooks/useTranslation";
 import axios from "axios";
 
 export default function History({ auth, spot }) {
+    const { t } = useTranslation();
     // Default to location to match the wireframe image, but normally history
     const [activeTab, setActiveTab] = useState("history");
     const [isExpanded, setIsExpanded] = useState(false);
@@ -1265,14 +1267,14 @@ export default function History({ auth, spot }) {
                         <div className="p-4 border-b border-slate-100 bg-slate-50/50">
                             {(() => {
                                 let backHref = "/places";
-                                let backLabel = "Back to Places";
+                                let backLabel = t("Back to Places");
                                 if (
                                     category ===
                                         "Spiritual Experiences & Wellness" ||
                                     category === "Spiritual Experience"
                                 ) {
                                     backHref = "/category/spiritual";
-                                    backLabel = "Back to Spiritual";
+                                    backLabel = t("Back to Spiritual");
                                 } else if (category === "Nature & Wildlife") {
                                     backHref = "/places";
                                 } else if (
@@ -1321,7 +1323,7 @@ export default function History({ auth, spot }) {
                                             d={item.icon}
                                         />
                                     </svg>
-                                    {item.label}
+                                    {t(item.label)}
                                 </button>
                             ))}
                         </nav>
@@ -1338,12 +1340,12 @@ export default function History({ auth, spot }) {
                         {category !== "Hydraulic" && (
                             <div className="bg-[#0f4a45] text-white px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <h2 className="text-lg font-bold tracking-wide">
-                                    {
+                                    {t(
                                         sidebarItems.find(
                                             (i) => i.id === activeTab,
                                         )?.label
-                                    }{" "}
-                                    - {spot?.name}
+                                    )}{" "}
+                                    - {t(spot?.name)}
                                 </h2>
 
                                 {/* Search box (simulating the map wireframe) */}
@@ -1356,7 +1358,7 @@ export default function History({ auth, spot }) {
                                                 setSearchQuery(e.target.value)
                                             }
                                             onKeyDown={handleSearch}
-                                            placeholder="Search Location"
+                                            placeholder={t("Search Location")}
                                             className="w-full bg-white/10 border border-white/20 rounded-md px-3 py-1.5 pr-8 text-sm text-white placeholder-white/60 focus:outline-none focus:ring-1 focus:ring-royalGold-400 focus:border-royalGold-400"
                                             disabled={isSearching}
                                         />
@@ -1391,17 +1393,12 @@ export default function History({ auth, spot }) {
                                     <div className="space-y-6">
                                         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-md">
                                             <h3 className="text-red-800 font-bold uppercase tracking-widest text-xs mb-1">
-                                                You Must Need
+                                                {t("You Must Need")}
                                             </h3>
                                             <p className="text-sm text-red-700/90 leading-relaxed">
-                                                Preserve our sacred heritage:
-                                                Please dress in traditional
-                                                white attire, refrain from
-                                                speaking loudly, and avoid using
-                                                polythene or plastic to help
-                                                maintain the serenity and
-                                                cleanliness of the sacred
-                                                grounds.
+                                                {t(
+                                                    "Preserve our sacred heritage: Please dress in traditional white attire, refrain from speaking loudly, and avoid using polythene or plastic to help maintain the serenity and cleanliness of the sacred grounds."
+                                                )}
                                             </p>
                                         </div>
                                     </div>
@@ -1424,10 +1421,10 @@ export default function History({ auth, spot }) {
 
                                         <div className="px-6 pt-2 pb-12 md:px-10 md:pb-16 text-center flex flex-col items-center justify-center relative z-10">
                                             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-white tracking-widest uppercase mb-4 drop-shadow-md">
-                                                {spot.name}
+                                                {t(spot.name)}
                                             </h2>
                                             <p className="text-[#e2c792] font-serif text-base md:text-lg lg:text-xl max-w-3xl leading-relaxed">
-                                                {spot.topic}
+                                                {t(spot.topic)}
                                             </p>
                                         </div>
                                     </div>
@@ -1436,8 +1433,7 @@ export default function History({ auth, spot }) {
                                     <div className="space-y-8 text-slate-700">
                                         <div className="bg-white border border-slate-200 shadow-sm p-6 rounded-xl">
                                             <h2 className="text-xl font-bold text-royalMaroon-900 mb-4">
-                                                Historical Narrative (Sub Topic
-                                                1)
+                                                {t("Historical Narrative (Sub Topic 1)")}
                                             </h2>
                                             <div className="prose prose-slate max-w-none text-sm leading-relaxed mb-6">
                                                 {(() => {
@@ -1456,57 +1452,72 @@ export default function History({ auth, spot }) {
                                                     const parseMarkdown = (
                                                         str,
                                                     ) => {
-                                                        const parts = str.split(
-                                                            /(\*\*.*?\*\*|\*.*?\*)/g,
-                                                        );
-                                                        return parts.map(
-                                                            (part, i) => {
-                                                                if (
-                                                                    part.startsWith(
-                                                                        "**",
-                                                                    ) &&
-                                                                    part.endsWith(
-                                                                        "**",
-                                                                    )
-                                                                ) {
-                                                                    return (
-                                                                        <strong
-                                                                            key={
-                                                                                i
-                                                                            }
-                                                                            className="font-semibold text-royalMaroon-800"
-                                                                        >
-                                                                            {part.slice(
-                                                                                2,
-                                                                                -2,
-                                                                            )}
-                                                                        </strong>
-                                                                    );
-                                                                } else if (
-                                                                    part.startsWith(
-                                                                        "*",
-                                                                    ) &&
-                                                                    part.endsWith(
-                                                                        "*",
-                                                                    )
-                                                                ) {
-                                                                    return (
-                                                                        <em
-                                                                            key={
-                                                                                i
-                                                                            }
-                                                                            className="italic text-slate-600"
-                                                                        >
-                                                                            {part.slice(
-                                                                                1,
-                                                                                -1,
-                                                                            )}
-                                                                        </em>
-                                                                    );
-                                                                }
-                                                                return part;
-                                                            },
-                                                        );
+                                                        if (!str) return null;
+                                                        const lines = str.split("\n");
+                                                        return lines.map((line, lineIdx) => {
+                                                            const rawLine = line.trim();
+                                                            if (!rawLine) {
+                                                                return <span key={lineIdx} className="block h-2" />;
+                                                            }
+                                                            const translatedLine = t(rawLine);
+                                                            const parts = translatedLine.split(
+                                                                /(\*\*.*?\*\*|\*.*?\*)/g,
+                                                            );
+                                                            const lineContent = parts.map(
+                                                                (part, i) => {
+                                                                    if (
+                                                                        part.startsWith(
+                                                                            "**",
+                                                                        ) &&
+                                                                        part.endsWith(
+                                                                            "**",
+                                                                        )
+                                                                    ) {
+                                                                        return (
+                                                                            <strong
+                                                                                key={
+                                                                                    i
+                                                                                }
+                                                                                className="font-semibold text-royalMaroon-800"
+                                                                            >
+                                                                                {t(part.slice(
+                                                                                    2,
+                                                                                    -2,
+                                                                                ))}
+                                                                            </strong>
+                                                                        );
+                                                                    } else if (
+                                                                        part.startsWith(
+                                                                            "*",
+                                                                        ) &&
+                                                                        part.endsWith(
+                                                                            "*",
+                                                                        )
+                                                                    ) {
+                                                                        return (
+                                                                            <em
+                                                                                key={
+                                                                                    i
+                                                                                }
+                                                                                className="italic text-slate-600"
+                                                                            >
+                                                                                {t(part.slice(
+                                                                                    1,
+                                                                                    -1,
+                                                                                ))}
+                                                                            </em>
+                                                                        );
+                                                                    }
+                                                                    return t(part);
+                                                                },
+                                                            );
+                                                            return (
+                                                                <React.Fragment key={lineIdx}>
+                                                                    {lineContent}
+                                                                    {lineIdx < lines.length - 1 && <br />}
+                                                                </React.Fragment>
+                                                            );
+                                                        });
                                                     };
 
                                                     if (!needsTruncation) {
@@ -1535,7 +1546,7 @@ export default function History({ auth, spot }) {
                                                                     }
                                                                     className="mt-2 text-[#0f4a45] hover:text-[#0c3935] font-bold text-sm flex items-center gap-1 transition-colors group cursor-pointer"
                                                                 >
-                                                                    Read More...
+                                                                    {t("Read More...")}
                                                                     <span className="transform group-hover:translate-x-1 transition-transform">
                                                                         →
                                                                     </span>
@@ -1602,7 +1613,7 @@ export default function History({ auth, spot }) {
                                                                 }
                                                                 className="mt-2 text-[#0f4a45] hover:text-[#0c3935] font-bold text-sm flex items-center gap-1 transition-colors group cursor-pointer"
                                                             >
-                                                                Read Less
+                                                                {t("Show Less")}
                                                                 <span className="transform group-hover:-translate-x-1 transition-transform">
                                                                     ←
                                                                 </span>
@@ -1630,8 +1641,7 @@ export default function History({ auth, spot }) {
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">
-                                                            Listen to the
-                                                            Narrative
+                                                            {t("LISTEN TO THE NARRATIVE")}
                                                         </p>
                                                         <audio
                                                             key={
@@ -1658,9 +1668,7 @@ export default function History({ auth, spot }) {
 
                                                 <div>
                                                     <h2 className="text-xl font-bold text-royalMaroon-900 mb-4">
-                                                        Blueprint /
-                                                        Architectural Layout
-                                                        (Sub Topic 2)
+                                                        {t("Blueprint / Architectural Layout (Sub Topic 2)")}
                                                     </h2>
 
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
@@ -1670,7 +1678,7 @@ export default function History({ auth, spot }) {
                                                                     src={
                                                                         spot.blueprint_image
                                                                     }
-                                                                    alt="Architectural Blueprint"
+                                                                    alt={t("Architectural Blueprint")}
                                                                     className="w-full h-full object-cover"
                                                                     onError={(
                                                                         e,
@@ -1681,16 +1689,13 @@ export default function History({ auth, spot }) {
                                                                 />
                                                             ) : (
                                                                 <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
-                                                                    Blueprint
-                                                                    Placeholder
+                                                                    {t("Blueprint Placeholder")}
                                                                 </div>
                                                             )}
                                                         </div>
                                                         <div className="prose prose-slate max-w-none text-sm leading-relaxed">
                                                             <p>
-                                                                {
-                                                                    spot.blueprint_text
-                                                                }
+                                                                {t(spot.blueprint_text)}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -1740,51 +1745,51 @@ export default function History({ auth, spot }) {
                                                 <h2 className="text-xl font-bold text-royalMaroon-900 mb-2">
                                                     {spot?.id ===
                                                     "rajarata-ayurveda"
-                                                        ? `Book an Ayurvedic Consultation / Treatment at ${spot?.name}`
+                                                        ? `${t("Book an Ayurvedic Consultation / Treatment at")} ${t(spot?.name)}`
                                                         : spot?.id ===
                                                             "nuwara-wewa-yoga"
-                                                          ? `Join a Lakeside Yoga Session / Book a Wellness Retreat at ${spot?.name}`
+                                                          ? `${t("Join a Lakeside Yoga Session / Book a Wellness Retreat at")} ${t(spot?.name)}`
                                                           : spot?.id ===
                                                               "ranmasu-uyana"
-                                                            ? `Book a Guided Mindfulness Walk at ${spot?.name}`
+                                                            ? `${t("Book a Guided Mindfulness Walk at")} ${t(spot?.name)}`
                                                             : spot?.id ===
                                                                 "mihintale-sunrise"
-                                                              ? `Book a Guided Sunrise Meditation at Mihintale`
+                                                              ? t("Book a Guided Sunrise Meditation at Mihintale")
                                                               : spot?.id ===
                                                                   "ritigala-forest-bathing"
-                                                                ? `Book a Guided Forest Bathing Session at Ritigala`
+                                                                ? t("Book a Guided Forest Bathing Session at Ritigala")
                                                                 : spot?.id ===
                                                                     "jaya-sri-maha-bodhi-contemplation"
-                                                                  ? `Book a Sacred Bodhi Contemplation Session at Jaya Sri Maha Bodhi`
-                                                                  : `Join a Meditation Session / Book a Retreat at ${spot?.name}`}
+                                                                  ? t("Book a Sacred Bodhi Contemplation Session at Jaya Sri Maha Bodhi")
+                                                                  : `${t("Join a Meditation Session / Book a Retreat at")} ${t(spot?.name)}`}
                                                 </h2>
                                                 <p className="text-slate-600 text-sm mb-6 max-w-2xl">
                                                     {spot?.id ===
                                                     "rajarata-ayurveda"
-                                                        ? `Select a preferred date and time slot to register for your wellness therapies and healing sessions at this serene center.`
+                                                        ? t("Select a preferred date and time slot to register for your wellness therapies and healing sessions at this serene center.")
                                                         : spot?.id ===
                                                             "nuwara-wewa-yoga"
-                                                          ? `Select a preferred date and time slot to register for our guided lakeside yoga programs or a longer wellness retreat.`
+                                                          ? t("Select a preferred date and time slot to register for our guided lakeside yoga programs or a longer wellness retreat.")
                                                           : spot?.id ===
                                                               "ranmasu-uyana"
-                                                            ? `Select a preferred date and time slot to book a guided walking meditation tour through the ancient royal gardens.`
+                                                            ? t("Select a preferred date and time slot to book a guided walking meditation tour through the ancient royal gardens.")
                                                             : spot?.id ===
                                                                 "mihintale-sunrise"
-                                                              ? `Select a preferred date and time slot to register for our early morning guided meditation sessions at the sacred Mihintale peak.`
+                                                              ? t("Select a preferred date and time slot to register for our early morning guided meditation sessions at the sacred Mihintale peak.")
                                                               : spot?.id ===
                                                                   "ritigala-forest-bathing"
-                                                                ? `Select a preferred date and time slot to register for our guided Shinrin-yoku (forest bathing) sessions in the ancient strict nature reserve.`
+                                                                ? t("Select a preferred date and time slot to register for our guided Shinrin-yoku (forest bathing) sessions in the ancient strict nature reserve.")
                                                                 : spot?.id ===
                                                                     "jaya-sri-maha-bodhi-contemplation"
-                                                                  ? `Select a preferred date and time slot to sit in guided silent contemplation beneath the world's oldest historically documented tree.`
-                                                                  : `Select a preferred date and time slot to register for our guided meditation programs or a longer retreat at this serene center.`}
+                                                                  ? t("Select a preferred date and time slot to sit in guided silent contemplation beneath the world's oldest historically documented tree.")
+                                                                  : t("Select a preferred date and time slot to register for our guided meditation programs or a longer retreat at this serene center.")}
                                                 </p>
 
                                                 <div className="space-y-6">
                                                     {/* Date Picker (Next 7 days) */}
                                                     <div>
                                                         <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide mb-3">
-                                                            Select a Date
+                                                            {t("Select a Date")}
                                                         </h3>
                                                         <div className="flex gap-3 overflow-x-auto pb-2 snap-x scrollbar-hide">
                                                             {[...Array(7)].map(
@@ -1824,13 +1829,13 @@ export default function History({ auth, spot }) {
                                                                             <span
                                                                                 className={`text-xs font-bold uppercase tracking-wider mb-1 ${isSelected ? "text-teal-100" : "text-slate-400"}`}
                                                                             >
-                                                                                {d.toLocaleDateString(
+                                                                                {t(d.toLocaleDateString(
                                                                                     "en-US",
                                                                                     {
                                                                                         weekday:
                                                                                             "short",
                                                                                     },
-                                                                                )}
+                                                                                ))}
                                                                             </span>
                                                                             <span className="text-2xl font-display font-bold">
                                                                                 {d.getDate()}
@@ -1838,12 +1843,12 @@ export default function History({ auth, spot }) {
                                                                             <span
                                                                                 className={`text-xs ${isSelected ? "text-teal-100" : "text-slate-500"}`}
                                                                             >
-                                                                                {d.toLocaleDateString(
+                                                                                {t(d.toLocaleDateString(
                                                                                     "en-US",
                                                                                     {
                                                                                         month: "short",
                                                                                     },
-                                                                                )}
+                                                                                ))}
                                                                             </span>
                                                                         </button>
                                                                     );
@@ -1865,7 +1870,7 @@ export default function History({ auth, spot }) {
                                                             }}
                                                         >
                                                             <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide mb-3">
-                                                                Select a Session
+                                                                {t("Select a Session")}
                                                             </h3>
                                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                                 {(spot?.id ===
@@ -1932,11 +1937,11 @@ export default function History({ auth, spot }) {
                                                                             }`}
                                                                         >
                                                                             <div className="font-bold text-slate-800 text-sm mb-1">
-                                                                                {
+                                                                                {t(
                                                                                     slot.split(
                                                                                         " (",
-                                                                                    )[0]
-                                                                                }
+                                                                                    )[0],
+                                                                                )}
                                                                             </div>
                                                                             {slot.includes(
                                                                                 "(",
@@ -1981,9 +1986,7 @@ export default function History({ auth, spot }) {
                                                                     }
                                                                     className="px-8 py-3 bg-[#0f4a45] hover:bg-[#0c3935] shadow-md border-none"
                                                                 >
-                                                                    Proceed to
-                                                                    Register
-                                                                    &rarr;
+                                                                    {t("Proceed to Register")} &rarr;
                                                                 </PrimaryButton>
                                                             </motion.div>
                                                         )}
@@ -1997,19 +2000,19 @@ export default function History({ auth, spot }) {
                                     <div className="relative overflow-hidden rounded-2xl bg-[#3a0d18] text-white min-h-[280px] flex items-end">
                                         <img
                                             src={spotThewawa.heroImage}
-                                            alt={spotThewawa.heroAlt}
+                                            alt={t(spotThewawa.heroAlt)}
                                             className="absolute inset-0 w-full h-full object-cover opacity-60"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-[#260711] via-[#3a0d18]/55 to-transparent" />
                                         <div className="relative p-6 md:p-10 max-w-2xl">
                                             <p className="text-[#f4d58b] text-sm font-semibold tracking-[0.18em] uppercase mb-3">
-                                                Sacred Service Schedule
+                                                {t("Sacred Service Schedule")}
                                             </p>
                                             <h1 className="font-display text-3xl md:text-5xl font-bold leading-tight">
-                                                Daily Thewawa and Special Pujas
+                                                {t("Daily Thewawa and Special Pujas")}
                                             </h1>
                                             <p className="mt-3 text-white/85 text-sm md:text-base">
-                                                {spotThewawa.heroSubtitle}
+                                                {t(spotThewawa.heroSubtitle)}
                                             </p>
                                         </div>
                                     </div>
@@ -2018,15 +2021,15 @@ export default function History({ auth, spot }) {
                                         <div className="flex items-end justify-between gap-4 mb-4">
                                             <div>
                                                 <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase">
-                                                    Daily schedule
+                                                    {t("Daily schedule")}
                                                 </p>
                                                 <h2 className="text-2xl font-bold text-royalMaroon-900">
-                                                    Daily Thewawa Schedule
+                                                    {t("Daily Thewawa Schedule")}
                                                 </h2>
                                             </div>
                                             <span className="hidden sm:inline-flex items-center gap-2 text-xs text-slate-500">
                                                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                                                Every day
+                                                {t("Every day")}
                                             </span>
                                         </div>
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -2062,12 +2065,12 @@ export default function History({ auth, spot }) {
                                                                     schedule.image
                                                                 }
                                                                 alt={
-                                                                    schedule.title
+                                                                    t(schedule.title)
                                                                 }
                                                                 className="w-full h-36 object-cover"
                                                             />
                                                             <span className="absolute top-2 right-2 text-[10px] font-bold uppercase tracking-widest bg-emerald-500 text-white px-2 py-0.5 rounded-full">
-                                                                Live Schedule
+                                                                {t("Live Schedule")}
                                                             </span>
                                                             <span className="absolute bottom-2 left-3 text-white font-bold text-lg drop-shadow">
                                                                 {String(
@@ -2083,15 +2086,15 @@ export default function History({ auth, spot }) {
                                                                 {schedule.time}
                                                             </p>
                                                             <h3 className="font-bold text-royalMaroon-900 text-sm mb-2">
-                                                                {schedule.title}
+                                                                {t(schedule.title)}
                                                             </h3>
                                                             <p className="text-xs text-slate-600 leading-relaxed">
-                                                                {
-                                                                    schedule.detail
-                                                                }
+                                                                {t(
+                                                                    schedule.detail,
+                                                                )}
                                                             </p>
                                                             <h4 className="mt-3 text-xs font-bold uppercase tracking-wide text-royalTeal">
-                                                                Visitor Sequence
+                                                                {t("Visitor Sequence")}
                                                             </h4>
                                                             <ol className="mt-2 space-y-1 text-xs text-slate-600 list-decimal list-inside">
                                                                 {schedule.steps.map(
@@ -2101,9 +2104,9 @@ export default function History({ auth, spot }) {
                                                                                 step
                                                                             }
                                                                         >
-                                                                            {
-                                                                                step
-                                                                            }
+                                                                            {t(
+                                                                                step,
+                                                                            )}
                                                                         </li>
                                                                     ),
                                                                 )}
@@ -2118,10 +2121,10 @@ export default function History({ auth, spot }) {
                                     <section className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6">
                                         <div>
                                             <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase">
-                                                Sacred offerings
+                                                {t("Sacred offerings")}
                                             </p>
                                             <h2 className="text-2xl font-bold text-royalMaroon-900 mb-4">
-                                                Special Pujas
+                                                {t("Special Pujas")}
                                             </h2>
                                             <div className="grid sm:grid-cols-3 gap-4">
                                                 {spotThewawa.specialPujas.map(
@@ -2159,19 +2162,18 @@ export default function History({ auth, spot }) {
                                                         >
                                                             <img
                                                                 src={image}
-                                                                alt={title}
+                                                                alt={t(title)}
                                                                 className="w-full h-32 object-cover"
                                                             />
                                                             <div className="p-4">
                                                                 <h3 className="font-bold text-royalMaroon-900 text-sm">
-                                                                    {title}
+                                                                    {t(title)}
                                                                 </h3>
                                                                 <p className="text-xs text-slate-600 leading-relaxed mt-2">
-                                                                    {detail}
+                                                                    {t(detail)}
                                                                 </p>
                                                                 <h4 className="mt-3 text-xs font-bold uppercase tracking-wide text-royalTeal">
-                                                                    Visitor
-                                                                    sequence
+                                                                    {t("Visitor Sequence")}
                                                                 </h4>
                                                                 <ol className="mt-2 space-y-1 text-xs text-slate-600 list-decimal list-inside">
                                                                     {steps.map(
@@ -2183,9 +2185,9 @@ export default function History({ auth, spot }) {
                                                                                     step
                                                                                 }
                                                                             >
-                                                                                {
-                                                                                    step
-                                                                                }
+                                                                                {t(
+                                                                                    step,
+                                                                                )}
                                                                             </li>
                                                                         ),
                                                                     )}
@@ -2196,22 +2198,17 @@ export default function History({ auth, spot }) {
                                                 )}
                                             </div>
                                             <p className="mt-4 text-xs text-slate-500">
-                                                Ritual names, eligibility,
-                                                routes, and materials can differ
-                                                by temple and date. Confirm the
-                                                current procedure with the
-                                                relevant temple office before
-                                                making an offering.
+                                                {t("Ritual names, eligibility, routes, and materials can differ by temple and date. Confirm the current procedure with the relevant temple office before making an offering.")}
                                             </p>
                                         </div>
 
                                         <div className="bg-[#f8f4ed] border border-royalGold-200 rounded-2xl p-6 flex flex-col gap-4">
                                             <div>
                                                 <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase mb-1">
-                                                    For all visitors
+                                                    {t("For all visitors")}
                                                 </p>
                                                 <h3 className="text-lg font-bold text-royalMaroon-900">
-                                                    Pilgrim Participation Guide
+                                                    {t("Pilgrim Participation Guide")}
                                                 </h3>
                                             </div>
                                             <ul className="flex flex-col gap-3">
@@ -2229,7 +2226,7 @@ export default function History({ auth, spot }) {
                                                                     "0",
                                                                 )}
                                                             </span>
-                                                            <span>{tip}</span>
+                                                            <span>{t(tip)}</span>
                                                         </li>
                                                     ),
                                                 )}
@@ -2252,19 +2249,19 @@ export default function History({ auth, spot }) {
                                     <div className="w-72 hidden lg:flex flex-col gap-4">
                                         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                                             <h4 className="font-bold text-slate-800 text-sm mb-2">
-                                                Location Details
+                                                {t("Location Details")}
                                             </h4>
                                             <p className="text-xs text-slate-600 leading-relaxed mb-4">
                                                 {isGeocodingAddress ? (
                                                     <span className="inline-flex items-center gap-1 text-slate-400">
                                                         <span className="w-3 h-3 border-2 border-slate-300 border-t-slate-500 rounded-full animate-spin inline-block"></span>
-                                                        Fetching address…
+                                                        {t("Fetching address…")}
                                                     </span>
                                                 ) : locationAddress ? (
                                                     locationAddress
                                                 ) : (
                                                     <span className="text-slate-400 italic">
-                                                        Address not available.
+                                                        {t("Address not available.")}
                                                     </span>
                                                 )}
                                             </p>
@@ -2274,12 +2271,12 @@ export default function History({ auth, spot }) {
                                                 rel="noopener noreferrer"
                                                 className={`w-full block text-center bg-[#0f4a45] text-white text-xs font-bold py-2 rounded-md hover:bg-[#0c3935] transition-colors ${!spot?.lat && !spot?.lng && !searchedLocation ? "opacity-50 pointer-events-none" : ""}`}
                                             >
-                                                Get Directions
+                                                {t("Get Directions")}
                                             </a>
                                         </div>
                                         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex-1">
                                             <h4 className="font-bold text-slate-800 text-sm mb-2">
-                                                Nearby Sites
+                                                {t("Nearby Sites")}
                                             </h4>
                                             <div className="text-xs text-slate-500 flex flex-col gap-2">
                                                 {spot?.nearby_sites &&
@@ -2295,7 +2292,7 @@ export default function History({ auth, spot }) {
                                                                     className={`w-2 h-2 rounded-full flex-shrink-0 ${index === 0 ? "bg-royalGold-500" : "bg-royalTeal"}`}
                                                                 ></div>
                                                                 <span className="group-hover:underline">
-                                                                    {site.name}
+                                                                    {t(site.name)}
                                                                 </span>
                                                                 <span className="text-slate-400 ml-auto">
                                                                     (
@@ -2309,7 +2306,7 @@ export default function History({ auth, spot }) {
                                                     )
                                                 ) : (
                                                     <span>
-                                                        No nearby sites found.
+                                                        {t("No nearby sites found.")}
                                                     </span>
                                                 )}
                                             </div>
@@ -2320,10 +2317,10 @@ export default function History({ auth, spot }) {
                                 <div className="space-y-8">
                                     <div className="flex items-center justify-between border-b border-slate-200 pb-4">
                                         <h3 className="text-xl font-bold text-royalMaroon-900 font-display">
-                                            Photo Gallery
+                                            {t("Photo Gallery")}
                                         </h3>
                                         <span className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-                                            {spot.gallery?.length || 0} Photos
+                                            {spot.gallery?.length || 0} {t("Photos")}
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -2360,8 +2357,7 @@ export default function History({ auth, spot }) {
                                         {(!spot.gallery ||
                                             spot.gallery.length === 0) && (
                                             <div className="col-span-full py-12 text-center text-slate-500">
-                                                No photos available for this
-                                                location yet.
+                                                {t("No photos available for this location yet.")}
                                             </div>
                                         )}
                                     </div>
@@ -2395,10 +2391,10 @@ export default function History({ auth, spot }) {
                     <div className="flex items-start justify-between gap-4">
                         <div>
                             <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase">
-                                Online puja booking
+                                {t("Online puja booking")}
                             </p>
                             <h2 className="text-2xl font-bold text-royalMaroon-900 mt-1">
-                                Reserve a Puja
+                                {t("Reserve a Puja")}
                             </h2>
                         </div>
                         <button
@@ -2416,7 +2412,7 @@ export default function History({ auth, spot }) {
                                 htmlFor="thewawa-puja"
                                 className="block text-sm font-semibold text-slate-700 mb-1"
                             >
-                                Puja type
+                                {t("Puja type")}
                             </label>
                             <select
                                 id="thewawa-puja"
@@ -2433,13 +2429,13 @@ export default function History({ auth, spot }) {
                                 }
                                 className="w-full bg-white text-slate-900 border-slate-300 rounded-md focus:border-royalTeal focus:ring-royalTeal"
                             >
-                                <option>Aluyama Thewawa</option>
-                                <option>Dawal Buddha Puja Thewawa</option>
-                                <option>Gilanpasa and Sandhya Thewawa</option>
-                                <option>Kanchuka Puja</option>
-                                <option>Gilanpasa Puja</option>
-                                <option>Atawisi and 108-Bowl Puja</option>
-                                <option>Alms-giving</option>
+                                <option value="Aluyama Thewawa">{t("Aluyama Thewawa")}</option>
+                                <option value="Dawal Buddha Puja Thewawa">{t("Dawal Buddha Puja Thewawa")}</option>
+                                <option value="Gilanpasa and Sandhya Thewawa">{t("Gilanpasa and Sandhya Thewawa")}</option>
+                                <option value="Kanchuka Puja">{t("Kanchuka Puja")}</option>
+                                <option value="Gilanpasa Puja">{t("Gilanpasa Puja")}</option>
+                                <option value="Atawisi and 108-Bowl Puja">{t("Atawisi and 108-Bowl Puja")}</option>
+                                <option value="Alms-giving">{t("Alms-giving")}</option>
                             </select>
                         </div>
                         <div>
@@ -2447,7 +2443,7 @@ export default function History({ auth, spot }) {
                                 htmlFor="thewawa-date"
                                 className="block text-sm font-semibold text-slate-700 mb-1"
                             >
-                                Puja date
+                                {t("Puja date")}
                             </label>
                             <input
                                 id="thewawa-date"
@@ -2469,7 +2465,7 @@ export default function History({ auth, spot }) {
                                 htmlFor="thewawa-amount"
                                 className="block text-sm font-semibold text-slate-700 mb-1"
                             >
-                                Donation amount (LKR)
+                                {t("Donation amount (LKR)")}
                             </label>
                             <input
                                 id="thewawa-amount"
@@ -2492,7 +2488,7 @@ export default function History({ auth, spot }) {
                                 htmlFor="thewawa-name"
                                 className="block text-sm font-semibold text-slate-700 mb-1"
                             >
-                                Name
+                                {t("Name")}
                             </label>
                             <input
                                 id="thewawa-name"
@@ -2512,7 +2508,7 @@ export default function History({ auth, spot }) {
                                 htmlFor="thewawa-phone"
                                 className="block text-sm font-semibold text-slate-700 mb-1"
                             >
-                                Phone number
+                                {t("Phone number")}
                             </label>
                             <input
                                 id="thewawa-phone"
@@ -2532,7 +2528,7 @@ export default function History({ auth, spot }) {
                                 htmlFor="thewawa-email"
                                 className="block text-sm font-semibold text-slate-700 mb-1"
                             >
-                                Email address
+                                {t("Email address")}
                             </label>
                             <input
                                 id="thewawa-email"
@@ -2554,7 +2550,7 @@ export default function History({ auth, spot }) {
                             type="submit"
                             className="bg-[#0f4a45] text-white font-bold px-5 py-3 rounded-lg hover:bg-[#0c3935] transition-colors"
                         >
-                            Continue to payment →
+                            {t("Continue to payment")} →
                         </button>
                     </div>
                 </form>
@@ -2569,10 +2565,10 @@ export default function History({ auth, spot }) {
                     <div className="flex items-start justify-between gap-4">
                         <div>
                             <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase">
-                                Secure payment simulation
+                                {t("Secure payment simulation")}
                             </p>
                             <h2 className="text-2xl font-bold text-royalMaroon-900 mt-1">
-                                Online payment
+                                {t("Online payment")}
                             </h2>
                         </div>
                         <button
@@ -2586,15 +2582,15 @@ export default function History({ auth, spot }) {
                     </div>
                     <div className="bg-slate-50 rounded-lg p-4 mt-6 text-sm">
                         <div className="flex justify-between">
-                            <span>Puja</span>
-                            <strong>{thewawaForm.puja.split(" (")[0]}</strong>
+                            <span>{t("Puja")}</span>
+                            <strong>{t(thewawaForm.puja.split(" (")[0])}</strong>
                         </div>
                         <div className="flex justify-between mt-2">
-                            <span>Date</span>
+                            <span>{t("Date")}</span>
                             <strong>{thewawaForm.date}</strong>
                         </div>
                         <div className="flex justify-between mt-2 text-royalMaroon-900">
-                            <span>Amount</span>
+                            <span>{t("Amount")}</span>
                             <strong>
                                 LKR{" "}
                                 {Number(thewawaForm.amount).toLocaleString()}
@@ -2603,10 +2599,10 @@ export default function History({ auth, spot }) {
                     </div>
                     <div className="flex gap-2 mt-5 text-xs">
                         <span className="border border-royalGold-400 bg-royalGold-50 rounded px-3 py-2 font-semibold">
-                            Credit / Debit Card
+                            {t("Credit / Debit Card")}
                         </span>
                         <span className="border border-slate-200 rounded px-3 py-2">
-                            Mobile Banking
+                            {t("Mobile Banking")}
                         </span>
                     </div>
                     <div className="grid gap-4 mt-5">
@@ -2615,7 +2611,7 @@ export default function History({ auth, spot }) {
                                 htmlFor="card-number"
                                 className="block text-sm font-semibold text-slate-700 mb-1"
                             >
-                                Card number
+                                {t("Card number")}
                             </label>
                             <input
                                 id="card-number"
@@ -2632,7 +2628,7 @@ export default function History({ auth, spot }) {
                                     htmlFor="card-expiry"
                                     className="block text-sm font-semibold text-slate-700 mb-1"
                                 >
-                                    Expiry
+                                    {t("Expiry")}
                                 </label>
                                 <input
                                     id="card-expiry"
@@ -2646,7 +2642,7 @@ export default function History({ auth, spot }) {
                                     htmlFor="card-cvc"
                                     className="block text-sm font-semibold text-slate-700 mb-1"
                                 >
-                                    CVC
+                                    {t("CVC")}
                                 </label>
                                 <input
                                     id="card-cvc"
@@ -2660,15 +2656,14 @@ export default function History({ auth, spot }) {
                         </div>
                     </div>
                     <p className="text-xs text-slate-500 mt-4">
-                        This is a payment interface simulation. No real money
-                        will be charged.
+                        {t("This is a payment interface simulation. No real money will be charged.")}
                     </p>
                     <div className="mt-6 flex justify-end">
                         <button
                             type="submit"
                             className="bg-[#3a0d18] text-white font-bold px-5 py-3 rounded-lg hover:bg-[#260711] transition-colors"
                         >
-                            Confirm payment
+                            {t("Confirm payment")}
                         </button>
                     </div>
                 </form>
@@ -2684,14 +2679,13 @@ export default function History({ auth, spot }) {
                         ✓
                     </div>
                     <p className="text-xs font-bold tracking-[0.18em] text-royalGold-700 uppercase mt-4">
-                        Booking confirmed
+                        {t("Booking confirmed")}
                     </p>
                     <h2 className="text-2xl font-bold text-royalMaroon-900 mt-1">
-                        Puja booking confirmed
+                        {t("Puja booking confirmed")}
                     </h2>
                     <p className="text-sm text-slate-600 mt-3">
-                        Thank you for your puja booking. Your confirmation
-                        number is:
+                        {t("Thank you for your puja booking. Your confirmation number is:")}
                     </p>
                     <p className="font-bold text-lg text-royalTeal mt-2">
                         {thewawaReceipt}
@@ -2701,7 +2695,7 @@ export default function History({ auth, spot }) {
                         onClick={() => setThewawaReceipt(null)}
                         className="mt-6 bg-[#0f4a45] text-white font-bold px-5 py-3 rounded-lg"
                     >
-                        Done
+                        {t("Done")}
                     </button>
                 </div>
             </Modal>
@@ -2713,25 +2707,25 @@ export default function History({ auth, spot }) {
                         <div className="text-sm">
                             <span className="font-bold text-royalMaroon-900 block sm:inline">
                                 {spot?.id === "rajarata-ayurveda"
-                                    ? "Seeking Natural Healing?"
+                                    ? t("Seeking Natural Healing?")
                                     : spot?.id === "nuwara-wewa-yoga"
-                                      ? "Seeking Wellness & Calm?"
+                                      ? t("Seeking Wellness & Calm?")
                                       : spot?.id === "ranmasu-uyana"
-                                        ? "Seeking Mindful Exploration?"
+                                        ? t("Seeking Mindful Exploration?")
                                         : spot?.id === "mihintale-sunrise"
-                                          ? "Seeking a Spiritual Awakening?"
-                                          : "Seeking Inner Peace?"}
+                                          ? t("Seeking a Spiritual Awakening?")
+                                          : t("Seeking Inner Peace?")}
                             </span>
                             <span className="text-slate-600 sm:ml-2">
                                 {spot?.id === "rajarata-ayurveda"
-                                    ? "Book an Ayurvedic consultation or treatment today."
+                                    ? t("Book an Ayurvedic consultation or treatment today.")
                                     : spot?.id === "nuwara-wewa-yoga"
-                                      ? "Join a lakeside yoga session or book a wellness retreat today."
+                                      ? t("Join a lakeside yoga session or book a wellness retreat today.")
                                       : spot?.id === "ranmasu-uyana"
-                                        ? "Book a guided walking meditation tour through the ancient royal gardens."
+                                        ? t("Book a guided walking meditation tour through the ancient royal gardens.")
                                         : spot?.id === "mihintale-sunrise"
-                                          ? "Book a guided sunrise meditation at Mihintale today."
-                                          : "Join a guided meditation session or book a retreat today."}
+                                          ? t("Book a guided sunrise meditation at Mihintale today.")
+                                          : t("Join a guided meditation session or book a retreat today.")}
                             </span>
                         </div>
                         <PrimaryButton
@@ -2748,14 +2742,14 @@ export default function History({ auth, spot }) {
                             className="w-full sm:w-auto px-6 py-3 bg-[#0f4a45] hover:bg-[#0c3935] border-none"
                         >
                             {spot?.id === "rajarata-ayurveda"
-                                ? "Book Treatment"
+                                ? t("Book Treatment")
                                 : spot?.id === "nuwara-wewa-yoga"
-                                  ? "Book Yoga Session"
+                                  ? t("Book Yoga Session")
                                   : spot?.id === "ranmasu-uyana"
-                                    ? "Book Guided Walk"
+                                    ? t("Book Guided Walk")
                                     : spot?.id === "mihintale-sunrise"
-                                      ? "Book Sunrise Meditation"
-                                      : "Book a Retreat"}
+                                      ? t("Book Sunrise Meditation")
+                                      : t("Book a Retreat")}
                         </PrimaryButton>
                     </div>
                 </div>
@@ -2783,11 +2777,11 @@ export default function History({ auth, spot }) {
                     {!bookingSuccess ? (
                         <>
                             <h2 className="text-xl font-bold text-royalMaroon-900 mb-4 border-b border-slate-100 pb-2">
-                                Complete Registration
+                                {t("Complete Registration")}
                             </h2>
                             <p className="text-sm text-slate-600 mb-6 bg-slate-50 p-3 rounded-md border border-slate-100">
-                                You are booking <strong>{selectedSlot}</strong>{" "}
-                                for <strong>{selectedDate}</strong>.
+                                {t("You are booking")} <strong>{t(selectedSlot?.split(" (")[0])}</strong>{" "}
+                                {t("for")} <strong>{selectedDate}</strong>.
                             </p>
 
                             <form
@@ -2796,13 +2790,13 @@ export default function History({ auth, spot }) {
                             >
                                 {bookingErrors.general && (
                                     <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">
-                                        {bookingErrors.general}
+                                        {t(bookingErrors.general)}
                                     </div>
                                 )}
                                 <div>
                                     <InputLabel
                                         htmlFor="name"
-                                        value="Full Name"
+                                        value={t("Full Name")}
                                     />
                                     <TextInput
                                         id="name"
@@ -2834,7 +2828,7 @@ export default function History({ auth, spot }) {
                                     <div>
                                         <InputLabel
                                             htmlFor="email"
-                                            value="Email Address"
+                                            value={t("Email Address")}
                                         />
                                         <TextInput
                                             id="email"
@@ -2865,7 +2859,7 @@ export default function History({ auth, spot }) {
                                     <div>
                                         <InputLabel
                                             htmlFor="phone"
-                                            value="Phone Number"
+                                            value={t("Phone Number")}
                                         />
                                         <TextInput
                                             id="phone"
@@ -2899,7 +2893,7 @@ export default function History({ auth, spot }) {
                                     <div>
                                         <InputLabel
                                             htmlFor="language"
-                                            value="Language Preference"
+                                            value={t("Language Preference")}
                                         />
                                         <select
                                             id="language"
@@ -2914,17 +2908,20 @@ export default function History({ auth, spot }) {
                                             disabled={isSubmittingBooking}
                                         >
                                             <option value="English">
-                                                English
+                                                {t("English")}
                                             </option>
                                             <option value="Sinhala">
-                                                Sinhala
+                                                {t("Sinhala")}
+                                            </option>
+                                            <option value="Tamil">
+                                                {t("Tamil")}
                                             </option>
                                         </select>
                                     </div>
                                     <div>
                                         <InputLabel
                                             htmlFor="attendance"
-                                            value="Group Size"
+                                            value={t("Group Size")}
                                         />
                                         <TextInput
                                             id="attendance"
@@ -2962,10 +2959,7 @@ export default function History({ auth, spot }) {
                                             disabled={isSubmittingBooking}
                                         />
                                         <span className="ms-3 text-sm text-slate-600 leading-tight pt-0.5">
-                                            I agree to follow the white dress
-                                            code and monastery guidelines,
-                                            preserving the serenity of the
-                                            sacred grounds.
+                                            {t("I agree to follow the white dress code and monastery guidelines, preserving the serenity of the sacred grounds.")}
                                         </span>
                                     </label>
                                     <InputError
@@ -2983,15 +2977,15 @@ export default function History({ auth, spot }) {
                                         className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-sm font-bold transition-colors"
                                         disabled={isSubmittingBooking}
                                     >
-                                        Cancel
+                                        {t("Cancel")}
                                     </button>
                                     <PrimaryButton
                                         className="bg-[#0f4a45] hover:bg-[#0c3935] border-none"
                                         disabled={isSubmittingBooking}
                                     >
                                         {isSubmittingBooking
-                                            ? "Confirming..."
-                                            : "Confirm Registration"}
+                                            ? t("Confirming...")
+                                            : t("Confirm Registration")}
                                     </PrimaryButton>
                                 </div>
                             </form>
@@ -3015,16 +3009,14 @@ export default function History({ auth, spot }) {
                                 </svg>
                             </div>
                             <h2 className="text-2xl font-display font-bold text-royalMaroon-900 mb-2">
-                                Booking Confirmed!
+                                {t("Booking Confirmed!")}
                             </h2>
                             <p className="text-slate-600 mb-6 max-w-sm mx-auto text-sm">
-                                An email and SMS with your retreat details have
-                                been sent. Please present this QR code at the
-                                entrance.
+                                {t("An email and SMS with your retreat details have been sent. Please present this QR code at the entrance.")}
                             </p>
                             <div className="bg-slate-50 border border-slate-200 p-6 rounded-xl inline-block shadow-sm">
                                 <div className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">
-                                    Reference Number
+                                    {t("Reference Number")}
                                 </div>
                                 <div className="text-2xl font-bold font-mono tracking-wider text-[#0f4a45]">
                                     {bookingSuccess}
@@ -3048,7 +3040,7 @@ export default function History({ auth, spot }) {
                                         });
                                     }}
                                 >
-                                    Done
+                                    {t("Done")}
                                 </PrimaryButton>
                             </div>
                         </div>

@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "@/Hooks/useTranslation";
 
 export default function Footer({ auth, laravelVersion, phpVersion }) {
+    const { t } = useTranslation();
+
     return (
         <motion.footer
             initial={{ opacity: 0 }}
@@ -11,47 +14,47 @@ export default function Footer({ auth, laravelVersion, phpVersion }) {
         >
             <div className="flex flex-wrap justify-center items-center gap-3 text-xs sm:text-sm text-gray-200 font-medium tracking-wide">
                 <a href="#hero" className="hover:text-white transition-colors">
-                    Home
+                    {t("Home")}
                 </a>
                 <span className="text-gray-400 opacity-70">|</span>
                 <a
                     href="/translator"
                     className="text-royalGold-400 hover:text-white transition-colors"
                 >
-                    AI Cultural Translator
+                    {t("AI Cultural Translator")}
                 </a>
                 <span className="text-gray-400 opacity-70">|</span>
                 <a
                     href="#features"
                     className="hover:text-white transition-colors"
                 >
-                    Features
+                    {t("Features")}
                 </a>
                 <span className="text-gray-400 opacity-70">|</span>
                 <a
                     href="#discover"
                     className="hover:text-white transition-colors"
                 >
-                    Explorer Desk
+                    {t("Explorer Desk")}
                 </a>
                 <span className="text-gray-400 opacity-70">|</span>
                 <a
                     href="#newsletter"
                     className="hover:text-white transition-colors"
                 >
-                    Adventure Club
+                    {t("Adventure Club")}
                 </a>
             </div>
 
             <div className="text-gray-300 text-xs font-light text-center px-4 max-w-2xl">
-                Discover responsibly. Respect local cultures, protect historical
-                sights, and practice strict waste management to preserve the
-                natural beauty of the island.
+                {t(
+                    "Discover responsibly. Respect local cultures, protect historical sights, and practice strict waste management to preserve the natural beauty of the island.",
+                )}
             </div>
 
             <div className="text-gray-200 text-xs font-medium text-center">
-                © {new Date().getFullYear()} SecretPlaces Sri Lanka. Coordinated
-                with love by Local Nomads.
+                © {new Date().getFullYear()} SecretPlaces Sri Lanka.{" "}
+                {t("Coordinated with love by Local Nomads.")}
             </div>
 
             {(laravelVersion || phpVersion) && (

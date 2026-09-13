@@ -3,6 +3,7 @@ import Navbar from "@/Layouts/Navbar";
 import Footer from "@/Layouts/Footer";
 import { motion } from "framer-motion";
 import SpotCard from "./Welcome-sub-sub-components/SpotCard";
+import { useTranslation } from "@/Hooks/useTranslation";
 
 const eightSacredPlaces = [
     {
@@ -131,9 +132,11 @@ const otherSites = [
 ];
 
 export default function Places({ auth, laravelVersion, phpVersion }) {
+    const { t } = useTranslation();
+
     return (
         <>
-            <Head title="Sacred Sites & Shrines - Secret Places Sri Lanka" />
+            <Head title={`${t("Sacred Sites & Shrines")} - Secret Places Sri Lanka`} />
             <div className="min-h-screen bg-[#FAF9F6] text-[#2c1d11] font-sans selection:bg-royalGold-500 selection:text-royalMaroon-950 flex flex-col">
                 <Navbar auth={auth} />
 
@@ -146,21 +149,19 @@ export default function Places({ auth, laravelVersion, phpVersion }) {
                 >
                     <img
                         src="/images/sacred_sites.png"
-                        alt="Sacred Sites & Shrines"
+                        alt={t("Sacred Sites & Shrines")}
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/50 to-[#FAF9F6]" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
                         <span className="text-xs uppercase tracking-widest font-bold text-royalGold-400 mb-2">
-                            Category Exploration
+                            {t("Category Exploration")}
                         </span>
                         <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
-                            Sacred Sites & Shrines
+                            {t("Sacred Sites & Shrines")}
                         </h1>
                         <p className="mt-3 text-white/70 text-sm max-w-xl font-light">
-                            Explore the ancient, sacred heart of Anuradhapura,
-                            home to venerable stupas, historic monasteries, and
-                            deeply revered Buddhist heritage sites.
+                            {t("Discover historic temples, ancient shrines, and deeply revered holy places.")}
                         </p>
                     </div>
                 </motion.div>
@@ -174,15 +175,13 @@ export default function Places({ auth, laravelVersion, phpVersion }) {
                     {/* Header */}
                     <div className="space-y-3 text-left border-b border-royalGold-400/20 pb-8">
                         <span className="text-xs uppercase tracking-widest font-bold text-royalGold-700">
-                            Exploration Desk
+                            {t("Exploration Desk")}
                         </span>
                         <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-royalMaroon-950">
-                            Sacred Sites & Shrines
+                            {t("Sacred Sites & Shrines")}
                         </h2>
                         <p className="text-slate-500 font-light text-sm max-w-lg">
-                            Explore the ancient, sacred heart of Anuradhapura,
-                            home to venerable stupas, historic monasteries, and
-                            deeply revered Buddhist heritage sites.
+                            {t("Discover historic temples, ancient shrines, and deeply revered holy places.")}
                         </p>
                     </div>
 
@@ -191,13 +190,20 @@ export default function Places({ auth, laravelVersion, phpVersion }) {
                         <div className="flex items-center gap-4">
                             <div className="h-px bg-slate-300 flex-grow" />
                             <h3 className="font-display text-xl tracking-wider font-bold text-slate-800 border border-slate-200 px-6 py-2 rounded-lg bg-transparent">
-                                The Eight Sacred Places
+                                {t("The Eight Sacred Places")}
                             </h3>
                             <div className="h-px bg-slate-300 flex-grow" />
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {eightSacredPlaces.map((spot) => (
-                                <SpotCard key={spot.id} spot={spot} />
+                                <SpotCard
+                                    key={spot.id}
+                                    spot={{
+                                        ...spot,
+                                        name: t(spot.name),
+                                        description: t(spot.description),
+                                    }}
+                                />
                             ))}
                         </div>
                     </section>
@@ -207,13 +213,20 @@ export default function Places({ auth, laravelVersion, phpVersion }) {
                         <div className="flex items-center gap-4">
                             <div className="h-px bg-slate-300 flex-grow" />
                             <h3 className="font-display text-xl tracking-wider font-bold text-slate-800 border border-slate-200 px-6 py-2 rounded-lg bg-transparent">
-                                Other Sacred & Monastic Sites
+                                {t("Other Sacred & Monastic Sites")}
                             </h3>
                             <div className="h-px bg-slate-300 flex-grow" />
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {otherSites.map((spot) => (
-                                <SpotCard key={spot.id} spot={spot} />
+                                <SpotCard
+                                    key={spot.id}
+                                    spot={{
+                                        ...spot,
+                                        name: t(spot.name),
+                                        description: t(spot.description),
+                                    }}
+                                />
                             ))}
                         </div>
                     </section>
