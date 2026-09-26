@@ -1,9 +1,11 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import axios from 'axios';
 
 export default function ReviewsCarousel() {
+    const { t } = useTranslation();
     const [reviews, setReviews] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -48,7 +50,7 @@ export default function ReviewsCarousel() {
                     </div>
                     
                     <p className="text-lg sm:text-xl text-slate-700 italic font-medium leading-relaxed mb-8 relative z-10">
-                        "{reviews[currentIndex].text}"
+                        "{t(reviews[currentIndex].text)}"
                     </p>
                     
                     <div className="flex items-center gap-4">
@@ -59,7 +61,7 @@ export default function ReviewsCarousel() {
                         />
                         <div className="text-left">
                             <h4 className="font-bold text-slate-900">{reviews[currentIndex].name}</h4>
-                            <p className="text-xs text-slate-500">{reviews[currentIndex].service} • {reviews[currentIndex].date}</p>
+                            <p className="text-xs text-slate-500">{t(reviews[currentIndex].service)} • {t(reviews[currentIndex].date)}</p>
                         </div>
                     </div>
                 </motion.div>

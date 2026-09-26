@@ -1,3 +1,4 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { useState } from 'react';
 import { MapPin, Calendar, Users, Car, Search, Map, Train, Bus, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -21,6 +22,7 @@ const searchSchema = z.object({
 });
 
 export default function SearchWidget({ onSearchChange }) {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('private');
     const [pickup, setPickup] = useState('');
     const [destinations, setDestinations] = useState([]);
@@ -104,21 +106,21 @@ export default function SearchWidget({ onSearchChange }) {
                     onClick={() => setActiveTab('private')}
                     className={`flex-1 py-4 px-6 text-sm font-bold flex items-center justify-center gap-2 whitespace-nowrap transition-colors ${activeTab === 'private' ? 'text-teal-800 border-b-2 border-teal-600 bg-teal-50/50' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}
                 >
-                    <Car className="w-4 h-4" /> Private Vehicles
+                    <Car className="w-4 h-4" /> {t("Private Vehicles")}
                 </button>
                 <button 
                     type="button"
                     onClick={() => setActiveTab('packages')}
                     className={`flex-1 py-4 px-6 text-sm font-bold flex items-center justify-center gap-2 whitespace-nowrap transition-colors ${activeTab === 'packages' ? 'text-teal-800 border-b-2 border-teal-600 bg-teal-50/50' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}
                 >
-                    <Map className="w-4 h-4" /> Pre-planned Packages
+                    <Map className="w-4 h-4" /> {t("Pre-planned Packages")}
                 </button>
                 <button 
                     type="button"
                     onClick={() => setActiveTab('public')}
                     className={`flex-1 py-4 px-6 text-sm font-bold flex items-center justify-center gap-2 whitespace-nowrap transition-colors ${activeTab === 'public' ? 'text-teal-800 border-b-2 border-teal-600 bg-teal-50/50' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}
                 >
-                    <Train className="w-4 h-4" /> Train/Bus Timetables
+                    <Train className="w-4 h-4" /> {t("Train/Bus Timetables")}
                 </button>
             </div>
 
@@ -130,13 +132,13 @@ export default function SearchWidget({ onSearchChange }) {
                             {/* Pickup */}
                             <div>
                                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                                    Pickup Location
+                                    {t("Pickup Location")}
                                 </label>
                                 <div className="relative">
                                     <MapPin className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.pickup ? 'text-rose-400' : 'text-slate-400'}`} />
                                     <input 
                                         type="text" 
-                                        placeholder="Hotel or Station..." 
+                                        placeholder={t("Hotel or Station...")} 
                                         value={pickup}
                                         onChange={(e) => {
                                             setPickup(e.target.value);
@@ -159,7 +161,7 @@ export default function SearchWidget({ onSearchChange }) {
                             {/* Destinations */}
                             <div className="lg:col-span-2">
                                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                                    Destination(s)
+                                    {t("Destination(s)")}
                                 </label>
                                 <div className={`bg-slate-50 border rounded-xl p-2 flex flex-wrap gap-2 items-center transition-colors ${
                                     errors.destinations 
@@ -174,7 +176,7 @@ export default function SearchWidget({ onSearchChange }) {
                                     ))}
                                     <input 
                                         type="text" 
-                                        placeholder={destinations.length === 0 ? "Add sites (e.g. Ruwanwelisaya) and press Enter" : "Add more..."} 
+                                        placeholder={destinations.length === 0 ? t("Add sites (e.g. Ruwanwelisaya) and press Enter") : t("Add more...")} 
                                         value={destinationInput}
                                         onChange={(e) => {
                                             setDestinationInput(e.target.value);
@@ -193,7 +195,7 @@ export default function SearchWidget({ onSearchChange }) {
 
                             {/* Vehicle Type */}
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Vehicle Type</label>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t("Vehicle Type")}</label>
                                 <div className="relative">
                                     <Car className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                     <select 
@@ -206,12 +208,12 @@ export default function SearchWidget({ onSearchChange }) {
                                             }
                                         }}
                                     >
-                                        <option>Any Vehicle</option>
-                                        <option>Bus</option>
-                                        <option>Coaster</option>
-                                        <option>KDH Van</option>
-                                        <option>Car</option>
-                                        <option>Tuk-Tuk</option>
+                                        <option value="Any Vehicle">{t("Any Vehicle")}</option>
+                                        <option value="Bus">{t("Bus")}</option>
+                                        <option value="Coaster">{t("Coaster")}</option>
+                                        <option value="KDH Van">{t("KDH Van")}</option>
+                                        <option value="Car">{t("Car")}</option>
+                                        <option value="Tuk-Tuk">{t("Tuk-Tuk")}</option>
                                     </select>
                                 </div>
                             </div>
@@ -220,7 +222,7 @@ export default function SearchWidget({ onSearchChange }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                             {/* Date Range */}
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Date Range</label>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t("Date Range")}</label>
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
                                         <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.startDate ? 'text-rose-400' : 'text-slate-400'}`} />
@@ -261,7 +263,7 @@ export default function SearchWidget({ onSearchChange }) {
                             {/* Passengers & Search Button */}
                             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
                                 <div className="w-full sm:flex-1 relative">
-                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Passengers</label>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t("Passengers")}</label>
                                     <div className="relative">
                                         <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                         <select 
@@ -269,11 +271,11 @@ export default function SearchWidget({ onSearchChange }) {
                                             onChange={(e) => setPassengers(e.target.value)}
                                             className="w-full pl-9 pr-4 py-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-teal-500 focus:border-teal-500 text-sm appearance-none"
                                         >
-                                            <option>2 Adults, 0 Children</option>
-                                            <option>Family (4-6)</option>
-                                            <option>Small Group (7-12)</option>
-                                            <option>Large Group (15+)</option>
-                                            <option>Wheelchair Included</option>
+                                            <option value="2 Adults, 0 Children">{t("2 Adults, 0 Children")}</option>
+                                            <option value="Family (4-6)">{t("Family (4-6)")}</option>
+                                            <option value="Small Group (7-12)">{t("Small Group (7-12)")}</option>
+                                            <option value="Large Group (15+)">{t("Large Group (15+)")}</option>
+                                            <option value="Wheelchair Included">{t("Wheelchair Included")}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -281,7 +283,7 @@ export default function SearchWidget({ onSearchChange }) {
                                     type="submit"
                                     className="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-teal-900/20 transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
                                 >
-                                    <Search className="w-4 h-4" /> Search Transport Options
+                                    <Search className="w-4 h-4" /> {t("Search Transport Options")}
                                 </button>
                             </div>
                         </div>
@@ -290,7 +292,7 @@ export default function SearchWidget({ onSearchChange }) {
 
                 {activeTab === 'packages' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                        <p className="text-slate-600 font-light">Explore our curated Atamasthana and Solosmasthana circuits designed for seamless pilgrimage.</p>
+                        <p className="text-slate-600 font-light">{t("Explore our curated Atamasthana and Solosmasthana circuits designed for seamless pilgrimage.")}</p>
                         <button 
                             type="button"
                             onClick={() => {
@@ -302,14 +304,14 @@ export default function SearchWidget({ onSearchChange }) {
                             }} 
                             className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2"
                         >
-                            <Map className="w-4 h-4" /> View Pre-planned Packages
+                            <Map className="w-4 h-4" /> {t("View Pre-planned Packages")}
                         </button>
                     </motion.div>
                 )}
 
                 {activeTab === 'public' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                        <p className="text-slate-600 font-light">Check live schedules for Intercity Express trains and SLTB AC buses to sacred destinations.</p>
+                        <p className="text-slate-600 font-light">{t("Check live schedules for Intercity Express trains and SLTB AC buses to sacred destinations.")}</p>
                         <button 
                             type="button"
                             onClick={() => {
@@ -321,7 +323,7 @@ export default function SearchWidget({ onSearchChange }) {
                             }} 
                             className="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2"
                         >
-                            <Bus className="w-4 h-4" /> Check Timetables
+                            <Bus className="w-4 h-4" /> {t("Check Timetables")}
                         </button>
                     </motion.div>
                 )}

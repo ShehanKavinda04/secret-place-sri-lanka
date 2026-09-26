@@ -1,8 +1,10 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { X, Navigation2, Phone, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
 export default function LiveTrackingModal({ isOpen, onClose }) {
+    const { t } = useTranslation();
     const [progress, setProgress] = useState(66); // Starts at 2/3rds for the mockup
     const [timeLeft, setTimeLeft] = useState(15);
     const [time, setTime] = useState(new Date(new Date().setHours(10, 45, 0, 0))); // 10:45 AM
@@ -134,7 +136,7 @@ export default function LiveTrackingModal({ isOpen, onClose }) {
 
                         <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-6 space-y-4">
                             <div className="flex justify-between items-center">
-                                <span className="text-slate-600 text-sm">Estimated Arrival</span>
+                                <span className="text-slate-600 text-sm">{t("Estimated Arrival")}</span>
                                 <span className="font-bold text-xl text-teal-800">
                                     {progress >= 100 ? "Arrived" : time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
@@ -188,7 +190,7 @@ export default function LiveTrackingModal({ isOpen, onClose }) {
 
                         <div className="mt-auto space-y-4 border-t border-slate-100 pt-6">
                             <h4 className="font-bold text-slate-700 text-sm uppercase tracking-wider">Share Tracking</h4>
-                            <p className="text-sm text-slate-500 mb-2">Share your live location securely with family members.</p>
+                            <p className="text-sm text-slate-500 mb-2">{t("Share your live location securely with family members.")}</p>
                             <div className="flex gap-2">
                                 <input 
                                     type="text" 

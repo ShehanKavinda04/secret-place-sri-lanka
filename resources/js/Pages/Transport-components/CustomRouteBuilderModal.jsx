@@ -1,9 +1,11 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { X, MapPin, Clock, Calendar, Car, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import axios from 'axios';
 
 export default function CustomRouteBuilderModal({ isOpen, onClose }) {
+    const { t } = useTranslation();
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         startPoint: '',
@@ -114,7 +116,7 @@ export default function CustomRouteBuilderModal({ isOpen, onClose }) {
                     <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                         <CheckCircle2 className="w-10 h-10" />
                     </div>
-                    <h3 className="text-3xl font-display font-bold text-slate-800">Custom Pilgrimage Confirmed!</h3>
+                    <h3 className="text-3xl font-display font-bold text-slate-800">{t("Custom Pilgrimage Confirmed!")}</h3>
                     <p className="text-slate-500 max-w-sm mx-auto">
                         Your custom itinerary has been submitted. Our dispatcher will assign your driver and send live coordination details shortly.
                     </p>
@@ -307,7 +309,7 @@ export default function CustomRouteBuilderModal({ isOpen, onClose }) {
                                 <CheckCircle2 className="w-8 h-8 text-teal-600" />
                             </div>
                             <h3 className="text-2xl font-display font-bold text-slate-800">Review & Confirm</h3>
-                            <p className="text-slate-500 mt-2">Your custom pilgrimage route is ready.</p>
+                            <p className="text-slate-500 mt-2">{t("Your custom pilgrimage route is ready.")}</p>
                         </div>
 
                         <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4">
@@ -364,7 +366,7 @@ export default function CustomRouteBuilderModal({ isOpen, onClose }) {
                     <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-teal-900 text-white">
                         <div>
                             <h2 className="text-xl font-display font-bold">Custom Route Builder</h2>
-                            <p className="text-teal-200 text-xs mt-0.5">Design your own sacred pilgrimage itinerary</p>
+                            <p className="text-teal-200 text-xs mt-0.5">{t("Design your own sacred pilgrimage itinerary")}</p>
                         </div>
                         <button 
                             onClick={onClose}

@@ -1,7 +1,9 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { motion } from "framer-motion";
 import { Link } from "@inertiajs/react";
 
 export default function Hero({ features = [], setSelectedFeature = () => {} }) {
+    const { t } = useTranslation();
     return (
         <section
             id="hero"
@@ -33,8 +35,8 @@ export default function Hero({ features = [], setSelectedFeature = () => {} }) {
                         }}
                         className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-wide text-royalGold-300 leading-tight"
                     >
-                        Welcome to Secret Places Sri Lanka <br />
-                        Explore Sacred Anuradhapura
+                        {t("Welcome to Secret Places Sri Lanka")} <br />
+                        {t("Explore Sacred Anuradhapura")}
                     </motion.h1>
                     <motion.p
                         variants={{
@@ -43,11 +45,7 @@ export default function Hero({ features = [], setSelectedFeature = () => {} }) {
                         }}
                         className="text-royalGold-400/90 text-base sm:text-lg max-w-xl font-light leading-relaxed"
                     >
-                        Journey beyond the ordinary into a civilisation 2,500
-                        years in the making. Explore hidden jungle monasteries,
-                        awe-inspiring ancient stupas, sacred Bodhi trees, and
-                        timeless pilgrimage routes that breathe with living
-                        history and profound spiritual energy.
+                        {t("Journey beyond the ordinary into a civilisation 2,500 years in the making. Explore hidden jungle monasteries, awe-inspiring ancient stupas, sacred Bodhi trees, and timeless pilgrimage routes that breathe with living history and profound spiritual energy.")}
                     </motion.p>
                     <motion.div
                         variants={{
@@ -74,7 +72,7 @@ export default function Hero({ features = [], setSelectedFeature = () => {} }) {
                                     d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m0 2.25c0 3.107 1.002 6.012 2.766 8.384m-4.502-1.921A11.96 11.96 0 0 1 3 5.621m15-1.996a48.474 48.474 0 0 0-6-.371"
                                 />
                             </svg>
-                            <span>AI Cultural Translator</span>
+                            <span>{t("AI Cultural Translator")}</span>
                         </Link>
 
                         <button
@@ -85,7 +83,7 @@ export default function Hero({ features = [], setSelectedFeature = () => {} }) {
                             }
                             className="px-6 py-3 rounded-full border-2 border-royalGold-500 text-royalGold-300 hover:bg-royalMaroon-700/50 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase"
                         >
-                            Live Detailing
+                            {t("Live Detailing")}
                         </button>
 
                         <button
@@ -96,7 +94,7 @@ export default function Hero({ features = [], setSelectedFeature = () => {} }) {
                             }
                             className="px-6 py-3 rounded-full border border-royalGold-500/50 text-royalGold-400 hover:bg-royalMaroon-700/50 active:scale-95 transition-all duration-200 font-bold text-sm sm:text-base tracking-wider uppercase"
                         >
-                            Live Booking
+                            {t("Live Booking")}
                         </button>
                     </motion.div>
                 </motion.div>

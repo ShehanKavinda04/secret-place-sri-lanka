@@ -1,3 +1,4 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -33,6 +34,7 @@ const bookingSchema = z.object({
 });
 
 export default function BookingModal({ isOpen, onClose, vehicle }) {
+    const { t } = useTranslation();
     const [step, setStep] = useState(1);
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [serverError, setServerError] = useState(null);
@@ -334,8 +336,8 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
 
                             {step === 2 && (
                                 <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-100 pb-2">Amenities & Special Needs</h3>
-                                    <p className="text-sm text-slate-500">Select any additional services you require for a smooth pilgrimage.</p>
+                                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-100 pb-2">{t("Amenities & Special Needs")}</h3>
+                                    <p className="text-sm text-slate-500">{t("Select any additional services you require for a smooth pilgrimage.")}</p>
                                     
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         {[
@@ -389,7 +391,7 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                             <span className="font-bold text-teal-700">LKR {totalFare.toLocaleString()}</span>
                                         </div>
                                         <div className="mt-4 pt-4 border-t border-slate-200 flex justify-between text-sm">
-                                            <span className="font-bold text-amber-600">Required Advance Payment (20%)</span>
+                                            <span className="font-bold text-amber-600">{t("Required Advance Payment (20%)")}</span>
                                             <span className="font-bold text-amber-700">LKR {advanceFare.toLocaleString()}</span>
                                         </div>
                                     </div>
@@ -406,7 +408,7 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                                 className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-teal-500 bg-teal-50/70 text-teal-800 shadow-sm ring-2 ring-teal-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
                                             >
                                                 <CreditCard className="w-8 h-8 mb-2 text-teal-700" />
-                                                <span className="font-bold text-sm">Card Payment</span>
+                                                <span className="font-bold text-sm">{t("Card Payment")}</span>
                                                 <span className="text-[10px] text-slate-400 mt-1">Visa / Master / LankaPay</span>
                                             </button>
 
@@ -416,7 +418,7 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                                 className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'lankaqr' ? 'border-teal-500 bg-teal-50/70 text-teal-800 shadow-sm ring-2 ring-teal-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
                                             >
                                                 <Smartphone className="w-8 h-8 mb-2 text-teal-700" />
-                                                <span className="font-bold text-sm">LankaQR</span>
+                                                <span className="font-bold text-sm">{t("LankaQR")}</span>
                                                 <span className="text-[10px] text-slate-400 mt-1">Scan & Pay via Mobile App</span>
                                             </button>
 
@@ -427,7 +429,7 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                             >
                                                 <Banknote className="w-8 h-8 mb-2 text-teal-700" />
                                                 <span className="font-bold text-sm">Bank Transfer</span>
-                                                <span className="text-[10px] text-slate-400 mt-1">Direct Bank Deposit / Slip</span>
+                                                <span className="text-[10px] text-slate-400 mt-1">{t("Direct Bank Deposit / Slip")}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -584,11 +586,11 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                                     {/* LankaQR SVG Code representation */}
                                                     <div className="w-36 h-36 bg-teal-900 text-white rounded-xl flex flex-col items-center justify-center p-2 relative">
                                                         <QrCode className="w-28 h-28 text-white" />
-                                                        <span className="text-[9px] font-bold tracking-wider text-teal-300 uppercase">LankaQR Verified</span>
+                                                        <span className="text-[9px] font-bold tracking-wider text-teal-300 uppercase">{t("LankaQR Verified")}</span>
                                                     </div>
                                                 </div>
 
-                                                <div className="text-sm font-bold text-slate-800">Scan with any Sri Lankan Banking App</div>
+                                                <div className="text-sm font-bold text-slate-800">{t("Scan with any Sri Lankan Banking App")}</div>
                                                 <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
                                                     Open Flash, BOC SmartPay, FriMi, Sampath Vishwa, or HNB SOLO and scan to transfer the 20% advance (<strong>LKR {advanceFare.toLocaleString()}</strong>).
                                                 </p>
@@ -606,14 +608,14 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
                                                 <div className="flex items-center gap-2 text-slate-800 font-bold text-sm border-b border-slate-200 pb-3">
                                                     <Building2 className="w-4 h-4 text-teal-700" />
-                                                    <span>Official Bank Deposit Account</span>
+                                                    <span>{t("Official Bank Deposit Account")}</span>
                                                 </div>
 
                                                 <div className="grid sm:grid-cols-2 gap-3 text-xs">
                                                     <div className="bg-white p-3 rounded-xl border border-slate-200">
                                                         <span className="text-slate-400 block font-semibold">Bank & Branch</span>
-                                                        <span className="font-bold text-slate-800 text-sm">Commercial Bank of Ceylon</span>
-                                                        <span className="text-slate-500 block">Anuradhapura City Branch</span>
+                                                        <span className="font-bold text-slate-800 text-sm">{t("Commercial Bank of Ceylon")}</span>
+                                                        <span className="text-slate-500 block">{t("Anuradhapura City Branch")}</span>
                                                     </div>
                                                     <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between">
                                                         <div>
@@ -654,8 +656,8 @@ export default function BookingModal({ isOpen, onClose, vehicle }) {
                                     <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
                                         <ShieldCheck className="w-12 h-12" />
                                     </div>
-                                    <h3 className="text-3xl font-bold text-slate-800">Booking Confirmed!</h3>
-                                    <p className="text-slate-500 max-w-sm mx-auto">Your transport has been successfully reserved. A confirmation email and SMS with live tracking details have been dispatched.</p>
+                                    <h3 className="text-3xl font-bold text-slate-800">{t("Booking Confirmed!")}</h3>
+                                    <p className="text-slate-500 max-w-sm mx-auto">{t("Your transport has been successfully reserved. A confirmation email and SMS with live tracking details have been dispatched.")}</p>
                                     
                                     <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 max-w-sm mx-auto flex flex-col gap-3 text-left">
                                         <div className="flex justify-between text-sm border-b border-slate-200 pb-2">

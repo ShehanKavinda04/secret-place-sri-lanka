@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/Hooks/useTranslation';
 
 export default function LiveMapWidget({ onClick }) {
+    const { t } = useTranslation();
     const [progress, setProgress] = useState(75);
-    const [statusText, setStatusText] = useState("Moving towards Ruwanwelisaya...");
+    const [statusKey, setStatusKey] = useState("Moving towards Ruwanwelisaya...");
     
     // Simulate real-time tracking stream
     useEffect(() => {
@@ -10,12 +12,12 @@ export default function LiveMapWidget({ onClick }) {
             setProgress(prev => {
                 const next = prev + 0.5; // Increment by 0.5%
                 if (next >= 100) {
-                    setStatusText("Arrived at destination!");
+                    setStatusKey("Arrived at destination!");
                     return 100;
                 } else if (next > 90) {
-                    setStatusText("Approaching drop-off point...");
+                    setStatusKey("Approaching drop-off point...");
                 } else if (next > 80) {
-                    setStatusText("Entering Anuradhapura city limits...");
+                    setStatusKey("Entering Anuradhapura city limits...");
                 }
                 return next;
             });
@@ -40,10 +42,10 @@ export default function LiveMapWidget({ onClick }) {
                     <div className="w-4 h-4 bg-teal-600 rounded-full relative z-10"></div>
                 </div>
                 
-                <h4 className="font-bold text-slate-800">Vehicle WP-KD 4521</h4>
+                <h4 className="font-bold text-slate-800">{t("Vehicle WP-KD 4521")}</h4>
                 
                 {/* Real-time status stream */}
-                <p className="text-xs text-slate-500 mb-3 text-center h-4">{statusText}</p>
+                <p className="text-xs text-slate-500 mb-3 text-center h-4">{t(statusKey)}</p>
                 
                 {/* Real-time progress bar */}
                 <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden mb-3 relative">
@@ -54,7 +56,7 @@ export default function LiveMapWidget({ onClick }) {
                 </div>
                 
                 <div className="text-xs font-bold text-teal-700 uppercase tracking-widest bg-teal-50 px-3 py-1 rounded-full border border-teal-100">
-                    Click to view full map
+                    {t("Click to view full map")}
                 </div>
             </div>
         </button>

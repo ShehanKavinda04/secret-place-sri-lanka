@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
+import { useTranslation } from '@/Hooks/useTranslation';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -21,6 +22,7 @@ import CustomRouteBuilderModal from './Transport-components/CustomRouteBuilderMo
 
 
 export default function Transport({ auth, laravelVersion, phpVersion }) {
+    const { t } = useTranslation();
     const [bookingModalOpen, setBookingModalOpen] = useState(false);
     const [liveTrackingModalOpen, setLiveTrackingModalOpen] = useState(false);
     const [emergencySOSModalOpen, setEmergencySOSModalOpen] = useState(false);
@@ -92,13 +94,13 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                     <div className="absolute inset-0 bg-gradient-to-b from-slate-900/90 via-slate-900/60 to-[#F8F9FA]" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pt-16">
                         <span className="text-xs uppercase tracking-widest font-bold text-teal-400 mb-6 bg-slate-900/50 px-4 py-1.5 rounded-full border border-teal-500/30 backdrop-blur-sm">
-                            Logistics Module
+                            {t("Logistics Module")}
                         </span>
                         <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight drop-shadow-2xl max-w-5xl leading-tight">
-                            Plan Your Sacred Journey Smoothly
+                            {t("Plan Your Sacred Journey Smoothly")}
                         </h1>
                         <p className="mt-8 text-white/90 text-lg sm:text-xl max-w-2xl font-light leading-relaxed">
-                            Reliable local transport, customizable routes, and end-to-end pilgrimage logistics.
+                            {t("Reliable local transport, customizable routes, and end-to-end pilgrimage logistics.")}
                         </p>
                     </div>
                 </motion.div>
@@ -114,14 +116,14 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                         <section id="packages-section" className="space-y-10">
                             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                                 <div>
-                                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">Pilgrimage Route & Package Builder</h2>
-                                    <p className="text-slate-600 mt-2 font-light text-lg">Select a pre-configured package or craft your own sacred path.</p>
+                                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">{t("Pilgrimage Route & Package Builder")}</h2>
+                                    <p className="text-slate-600 mt-2 font-light text-lg">{t("Select a pre-configured package or craft your own sacred path.")}</p>
                                 </div>
                                 <button 
                                     onClick={() => setCustomRouteModalOpen(true)}
                                     className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl border border-slate-300 transition-colors flex items-center gap-2"
                                 >
-                                    <Navigation2 className="w-5 h-5" /> Build My Own Route
+                                    <Navigation2 className="w-5 h-5" /> {t("Build My Own Route")}
                                 </button>
                             </div>
                             
@@ -135,8 +137,8 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                         {/* 3B. Vehicle Fleet Selection Grid */}
                         <section id="vehicles-section" className="space-y-10">
                             <div>
-                                <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">Vehicle Fleet Selection</h2>
-                                <p className="text-slate-600 mt-2 font-light text-lg">Safe, comfortable, and reliable transport driven by experienced locals.</p>
+                                <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">{t("Vehicle Fleet Selection")}</h2>
+                                <p className="text-slate-600 mt-2 font-light text-lg">{t("Safe, comfortable, and reliable transport driven by experienced locals.")}</p>
                             </div>
                             
                             <div className="grid lg:grid-cols-2 gap-8">
@@ -147,8 +149,8 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                                 ) : (
                                     <div className="col-span-2 text-center py-12 bg-white rounded-3xl border border-slate-100 shadow-sm">
                                         <Car className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                                        <h3 className="text-xl font-bold text-slate-700">No vehicles found</h3>
-                                        <p className="text-slate-500 mt-2">Try adjusting your search criteria to see more options.</p>
+                                        <h3 className="text-xl font-bold text-slate-700">{t("No vehicles found")}</h3>
+                                        <p className="text-slate-500 mt-2">{t("Try adjusting your search criteria to see more options.")}</p>
                                     </div>
                                 )}
                             </div>
@@ -157,8 +159,8 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                         {/* 3C. Public Transport Logistics Table */}
                         <section id="public-section" className="space-y-10">
                             <div>
-                                <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">Public Transport Logistics</h2>
-                                <p className="text-slate-600 mt-2 font-light text-lg">Live schedules for Intercity Express trains and CTB/SLTB buses.</p>
+                                <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">{t("Public Transport Logistics")}</h2>
+                                <p className="text-slate-600 mt-2 font-light text-lg">{t("Live schedules for Intercity Express trains and CTB/SLTB buses.")}</p>
                             </div>
                             
                             <PublicTransportTable />
@@ -169,25 +171,25 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                             <div className="absolute top-0 right-0 w-1/2 h-full bg-teal-900/20 blur-3xl rounded-full translate-x-1/3"></div>
                             
                             <div className="w-full md:w-1/2 space-y-6 relative z-10">
-                                <span className="text-teal-400 font-bold tracking-widest text-xs uppercase">Safety & Security</span>
-                                <h2 className="font-display text-4xl font-bold text-white">Live Tracking & Assistance</h2>
+                                <span className="text-teal-400 font-bold tracking-widest text-xs uppercase">{t("Safety & Security")}</span>
+                                <h2 className="font-display text-4xl font-bold text-white">{t("Live Tracking & Assistance")}</h2>
                                 <p className="text-slate-300 font-light text-lg leading-relaxed">
-                                    Share your live GPS tracking link with your family. All our verified fleet partners offer a 24/7 Breakdown replacement guarantee.
+                                    {t("Share your live GPS tracking link with your family. All our verified fleet partners offer a 24/7 Breakdown replacement guarantee.")}
                                 </p>
                                 
                                 <div className="pt-4 flex flex-col sm:flex-row gap-4">
                                     <div className="flex items-center gap-3 bg-white/10 px-5 py-3 rounded-xl border border-white/20">
                                         <ShieldAlert className="w-6 h-6 text-teal-400" />
                                         <div className="text-left text-sm text-white">
-                                            <div className="font-bold">Replacement Guarantee</div>
-                                            <div className="text-slate-400 text-xs">Within 2 hours anywhere</div>
+                                            <div className="font-bold">{t("Replacement Guarantee")}</div>
+                                            <div className="text-slate-400 text-xs">{t("Within 2 hours anywhere")}</div>
                                         </div>
                                     </div>
                                     <button 
                                         onClick={() => setEmergencySOSModalOpen(true)}
                                         className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2"
                                     >
-                                        <ShieldAlert className="w-5 h-5" /> Emergency SOS Support
+                                        <ShieldAlert className="w-5 h-5" /> {t("Emergency SOS Support")}
                                     </button>
                                 </div>
                             </div>
@@ -199,8 +201,8 @@ export default function Transport({ auth, laravelVersion, phpVersion }) {
                         {/* 5. Social Proof & Reviews */}
                         <section className="space-y-12">
                             <div className="text-center max-w-2xl mx-auto">
-                                <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">Pilgrim Experiences</h2>
-                                <p className="text-slate-600 mt-2 font-light text-lg">Don't just take our word for it. Read reviews from recent travelers.</p>
+                                <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-800">{t("Pilgrim Experiences")}</h2>
+                                <p className="text-slate-600 mt-2 font-light text-lg">{t("Don't just take our word for it. Read reviews from recent travelers.")}</p>
                             </div>
                             
                             <ReviewsCarousel />

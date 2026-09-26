@@ -1,6 +1,8 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { motion } from 'framer-motion';
 
 export default function FeaturesSection({ features, setSelectedFeature }) {
+    const { t } = useTranslation();
     const container = {
         hidden: { opacity: 0 },
         show: {
@@ -18,10 +20,10 @@ export default function FeaturesSection({ features, setSelectedFeature }) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 text-center">
                 <div className="max-w-3xl mx-auto space-y-4">
                     <h2 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-royalTeal leading-tight">
-                        Important Highlights
+                        {t("Important Highlights")}
                     </h2>
                     <p className="text-[#605a54] text-sm sm:text-base font-light max-w-2xl mx-auto">
-                        Experience the spiritual heart of Anuradhapura, featuring magnificent ancient stupas, historic monasteries, and deeply revered sacred Buddhist heritage sites.
+                        {t("Experience the spiritual heart of Anuradhapura, featuring magnificent ancient stupas, historic monasteries, and deeply revered sacred Buddhist heritage sites.")}
                     </p>
                 </div>
 
@@ -46,19 +48,19 @@ export default function FeaturesSection({ features, setSelectedFeature }) {
                             <div className="w-full bg-[#dfbe82] rounded-3xl pt-12 pb-6 px-6 -mt-10 border border-royalGold-500/20 shadow-md group-hover:shadow-xl group-hover:bg-[#e6c78e] transition-all duration-300 flex flex-col justify-between items-center text-center min-h-[220px]">
                                 <div className="space-y-2.5">
                                     <h3 className="font-display text-lg font-bold text-royalMaroon-950 uppercase tracking-wider">
-                                        {feature.title}
+                                        {t(feature.title)}
                                     </h3>
                                     <p className="text-royalMaroon-900/90 text-xs sm:text-sm font-medium leading-relaxed px-1">
-                                        {feature.description}
+                                        {t(feature.description)}
                                     </p>
                                 </div>
 
                                 <div className="w-full pt-4 mt-4 border-t border-royalMaroon-950/15 flex flex-col items-center gap-2">
                                     <span className="px-2.5 py-1 rounded-full bg-royalMaroon-950/10 text-[10px] font-extrabold tracking-wide text-royalMaroon-950 uppercase">
-                                        {feature.dynamicTag}
+                                        {t(feature.dynamicTag)}
                                     </span>
                                     <span className="text-[10px] font-bold text-royalMaroon-900 uppercase tracking-widest flex items-center gap-1 group-hover:text-royalMaroon-950 transition-colors">
-                                        Launch System ➜
+                                        {t("Launch System ➜")}
                                     </span>
                                 </div>
                             </div>

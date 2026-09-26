@@ -1,8 +1,10 @@
 import { X, MapPin, Clock, Info, ShieldCheck, Car, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { useTranslation } from '@/Hooks/useTranslation';
 
 export default function PackageOverviewModal({ isOpen, onClose, packageData }) {
+    const { t } = useTranslation();
     const [selectedTransport, setSelectedTransport] = useState('tuk-tuk');
 
     if (!isOpen || !packageData) return null;
@@ -54,12 +56,12 @@ export default function PackageOverviewModal({ isOpen, onClose, packageData }) {
                         
                         <div className="absolute bottom-0 left-0 w-full p-6 sm:p-8">
                             <div className="flex items-center gap-2 text-teal-300 text-sm font-bold tracking-wider uppercase mb-2">
-                                <MapPin className="w-4 h-4" /> {packageData.location}
+                                <MapPin className="w-4 h-4" /> {t(packageData.location)}
                             </div>
-                            <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-2">{packageData.name}</h2>
+                            <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-2">{t(packageData.name)}</h2>
                             <div className="flex items-center gap-4 text-white/80 text-sm">
-                                <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-teal-400" /> Verified Route</span>
-                                <span>⭐ {packageData.rating} ({packageData.reviews} reviews)</span>
+                                <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-teal-400" /> {t("Verified Route")}</span>
+                                <span>⭐ {packageData.rating} ({packageData.reviews} {t("reviews")})</span>
                             </div>
                         </div>
                     </div>
@@ -68,13 +70,13 @@ export default function PackageOverviewModal({ isOpen, onClose, packageData }) {
                         {/* Left Column: Itinerary */}
                         <div className="md:col-span-3 space-y-8">
                             <div>
-                                <h3 className="text-xl font-bold text-slate-800 mb-2">Route Overview</h3>
-                                <p className="text-slate-600 leading-relaxed">{packageData.description}</p>
+                                <h3 className="text-xl font-bold text-slate-800 mb-2">{t("Route Overview")}</h3>
+                                <p className="text-slate-600 leading-relaxed">{t(packageData.description)}</p>
                             </div>
 
                             <div>
                                 <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                                    <Clock className="w-5 h-5 text-teal-600" /> Suggested Itinerary
+                                    <Clock className="w-5 h-5 text-teal-600" /> {t("Suggested Itinerary")}
                                 </h3>
                                 <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
                                     {itinerary.map((stop, idx) => (
@@ -83,9 +85,9 @@ export default function PackageOverviewModal({ isOpen, onClose, packageData }) {
                                             <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] pl-4 md:pl-0 md:group-odd:pr-6 md:group-even:pl-6 text-left md:group-odd:text-right">
                                                 <div className="flex flex-col md:group-odd:items-end mb-1">
                                                     <span className="text-sm font-bold text-teal-600">{stop.time}</span>
-                                                    <h4 className="text-lg font-bold text-slate-800">{stop.title}</h4>
+                                                    <h4 className="text-lg font-bold text-slate-800">{t(stop.title)}</h4>
                                                 </div>
-                                                <p className="text-sm text-slate-500">{stop.desc}</p>
+                                                <p className="text-sm text-slate-500">{t(stop.desc)}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -96,7 +98,7 @@ export default function PackageOverviewModal({ isOpen, onClose, packageData }) {
                         {/* Right Column: Transport Options & Booking */}
                         <div className="md:col-span-2 space-y-6">
                             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                <h3 className="text-lg font-bold text-slate-800 mb-4">Select Transport</h3>
+                                <h3 className="text-lg font-bold text-slate-800 mb-4">{t("Select Transport")}</h3>
                                 <div className="space-y-3">
                                     {transportOptions.map(option => (
                                         <button
@@ -111,11 +113,11 @@ export default function PackageOverviewModal({ isOpen, onClose, packageData }) {
                                             <div className="flex justify-between items-center mb-1">
                                                 <div className="font-bold text-slate-800 flex items-center gap-2">
                                                     <Car className="w-4 h-4 text-slate-500" />
-                                                    {option.name}
+                                                    {t(option.name)}
                                                 </div>
                                                 {selectedTransport === option.id && <Check className="w-5 h-5 text-teal-600" />}
                                             </div>
-                                            <div className="text-sm text-slate-500">Up to {option.pax} passengers</div>
+                                            <div className="text-sm text-slate-500">{t("Up to")} {option.pax} {t("passengers")}</div>
                                         </button>
                                     ))}
                                 </div>
@@ -124,20 +126,20 @@ export default function PackageOverviewModal({ isOpen, onClose, packageData }) {
                             <div className="bg-teal-900 text-white p-6 rounded-2xl shadow-xl">
                                 <div className="flex justify-between items-end mb-4">
                                     <div>
-                                        <div className="text-teal-200 text-sm font-medium mb-1">Estimated Fare</div>
+                                        <div className="text-teal-200 text-sm font-medium mb-1">{t("Estimated Fare")}</div>
                                         <div className="text-3xl font-display font-bold">LKR {currentPrice.toLocaleString()}</div>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-teal-200 text-sm font-medium mb-1">Duration</div>
-                                        <div className="font-bold">~10 Hours</div>
+                                        <div className="text-teal-200 text-sm font-medium mb-1">{t("Duration")}</div>
+                                        <div className="font-bold">{t("~10 Hours")}</div>
                                     </div>
                                 </div>
                                 
                                 <button className="w-full bg-teal-500 hover:bg-teal-400 text-slate-900 font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-teal-500/20">
-                                    Book via WhatsApp
+                                    {t("Book via WhatsApp")}
                                 </button>
                                 <p className="text-center text-xs text-teal-300/60 mt-4 flex items-center justify-center gap-1">
-                                    <Info className="w-3 h-3" /> No upfront payment required
+                                    <Info className="w-3 h-3" /> {t("No upfront payment required")}
                                 </p>
                             </div>
                         </div>

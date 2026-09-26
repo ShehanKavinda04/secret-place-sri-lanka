@@ -1,8 +1,10 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import React from 'react';
 
 import { motion } from 'framer-motion';
 
 export default function CommunityImpactSection() {
+    const { t } = useTranslation();
     return (
         <motion.section 
             id="community-impact" 
@@ -18,10 +20,10 @@ export default function CommunityImpactSection() {
                 <div className="lg:col-span-5 space-y-8">
                     <div className="space-y-4 text-left">
                         <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-royalMaroon-950">
-                            Community Impact
+                            {t("Community Impact")}
                         </h2>
                         <p className="text-slate-600 font-light text-base leading-relaxed max-w-lg">
-                            Every transaction on Lankasara directly fuels the preservation of Sri Lankan heritage. We visualize the growth of local craft communities and the tangible support you provide.
+                            {t("Every transaction on Lankasara directly fuels the preservation of Sri Lankan heritage. We visualize the growth of local craft communities and the tangible support you provide.")}
                         </p>
                     </div>
 
@@ -33,7 +35,7 @@ export default function CommunityImpactSection() {
                             </svg>
                             <div>
                                 <div className="text-3xl font-bold text-royalMaroon-950">450+</div>
-                                <div className="text-[11px] font-bold tracking-wider text-royalGold-700 uppercase mt-1">MSMEs Supported</div>
+                                <div className="text-[11px] font-bold tracking-wider text-royalGold-700 uppercase mt-1">{t("MSMEs Supported")}</div>
                             </div>
                         </div>
                         {/* Stat 2 */}
@@ -43,7 +45,7 @@ export default function CommunityImpactSection() {
                             </svg>
                             <div>
                                 <div className="text-3xl font-bold text-royalMaroon-950">1.2M</div>
-                                <div className="text-[11px] font-bold tracking-wider text-royalGold-700 uppercase mt-1">Heritage Fund (LKR)</div>
+                                <div className="text-[11px] font-bold tracking-wider text-royalGold-700 uppercase mt-1">{t("Heritage Fund (LKR)")}</div>
                             </div>
                         </div>
                         {/* Stat 3 */}
@@ -53,7 +55,7 @@ export default function CommunityImpactSection() {
                             </svg>
                             <div>
                                 <div className="text-3xl font-bold text-royalMaroon-950">18</div>
-                                <div className="text-[11px] font-bold tracking-wider text-royalGold-700 uppercase mt-1">Traditions Preserved</div>
+                                <div className="text-[11px] font-bold tracking-wider text-royalGold-700 uppercase mt-1">{t("Traditions Preserved")}</div>
                             </div>
                         </div>
                         {/* Stat 4 */}
@@ -63,7 +65,7 @@ export default function CommunityImpactSection() {
                             </svg>
                             <div>
                                 <div className="text-3xl font-bold text-royalMaroon-950">100%</div>
-                                <div className="text-[11px] font-bold tracking-wider text-royalGold-700 uppercase mt-1">Verified Authentic</div>
+                                <div className="text-[11px] font-bold tracking-wider text-royalGold-700 uppercase mt-1">{t("Verified Authentic")}</div>
                             </div>
                         </div>
                     </div>
@@ -73,8 +75,8 @@ export default function CommunityImpactSection() {
                 <div className="lg:col-span-7 grid sm:grid-cols-2 lg:grid-cols-1 gap-6">
                     {/* Bar Chart Card */}
                     <div className="bg-white border border-royalGold-400/30 rounded-2xl p-6 sm:col-span-2 lg:col-span-1 shadow-sm h-full flex flex-col">
-                        <h3 className="text-lg font-bold text-royalMaroon-950">MSME Support Growth (LKR)</h3>
-                        <p className="text-sm text-slate-500 mb-8">Direct revenue generated for local artisans monthly</p>
+                        <h3 className="text-lg font-bold text-royalMaroon-950">{t("MSME Support Growth (LKR)")}</h3>
+                        <p className="text-sm text-slate-500 mb-8">{t("Direct revenue generated for local artisans monthly")}</p>
                         
                         <div className="relative flex-1 w-full mt-auto pl-10 min-h-[160px]">
                             {/* Grid lines */}
@@ -124,8 +126,8 @@ export default function CommunityImpactSection() {
 
                     {/* Donut Chart Card */}
                     <div className="bg-white border border-royalGold-400/30 rounded-2xl p-6 sm:col-span-2 lg:col-span-1 shadow-sm">
-                        <h3 className="text-lg font-bold text-royalMaroon-950">Fund Distribution</h3>
-                        <p className="text-sm text-slate-500 mb-6">How each LKR you spend is allocated</p>
+                        <h3 className="text-lg font-bold text-royalMaroon-950">{t("Fund Distribution")}</h3>
+                        <p className="text-sm text-slate-500 mb-6">{t("How each LKR you spend is allocated")}</p>
                         
                         <div className="flex flex-col sm:flex-row items-center gap-10">
                             <div className="relative w-36 h-36 shrink-0">
@@ -160,21 +162,21 @@ export default function CommunityImpactSection() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="w-3.5 h-3.5 rounded-sm bg-royalGold-500 shadow-sm"></div>
-                                        <span className="text-sm text-slate-700 font-medium">Artisan Income</span>
+                                        <span className="text-sm text-slate-700 font-medium">{t("Artisan Income")}</span>
                                     </div>
                                     <span className="text-sm font-bold text-royalGold-700">65%</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="w-3.5 h-3.5 rounded-sm bg-royalMaroon-700 shadow-sm"></div>
-                                        <span className="text-sm text-slate-700 font-medium">Preservation Fund</span>
+                                        <span className="text-sm text-slate-700 font-medium">{t("Preservation Fund")}</span>
                                     </div>
                                     <span className="text-sm font-bold text-royalGold-700">25%</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="w-3.5 h-3.5 rounded-sm bg-slate-300 shadow-sm"></div>
-                                        <span className="text-sm text-slate-700 font-medium">Community Dev</span>
+                                        <span className="text-sm text-slate-700 font-medium">{t("Community Dev")}</span>
                                     </div>
                                     <span className="text-sm font-bold text-royalGold-700">10%</span>
                                 </div>

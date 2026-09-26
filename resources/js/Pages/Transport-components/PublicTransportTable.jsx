@@ -1,8 +1,10 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { useState, useEffect } from 'react';
 import { Ticket, Train, Bus, Clock } from 'lucide-react';
 import axios from 'axios';
 
 export default function PublicTransportTable() {
+    const { t } = useTranslation();
     const [scheduleData, setScheduleData] = useState([]);
 
     useEffect(() => {
@@ -28,9 +30,9 @@ export default function PublicTransportTable() {
                     <thead>
                         <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
                             <th className="px-6 py-4">Transport</th>
-                            <th className="px-6 py-4">Route & Service</th>
-                            <th className="px-6 py-4">Departure</th>
-                            <th className="px-6 py-4">Arrival</th>
+                            <th className="px-6 py-4">{t("Route & Service")}</th>
+                            <th className="px-6 py-4">{t("Departure")}</th>
+                            <th className="px-6 py-4">{t("Arrival")}</th>
                             <th className="px-6 py-4 text-right">E-Ticket</th>
                         </tr>
                     </thead>

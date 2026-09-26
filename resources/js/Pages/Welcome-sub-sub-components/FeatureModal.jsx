@@ -1,3 +1,5 @@
+import { useTranslation } from '@/Hooks/useTranslation';
+
 export default function FeatureModal({ 
     selectedFeature, 
     setSelectedFeature, 
@@ -7,6 +9,7 @@ export default function FeatureModal({
     setBookingStatus, 
     handleMockBooking 
 }) {
+    const { t } = useTranslation();
     if (!selectedFeature) return null;
 
     return (
@@ -28,27 +31,27 @@ export default function FeatureModal({
                     </div>
                     <div className="text-left">
                         <h3 className="font-display text-xl font-bold text-royalGold-300 uppercase tracking-wide">
-                            {selectedFeature.title}
+                            {t(selectedFeature.title)}
                         </h3>
                         <span className="text-[10px] bg-royalGold-500/10 border border-royalGold-400/20 text-royalGold-400 px-2 py-0.5 rounded-full uppercase font-bold tracking-widest mt-1 inline-block">
-                            {selectedFeature.dynamicTag}
+                            {t(selectedFeature.dynamicTag)}
                         </span>
                     </div>
                 </div>
 
                 {/* Detailed description */}
                 <div className="text-left text-sm text-royalGold-300/80 leading-relaxed font-light">
-                    <p>{selectedFeature.details}</p>
+                    <p>{t(selectedFeature.details)}</p>
                 </div>
 
                 {/* Functional Live Demos Inside Modal */}
                 <div className="bg-royalMaroon-950/60 rounded-2xl p-4 border border-royalGold-500/10 space-y-3">
-                    <span className="text-[9px] uppercase font-bold text-royalGold-400/50 block tracking-widest text-left">Live Functional Sandbox</span>
+                    <span className="text-[9px] uppercase font-bold text-royalGold-400/50 block tracking-widest text-left">{t("Live Functional Sandbox")}</span>
                     
                     {selectedFeature.id === 'booking' && (
                         <form onSubmit={handleMockBooking} className="space-y-3 text-left">
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-bold text-royalGold-400 uppercase tracking-wider">Select Adventure Date</label>
+                                <label className="text-xs font-bold text-royalGold-400 uppercase tracking-wider">{t("Select Adventure Date")}</label>
                                 <input 
                                     type="date" 
                                     required
@@ -57,7 +60,7 @@ export default function FeatureModal({
                                 />
                             </div>
                             <button type="submit" className="w-full py-2.5 rounded-xl bg-royalGold-500 hover:bg-royalGold-400 text-royalMaroon-950 font-bold text-xs uppercase tracking-wider transition-colors">
-                                Book Instant Slot
+                                {t("Book Instant Slot")}
                             </button>
                             {bookingStatus && (
                                 <div className="text-xs font-semibold text-center text-emerald-400 bg-emerald-950/20 border border-emerald-800/30 rounded-xl py-2">
@@ -75,15 +78,15 @@ export default function FeatureModal({
                                 <div className="w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-100 z-10" />
                             </div>
                             <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">📡 Mapped coordinates active: 80.6337° E, 7.2906° N</span>
-                            <p className="text-[11px] text-royalGold-450/65 font-light">Interactive tracking locates 3 hidden waterfall trails within 2.5km radius.</p>
+                            <p className="text-[11px] text-royalGold-450/65 font-light">{t("Interactive tracking locates 3 hidden waterfall trails within 2.5km radius.")}</p>
                         </div>
                     )}
 
                     {selectedFeature.id === 'storytelling' && (
                         <div className="p-3 space-y-3 text-left">
                             <div className="flex items-center justify-between text-xs text-royalGold-300 font-semibold bg-royalMaroon-900 px-3 py-2 rounded-xl border border-royalGold-500/10">
-                                <span>🔊 Play Audio Story: Sigiriya Inscription</span>
-                                <span className="text-[9px] uppercase bg-royalGold-500/20 px-1.5 py-0.5 rounded text-royalGold-400 animate-pulse">Playing</span>
+                                <span>{t("🔊 Play Audio Story: Sigiriya Inscription")}</span>
+                                <span className="text-[9px] uppercase bg-royalGold-500/20 px-1.5 py-0.5 rounded text-royalGold-400 animate-pulse">{t("Playing")}</span>
                             </div>
                             {/* Mock player slider bar */}
                             <div className="space-y-1">
@@ -111,7 +114,7 @@ export default function FeatureModal({
 
                     {selectedFeature.id === 'analytics' && (
                         <div className="p-2 space-y-3 text-left">
-                            <span className="text-xs font-bold text-royalGold-400 uppercase tracking-wider block">Homestay Revenue Trends</span>
+                            <span className="text-xs font-bold text-royalGold-400 uppercase tracking-wider block">{t("Homestay Revenue Trends")}</span>
                             {/* Mock analytical bar chart */}
                             <div className="flex items-end justify-between h-20 bg-royalMaroon-900/80 rounded-xl p-3 border border-royalGold-500/10">
                                 <div className="w-6 bg-royalGold-500/30 hover:bg-royalGold-500 h-[30%] rounded transition-all duration-300" title="Mar: LKR 45k" />
@@ -130,10 +133,10 @@ export default function FeatureModal({
 
                     {selectedFeature.id === 'payments' && (
                         <div className="p-3 text-left space-y-3">
-                            <span className="text-xs font-bold text-royalGold-400 uppercase tracking-wider block">Mock Payment Gateway</span>
+                            <span className="text-xs font-bold text-royalGold-400 uppercase tracking-wider block">{t("Mock Payment Gateway")}</span>
                             <div className="bg-royalMaroon-900 border border-royalGold-500/10 rounded-xl p-3 space-y-2">
                                 <div className="flex justify-between text-xs text-royalGold-450/70 font-semibold">
-                                    <span>LankaPay Network</span>
+                                    <span>{t("LankaPay Network")}</span>
                                     <span className="text-emerald-400">● Safe</span>
                                 </div>
                                 {/* Dummy credit card fields */}

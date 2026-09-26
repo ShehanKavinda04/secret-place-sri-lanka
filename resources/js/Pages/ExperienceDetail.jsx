@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
+import { useTranslation } from '@/Hooks/useTranslation';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -20,6 +21,7 @@ import {
 } from '@/Utils/cardValidation';
 
 export default function ExperienceDetail({ auth, experienceId, laravelVersion, phpVersion, initialLocation, initialPolicies = [], initialReviews = [] }) {
+    const { t } = useTranslation();
     const [locationData, setLocationData] = useState(initialLocation);
     const [policyData, setPolicyData] = useState(initialPolicies);
     const [reviewsData, setReviewsData] = useState(initialReviews);
@@ -536,24 +538,24 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             <nav className="flex text-sm text-white/70 mb-4" aria-label="Breadcrumb">
                                 <ol className="inline-flex items-center space-x-1 md:space-x-3">
                                     <li className="inline-flex items-center">
-                                        <Link href="/" className="hover:text-royalGold-500 transition-colors">Home</Link>
+                                        <Link href="/" className="hover:text-royalGold-500 transition-colors">{t("Home")}</Link>
                                     </li>
                                     <li>
                                         <div className="flex items-center">
                                             <ChevronRight className="w-4 h-4 mx-1" />
-                                            <Link href="/category/heritage" className="hover:text-royalGold-500 transition-colors">MSME Experiences</Link>
+                                            <Link href="/category/heritage" className="hover:text-royalGold-500 transition-colors">{t("MSME Experiences")}</Link>
                                         </div>
                                     </li>
                                     <li>
                                         <div className="flex items-center">
                                             <ChevronRight className="w-4 h-4 mx-1" />
-                                            <span className="ml-1 font-medium">Anuradhapura</span>
+                                            <span className="ml-1 font-medium">{t("Anuradhapura")}</span>
                                         </div>
                                     </li>
                                     <li>
                                         <div className="flex items-center">
                                             <ChevronRight className="w-4 h-4 mx-1" />
-                                            <span className="ml-1 text-white font-bold">{experience.title}</span>
+                                            <span className="ml-1 text-white font-bold">{t(experience.title)}</span>
                                         </div>
                                     </li>
                                 </ol>
@@ -561,13 +563,13 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                             <div className="flex flex-wrap gap-2 mb-4">
                                 <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20">
-                                    <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Verified Spot
+                                    <ShieldCheck className="w-3.5 h-3.5 mr-1" /> {t("Verified Spot")}
                                 </span>
                                 <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-royalGold-500/20 text-royalGold-400 border border-royalGold-500/30">
-                                    <Map className="w-3.5 h-3.5 mr-1" /> Cultural Heritage
+                                    <Map className="w-3.5 h-3.5 mr-1" /> {t("Cultural Heritage")}
                                 </span>
                                 <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#FF6B35]/20 text-[#FF6B35] border border-[#FF6B35]/30">
-                                    <Check className="w-3.5 h-3.5 mr-1" /> Instant Confirmation
+                                    <Check className="w-3.5 h-3.5 mr-1" /> {t("Instant Confirmation")}
                                 </span>
                             </div>
                         </div>
@@ -575,19 +577,19 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                         {/* 2. Hero Section Titles */}
                         <div className="mb-10">
                             <h1 className="text-4xl md:text-5xl font-display font-light text-white mb-3">
-                                {experience.title}
+                                {t(experience.title)}
                             </h1>
-                            <p className="text-lg text-white/80 font-light mb-6 max-w-3xl leading-relaxed">{experience.subtitle}</p>
+                            <p className="text-lg text-white/80 font-light mb-6 max-w-3xl leading-relaxed">{t(experience.subtitle)}</p>
                             
                             <div className="flex items-center gap-4 text-sm font-medium mb-8">
                                 <div className="flex items-center text-royalGold-500">
                                     <Star className="w-5 h-5 fill-current mr-1" />
-                                    <span className="text-white text-base">{experience.rating} <span className="text-white/60 font-normal font-light">({experience.reviewsCount} Reviews)</span></span>
+                                    <span className="text-white text-base">{experience.rating} <span className="text-white/60 font-normal font-light">({experience.reviewsCount} {t("Reviews")})</span></span>
                                 </div>
                                 <span className="text-white/30">|</span>
                                 <div className="flex items-center text-white/80">
                                     <MapPin className="w-5 h-5 text-royalGold-500 mr-1" />
-                                    {experience.location}
+                                    {t(experience.location)}
                                 </div>
                             </div>
 
@@ -636,7 +638,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     <div className="md:col-span-2 relative rounded-2xl overflow-hidden group">
                                         <img src={experience.mainImage} alt={experience.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                         <button className="absolute bottom-6 right-6 bg-white/90 backdrop-blur text-royalMaroon-950 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-white transition-colors shadow-lg">
-                                            <Camera className="w-5 h-5" /> Video Preview
+                                            <Camera className="w-5 h-5" /> {t("Video Preview")}
                                         </button>
                                     </div>
                                     <div className="hidden md:grid grid-rows-2 gap-4 h-full">
@@ -650,7 +652,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             <div className="rounded-2xl overflow-hidden relative group">
                                                 <img src={experience.gallery[2]} alt="Gallery 3" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                                 <div className="absolute inset-0 bg-royalMaroon-950/40 flex items-center justify-center cursor-pointer hover:bg-royalMaroon-950/50 transition-colors">
-                                                    <span className="text-white font-bold text-lg">+4 Photos</span>
+                                                    <span className="text-white font-bold text-lg">{t("+4 Photos")}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -672,43 +674,43 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm mb-10 flex flex-wrap gap-y-6 justify-between">
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
                                     <Clock className="w-6 h-6 text-royalGold-500 mb-2" />
-                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Duration</span>
-                                    <span className="text-sm font-semibold text-slate-800">{experience.duration}</span>
+                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">{t("DURATION")}</span>
+                                    <span className="text-sm font-semibold text-slate-800">{t(experience.duration)}</span>
                                 </div>
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
                                     <Users className="w-6 h-6 text-royalGold-500 mb-2" />
-                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Group Size</span>
-                                    <span className="text-sm font-semibold text-slate-800">{experience.groupSize}</span>
+                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">{t("GROUP SIZE")}</span>
+                                    <span className="text-sm font-semibold text-slate-800">{t(experience.groupSize)}</span>
                                 </div>
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
                                     <Globe className="w-6 h-6 text-royalGold-500 mb-2" />
-                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Languages</span>
-                                    <span className="text-sm font-semibold text-slate-800">Sinhala / English</span>
+                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">{t("LANGUAGES")}</span>
+                                    <span className="text-sm font-semibold text-slate-800">{t("Sinhala / English")}</span>
                                 </div>
                                 <div className="w-1/2 sm:w-1/4 flex flex-col items-start">
                                     <Accessibility className="w-6 h-6 text-royalGold-500 mb-2" />
-                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Accessibility</span>
-                                    <span className="text-sm font-semibold text-slate-800">Kid-friendly</span>
+                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">{t("ACCESSIBILITY")}</span>
+                                    <span className="text-sm font-semibold text-slate-800">{t("Kid-friendly")}</span>
                                 </div>
                                 <div className="w-full mt-4 pt-4 border-t border-slate-100">
-                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold block mb-2">Inclusions</span>
+                                    <span className="text-xs text-slate-500 uppercase tracking-wider font-bold block mb-2">{t("INCLUSIONS")}</span>
                                     <div className="flex flex-wrap gap-2">
-                                        <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Local guide</span>
-                                        <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Artisan interactions</span>
-                                        <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Light refreshments</span>
-                                        <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">Traditional souvenir</span>
+                                        <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">{t("Local guide")}</span>
+                                        <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">{t("Artisan interactions")}</span>
+                                        <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">{t("Light refreshments")}</span>
+                                        <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-medium">{t("Traditional souvenir")}</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* 4. Detailed Description & Itinerary Timeline */}
                             <section className="mb-12">
-                                <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-4">Experience Overview</h2>
+                                <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-4">{t("Experience Overview")}</h2>
                                 <p className="text-slate-600 leading-relaxed mb-8 text-lg">
-                                    {experience.overview}
+                                    {t(experience.overview)}
                                 </p>
 
-                                <h3 className="text-xl font-bold text-slate-800 mb-6 font-display">Itinerary Timeline</h3>
+                                <h3 className="text-xl font-bold text-slate-800 mb-6 font-display">{t("Itinerary Timeline")}</h3>
                                 <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
                                     
                                     {experience.itinerary.map((item, idx) => (
@@ -718,9 +720,9 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             </div>
                                             <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <h4 className="font-bold text-slate-800 text-lg">{item.title}</h4>
+                                                    <h4 className="font-bold text-slate-800 text-lg">{t(item.title)}</h4>
                                                 </div>
-                                                <p className="text-slate-600 text-sm">{item.desc}</p>
+                                                <p className="text-slate-600 text-sm">{t(item.desc)}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -729,7 +731,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                             {/* 6. Location & Interactive Map View */}
                             <section className="mb-12">
-                                <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-4">Location & Meeting Point</h2>
+                                <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-4">{t("Location & Meeting Point")}</h2>
                                 {locationData ? (
                                     <>
                                         <p className="text-slate-600 mb-6 flex items-start gap-2">
@@ -748,16 +750,16 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             ></iframe>
                                         </div>
                                         <div className="bg-royalMaroon-950/5 rounded-xl p-5 border border-royalMaroon-950/10">
-                                            <h4 className="font-bold text-royalMaroon-950 mb-2 text-sm uppercase tracking-wider">How to get there</h4>
+                                            <h4 className="font-bold text-royalMaroon-950 mb-2 text-sm uppercase tracking-wider">{t("How to get there")}</h4>
                                             <ul className="text-sm text-slate-700 space-y-2">
-                                                {locationData.directions_tuktuk && <li><strong>By Tuk-Tuk:</strong> {locationData.directions_tuktuk}</li>}
-                                                {locationData.directions_bus && <li><strong>By Bus:</strong> {locationData.directions_bus}</li>}
-                                                {locationData.directions_car && <li><strong>By Private Car:</strong> {locationData.directions_car}</li>}
+                                                {locationData.directions_tuktuk && <li><strong>{t("By Tuk-Tuk:")}</strong> {locationData.directions_tuktuk}</li>}
+                                                {locationData.directions_bus && <li><strong>{t("By Bus:")}</strong> {locationData.directions_bus}</li>}
+                                                {locationData.directions_car && <li><strong>{t("By Private Car:")}</strong> {locationData.directions_car}</li>}
                                             </ul>
                                         </div>
                                     </>
                                 ) : (
-                                    <p className="text-slate-500 italic">Location details will be available soon.</p>
+                                    <p className="text-slate-500 italic">{t("Location details will be available soon.")}</p>
                                 )}
                             </section>
 
@@ -768,16 +770,16 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         <img src={`https://ui-avatars.com/api/?name=${experience.hostAvatar}&background=40030a&color=fff&size=128`} alt="Host Avatar" className="w-full h-full object-cover" />
                                     </div>
                                     <div className="text-center sm:text-left">
-                                        <h2 className="text-3xl font-light text-slate-800 font-display mb-1">Hosted by {experience.hostName}</h2>
-                                        <p className="text-sm text-slate-500 mb-4">Multi-generational artisans • Hosting since 2018</p>
+                                        <h2 className="text-3xl font-light text-slate-800 font-display mb-1">{t("Hosted by")} {experience.hostName}</h2>
+                                        <p className="text-sm text-slate-500 mb-4">{t("Multi-generational artisans • Hosting since 2018")}</p>
                                         <p className="text-slate-600 mb-4 max-w-2xl">
-                                            Our cooperative unites over 40 family-run MSMEs across the region. We are passionate about sharing our ancestral crafting techniques with visitors to preserve our heritage and sustain our rural communities.
+                                            {t("Our cooperative unites over 40 family-run MSMEs across the region. We are passionate about sharing our ancestral crafting techniques with visitors to preserve our heritage and sustain our rural communities.")}
                                         </p>
                                         <button 
                                             onClick={() => setShowContactModal(true)}
                                             className="px-6 py-2 border-2 border-royalMaroon-950 text-royalMaroon-950 font-semibold rounded-lg hover:bg-royalMaroon-950 hover:text-white transition-colors"
                                         >
-                                            Contact Host
+                                            {t("Contact Host")}
                                         </button>
                                     </div>
                                 </div>
@@ -785,7 +787,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                             {/* 8. Guidelines & Policy Accordions */}
                             <section className="mb-12">
-                                <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-6">Important Information</h2>
+                                <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-6">{t("Important Information")}</h2>
                                 <div className="space-y-3">
                                     {(policyData && policyData.length > 0 ? policyData : [
                                         { title: 'Dress Code', content: 'We recommend comfortable, loose-fitting cotton clothing suitable for the tropical climate. Modest attire is appreciated when visiting village homes.' },
@@ -798,12 +800,12 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 onClick={() => toggleAccordion(idx)}
                                                 className="w-full px-6 py-4 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none"
                                             >
-                                                <span className="font-semibold text-slate-800">{acc.title}</span>
+                                                <span className="font-semibold text-slate-800">{t(acc.title)}</span>
                                                 <ChevronDown className={`w-5 h-5 text-slate-500 transition-transform ${openAccordion === idx ? 'rotate-180' : ''}`} />
                                             </button>
                                             {openAccordion === idx && (
                                                 <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 text-slate-600 text-sm">
-                                                    {acc.content}
+                                                    {t(acc.content)}
                                                 </div>
                                             )}
                                         </div>
@@ -816,15 +818,15 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                 <div className="flex items-center gap-3 mb-6">
                                     <Star className="w-8 h-8 fill-royalGold-500 text-royalGold-500" />
                                     <h2 className="text-4xl font-light text-slate-800 font-display">4.8 <span className="text-xl font-normal text-slate-500">/ 5.0</span></h2>
-                                    <span className="text-slate-500 ml-2">({reviewsData.length} verified reviews)</span>
+                                    <span className="text-slate-500 ml-2">({reviewsData.length} {t("verified reviews")})</span>
                                 </div>
                                 
                                 {/* Write a Review Form */}
                                 <form onSubmit={submitReview} className="mb-8 bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                                    <h3 className="text-xl font-bold text-slate-800 mb-4">Leave a Review</h3>
+                                    <h3 className="text-xl font-bold text-slate-800 mb-4">{t("Leave a Review")}</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                         <div>
-                                            <label className="block text-sm font-semibold text-slate-700 mb-1">Your Name</label>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-1">{t("Your Name")}</label>
                                             <input 
                                                 type="text" 
                                                 className="w-full rounded-lg border-slate-300 focus:border-royalMaroon-950 focus:ring-royalMaroon-950" 
@@ -834,7 +836,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-semibold text-slate-700 mb-1">Rating</label>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-1">{t("Rating")}</label>
                                             <div className="flex items-center gap-2 h-[42px]">
                                                 {[1, 2, 3, 4, 5].map((star) => (
                                                     <button 
@@ -850,7 +852,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         </div>
                                     </div>
                                     <div className="mb-4">
-                                        <label className="block text-sm font-semibold text-slate-700 mb-1">Your Review</label>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-1">{t("Your Review")}</label>
                                         <textarea 
                                             rows="3" 
                                             className="w-full rounded-lg border-slate-300 focus:border-royalMaroon-950 focus:ring-royalMaroon-950"
@@ -864,7 +866,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         disabled={submittingReview}
                                         className="bg-royalMaroon-950 text-white px-6 py-2 rounded-lg font-semibold hover:bg-royalMaroon-900 transition-colors disabled:opacity-50"
                                     >
-                                        {submittingReview ? 'Submitting...' : 'Submit Review'}
+                                        {submittingReview ? t('Submitting...') : t('Submit Review')}
                                     </button>
                                 </form>
 
@@ -876,7 +878,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                     <img src={rev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(rev.name)}&background=random`} className="w-10 h-10 rounded-full" />
                                                     <div>
                                                         <h4 className="font-bold text-slate-800">{rev.name}</h4>
-                                                        <p className="text-xs text-slate-500">{new Date(rev.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} • Verified Buyer</p>
+                                                        <p className="text-xs text-slate-500">{new Date(rev.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} • {t("Verified Buyer")}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-1 text-royalGold-500">
@@ -889,7 +891,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         </div>
                                     ))}
                                     {reviewsData.length === 0 && (
-                                        <p className="text-slate-500 text-center py-4">No reviews yet. Be the first to leave one!</p>
+                                        <p className="text-slate-500 text-center py-4">{t("No reviews yet. Be the first to leave one!")}</p>
                                     )}
                                 </div>
                             </section>
@@ -912,9 +914,9 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     <div>
                                         <div className="flex items-baseline gap-1">
                                             <span className="text-2xl font-bold text-slate-900">${experience.price}</span>
-                                            <span className="text-sm text-slate-500">/ person</span>
+                                            <span className="text-sm text-slate-500">{t("/ person")}</span>
                                         </div>
-                                        <p className="text-xs text-slate-400 mt-1">LKR {experience.priceLkr.toLocaleString()} approx.</p>
+                                        <p className="text-xs text-slate-400 mt-1">LKR {experience.priceLkr.toLocaleString()} {t("approx.")}</p>
                                     </div>
                                     <button 
                                         onClick={() => setIsWishlisted(!isWishlisted)}
@@ -928,20 +930,20 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                 <div className="mb-4 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
                                     <span className="text-slate-500 font-medium flex items-center gap-1.5">
                                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
-                                        <span>Live Availability</span>
+                                        <span>{t("Live Availability")}</span>
                                     </span>
                                     <span className="font-bold text-slate-800">
                                         {currentSlotInfo.remaining > 0 ? (
-                                            <span className="text-emerald-700 font-bold">{currentSlotInfo.remaining} / {currentSlotInfo.capacity} spots left</span>
+                                            <span className="text-emerald-700 font-bold">{currentSlotInfo.remaining} / {currentSlotInfo.capacity} {t("spots left")}</span>
                                         ) : (
-                                            <span className="text-rose-600 font-bold">Sold Out</span>
+                                            <span className="text-rose-600 font-bold">{t("Sold Out")}</span>
                                         )}
                                     </span>
                                 </div>
 
                                 <div className="border border-slate-300 rounded-xl overflow-hidden mb-6">
                                     <div className={`p-3 border-b border-slate-300 bg-slate-50 ${bookingState.status === 'error' && !date ? 'ring-2 ring-red-500' : ''}`}>
-                                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Date</label>
+                                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">{t("DATE")}</label>
                                         <div className="flex items-center">
                                             <CalendarIcon className="w-4 h-4 text-slate-400 mr-2" />
                                             <input 
@@ -956,25 +958,25 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         </div>
                                     </div>
                                     <div className="p-3 border-b border-slate-300 bg-white">
-                                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Time Slot</label>
+                                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">{t("TIME SLOT")}</label>
                                         <select 
                                             className="w-full bg-transparent border-none p-0 text-sm focus:ring-0 text-slate-800 cursor-pointer"
                                             value={timeSlot}
                                             onChange={(e) => setTimeSlot(e.target.value)}
                                         >
                                             <option value="9:00 AM (Morning Session)">
-                                                9:00 AM (Morning Session) {availabilityData?.slots?.['9:00 AM (Morning Session)']?.remaining !== undefined ? `• ${availabilityData.slots['9:00 AM (Morning Session)'].remaining} spots` : ''}
+                                                {t("9:00 AM (Morning Session)")} {availabilityData?.slots?.['9:00 AM (Morning Session)']?.remaining !== undefined ? `• ${availabilityData.slots['9:00 AM (Morning Session)'].remaining} ${t("spots left")}` : ''}
                                             </option>
                                             <option value="2:00 PM (Afternoon Session)">
-                                                2:00 PM (Afternoon Session) {availabilityData?.slots?.['2:00 PM (Afternoon Session)']?.remaining !== undefined ? `• ${availabilityData.slots['2:00 PM (Afternoon Session)'].remaining} spots` : ''}
+                                                {t("2:00 PM (Afternoon Session)")} {availabilityData?.slots?.['2:00 PM (Afternoon Session)']?.remaining !== undefined ? `• ${availabilityData.slots['2:00 PM (Afternoon Session)'].remaining} ${t("spots left")}` : ''}
                                             </option>
                                         </select>
                                     </div>
                                     <div className="p-4 bg-slate-50 flex flex-col gap-4">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <div className="font-semibold text-sm text-slate-800">Adults</div>
-                                                <div className="text-xs text-slate-500">Age 13+</div>
+                                                <div className="font-semibold text-sm text-slate-800">{t("Adults")}</div>
+                                                <div className="text-xs text-slate-500">{t("Age 13+")}</div>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <button onClick={() => handleGuestChange('adults', 'dec')} className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 hover:border-slate-800 hover:text-slate-800 transition-colors">
@@ -988,8 +990,8 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <div className="font-semibold text-sm text-slate-800">Children</div>
-                                                <div className="text-xs text-slate-500">Age 4-12 (50% Off)</div>
+                                                <div className="font-semibold text-sm text-slate-800">{t("Children")}</div>
+                                                <div className="text-xs text-slate-500">{t("Age 4-12 (50% Off)")}</div>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <button onClick={() => handleGuestChange('children', 'dec')} className="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 hover:border-slate-800 hover:text-slate-800 transition-colors">
@@ -1005,7 +1007,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                 </div>
 
                                 <div className="flex justify-between items-center mb-6 py-4 border-t border-slate-200">
-                                    <span className="font-bold text-slate-800">Total</span>
+                                    <span className="font-bold text-slate-800">{t("Total")}</span>
                                     <div className="text-right">
                                         <div className="font-bold text-xl text-slate-900">${totalCost}</div>
                                         <div className="text-xs text-slate-500">LKR {totalCostLkr.toLocaleString()}</div>
@@ -1025,13 +1027,13 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 <Check className="w-6 h-6 text-emerald-600" />
                                             </div>
                                         </div>
-                                        <h4 className="font-bold text-emerald-800 text-lg mb-1">Booking Confirmed!</h4>
+                                        <h4 className="font-bold text-emerald-800 text-lg mb-1">{t("Booking Confirmed!")}</h4>
                                         <p className="text-sm text-emerald-600 mb-3">See you on {new Date(date).toLocaleDateString()} at {timeSlot.split(' ')[0]}.</p>
                                         <button 
                                             onClick={() => setShowPaymentModal(true)}
                                             className="text-xs text-emerald-700 underline font-semibold hover:text-emerald-900"
                                         >
-                                            View Official Payment Receipt
+                                            {t("View Official Payment Receipt")}
                                         </button>
                                     </div>
                                 ) : (
@@ -1042,18 +1044,18 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             className="w-full flex justify-center items-center gap-2 bg-[#FF6B35] text-white font-bold text-lg py-4 rounded-xl hover:bg-[#e85a25] transition-colors shadow-lg shadow-[#FF6B35]/30 mb-3 disabled:opacity-50 cursor-pointer"
                                         >
                                             <CreditCard className="w-5 h-5" />
-                                            <span>Book Now</span>
+                                            <span>{t("Book Now")}</span>
                                         </button>
                                         <button 
                                             onClick={() => setIsWishlisted(!isWishlisted)}
                                             className="w-full flex justify-center items-center gap-2 bg-white text-slate-700 font-semibold py-3 rounded-xl border border-slate-300 hover:bg-slate-50 transition-colors"
                                         >
                                             <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-[#FF6B35] text-[#FF6B35]' : 'text-slate-400'}`} />
-                                            {isWishlisted ? 'Saved to Wishlist' : 'Add to Wishlist'}
+                                            {isWishlisted ? t('Saved to Wishlist') : t('Add to Wishlist')}
                                         </button>
                                         <p className="text-center text-xs text-slate-500 mt-4 flex items-center justify-center gap-1.5">
                                             <Lock className="w-3.5 h-3.5 text-slate-400" />
-                                            <span>Encrypted 256-bit payment gateway</span>
+                                            <span>{t("Encrypted 256-bit payment gateway")}</span>
                                         </p>
                                     </>
                                 )}
@@ -1064,7 +1066,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                     {/* 10. Recommended / Similar MSME Experiences Grid */}
                     <section className="mt-16 pt-16 border-t border-slate-200">
-                        <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-8">More Experiences You Might Like</h2>
+                        <h2 className="text-3xl font-display font-light text-royalMaroon-950 mb-8">{t("More Experiences You Might Like")}</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
                                 { title: 'Hands-on Clay Pottery Workshop', location: 'Anuradhapura', image: '/images/clay_workshop.png', rating: 4.9, price: 35 },
@@ -1080,9 +1082,9 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         </div>
                                     </div>
                                     <div className="p-4">
-                                        <div className="text-xs text-royalMaroon-950 font-semibold mb-1 uppercase tracking-wider">{sim.location}</div>
-                                        <h4 className="font-bold text-slate-800 mb-2 leading-tight group-hover:text-[#FF6B35] transition-colors">{sim.title}</h4>
-                                        <div className="font-bold text-slate-900 text-sm">From ${sim.price}</div>
+                                        <div className="text-xs text-royalMaroon-950 font-semibold mb-1 uppercase tracking-wider">{t(sim.location)}</div>
+                                        <h4 className="font-bold text-slate-800 mb-2 leading-tight group-hover:text-[#FF6B35] transition-colors">{t(sim.title)}</h4>
+                                        <div className="font-bold text-slate-900 text-sm">{t("From")} ${sim.price}</div>
                                     </div>
                                 </div>
                             ))}
@@ -1103,14 +1105,14 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                             <div className="relative z-10">
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-royalGold-500/20 text-royalGold-400 border border-royalGold-500/30 uppercase tracking-wider">
-                                        Encrypted Gateway
+                                        {t("Encrypted Gateway")}
                                     </span>
                                     <span className="text-xs text-white/60 flex items-center gap-1">
                                         <Lock className="w-3 h-3 text-emerald-400" /> SSL 256-Bit
                                     </span>
                                 </div>
                                 <h3 className="font-display text-2xl font-bold text-white">
-                                    {confirmedReceipt ? 'Payment Receipt & Confirmation' : 'Complete Your Booking'}
+                                    {confirmedReceipt ? t('Payment Receipt & Confirmation') : t('Complete Your Booking')}
                                 </h3>
                                 <p className="text-white/70 text-xs mt-0.5">
                                     {experience.title} • {date ? new Date(date).toLocaleDateString() : ''}
@@ -1134,9 +1136,9 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
                                             <CheckCircle className="w-10 h-10" />
                                         </div>
-                                        <h4 className="text-2xl font-bold text-emerald-900 font-display mb-1">Payment Successful!</h4>
+                                        <h4 className="text-2xl font-bold text-emerald-900 font-display mb-1">{t("Payment Successful!")}</h4>
                                         <p className="text-sm text-emerald-700">
-                                            Your transaction has been recorded in the database and your booking is confirmed.
+                                            {t("Your transaction has been recorded in the database and your booking is confirmed.")}
                                         </p>
                                     </div>
 
@@ -1144,38 +1146,38 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4 font-sans">
                                         <div className="flex justify-between items-center border-b border-slate-200 pb-3">
                                             <div>
-                                                <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">Booking Reference</span>
+                                                <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">{t("Booking Reference")}</span>
                                                 <div className="font-mono text-base font-bold text-royalMaroon-950">{confirmedReceipt.reference}</div>
                                             </div>
                                             <div className="text-right">
-                                                <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">Transaction ID</span>
+                                                <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">{t("Transaction ID")}</span>
                                                 <div className="font-mono text-sm font-semibold text-slate-700">{confirmedReceipt.transaction_id}</div>
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div>
-                                                <span className="text-xs text-slate-400 block">Experience</span>
+                                                <span className="text-xs text-slate-400 block">{t("Experience")}</span>
                                                 <span className="font-bold text-slate-800">{confirmedReceipt.experience}</span>
                                             </div>
                                             <div>
-                                                <span className="text-xs text-slate-400 block">Host / Cooperative</span>
+                                                <span className="text-xs text-slate-400 block">{t("Host / Cooperative")}</span>
                                                 <span className="font-semibold text-slate-700">{confirmedReceipt.host}</span>
                                             </div>
                                             <div>
-                                                <span className="text-xs text-slate-400 block">Date & Time</span>
+                                                <span className="text-xs text-slate-400 block">{t("Date & Time")}</span>
                                                 <span className="font-medium text-slate-800">{confirmedReceipt.date} • {confirmedReceipt.time_slot}</span>
                                             </div>
                                             <div>
-                                                <span className="text-xs text-slate-400 block">Guests</span>
+                                                <span className="text-xs text-slate-400 block">{t("Guests")}</span>
                                                 <span className="font-medium text-slate-800">{confirmedReceipt.guests}</span>
                                             </div>
                                             <div>
-                                                <span className="text-xs text-slate-400 block">Payment Method</span>
+                                                <span className="text-xs text-slate-400 block">{t("Payment Method")}</span>
                                                 <span className="font-medium text-slate-800">{confirmedReceipt.payment_method}</span>
                                             </div>
                                             <div>
-                                                <span className="text-xs text-slate-400 block">Total Paid</span>
+                                                <span className="text-xs text-slate-400 block">{t("Total Paid")}</span>
                                                 <span className="font-bold text-emerald-700 text-base">${confirmedReceipt.total_amount} USD</span>
                                             </div>
                                         </div>
@@ -1195,13 +1197,13 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             className="flex-1 flex items-center justify-center gap-2 bg-slate-100 text-slate-800 font-semibold py-3.5 rounded-xl hover:bg-slate-200 transition-colors cursor-pointer"
                                         >
                                             <Printer className="w-4 h-4" />
-                                            <span>Print Receipt</span>
+                                            <span>{t("Print Receipt")}</span>
                                         </button>
                                         <button 
                                             onClick={() => setShowPaymentModal(false)}
                                             className="flex-1 bg-royalMaroon-950 text-white font-bold py-3.5 rounded-xl hover:bg-royalMaroon-900 transition-colors cursor-pointer"
                                         >
-                                            Done
+                                            {t("Done")}
                                         </button>
                                     </div>
                                 </div>
@@ -1219,16 +1221,16 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     {/* Booking Summary Box */}
                                     <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
                                         <div className="flex justify-between items-center text-sm mb-2">
-                                            <span className="text-slate-600 font-medium">Session & Attendees:</span>
+                                            <span className="text-slate-600 font-medium">{t("Session & Attendees:")}</span>
                                             <span className="font-bold text-slate-800">{guests.adults} Adults{guests.children > 0 ? `, ${guests.children} Children` : ''} • {timeSlot.split(' ')[0]}</span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm mb-2">
-                                            <span className="text-slate-600 font-medium">Scheduled Date:</span>
+                                            <span className="text-slate-600 font-medium">{t("Scheduled Date:")}</span>
                                             <span className="font-bold text-slate-800">{date ? new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : 'Not chosen'}</span>
                                         </div>
                                         <div className="h-px bg-slate-200 my-2.5" />
                                         <div className="flex justify-between items-center">
-                                            <span className="font-bold text-slate-800">Total Payable Amount</span>
+                                            <span className="font-bold text-slate-800">{t("Total Payable Amount")}</span>
                                             <div className="text-right">
                                                 <span className="text-xl font-bold text-royalMaroon-950">${totalCost} USD</span>
                                                 <span className="block text-xs text-slate-500 font-medium">≈ LKR {totalCostLkr.toLocaleString()}</span>
@@ -1239,11 +1241,11 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     {/* Guest Information */}
                                     <div>
                                         <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">
-                                            1. Guest Details & Contact
+                                            {t("1. Guest Details & Contact")}
                                         </h4>
                                         <div className="grid sm:grid-cols-2 gap-3">
                                             <div>
-                                                <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+                                                <label className="block text-xs font-semibold text-slate-700 mb-1">{t("Full Name *")}</label>
                                                 <input 
                                                     type="text" 
                                                     value={customerInfo.name}
@@ -1259,7 +1261,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 )}
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address *</label>
+                                                <label className="block text-xs font-semibold text-slate-700 mb-1">{t("Email Address *")}</label>
                                                 <input 
                                                     type="email" 
                                                     value={customerInfo.email}
@@ -1275,7 +1277,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 )}
                                             </div>
                                             <div className="sm:col-span-2">
-                                                <label className="block text-xs font-semibold text-slate-700 mb-1">Mobile / WhatsApp Number *</label>
+                                                <label className="block text-xs font-semibold text-slate-700 mb-1">{t("Mobile / WhatsApp Number *")}</label>
                                                 <input 
                                                     type="tel" 
                                                     value={customerInfo.phone}
@@ -1296,7 +1298,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     {/* Payment Method Selector */}
                                     <div>
                                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-                                            2. Choose Payment Method
+                                            {t("2. Choose Payment Method")}
                                         </h4>
                                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                                             <button 
@@ -1305,8 +1307,8 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all cursor-pointer ${paymentMethod === 'card' ? 'border-royalGold-500 bg-royalGold-500/10 text-royalMaroon-950 font-bold shadow-sm ring-2 ring-royalGold-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
                                             >
                                                 <CreditCard className="w-6 h-6 mb-1.5 text-royalMaroon-950" />
-                                                <span className="text-xs font-bold">Credit/Debit Card</span>
-                                                <span className="text-[10px] text-slate-400 mt-0.5">Visa / Master / LankaPay</span>
+                                                <span className="text-xs font-bold">{t("Credit/Debit Card")}</span>
+                                                <span className="text-[10px] text-slate-400 mt-0.5">{t("Visa / Master / LankaPay")}</span>
                                             </button>
 
                                             <button 
@@ -1315,8 +1317,8 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all cursor-pointer ${paymentMethod === 'lankaqr' ? 'border-royalGold-500 bg-royalGold-500/10 text-royalMaroon-950 font-bold shadow-sm ring-2 ring-royalGold-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
                                             >
                                                 <QrCode className="w-6 h-6 mb-1.5 text-royalMaroon-950" />
-                                                <span className="text-xs font-bold">LankaQR</span>
-                                                <span className="text-[10px] text-slate-400 mt-0.5">Instant Scan & Pay</span>
+                                                <span className="text-xs font-bold">{t("LankaQR")}</span>
+                                                <span className="text-[10px] text-slate-400 mt-0.5">{t("Instant Scan & Pay")}</span>
                                             </button>
 
                                             <button 
@@ -1325,7 +1327,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all cursor-pointer ${paymentMethod === 'koko' ? 'border-royalGold-500 bg-royalGold-500/10 text-royalMaroon-950 font-bold shadow-sm ring-2 ring-royalGold-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
                                             >
                                                 <Smartphone className="w-6 h-6 mb-1.5 text-royalMaroon-950" />
-                                                <span className="text-xs font-bold">Koko Pay in 3</span>
+                                                <span className="text-xs font-bold">{t("Koko Pay in 3")}</span>
                                                 <span className="text-[10px] text-slate-400 mt-0.5">3x ${(totalCost / 3).toFixed(2)} (0%)</span>
                                             </button>
 
@@ -1335,8 +1337,8 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 className={`p-3 rounded-2xl border-2 flex flex-col items-center text-center transition-all cursor-pointer ${paymentMethod === 'bank' ? 'border-royalGold-500 bg-royalGold-500/10 text-royalMaroon-950 font-bold shadow-sm ring-2 ring-royalGold-500/20' : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'}`}
                                             >
                                                 <Building2 className="w-6 h-6 mb-1.5 text-royalMaroon-950" />
-                                                <span className="text-xs font-bold">Bank Transfer</span>
-                                                <span className="text-[10px] text-slate-400 mt-0.5">Direct Deposit</span>
+                                                <span className="text-xs font-bold">{t("Bank Transfer")}</span>
+                                                <span className="text-[10px] text-slate-400 mt-0.5">{t("Direct Deposit")}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -1348,7 +1350,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                                                     <div className="flex items-center gap-2 text-slate-700 font-bold text-xs">
                                                         <Lock className="w-4 h-4 text-emerald-600" />
-                                                        <span>Encrypted Card Checkout (PayHere Direct)</span>
+                                                        <span>{t("Encrypted Card Checkout (PayHere Direct)")}</span>
                                                     </div>
                                                     <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-500">
                                                         <span className={`px-2 py-0.5 rounded border transition-all ${getCardBrand(cardDetails.cardNumber) === 'visa' ? 'bg-blue-600 text-white font-bold border-blue-600' : 'bg-white border-slate-200 text-slate-600'}`}>
@@ -1368,7 +1370,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                                                 <div>
                                                     <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                                                        Cardholder Name *
+                                                        {t("Cardholder Name *")}
                                                     </label>
                                                     <input 
                                                         type="text" 
@@ -1393,7 +1395,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
 
                                                 <div>
                                                     <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                                                        Card Number *
+                                                        {t("Card Number *")}
                                                     </label>
                                                     <div className="relative">
                                                         <input 
@@ -1425,7 +1427,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div>
                                                         <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                                                            Expiry Date *
+                                                            {t("Expiry Date *")}
                                                         </label>
                                                         <input 
                                                             type="text" 
@@ -1450,7 +1452,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                     </div>
                                                     <div>
                                                         <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                                                            CVV / CVC *
+                                                            {t("CVV / CVC *")}
                                                         </label>
                                                         <input 
                                                             type="password" 
@@ -1480,15 +1482,15 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 <div className="inline-block p-4 bg-white rounded-2xl shadow-sm border border-slate-200 mb-3">
                                                     <div className="w-36 h-36 bg-royalMaroon-950 text-white rounded-xl flex flex-col items-center justify-center p-2 relative">
                                                         <QrCode className="w-28 h-28 text-white" />
-                                                        <span className="text-[9px] font-bold tracking-wider text-royalGold-400 uppercase">LankaQR Verified</span>
+                                                        <span className="text-[9px] font-bold tracking-wider text-royalGold-400 uppercase">{t("LankaQR Verified")}</span>
                                                     </div>
                                                 </div>
-                                                <div className="text-sm font-bold text-slate-800">Scan with any Sri Lankan Banking App</div>
+                                                <div className="text-sm font-bold text-slate-800">{t("Scan with any Sri Lankan Banking App")}</div>
                                                 <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
                                                     Open FriMi, Flash, BOC SmartPay, Sampath Vishwa, or HNB SOLO and scan to transfer <strong>${totalCost} USD (LKR {totalCostLkr.toLocaleString()})</strong>.
                                                 </p>
                                                 <div className="mt-3 pt-3 border-t border-slate-200 flex items-center justify-center gap-2">
-                                                    <span className="text-[11px] font-bold text-slate-600">Merchant Reference:</span>
+                                                    <span className="text-[11px] font-bold text-slate-600">{t("Merchant Reference:")}</span>
                                                     <span className="font-mono text-xs font-bold bg-white px-3 py-1 rounded-lg border border-slate-200 text-royalMaroon-950">
                                                         LQR-EXP-2026-9841
                                                     </span>
@@ -1501,9 +1503,9 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                                 <div className="w-12 h-12 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto">
                                                     <Smartphone className="w-6 h-6" />
                                                 </div>
-                                                <h5 className="font-bold text-slate-800 text-base">Pay in 3 Interest-Free Installments</h5>
+                                                <h5 className="font-bold text-slate-800 text-base">{t("Pay in 3 Interest-Free Installments")}</h5>
                                                 <p className="text-xs text-slate-600 max-w-sm mx-auto">
-                                                    Pay <strong>${(totalCost / 3).toFixed(2)} today</strong>, and 2 monthly payments of <strong>${(totalCost / 3).toFixed(2)}</strong> automatically deducted.
+                                                    <span>{t("Pay")} <strong>${(totalCost / 3).toFixed(2)} {t("today")}</strong>, {t("and 2 monthly payments of")} <strong>${(totalCost / 3).toFixed(2)}</strong> {t("automatically deducted")}.</span>
                                                 </p>
                                                 <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-xs font-semibold">
                                                     <Check className="w-3.5 h-3.5 text-amber-600" /> 0% Interest • Instant Approval
@@ -1515,17 +1517,17 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
                                                 <div className="flex items-center gap-2 text-slate-800 font-bold text-xs border-b border-slate-200 pb-2.5">
                                                     <Building2 className="w-4 h-4 text-royalGold-600" />
-                                                    <span>Official Bank Deposit Account</span>
+                                                    <span>{t("Official Bank Deposit Account")}</span>
                                                 </div>
                                                 <div className="grid sm:grid-cols-2 gap-3 text-xs">
                                                     <div className="bg-white p-3 rounded-xl border border-slate-200">
-                                                        <span className="text-slate-400 block font-semibold">Bank & Branch</span>
-                                                        <span className="font-bold text-slate-800 text-sm">Commercial Bank of Ceylon</span>
-                                                        <span className="text-slate-500 block">Anuradhapura City Branch</span>
+                                                        <span className="text-slate-400 block font-semibold">{t("Bank & Branch")}</span>
+                                                        <span className="font-bold text-slate-800 text-sm">{t("Commercial Bank of Ceylon")}</span>
+                                                        <span className="text-slate-500 block">{t("Anuradhapura City Branch")}</span>
                                                     </div>
                                                     <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between">
                                                         <div>
-                                                            <span className="text-slate-400 block font-semibold">Account Number</span>
+                                                            <span className="text-slate-400 block font-semibold">{t("Account Number")}</span>
                                                             <span className="font-mono font-bold text-slate-800 text-sm">8009 2314 9910</span>
                                                         </div>
                                                         <button 
@@ -1555,17 +1557,17 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             {isSubmittingPayment ? (
                                                 <>
                                                     <RefreshCw className="w-5 h-5 animate-spin" />
-                                                    <span>Processing Payment & Syncing DB...</span>
+                                                    <span>{t("Processing Payment & Syncing DB...")}</span>
                                                 </>
                                             ) : (
                                                 <>
                                                     <Lock className="w-4 h-4" />
-                                                    <span>Pay & Confirm Reservation (${totalCost} USD)</span>
+                                                    <span>{t("Pay & Confirm Reservation")} (${totalCost} USD)</span>
                                                 </>
                                             )}
                                         </button>
                                         <p className="text-center text-xs text-slate-400 mt-2.5">
-                                            By proceeding, you agree to the verified cancellation & booking policy.
+                                            {t("By proceeding, you agree to the verified cancellation & booking policy.")}
                                         </p>
                                     </div>
                                 </form>
@@ -1580,7 +1582,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
                         <div className="flex justify-between items-center p-6 border-b border-slate-100">
-                            <h3 className="font-display text-2xl text-royalMaroon-950">Contact {experience.hostName}</h3>
+                            <h3 className="font-display text-2xl text-royalMaroon-950">{t("Contact Host")}: {experience.hostName}</h3>
                             <button onClick={() => setShowContactModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
                                 <X className="w-6 h-6" />
                             </button>
@@ -1591,18 +1593,18 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                     <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <Check className="w-8 h-8" />
                                     </div>
-                                    <h4 className="text-xl font-bold text-slate-800 mb-2">Message Sent!</h4>
-                                    <p className="text-slate-600">The host will get back to you shortly.</p>
+                                    <h4 className="text-xl font-bold text-slate-800 mb-2">{t("Message Sent!")}</h4>
+                                    <p className="text-slate-600">{t("The host will get back to you shortly.")}</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleContactSubmit}>
                                     <div className="mb-4">
-                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Inquiry regarding</label>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">{t("Inquiry regarding")}</label>
                                         <input type="text" disabled value={experience.title} className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-slate-600" />
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                         <div>
-                                            <label className="block text-sm font-semibold text-slate-700 mb-2">Your Name</label>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-2">{t("Your Name")}</label>
                                             <input 
                                                 type="text" 
                                                 required
@@ -1613,7 +1615,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-semibold text-slate-700 mb-2">Your Email</label>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-2">{t("Your Email")}</label>
                                             <input 
                                                 type="email" 
                                                 required
@@ -1625,7 +1627,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         </div>
                                     </div>
                                     <div className="mb-4">
-                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Your Contact Number (Optional)</label>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">{t("Your Contact Number (Optional)")}</label>
                                         <input 
                                             type="tel" 
                                             value={contactPhone}
@@ -1643,7 +1645,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         )}
                                     </div>
                                     <div className="mb-6">
-                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Your Message</label>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">{t("Your Message")}</label>
                                         <textarea 
                                             required
                                             rows="4"
@@ -1658,7 +1660,7 @@ export default function ExperienceDetail({ auth, experienceId, laravelVersion, p
                                         disabled={contactStatus === 'sending'}
                                         className="w-full bg-royalMaroon-950 text-white font-semibold rounded-lg py-3 hover:bg-royalMaroon-900 transition-colors disabled:opacity-70"
                                     >
-                                        {contactStatus === 'sending' ? 'Sending...' : 'Send Message'}
+                                        {contactStatus === 'sending' ? t('Sending...') : t('Send Message')}
                                     </button>
                                 </form>
                             )}

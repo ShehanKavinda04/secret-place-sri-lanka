@@ -1,9 +1,11 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { X, ShieldAlert, Phone, MapPin, Navigation2, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function EmergencySOSModal({ isOpen, onClose }) {
+    const { t } = useTranslation();
     const [status, setStatus] = useState('idle'); // 'idle' | 'activating' | 'active'
     const [lat, setLat] = useState(8.3512);
     const [lng, setLng] = useState(80.3982);
@@ -86,7 +88,7 @@ export default function EmergencySOSModal({ isOpen, onClose }) {
                                 </div>
                                 
                                 <div>
-                                    <h3 className="font-display text-3xl font-bold text-slate-900 mb-2">Emergency SOS</h3>
+                                    <h3 className="font-display text-3xl font-bold text-slate-900 mb-2">{t("Emergency SOS")}</h3>
                                     <p className="text-slate-600 leading-relaxed">
                                         Are you sure you want to activate the Emergency SOS? This will immediately broadcast your live location to local authorities and your registered emergency contacts.
                                     </p>
@@ -133,7 +135,7 @@ export default function EmergencySOSModal({ isOpen, onClose }) {
                                 </div>
                                 <div>
                                     <h3 className="font-display text-2xl font-bold text-slate-900 mb-2">Connecting...</h3>
-                                    <p className="text-slate-600">Broadcasting location and alerting authorities...</p>
+                                    <p className="text-slate-600">{t("Broadcasting location and alerting authorities...")}</p>
                                 </div>
                             </div>
                         )}

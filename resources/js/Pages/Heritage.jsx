@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import Navbar from '@/Layouts/Navbar';
 import Footer from '@/Layouts/Footer';
+import { useTranslation } from '@/Hooks/useTranslation';
 import { motion } from 'framer-motion';
 import SpotCard from './Welcome-sub-sub-components/SpotCard';
 
@@ -126,6 +127,7 @@ const heritageExperiences = [
 ];
 
 export default function Heritage({ auth, laravelVersion, phpVersion }) {
+    const { t } = useTranslation();
     return (
         <>
             <Head title="Local Heritage MSMEs & Crafts - Secret Places Sri Lanka" />
@@ -142,12 +144,12 @@ export default function Heritage({ auth, laravelVersion, phpVersion }) {
                     <img src="/images/heritage_crafts.png" alt="Local Heritage MSMEs & Crafts" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/50 to-[#FAF9F6]" />
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-                        <span className="text-xs uppercase tracking-widest font-bold text-royalGold-400 mb-2">Category Exploration</span>
+                        <span className="text-xs uppercase tracking-widest font-bold text-royalGold-400 mb-2">{t("Category Exploration")}</span>
                         <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
-                            Local Heritage MSMEs &amp; Crafts
+                            {t("Local Heritage MSMEs & Crafts")}
                         </h1>
                         <p className="mt-3 text-white/70 text-sm max-w-xl font-light">
-                            Support the living artisan traditions that have sustained Anuradhapura's cultural identity for centuries.
+                            {t("Support the living artisan traditions that have sustained Anuradhapura's cultural identity for centuries.")}
                         </p>
                     </div>
                 </motion.div>
@@ -164,7 +166,7 @@ export default function Heritage({ auth, laravelVersion, phpVersion }) {
                             <div key={item.label} className="flex flex-col items-center gap-1">
                                 <span className="text-2xl">{item.icon}</span>
                                 <span className="font-display text-2xl font-bold text-royalMaroon-800">{item.stat}</span>
-                                <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">{item.label}</span>
+                                <span className="text-xs text-slate-500 font-medium uppercase tracking-wide">{t(item.label)}</span>
                             </div>
                         ))}
                     </div>
@@ -178,12 +180,12 @@ export default function Heritage({ auth, laravelVersion, phpVersion }) {
                 >
                     {/* Header */}
                     <div className="space-y-3 text-left border-b border-royalGold-400/20 pb-8">
-                        <span className="text-xs uppercase tracking-widest font-bold text-royalGold-700">Exploration Desk</span>
+                        <span className="text-xs uppercase tracking-widest font-bold text-royalGold-700">{t("Exploration Desk")}</span>
                         <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-royalMaroon-950">
-                            Anuradhapura Heritage Crafts
+                            {t("Anuradhapura Heritage Crafts")}
                         </h2>
                         <p className="text-slate-500 font-light text-sm max-w-lg">
-                            Discover the extraordinary skill of Anuradhapura's craftspeople — from traditional stone sculptors recreating ancient moonstones to skilled potters and rush-weavers around the ancient reservoirs. Every purchase sustains a living heritage tradition in the Sacred City.
+                            {t("Discover the extraordinary skill of Anuradhapura's craftspeople — from traditional stone sculptors recreating ancient moonstones to skilled potters and rush-weavers around the ancient reservoirs. Every purchase sustains a living heritage tradition in the Sacred City.")}
                         </p>
                     </div>
 
@@ -192,7 +194,7 @@ export default function Heritage({ auth, laravelVersion, phpVersion }) {
                         <div className="flex items-center gap-4">
                             <div className="h-px bg-slate-300 flex-grow" />
                             <h3 className="font-display text-xl tracking-wider font-bold text-slate-800 border border-slate-200 px-6 py-2 rounded-lg bg-transparent">
-                                Traditional Crafts &amp; Artisan Studios
+                                {t("Traditional Crafts & Artisan Studios")}
                             </h3>
                             <div className="h-px bg-slate-300 flex-grow" />
                         </div>
@@ -208,7 +210,7 @@ export default function Heritage({ auth, laravelVersion, phpVersion }) {
                         <div className="flex items-center gap-4">
                             <div className="h-px bg-slate-300 flex-grow" />
                             <h3 className="font-display text-xl tracking-wider font-bold text-slate-800 border border-slate-200 px-6 py-2 rounded-lg bg-transparent">
-                                Heritage Villages &amp; MSME Experiences
+                                {t("Heritage Villages & MSME Experiences")}
                             </h3>
                             <div className="h-px bg-slate-300 flex-grow" />
                         </div>
@@ -223,9 +225,9 @@ export default function Heritage({ auth, laravelVersion, phpVersion }) {
                     <div className="rounded-3xl bg-royalTeal/5 border border-royalTeal/20 p-8 flex flex-col sm:flex-row items-start gap-6">
                         <div className="flex-shrink-0 w-12 h-12 rounded-full bg-royalTeal/10 flex items-center justify-center text-2xl">🌿</div>
                         <div className="space-y-2">
-                            <h4 className="font-display text-lg font-bold text-royalMaroon-950">Shop Responsibly, Preserve Heritage</h4>
+                            <h4 className="font-display text-lg font-bold text-royalMaroon-950">{t("Shop Responsibly, Preserve Heritage")}</h4>
                             <p className="text-sm text-slate-600 font-light leading-relaxed">
-                                When you buy directly from local artisans and MSME cooperatives, you protect centuries of traditional knowledge and ensure fair income for remote communities. Look for the <strong>Authentic Sri Lankan Craft</strong> seal before purchasing.
+                                {t("When you buy directly from local artisans and MSME cooperatives, you protect centuries of traditional knowledge and ensure fair income for remote communities. Look for the")} <strong>{t("Authentic Sri Lankan Craft")}</strong> {t("seal before purchasing.")}
                             </p>
                         </div>
                     </div>

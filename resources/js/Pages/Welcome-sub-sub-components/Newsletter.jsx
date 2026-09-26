@@ -1,6 +1,8 @@
+import { useTranslation } from '@/Hooks/useTranslation';
 import { motion } from 'framer-motion';
 
 export default function Newsletter() {
+    const { t } = useTranslation();
     return (
         <motion.section 
             id="newsletter" 
@@ -17,21 +19,21 @@ export default function Newsletter() {
                     </svg>
                 </div>
                 <div className="space-y-3">
-                    <span className="text-xs uppercase tracking-widest font-extrabold text-royalMaroon-900">Sri Lankan Adventure Club</span>
-                    <h2 className="font-display text-3xl font-extrabold text-royalMaroon-950">Join the Secret Travel Group</h2>
+                    <span className="text-xs uppercase tracking-widest font-extrabold text-royalMaroon-900">{t("Sri Lankan Adventure Club")}</span>
+                    <h2 className="font-display text-3xl font-extrabold text-royalMaroon-950">{t("Join the Secret Travel Group")}</h2>
                     <p className="text-slate-650 font-light max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
-                        Subscribe to receive precise maps, safety coordinates, and guidelines for a brand new secret travel spot every month.
+                        {t("Subscribe to receive precise maps, safety coordinates, and guidelines for a brand new secret travel spot every month.")}
                     </p>
                 </div>
                 <form className="max-w-md mx-auto flex gap-3 p-1.5 bg-white border border-slate-300 rounded-full focus-within:border-royalGold-500 shadow-sm">
                     <input 
                         type="email" 
                         required
-                        placeholder="Enter your email address" 
+                        placeholder={t("Enter your email address")} 
                         className="bg-transparent border-0 outline-none flex-1 px-5 text-sm text-slate-800 placeholder-slate-400"
                     />
                     <button type="submit" className="px-6 py-3 bg-royalMaroon-800 text-royalGold-300 font-bold uppercase tracking-wider text-xs rounded-full hover:bg-royalMaroon-900">
-                        Subscribe
+                        {t("Subscribe")}
                     </button>
                 </form>
             </div>
