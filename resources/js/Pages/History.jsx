@@ -1391,14 +1391,18 @@ export default function History({ auth, spot }) {
                                 <div className="max-w-4xl space-y-10">
                                     {/* Header & Guidelines */}
                                     <div className="space-y-6">
-                                        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-md">
-                                            <h3 className="text-red-800 font-bold uppercase tracking-widest text-xs mb-1">
+                                        <div className="bg-amber-50/80 border-l-4 border-amber-600 p-4 rounded-r-md">
+                                            <h3 className="text-amber-900 font-bold uppercase tracking-widest text-xs mb-1">
                                                 {t("You Must Need")}
                                             </h3>
-                                            <p className="text-sm text-red-700/90 leading-relaxed">
-                                                {t(
-                                                    "Preserve our sacred heritage: Please dress in traditional white attire, refrain from speaking loudly, and avoid using polythene or plastic to help maintain the serenity and cleanliness of the sacred grounds."
-                                                )}
+                                            <p className="text-sm text-amber-800/90 leading-relaxed">
+                                                {category === "Hydraulic"
+                                                    ? t(
+                                                          "Preserve our ancient hydraulic heritage: Exercise care around embankment bunds and sluice mechanisms. Avoid swimming in unauthorized deep reservoirs, maintain cleanliness, and avoid disposing of plastic or polythene in water channels."
+                                                      )
+                                                    : t(
+                                                          "Preserve our sacred heritage: Please dress in traditional white attire, refrain from speaking loudly, and avoid using polythene or plastic to help maintain the serenity and cleanliness of the sacred grounds."
+                                                      )}
                                             </p>
                                         </div>
                                     </div>
@@ -1734,10 +1738,7 @@ export default function History({ auth, spot }) {
                                         )}
 
                                         {/* Booking Section */}
-                                        {![
-                                            "Sacred Sites",
-                                            "Sacred Sites & Shrines",
-                                        ].includes(category) && (
+                                        {(category?.includes("Spiritual") || category?.includes("Wellness") || spot?.id?.includes("yoga") || spot?.id === "rajarata-ayurveda" || spot?.id === "ranmasu-uyana" || spot?.id === "mihintale-sunrise" || spot?.id === "ritigala-forest-bathing" || spot?.id === "jaya-sri-maha-bodhi-contemplation") && (
                                             <div
                                                 className="bg-white border border-slate-200 shadow-sm p-6 rounded-xl mt-8"
                                                 id="booking-section"
@@ -2701,7 +2702,7 @@ export default function History({ auth, spot }) {
             </Modal>
 
             {/* Floating CTA for Booking */}
-            {activeTab === "history" && (
+            {activeTab === "history" && (category?.includes("Spiritual") || category?.includes("Wellness") || spot?.id?.includes("yoga") || spot?.id === "rajarata-ayurveda" || spot?.id === "ranmasu-uyana" || spot?.id === "mihintale-sunrise" || spot?.id === "ritigala-forest-bathing" || spot?.id === "jaya-sri-maha-bodhi-contemplation") && (
                 <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] p-4 flex justify-center pb-8 lg:pb-4">
                     <div className="max-w-6xl w-full flex flex-col sm:flex-row items-center justify-between gap-4 px-4">
                         <div className="text-sm">

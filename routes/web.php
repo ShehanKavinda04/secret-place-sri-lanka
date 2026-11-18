@@ -1619,6 +1619,190 @@ EOD,
                 '/images/jaya_sri_gallery_3.jpg',
             ]
         ],
+        'abhaya-wewa' => [
+            'name' => 'Abhaya Wewa (Basawakkulama)',
+            'category' => 'Hydraulic',
+            'image' => '/images/abhaya_wewa_actual.jpg',
+            'topic' => 'Built by King Pandukabhaya in the 4th century BC, this is the oldest recorded man-made reservoir in Sri Lanka, a testament to early hydraulic engineering.',
+            'history_narrative' => <<<'EOD'
+Chapter 1: The Vision of King Pandukabhaya and the Foundation of Anuradhapura
+In the fourth century BCE (circa 437–367 BCE), King Pandukabhaya unified the administrative strongholds of ancient Sri Lanka and founded the historic royal capital of Anuradhapura. Recognizing that a grand urban capital and thriving civilization required a perennial, dependable water supply to sustain its population, agriculture, and royal institutions, King Pandukabhaya commissioned the construction of Abhaya Wewa.
+
+Named in royal honor after the king himself (and later colloquially referred to as Basawakkulama), the reservoir was ingeniously situated to harvest rainfall and natural runoff across the upper Malwathu Oya catchment basin. It stands recognized by historians and hydraulic engineers as the oldest scientifically documented man-made reservoir in Sri Lanka and one of the earliest urban water reservoirs in the ancient world.
+
+Chapter 2: Masterclass in Early Hydraulic Civil Engineering
+The construction of Abhaya Wewa marked the dawn of Sri Lanka's world-renowned "hydraulic civilization" (Wewa Sanskrutiya). Built centuries before the Roman aqueducts reached their zenith, the engineering of Abhaya Wewa demonstrated remarkable topographical mastery:
+
+1. The Earthen Bund (Väva Bämma): Ancient Sinhalese builders constructed a massive, compacted earth embankment spanning over 5,900 feet in length and rising over 20 feet high. The bund was contoured specifically to withstand the hydraulic pressure of seasonal monsoon deluges while maintaining maximum surface area.
+
+2. Pioneering Sluice (Bisokotuwa Precursor): To release water gradually without eroding the earthen dam, early engineers introduced early conduit and sluice mechanisms that laid the conceptual groundwork for the legendary Bisokotuwa (valve pit tower) invented in subsequent centuries.
+
+3. Microclimate Moderation: The vast sheet of cooling water situated upwind of the ancient royal city significantly moderated Anuradhapura's tropical dry-zone climate, providing pleasant cooling breezes and feeding the underground water table for wells throughout the metropolis.
+
+Chapter 3: Sustaining the Sacred City Through Millennia
+Throughout centuries of Rajarata's golden eras, Abhaya Wewa faithfully nourished the city. It supplied pure water to the royal palaces, the monks of the nearby Mahavihara and Abhayagiri fraternities, the royal pleasure gardens (Ranmasu Uyana), and the extensive agricultural fields that fed thousands of pilgrims arriving to worship the sacred Jaya Sri Maha Bodhi and the great stupas.
+
+Successive monarchs, from King Devanampiyatissa to King Parakramabahu the Great, meticulously maintained, desilted, and fortified the bund of Abhaya Wewa, recognizing it as the foundational lifeline of the kingdom.
+
+Chapter 4: The Serene Monument in Modern Times
+Today, spanning approximately 255 acres of shimmering water surface, Abhaya Wewa remains an active, living monument. Its peaceful waters mirror the sky and reflect the distant gleaming spires of Ruwanwelisaya and Mirisawetiya stupas.
+
+Locals and international visitors gather along the scenic shaded bund at sunset to marvel at the gentle waves, observe vibrant birdlife including pelicans and egrets, and reflect on the awe-inspiring engineering legacy of an ancient civilization that mastered water management more than 2,400 years ago.
+EOD,
+            'history_audio' => '/audio/abhaya_wewa_history.mp3',
+            'blueprint_text' => 'The hydraulic blueprint of Abhaya Wewa features an extensive curved earthen embankment spanning approximately 1,800 meters, engineered across natural terrain contours to impound runoff from the surrounding catchment. Ancient masonry-lined conduits and stone spillways regulate water discharge to urban canals and irrigation networks. The reservoir layout seamlessly harmonizes with the surrounding landscape, integrating low-water storage basins with protective wave-deflecting revetments (ralapanawa).',
+            'blueprint_image' => '/images/abhaya_wewa_actual.jpg',
+            'lat' => 8.3562,
+            'lng' => 80.3878,
+            'gallery' => [
+                '/images/abhaya_wewa_photo_1.jpg',
+                '/images/abhaya_wewa_photo_2.jpg',
+                '/images/abhaya_wewa_photo_3.jpg',
+                '/images/abhaya_wewa_photo_4.jpg',
+                '/images/abhaya_wewa_photo_5.jpg',
+                '/images/abhaya_wewa_photo_6.jpg'
+            ]
+        ],
+        'nuwara-wewa' => [
+            'name' => 'Nuwara Wewa Reservoir',
+            'category' => 'Hydraulic',
+            'image' => '/images/nuwara_wewa_actual.jpg',
+            'topic' => "The largest of Anuradhapura's three main reservoirs, built to supply water to the ancient capital. Its massive bund reflects highly advanced ancient topographical knowledge.",
+            'history_narrative' => <<<'EOD'
+Chapter 1: The Grand Eastern Reservoir of the Royal Capital
+Nuwara Wewa, situated along the eastern ramparts of ancient Anuradhapura, stands as the largest of the three legendary reservoirs engineered to protect and nourish the royal capital. Commissioned in the 1st century BCE, historical chronicles attribute its foundation to King Vattagamani Abhaya (Walagamba) during his triumphant restoration of Sinhala sovereignty.
+
+Spanning an immense water spread area covering approximately 3,000 acres, this monumental artificial lake was strategically designed to catch monsoonal surges and perennial streams originating from the Kanadara Oya catchment, creating an unshakeable municipal reservoir for the thriving metropolis.
+
+Chapter 2: Masterstroke of Ancient Civil and Geotechnical Engineering
+The scale and topographic precision of Nuwara Wewa astounded 19th-century colonial surveyors and continues to inspire modern hydrologists:
+
+1. The Monumental Dam (Väva Bämma): The main earthen embankment stretches over 3 miles (approximately 5 kilometers) in length and towers over 37 feet above the valley floor. Built using layered, compacted clay soils and heavy boulders, it withstands catastrophic hydrostatic pressures during extreme northeast monsoon deluges.
+
+2. Ancient Valve Towers (Bisokotuwa): Nuwara Wewa features some of the finest surviving examples of ancient stone-hewn Bisokotuwa sluice gates. These underwater valve towers dissipated torrential water pressure, allowing gentle, regulated discharge into irrigation distributaries without dam compromise.
+
+3. Low-Gradient Canal System: Through gently sloped, stone-paved canal branches, water from Nuwara Wewa was conveyed across miles of city terrain, irrigating royal orchards, monasteries, and miles of surrounding paddy fields.
+
+Chapter 3: Lifeline of Anuradhapura Across Two Millennia
+Throughout centuries of foreign incursions, drought, and political shifts, Nuwara Wewa remained the vital lifeline that kept Anuradhapura alive. Even when capitals shifted south to Polonnaruwa, local agrarian communities safeguarded the bund, maintaining an unbroken agricultural heritage that feeds thousands of farming families to this very day.
+
+Chapter 4: The Breathtaking Inland Sea Today
+Today, standing upon the breeze-swept bund of Nuwara Wewa offers one of the most stunning panoramic vistas in all of Sri Lanka. Looking westward across its vast, shimmering surface, visitors can gaze upon the white domes of Ruwanwelisaya and Mirisawetiya emerging like lotus buds above the ancient tree canopy. The cool waters remain a cherished sanctuary for kingfishers, cormorants, and peaceful evening wanderers.
+EOD,
+            'history_audio' => '/audio/nuwara_wewa_reservoir_history.mp3',
+            'blueprint_text' => 'The hydraulic layout of Nuwara Wewa features a colossal earthen embankment extending approximately 4.8 kilometers with reinforced stone riprap wave breakers. Precision stone masonry sluices and dual surplus spillways effectively manage high water levels and disperse regulated water across eastern agricultural canals.',
+            'blueprint_image' => '/images/nuwara_wewa_actual.jpg',
+            'lat' => 8.3470,
+            'lng' => 80.4280,
+            'gallery' => [
+                '/images/nuwara_wewa_actual.jpg',
+                '/images/nuwara_wewa_photo_2.jpg',
+                '/images/nuwara_wewa_photo_3.jpg',
+                '/images/nuwara_wewa_photo_4.jpg',
+                '/images/nuwara_wewa_photo_5.jpg',
+                '/images/nuwara_wewa_photo_6.jpg'
+            ]
+        ],
+        'tissa-wewa' => [
+            'name' => 'Tissa Wewa',
+            'category' => 'Hydraulic',
+            'image' => '/images/tissa_wewa_actual.jpg',
+            'topic' => "Constructed by King Devanampiya Tissa in the 3rd century BC, this vast reservoir provided water to the Royal Gardens and remains vital to the region's agriculture today.",
+            'history_narrative' => <<<'EOD'
+Chapter 1: The Royal Reservoir of King Devanampiya Tissa
+Constructed in the 3rd century BCE by King Devanampiya Tissa shortly after the introduction of Buddhism to Sri Lanka, Tissa Wewa was conceived to supply water to the expanding royal precincts and the sacred Mahamevnawa Gardens.
+
+Spanning over 550 acres of water surface, Tissa Wewa was deliberately positioned downstream of ancient catchment corridors to nourish royal groves, the sacred Jaya Sri Maha Bodhi shrine, and the sprawling monastic quarters of the Mahavihara.
+
+Chapter 2: Integration with the Great Jaya Ganga
+In the 5th century CE, King Dhatusena transformed Sri Lanka's irrigation network by constructing the monumental Jaya Ganga (Yoda Ela)—a 54-mile trans-basin canal with an astonishing gradient of less than six inches per mile. The Jaya Ganga diverted waters from the distant Kala Wewa directly into Tissa Wewa, turning it into a perpetual water reservoir immune to regional droughts.
+
+The embankment, extending over 2 miles in length and protected by expertly laid granite revetments (ralapanawa), stands as a prime example of ancient Sinhalese shoreline engineering designed to counteract wave erosion.
+
+Chapter 3: An Enduring Living Monument
+Today, Tissa Wewa remains completely intact and fully operational. Its waters still irrigate hundreds of fertile acres of green paddy fields, and its serene tree-shaded bund provides one of Anuradhapura's most beloved gathering spots for sunset contemplation and photography.
+EOD,
+            'history_audio' => '/audio/tissa_wewa_history.mp3',
+            'blueprint_text' => 'Tissa Wewa encompasses an earthen bund of 3.2 kilometers with stone-lined riprap and ancient masonry sluices linked directly to the historic Yoda Ela canal network.',
+            'blueprint_image' => '/images/tissa_wewa_actual.jpg',
+            'lat' => 8.3364,
+            'lng' => 80.3808,
+            'gallery' => [
+                '/images/tissa_wewa_actual.jpg',
+                '/images/tissa_wewa_photo_2.jpg',
+                '/images/tissa_wewa_photo_3.jpg',
+                '/images/tissa_wewa_photo_4.jpg',
+                '/images/tissa_wewa_sunset.jpg'
+            ]
+        ],
+        'kuttam-pokuna' => [
+            'name' => 'Kuttam Pokuna (Twin Ponds)',
+            'category' => 'Hydraulic',
+            'image' => '/images/kuttam_pokuna_actual.jpg',
+            'topic' => 'An absolute masterpiece of ancient hydrology and architecture. These beautifully proportioned bathing pools for monks feature advanced underground water filtration systems.',
+            'history_narrative' => <<<'EOD'
+Chapter 1: The Splendor of Abhayagiri Monastic Architecture
+Built between the 8th and 10th centuries CE within the sprawling Abhayagiri monastic university complex, Kuttam Pokuna (the Twin Ponds) served as the ceremonial bathing precinct for the thousands of ordained Buddhist monks and scholars residing at the monastery.
+
+Although referred to as the Twin Ponds, the two pools are deliberately asymmetrical: the northern pond measures 91 feet in length, while the southern pond extends to 132 feet. Both are hewn from finely dressed granite, harmonizing architectural elegance with cutting-edge hydrological engineering.
+
+Chapter 2: Advanced Underground Multi-Stage Filtration
+The hydraulic design of Kuttam Pokuna demonstrated an extraordinary understanding of water purification:
+
+1. Sedimentation Basin: Inflow water was first channeled through an underground clay pipeline into an exterior settling tank, allowing sand and silt to precipitate.
+
+2. Subterranean Filtration: The water then passed through subterranean stone filtering chambers layered with charcoal, sand, and porous gravel before entering the ponds.
+
+3. Sculpted Water Inflow: Purified water entered the smaller pond through the mouth of a beautifully sculpted stone Makara (mythical water creature) spout, cascading in a sparkling stream into the pool.
+
+4. Drainage and Sluice Channels: Bottom conduits equipped with removable stone plugs enabled monks to completely drain and clean the ponds periodically without disrupting the granite masonry.
+
+Chapter 3: Timeless Artistic Masterpiece
+Flanked by gracefully curved balustrades, five-hooded Cobra (Naga) guardian stones symbolizing protective water spirits, and auspicious Punkalas (vessels of abundance), Kuttam Pokuna stands as one of the ultimate artistic and engineering triumphs of the Anuradhapura Kingdom.
+EOD,
+            'history_audio' => '/audio/kuttam_pokuna_history.mp3',
+            'blueprint_text' => 'The architectural layout features two interlocking rectangular granite-faced bathing pools with underground settling basins, Makara water spouts, tiered perimeter steps, and subterranean emptying conduits.',
+            'blueprint_image' => '/images/kuttam_pokuna_actual.jpg',
+            'lat' => 8.3686,
+            'lng' => 80.4042,
+            'gallery' => [
+                '/images/kuttam_pokuna_actual.jpg',
+                '/images/kuttam_pokuna_photo_1.jpg',
+                '/images/kuttam_pokuna_photo_2.jpg',
+                '/images/kuttam_pokuna_photo_3.jpg',
+                '/images/kuttam_pokuna_photo_4.jpg',
+                '/images/kuttam_pokuna_photo_5.jpg'
+            ]
+        ],
+        'eth-pokuna' => [
+            'name' => 'Eth Pokuna (Elephant Pond)',
+            'category' => 'Hydraulic',
+            'image' => '/images/eth_pokuna_actual.jpg',
+            'topic' => 'A gigantic ancient artificial pool built for the monks of Abhayagiri. It is so large that it can hold six Olympic swimming pools worth of water, fed by an intricate canal system.',
+            'history_narrative' => <<<'EOD'
+Chapter 1: The Monumental Water Basin of Abhayagiri
+Constructed around the 3rd century CE, Eth Pokuna (the Elephant Pond) is the largest man-made monastic water reservoir in Anuradhapura. Spanning 522 feet (159 meters) in length, 173 feet (52 meters) in width, and dropping to an astonishing depth of 31 feet (9.5 meters), it could hold approximately 75,000 cubic meters of water—the equivalent of six modern Olympic swimming pools.
+
+Chapter 2: Subterranean Piping and Feeder Canals
+To fill a reservoir of this gargantuan scale, ancient Sinhalese hydraulic engineers laid underground burnt-clay conduit networks and deep masonry canals connecting Eth Pokuna directly to the Periyakulama tank. Stone-paved steps lead down its massive sloping stone walls, allowing monks safe access to the water at varying seasonal depths.
+
+Chapter 3: Monastic Utility and Enduring Wonder
+Eth Pokuna catered to the daily hygiene, sanitation, and drinking needs of over 5,000 monks living in the Abhayagiri fraternity. Today, nestled within the quiet green forests of northern Anuradhapura, the sheer scale of Eth Pokuna leaves archaeologists and visitors in absolute awe of ancient Sri Lanka's infrastructural vision.
+EOD,
+            'history_audio' => '/audio/eth_pokuna_history.mp3',
+            'blueprint_text' => 'A massive rectangular stone-walled reservoir measuring 159m by 52m with deep flights of granite stairs and subterranean clay conduit inlets conveying water from regional tanks.',
+            'blueprint_image' => '/images/eth_pokuna_actual.jpg',
+            'lat' => 8.3697,
+            'lng' => 80.3956,
+            'gallery' => [
+                '/images/eth_pokuna_actual.jpg',
+                '/images/eth_pokuna_photo_1.jpg',
+                '/images/eth_pokuna_photo_2.jpg',
+                '/images/eth_pokuna_photo_3.jpg',
+                '/images/eth_pokuna_photo_4.jpg',
+                '/images/eth_pokuna_photo_5.jpg'
+            ]
+        ],
     ];
 
     $request = request();
@@ -1627,8 +1811,7 @@ EOD,
         $spotInfo = $spotsData[$id];
 
         // Prefer the canonical site data for known locations so stale URL parameters
-        // (for example an old image query from a previous page visit) cannot override
-        // the real content for that sacred site.
+        // cannot override the real content for that site.
         if ($request->query('name')) {
             $spotInfo['name'] = $request->query('name');
         }
@@ -1638,15 +1821,19 @@ EOD,
         if ($request->query('category')) {
             $spotInfo['category'] = $request->query('category');
         }
+        if ($request->query('image') && empty($spotInfo['image'])) {
+            $spotInfo['image'] = $request->query('image');
+        }
     } else {
+        $defaultSpot = $spotsData['abhaya-wewa'] ?? $spotsData['jaya-sri'];
         $spotInfo = [
-            'name' => $request->query('name', $spotsData['jaya-sri']['name']),
-            'category' => $request->query('category', 'Sacred Sites'),
-            'image' => $request->query('image', $spotsData['jaya-sri']['image']),
-            'topic' => $request->query('topic', $spotsData['jaya-sri']['topic']),
+            'name' => $request->query('name', $defaultSpot['name']),
+            'category' => $request->query('category', 'Hydraulic'),
+            'image' => $request->query('image', $defaultSpot['image']),
+            'topic' => $request->query('topic', $defaultSpot['topic']),
             'history_narrative' => 'Detailed historical narrative is currently not available for this specific location. Please check back later.',
             'blueprint_text' => 'Architectural details and blueprint information are currently not available.',
-            'blueprint_image' => null,
+            'blueprint_image' => $request->query('image', $defaultSpot['image']),
             'lat' => null,
             'lng' => null,
         ];

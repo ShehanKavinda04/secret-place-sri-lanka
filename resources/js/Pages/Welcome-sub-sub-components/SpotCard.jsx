@@ -22,6 +22,7 @@ export default function SpotCard({ spot, onBook, onDetails }) {
                         data: {
                             name: spot.name,
                             topic: spot.description,
+                            ...(spot.image && { image: spot.image }),
                             ...(spot.category && { category: spot.category }),
                         },
                     });
