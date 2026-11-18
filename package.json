@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "concurrently -c \"cyan,magenta,yellow,blue\" \"php artisan serve\" \"vite\" \"php artisan queue:work\" \"php artisan reverb:start\""
+        "dev": "concurrently -c \"cyan,magenta,yellow,blue,green\" \"php artisan serve\" \"vite\" \"php artisan queue:work\" \"php artisan reverb:start\" \"python translation_api/api.py\"",
+        "translate": "python translation_api/api.py"
     },
     "devDependencies": {
         "@headlessui/react": "^2.0.0",

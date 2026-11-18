@@ -18,6 +18,15 @@ export const AppStateProvider = ({ children }) => {
     const [role, setRole] = useState("customer");
     const [language, setLanguageState] = useState(() => {
         if (typeof window === "undefined") return "EN";
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get("lang");
+            if (urlLang && ["EN", "SI", "TA"].includes(urlLang.toUpperCase())) {
+                const normalized = urlLang.toUpperCase();
+                localStorage.setItem("secret_places_language", normalized);
+                return normalized;
+            }
+        } catch (e) {}
         return String(
             localStorage.getItem("secret_places_language") || "EN",
         ).toUpperCase();

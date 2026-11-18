@@ -21,6 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/*',
             'predict-demand',
             'api/predict-demand',
+            'translate',
+            'translate/*',
         ]);
 
         $middleware->alias([

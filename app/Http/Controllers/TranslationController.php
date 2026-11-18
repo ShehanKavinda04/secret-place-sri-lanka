@@ -23,7 +23,7 @@ class TranslationController extends Controller
         $tgt_lang = $request->input('tgt_lang', 'eng_Latn');
 
         try {
-            $response = Http::timeout(12)->post('http://127.0.0.1:5001/translate', [
+            $response = Http::timeout(45)->post('http://127.0.0.1:5001/translate', [
                 'text' => $text,
                 'src_lang' => $src_lang,
                 'tgt_lang' => $tgt_lang,

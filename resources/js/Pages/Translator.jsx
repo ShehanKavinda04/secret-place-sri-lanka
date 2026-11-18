@@ -3,9 +3,11 @@ import { Head, Link } from "@inertiajs/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/Layouts/Navbar";
 import Footer from "@/Layouts/Footer";
+import { useTranslation } from "@/Hooks/useTranslation";
 import axios from "axios";
 
 export default function Translator({ auth, initialTab = "translator" }) {
+    const { t, language, isSinhala } = useTranslation();
     const [activeTab, setActiveTab] = useState(initialTab || "translator");
 
     // --- Neural Translator State ---
@@ -219,6 +221,11 @@ export default function Translator({ auth, initialTab = "translator" }) {
         if (!predictionResult || !predictionResult.advice) return;
         setIsTranslatingAdvice(true);
         try {
+            const directSinhala = t(predictionResult.advice);
+            if (directSinhala && directSinhala !== predictionResult.advice) {
+                setTranslatedAdvice(directSinhala);
+            }
+
             const response = await axios.post("/translate", {
                 text: predictionResult.advice,
                 src_lang: "eng_Latn",
@@ -229,6 +236,10 @@ export default function Translator({ auth, initialTab = "translator" }) {
             }
         } catch (err) {
             console.error("Advice translation error:", err);
+            const fallback = t(predictionResult.advice);
+            if (fallback && fallback !== predictionResult.advice) {
+                setTranslatedAdvice(fallback);
+            }
         } finally {
             setIsTranslatingAdvice(false);
         }
@@ -260,7 +271,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#081b18] via-[#0c2420] to-[#05110f] text-[#f2f7f5] font-sans antialiased selection:bg-amber-400 selection:text-slate-950 flex flex-col">
-            <Head title="AI Intelligence & Cultural Translator | SecretPlaces Sri Lanka" />
+            <Head title={`${t("AI Travel & Cultural Intelligence Suite")} | SecretPlaces Sri Lanka`} />
 
             <Navbar auth={auth} />
 
@@ -274,19 +285,15 @@ export default function Translator({ auth, initialTab = "translator" }) {
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-amber-300 text-xs font-semibold tracking-wider uppercase backdrop-blur-md">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        Unified AI Engine (`model.safetensors` &
-                        `cwgbm_model.pkl`)
+                        {t("Unified AI Engine (`model.safetensors` & `cwgbm_model.pkl`)")}
                     </div>
 
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-300 to-amber-500 tracking-tight">
-                        AI Travel & Cultural Intelligence Suite
+                        {t("AI Travel & Cultural Intelligence Suite")}
                     </h1>
 
                     <p className="max-w-2xl mx-auto text-sm sm:text-base text-emerald-100/80 leading-relaxed font-sansDisplay">
-                        Explore authentic Sri Lankan heritage with neural
-                        language translation (`model.safetensors`) and
-                        predictive tourist crowd forecasting
-                        (`cwgbm_model.pkl`).
+                        {t("Explore authentic Sri Lankan heritage with neural language translation (`model.safetensors`) and predictive tourist crowd forecasting (`cwgbm_model.pkl`).")}
                     </p>
 
                     {/* Navigation Tab Bar */}
@@ -300,7 +307,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                         : "text-emerald-200/80 hover:text-white hover:bg-emerald-500/10"
                                 }`}
                             >
-                                <span>Neural Cultural Translator</span>
+                                <span>{t("Neural Cultural Translator")}</span>
                             </button>
 
                             <button
@@ -325,7 +332,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                         d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"
                                     />
                                 </svg>
-                                <span>CwGBM Visitor Demand Forecast</span>
+                                <span>{t("CwGBM Visitor Demand Forecast")}</span>
                             </button>
                         </div>
                     </div>
@@ -347,8 +354,8 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                         <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
                                         <span className="font-display font-bold text-sm text-amber-300 uppercase tracking-wider">
                                             {srcLang === "sin_Sinh"
-                                                ? "Sinhala (සිංහල)"
-                                                : "English"}
+                                                ? t("Sinhala (සිංහල)")
+                                                : t("English")}
                                         </span>
                                     </div>
 
@@ -370,7 +377,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                 d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
                                             />
                                         </svg>
-                                        <span>Swap</span>
+                                        <span>{t("Swap")}</span>
                                     </button>
                                 </div>
 
@@ -384,8 +391,8 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                         rows={6}
                                         placeholder={
                                             srcLang === "sin_Sinh"
-                                                ? "මෙහි සිංහල වාක්‍යයක් හෝ වචනයක් ටයිප් කරන්න (e.g. ඔබට කෙසේද? හෝ දළදා පෙරහැර)..."
-                                                : "Type English phrase here..."
+                                                ? (isSinhala ? "මෙහි සිංහල වාක්‍යයක් හෝ වචනයක් ටයිප් කරන්න (උදා: ඔබට කෙසේද? හෝ දළදා පෙරහැර)..." : "Type Sinhala phrase here (e.g. ඔබට කෙසේද?)...")
+                                                : (isSinhala ? "මෙහි ඉංග්‍රීසි වාක්‍යයක් ටයිප් කරන්න..." : "Type English phrase here...")
                                         }
                                         className="w-full bg-[#051613] border border-emerald-500/30 rounded-2xl p-4 text-base text-[#FAF9F6] placeholder-emerald-200/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all resize-none shadow-inner"
                                     />
@@ -403,7 +410,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                 }}
                                                 className="text-xs text-emerald-200 hover:text-white bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded-md transition-colors"
                                             >
-                                                Clear
+                                                {t("Clear")}
                                             </button>
                                         )}
                                     </div>
@@ -411,7 +418,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
 
                                 <div className="space-y-2 pt-1">
                                     <div className="text-xs font-semibold text-emerald-200/80">
-                                        Try cultural sample phrases:
+                                        {t("Try cultural sample phrases:")}
                                     </div>
                                     <div className="flex flex-wrap gap-2">
                                         {samplePhrases.map((chip, idx) => (
@@ -425,7 +432,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                             >
                                                 <span>{chip.label}</span>
                                                 <span className="text-[10px] text-emerald-200/50 group-hover:text-amber-200">
-                                                    ({chip.desc})
+                                                    ({t(chip.desc)})
                                                 </span>
                                             </button>
                                         ))}
@@ -439,10 +446,10 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                 >
                                     {isLoading ? (
                                         <span>
-                                            Processing with model.safetensors...
+                                            {t("Processing with model.safetensors...")}
                                         </span>
                                     ) : (
-                                        <span>Translate Now</span>
+                                        <span>{t("Translate Now")}</span>
                                     )}
                                 </button>
                             </div>
@@ -455,8 +462,8 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
                                             <span className="font-display font-bold text-sm text-amber-300 uppercase tracking-wider">
                                                 {tgtLang === "eng_Latn"
-                                                    ? "English Output"
-                                                    : "Sinhala Output"}
+                                                    ? t("English Output")
+                                                    : t("Sinhala Output")}
                                             </span>
                                         </div>
 
@@ -469,8 +476,8 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                 }`}
                                             >
                                                 {sourceEngine === "glossary"
-                                                    ? "Cultural Glossary Match"
-                                                    : "Neural AI Model (`model.safetensors`)"}
+                                                    ? t("Cultural Glossary Match")
+                                                    : t("Neural AI Model (`model.safetensors`)")}
                                             </span>
                                         )}
                                     </div>
@@ -491,7 +498,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                             }
                                                             className="p-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-amber-300 text-xs font-semibold flex items-center gap-1"
                                                         >
-                                                            Listen
+                                                            {t("Listen")}
                                                         </button>
                                                         <button
                                                             onClick={() =>
@@ -502,20 +509,19 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                             className="p-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-amber-300 text-xs font-semibold flex items-center gap-1"
                                                         >
                                                             {copied
-                                                                ? "Copied!"
-                                                                : "Copy Result"}
+                                                                ? t("Copied!")
+                                                                : t("Copy Result")}
                                                         </button>
                                                     </div>
                                                     <span className="text-[11px] text-emerald-200/60 font-mono">
-                                                        Confidence: High
+                                                        {t("Confidence: High")}
                                                     </span>
                                                 </div>
                                             </>
                                         ) : (
                                             <div className="flex flex-col items-center justify-center h-36 text-center space-y-2 text-emerald-200/40">
                                                 <p className="text-sm font-sansDisplay">
-                                                    Translation output will
-                                                    appear here.
+                                                    {t("Translation output will appear here.")}
                                                 </p>
                                             </div>
                                         )}
@@ -537,14 +543,14 @@ export default function Translator({ auth, initialTab = "translator" }) {
                         <div className="bg-[#0c2a25]/80 border border-emerald-500/20 rounded-3xl p-6 space-y-4">
                             <div className="flex items-center justify-between">
                                 <h3 className="font-display font-bold text-lg text-amber-300">
-                                    Recent Translations
+                                    {t("Recent Translations")}
                                 </h3>
                                 {history.length > 0 && (
                                     <button
                                         onClick={clearHistory}
                                         className="text-xs text-emerald-200/60 hover:text-amber-300"
                                     >
-                                        Clear History
+                                        {t("Clear History")}
                                     </button>
                                 )}
                             </div>
@@ -570,7 +576,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                 </div>
                             ) : (
                                 <p className="text-xs text-emerald-200/50">
-                                    No saved history yet.
+                                    {t("No saved history yet.")}
                                 </p>
                             )}
                         </div>
@@ -590,24 +596,23 @@ export default function Translator({ auth, initialTab = "translator" }) {
                             <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20">
                                 <div>
                                     <h2 className="font-display font-bold text-xl text-amber-300">
-                                        CwGBM Forecast Parameters
+                                        {t("CwGBM Forecast Parameters")}
                                     </h2>
                                     <p className="text-xs text-emerald-200/70">
-                                        CatBoost Gradient Boosting AI Model
-                                        (`cwgbm_model.pkl`)
+                                        {t("CatBoost Gradient Boosting AI Model (`cwgbm_model.pkl`)")}
                                     </p>
                                 </div>
                                 <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 border border-emerald-500/30 text-amber-300">
                                     {serviceStatus.cwgbmLoaded
-                                        ? "Model Loaded"
-                                        : "Algorithmic Fallback"}
+                                        ? t("Model Loaded")
+                                        : t("Model Offline")}
                                 </span>
                             </div>
 
                             {/* Preset Buttons */}
                             <div className="space-y-1.5">
                                 <span className="text-xs font-semibold text-emerald-200/80">
-                                    Quick Forecast Scenarios:
+                                    {t("Quick Forecast Scenarios:")}
                                 </span>
                                 <div className="flex flex-wrap gap-2">
                                     <button
@@ -619,7 +624,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                         }}
                                         className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs text-amber-200"
                                     >
-                                        Cool Off-Peak Day
+                                        {t("Cool Off-Peak Day")}
                                     </button>
                                     <button
                                         onClick={() => {
@@ -630,7 +635,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                         }}
                                         className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs text-amber-200"
                                     >
-                                        Hot Peak Festival
+                                        {t("Hot Peak Festival")}
                                     </button>
                                     <button
                                         onClick={() => {
@@ -641,7 +646,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                         }}
                                         className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs text-amber-200"
                                     >
-                                        Typical Anuradhapura
+                                        {t("Typical Anuradhapura")}
                                     </button>
                                 </div>
                             </div>
@@ -650,7 +655,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                             <div className="space-y-4 pt-2">
                                 <div>
                                     <div className="flex justify-between text-xs font-bold text-amber-300 mb-1">
-                                        <span>Temperature (°C)</span>
+                                        <span>{t("Temperature (°C)")}</span>
                                         <span>{temperature}°C</span>
                                     </div>
                                     <input
@@ -668,7 +673,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
 
                                 <div>
                                     <div className="flex justify-between text-xs font-bold text-amber-300 mb-1">
-                                        <span>Dew Point (°C)</span>
+                                        <span>{t("Dew Point (°C)")}</span>
                                         <span>{dewPoint}°C</span>
                                     </div>
                                     <input
@@ -686,11 +691,11 @@ export default function Translator({ auth, initialTab = "translator" }) {
 
                                 <div>
                                     <div className="flex justify-between text-xs font-bold text-amber-300 mb-1">
-                                        <span>Seasonality</span>
+                                        <span>{t("Seasonality")}</span>
                                         <span>
                                             {isPeakSeason
-                                                ? "Peak Season"
-                                                : "Off-Peak Season"}
+                                                ? t("Peak Season")
+                                                : t("Off-Peak Season")}
                                         </span>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 pt-1">
@@ -698,13 +703,13 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                             onClick={() => setIsPeakSeason(0)}
                                             className={`py-2 rounded-xl text-xs font-bold border transition-all ${!isPeakSeason ? "bg-amber-400 text-slate-950 border-amber-400" : "bg-[#051613] text-emerald-200 border-emerald-500/30"}`}
                                         >
-                                            Off-Peak Season
+                                            {t("Off-Peak Season")}
                                         </button>
                                         <button
                                             onClick={() => setIsPeakSeason(1)}
                                             className={`py-2 rounded-xl text-xs font-bold border transition-all ${isPeakSeason ? "bg-amber-400 text-slate-950 border-amber-400" : "bg-[#051613] text-emerald-200 border-emerald-500/30"}`}
                                         >
-                                            Peak Season
+                                            {t("Peak Season")}
                                         </button>
                                     </div>
                                 </div>
@@ -712,9 +717,9 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                 <div>
                                     <div className="flex justify-between text-xs font-bold text-amber-300 mb-1">
                                         <span>
-                                            Historical Base Demand (Visitors)
+                                            {t("Historical Base Demand (Visitors)")}
                                         </span>
-                                        <span>{laggedDemand} visitors</span>
+                                        <span>{laggedDemand} {t("visitors")}</span>
                                     </div>
                                     <input
                                         type="range"
@@ -737,11 +742,10 @@ export default function Translator({ auth, initialTab = "translator" }) {
                             >
                                 {isPredicting ? (
                                     <span>
-                                        Computing Gradient Boosting AI
-                                        Prediction...
+                                        {t("Computing Gradient Boosting AI Prediction...")}
                                     </span>
                                 ) : (
-                                    <span>Compute CwGBM AI Forecast</span>
+                                    <span>{t("Compute CwGBM AI Forecast")}</span>
                                 )}
                             </button>
 
@@ -758,7 +762,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                 <div>
                                     <div className="flex items-center justify-between pb-3 border-b border-emerald-500/20">
                                         <h3 className="font-display font-bold text-lg text-amber-300">
-                                            Predicted Visitor Demand
+                                            {t("Predicted Visitor Demand")}
                                         </h3>
                                         <span className="text-xs text-emerald-200/60 font-mono">
                                             CwGBM Engine
@@ -775,7 +779,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                     }
                                                 </span>
                                                 <span className="text-base text-emerald-200/80 font-medium">
-                                                    Estimated Visitors / Day
+                                                    {t("Estimated Visitors / Day")}
                                                 </span>
                                             </div>
 
@@ -785,7 +789,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                     className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border ${predictionResult.densityColor}`}
                                                 >
                                                     {
-                                                        predictionResult.densityLevel
+                                                        t(predictionResult.densityLevel)
                                                     }
                                                 </span>
                                             </div>
@@ -793,10 +797,10 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                             {/* Advisory Note */}
                                             <div className="p-4 rounded-2xl bg-[#051613] border border-emerald-500/30 space-y-2">
                                                 <div className="text-xs font-bold text-amber-300 uppercase tracking-wider">
-                                                    AI Travel Guidance (English)
+                                                    {isSinhala ? t("AI Travel Guidance (Sinhala)") : t("AI Travel Guidance (English)")}
                                                 </div>
                                                 <p className="text-sm text-white/90 leading-relaxed">
-                                                    {predictionResult.advice}
+                                                    {isSinhala ? (translatedAdvice || t(predictionResult.advice)) : predictionResult.advice}
                                                 </p>
                                             </div>
 
@@ -813,9 +817,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                 >
                                                     {isTranslatingAdvice ? (
                                                         <span>
-                                                            Translating to
-                                                            Sinhala with
-                                                            `model.safetensors`...
+                                                            {t("Translating to Sinhala with `model.safetensors`...")}
                                                         </span>
                                                     ) : (
                                                         <>
@@ -836,9 +838,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                                 />
                                                             </svg>
                                                             <span>
-                                                                Translate Advice
-                                                                to Sinhala
-                                                                (`model.safetensors`)
+                                                                {t("Translate Advice to Sinhala (`model.safetensors`)")}
                                                             </span>
                                                         </>
                                                     )}
@@ -848,7 +848,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                             {translatedAdvice && (
                                                 <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1">
                                                     <div className="text-xs font-bold text-amber-300 uppercase tracking-wider">
-                                                        Sinhala Translation
+                                                        {t("Sinhala Translation")}
                                                     </div>
                                                     <p className="text-base text-amber-200 font-medium">
                                                         {translatedAdvice}
@@ -873,9 +873,7 @@ export default function Translator({ auth, initialTab = "translator" }) {
                                                 />
                                             </svg>
                                             <p className="text-sm font-sansDisplay">
-                                                Adjust sliders and click
-                                                'Compute CwGBM AI Forecast' to
-                                                see live predictions.
+                                                {t("Adjust sliders and click 'Compute CwGBM AI Forecast' to see live predictions.")}
                                             </p>
                                         </div>
                                     )}
